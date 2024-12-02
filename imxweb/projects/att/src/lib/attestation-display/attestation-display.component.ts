@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,19 +26,18 @@
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
-import { IClientProperty, IEntity, IReadValue } from 'imx-qbm-dbts';
+import { IClientProperty, IEntity, IReadValue } from '@imx-modules/imx-qbm-dbts';
 import { buildAdditionalElementsString, ParameterizedText } from 'qbm';
 
 @Component({
   selector: 'imx-attestation-display',
   templateUrl: './attestation-display.component.html',
-  styleUrls: ['./attestation-display.component.scss']
 })
 export class AttestationDisplayComponent implements OnInit, OnChanges {
   public parameterizedText: ParameterizedText;
   public additionalText: string;
 
-  @Input() public attestation: { UiText: IReadValue<string>, GetEntity: () => IEntity };
+  @Input() public attestation: { UiText: IReadValue<string>; GetEntity: () => IEntity };
   @Input() public additionalColumns: IClientProperty[];
 
   public ngOnInit(): void {
@@ -47,10 +46,8 @@ export class AttestationDisplayComponent implements OnInit, OnChanges {
     this.parameterizedText = {
       value: this.attestation.UiText.value || entity.GetDisplay(),
       marker: { start: '"%', end: '%"' },
-      getParameterValue: columnName => entity.GetColumn(columnName).GetDisplayValue()
+      getParameterValue: (columnName) => entity.GetColumn(columnName).GetDisplayValue(),
     };
-
-
   }
 
   public ngOnChanges(simple: SimpleChanges): void {

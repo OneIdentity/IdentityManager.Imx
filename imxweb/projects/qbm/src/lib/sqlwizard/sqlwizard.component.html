@@ -9,20 +9,25 @@
   </button>
   <span class="imx-spacer"></span>
   {{ '#LDS#Logical operator' | translate }}
-  <mat-button-toggle-group name="logical-operator" (change)="onOperatorChanged($event)">
-    <mat-button-toggle value="and" [checked]="expression.LogOperator === this.LogOp.AND">{{ andConditionLabel | translate }}</mat-button-toggle>
-    <mat-button-toggle value="or" [checked]="expression.LogOperator === this.LogOp.OR">{{ orConditionLabel | translate }}</mat-button-toggle>
+  <mat-button-toggle-group name="logical-operator" [hideSingleSelectionIndicator]="true" (change)="onOperatorChanged($event)">
+    <mat-button-toggle value="and" [checked]="expression.LogOperator === this.LogOp.AND">{{
+      andConditionLabel | translate
+    }}</mat-button-toggle>
+    <mat-button-toggle value="or" [checked]="expression.LogOperator === this.LogOp.OR">{{
+      orConditionLabel | translate
+    }}</mat-button-toggle>
   </mat-button-toggle-group>
 </div>
 <ng-container *ngIf="viewSettings">
   <mat-list class="expression-list">
     <ng-container *ngFor="let expr of viewSettings.root.childViews; let i = index; let first = first; let last = last">
       <div *ngIf="!first" class="selected-logical-op">
-        {{logOpText() | translate}}
+        {{ logOpText() | translate }}
       </div>
       <li class="expression-container" #expressionItem>
         <div class="expression-container-header">{{ i + 1 }}.</div>
-        <imx-sqlwizard-singleexpression [expr]="expr" [first]="first" [last]="last" (change)="emitChanges()"> </imx-sqlwizard-singleexpression>
+        <imx-sqlwizard-singleexpression [expr]="expr" [first]="first" [last]="last" (change)="emitChanges()">
+        </imx-sqlwizard-singleexpression>
       </li>
     </ng-container>
   </mat-list>

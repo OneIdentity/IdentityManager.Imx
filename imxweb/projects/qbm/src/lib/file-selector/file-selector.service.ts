@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,15 +30,15 @@ import { Subject } from 'rxjs';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FileSelectorService {
-  public readonly fileFormatError = new Subject();
+  public readonly fileFormatError = new Subject<void>();
   public readonly fileSelected = new Subject<string>();
 
-  constructor(private logger: ClassloggerService) { }
+  constructor(private logger: ClassloggerService) {}
 
-  public emitFiles(files: FileList, acceptedFileFormat: string): void {
+  public emitFiles(files: FileList | null, acceptedFileFormat: string): void {
     if (files == null || files.length === 0) {
       this.logger.debug(this, 'No file selected.');
       return;

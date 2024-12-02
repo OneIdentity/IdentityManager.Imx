@@ -1,3 +1,5 @@
+@import 'base/mixins';
+
 :host {
   display: flex;
   align-items: center;
@@ -11,11 +13,9 @@ button.imx-button {
   margin-right: 10px;
 }
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
+  @include flex-column-container($height: inherit);
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: inherit;
 }
 
 .imx-select-category {

@@ -3,32 +3,4 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-
-
-  .mat-card {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    margin: 3px;
-  }
-}
-
-.imx-helper-alert {
-  margin-bottom: 15px;
-}
-
-.eui-dark-theme {
-  :host {
-    .imx-helper-alert {
-      color: $color-gray-2;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-helper-alert {
-      color: $color-gray-0;
-    }
-  }
 }

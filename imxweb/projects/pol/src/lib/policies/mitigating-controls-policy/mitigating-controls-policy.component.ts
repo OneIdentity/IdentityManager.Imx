@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { PoliciesService } from '../policies.service';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { CdrFactoryService, ColumnDependentReference } from 'qbm';
+import { PoliciesService } from '../policies.service';
 
 /**
  * Used to get and display mitigating controls for each policy
@@ -38,7 +38,7 @@ import { CdrFactoryService, ColumnDependentReference } from 'qbm';
   styleUrls: ['./mitigating-controls-policy.component.scss'],
 })
 export class MitigatingControlsPolicyComponent implements OnInit {
-  @Input() public readonly objectUid: string;
+  @Input() public objectUid: string;
   @Input() public isMControlPerViolation: boolean;
 
   public mControls: ColumnDependentReference[];
@@ -49,7 +49,7 @@ export class MitigatingControlsPolicyComponent implements OnInit {
   constructor(
     private apiService: PoliciesService,
     private readonly busyService: EuiLoadingService,
-    private cdrService: CdrFactoryService
+    private cdrService: CdrFactoryService,
   ) {}
 
   /**
@@ -66,8 +66,8 @@ export class MitigatingControlsPolicyComponent implements OnInit {
     this.busyService.show();
     try {
       this.mControls = (await this.apiService.getMitigatingControls(this.objectUid)).Data.map((control) =>
-        this.cdrService.buildCdr(control.GetEntity(), control.UID_MitigatingControl.Column.ColumnName)
-      );
+        this.cdrService.buildCdr(control.GetEntity(), control.UID_MitigatingControl.Column.ColumnName),
+      ).filter(Boolean) as ColumnDependentReference[];
     } finally {
       this.busyService.hide();
     }

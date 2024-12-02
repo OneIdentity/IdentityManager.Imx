@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { ApiClientMethodFactoryMock } from './api-client.spec';
-import { ApiClientFetch } from './api-client-fetch';
 import { of } from 'rxjs';
+import { ApiClientFetch } from './api-client-fetch';
+import { ApiClientMethodFactoryMock } from './api-client.spec';
 
 describe('ApiClientFetch', () => {
   const methodFactory = new ApiClientMethodFactoryMock();
@@ -36,18 +36,20 @@ describe('ApiClientFetch', () => {
       path: '/imx/applications',
       type: 'GET',
       onInvoke: (client: any) => client.imx_applications_get(),
-      value: [{
-        Name: 'somename',
-        DisplayName: 'somedisplayname',
-        Description: 'somedescription',
-        Path: 'somepath'
-      }]
+      value: [
+        {
+          Name: 'somename',
+          DisplayName: 'somedisplayname',
+          Description: 'somedescription',
+          Path: 'somepath',
+        },
+      ],
     },
     {
       path: '/imx/sessions/someAppId',
       type: 'GET',
       onInvoke: (client: any) => client.imx_sessions_get('someAppId'),
-      value: {}
+      value: {},
     },
     {
       path: '/imx/multilanguage/getcaptions',
@@ -55,8 +57,8 @@ describe('ApiClientFetch', () => {
       onInvoke: (client: any) => client.imx_multilanguage_getcaptions_get(null),
       value: {
         caption1: 'value1',
-        caption2: 'value2'
-      }
+        caption2: 'value2',
+      },
     },
     {
       path: '/imx/multilanguage/getcaptions?cultureName=someCultureName',
@@ -64,18 +66,18 @@ describe('ApiClientFetch', () => {
       onInvoke: (client: any) => client.imx_multilanguage_getcaptions_get('someCultureName'),
       value: {
         caption1: 'value1',
-        caption2: 'value2'
-      }
+        caption2: 'value2',
+      },
     },
     {
       path: '/imx/login/someAppId',
       type: 'POST',
       onInvoke: (client: any) => client.imx_login_post('someAppId', {}),
       value: {},
-      body: JSON.stringify({})
-    }
+      body: JSON.stringify({}),
+    },
   ];
-  methods.forEach(method => {
+  methods.forEach((method) => {
     const json = method.value ? JSON.stringify(method.value) : '{}';
     const serverErrorMessage = '[{"Message":"Some error message","Level":"42","Number":"23"}]';
     [
@@ -84,59 +86,61 @@ describe('ApiClientFetch', () => {
         json: serverErrorMessage,
         expectedError: {
           userfriendly: 'Some error message [23]',
-          message: serverErrorMessage
-        }
+          message: serverErrorMessage,
+        },
       },
       {
         status: 200,
         json: json,
-        expectedJson: json
+        expectedJson: json,
       },
       {
         status: -1,
         json: serverErrorMessage,
         expectedError: {
           userfriendly: 'Some error message [23]',
-          message: serverErrorMessage
-        }
+          message: serverErrorMessage,
+        },
       },
       {
         status: 204,
         json: null,
-        expectedJson: null
-      }
-    ].forEach(testcase =>
+        expectedJson: null,
+      },
+    ].forEach((testcase) =>
       it(`has a method ${method.path}`, async () => {
         const client = new ApiClientFetch(
           '',
           <any>{
-            debug: jasmine.createSpy('debug')
+            debug: jasmine.createSpy('debug'),
           },
           <any>{
-            get: jasmine.createSpy('get').and.callFake(key => of(key.replace('#LDS#', '')))
+            get: jasmine.createSpy('get').and.callFake((key) => of(key.replace('#LDS#', ''))),
           },
           {
-            fetch: (_0: RequestInfo, init: RequestInit) => Promise.resolve({
-              status: testcase.status,
-              text: () => Promise.resolve(testcase.json),
-              json: () => Promise.resolve(JSON.parse(testcase.json)),
-              blob: () => Promise.resolve(new Blob()),
-              headers: <any>{
-                get: jasmine.createSpy('get').and.returnValue(null)
-              },
-              ok: null,
-              redirected: null,
-              statusText: null,
-              trailer: null,
-              type: null,
-              url: null,
-              clone: null,
-              body: init.body,
-              bodyUsed: init.body != null,
-              arrayBuffer: null,
-              formData: null
-            } as Response)
-          });
+            fetch: (_0: RequestInfo, init: RequestInit) =>
+              Promise.resolve({
+                status: testcase.status,
+                text: () => Promise.resolve(testcase.json),
+                json: () => Promise.resolve(JSON.parse(testcase.json)),
+                blob: () => Promise.resolve(new Blob()),
+                headers: <any>{
+                  get: jasmine.createSpy('get').and.returnValue(null),
+                },
+                ok: null,
+                redirected: null,
+                statusText: null,
+                trailer: null,
+                type: null,
+                url: null,
+                clone: null,
+                body: init.body,
+                bodyUsed: init.body != null,
+                arrayBuffer: null,
+                formData: null,
+              } as Response),
+          },
+        );
 
         let actualResponse = null;
         let catchedError = null;
@@ -155,7 +159,7 @@ describe('ApiClientFetch', () => {
             expect(JSON.stringify(actualResponse)).toEqual(testcase.expectedJson);
           }
         }
-      })
+      }),
     );
   });
 });

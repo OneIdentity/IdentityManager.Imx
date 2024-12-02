@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,46 @@
  *
  */
 
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRolesEntitlements, RoleAssignmentData } from 'imx-api-qer';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { PortalRolesEntitlements, RoleAssignmentData } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  DbObjectKey,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+  XOrigin,
+} from '@imx-modules/imx-qbm-dbts';
 
-import { BusyService, ConfirmationService, DataSourceToolbarSettings, DataTableComponent, MetadataService, SnackBarService } from 'qbm';
-import { RoleRecommendationsComponent } from './role-recommendations/role-recommendations.component';
+import { Router } from '@angular/router';
+import {
+  BusyService,
+  ConfirmationService,
+  DataSourceToolbarSettings,
+  DataTableComponent,
+  HelpContextualComponent,
+  HelpContextualService,
+  MetadataService,
+  SnackBarService,
+  calculateSidesheetWidth,
+} from 'qbm';
+import { Subscription } from 'rxjs';
 import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 import { EntitlementSelectorComponent } from './entitlement-selector.component';
-import { RoleRecommendationResultItem } from './role-recommendations/role-recommendation-result-item';
 import { RoleEntitlementActionService } from './role-entitlement-action.service';
+import { RoleRecommendationResultItem } from './role-recommendations/role-recommendation-result-item';
+import { RoleRecommendationsComponent } from './role-recommendations/role-recommendations.component';
 @Component({
   selector: 'imx-role-entitlements',
   templateUrl: './role-entitlements.component.html',
   styleUrls: ['./role-entitlements.component.scss', '../sidesheet.scss'],
 })
-export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
-  get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
-  }
+export class RoleEntitlementsComponent implements OnInit, AfterViewInit, OnDestroy {
   public dstSettings: DataSourceToolbarSettings;
   public navigationState: CollectionLoadParameters = {};
   public entitySchema: EntitySchema;
@@ -54,6 +71,8 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   public displayColumns: IClientProperty[];
   public entitlementTypes: Map<string, string>;
   public canEdit: boolean;
+
+  private subscription: Subscription;
 
   @ViewChild('dataTable') public dataTable: DataTableComponent<TypedEntity>;
 
@@ -78,7 +97,9 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     private readonly sidesheet: EuiSidesheetService,
     private readonly metadata: MetadataService,
     private readonly translate: TranslateService,
-    private roleActionService: RoleEntitlementActionService
+    private roleActionService: RoleEntitlementActionService,
+    private helpContextService: HelpContextualService,
+    private router: Router,
   ) {
     this.canEdit = roleService.canEdit;
   }
@@ -87,8 +108,14 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     this.entitySchema = PortalRolesEntitlements.GetEntitySchema();
   }
 
+  public ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
   public get hasRecommendations(): boolean {
-    return this.roleService.getRoleTypeInfo().canUseRecommendations;
+    return this.roleService.getRoleTypeInfo()?.canUseRecommendations || false;
   }
 
   public async ngAfterViewInit(): Promise<void> {
@@ -117,19 +144,22 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
 
   public async onSelectEntitlements(): Promise<void> {
     this.busyServiceElemental.show();
-    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    const entity = this.dataManagementService.entityInteractive?.GetEntity();
     let entitlementTypes: RoleAssignmentData[];
     try {
-      entitlementTypes = await this.roleService.getEntitlementTypes(entity);
+      entitlementTypes = (await this.roleService.getEntitlementTypes(entity)) ?? [];
     } finally {
       this.busyServiceElemental.hide();
     }
+    const helpId = this.roleService.getHelpContextId();
+    if (helpId) this.helpContextService.setHelpContextId(helpId);
     const selectedValues = await this.sidesheet
       .open(EntitlementSelectorComponent, {
         title: await this.translate.get('#LDS#Heading Request Entitlements').toPromise(),
-        subTitle: entity.GetDisplay(),
+        subTitle: entity?.GetDisplay(),
+        headerComponent: helpId ? HelpContextualComponent : undefined,
         padding: '0px',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         testId: 'role-entitlements-new-sidesheet',
         data: {
           entitlementTypes: entitlementTypes,
@@ -146,7 +176,15 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
         this.busyServiceElemental.hide(overlay);
       }
 
-      this.snackbar.open({ key: '#LDS#The entitlement assignments have been successfully added to your shopping cart.' }, '#LDS#Close');
+      this.subscription = this.snackbar
+        .open({ key: '#LDS#The entitlement assignments have been successfully added to your shopping cart.' }, '#LDS#Go to cart', {
+          duration: 5000,
+        })
+        .onAction()
+        .subscribe(() => {
+          this.sidesheet.closeAll();
+          this.router.navigate(['shoppingcart']);
+        });
     }
   }
 
@@ -161,7 +199,7 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     const colName = this.roleService.getEntitlementFkName();
     const objKey = DbObjectKey.FromXml(item.GetEntity().GetColumn(colName).GetValue());
     const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
-    return metadata.DisplaySingular;
+    return metadata?.DisplaySingular || '';
   }
 
   public canDeleteAllSelected(): boolean {
@@ -187,7 +225,7 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
         this.dataTable.clearSelection();
         this.snackbar.open(
           { key: '#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.' },
-          '#LDS#Close'
+          '#LDS#Close',
         );
         await this.navigate();
       }
@@ -203,41 +241,43 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   }
 
   public async onShowRecommendations(): Promise<any> {
-    const entity = this.dataManagementService.entityInteractive.GetEntity();
-    const result: RoleRecommendationResultItem[] = await this.sidesheet
+    const entity = this.dataManagementService.entityInteractive?.GetEntity();
+    const result: { items: RoleRecommendationResultItem[] } = await this.sidesheet
       .open(RoleRecommendationsComponent, {
         title: await this.translate.get('#LDS#Heading View Recommended Entitlements').toPromise(),
-        subTitle: entity.GetDisplay(),
+        subTitle: entity?.GetDisplay(),
         padding: '0px',
-        width: 'max(650px, 65%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'role-recommendation-sidesheet',
         data: {
           tablename: this.roleService.ownershipInfo.TableName,
-          uidRole: this.dataManagementService.entityInteractive.GetEntity().GetKeys()[0],
+          uidRole: this.dataManagementService.entityInteractive?.GetEntity().GetKeys()[0],
           canEdit: this.canEdit,
         },
       })
       .afterClosed()
       .toPromise();
 
-    if (result != null) {
+    if (!!result) {
       let countAdd = 0;
       let countRemove = 0;
       const overlay = this.busyServiceElemental.show();
       try {
-        countAdd = await this.roleActionService.addRecommendation(
-          entity,
-          result.filter((elem) => elem.Type.value === 0)
-        );
-        countRemove = await this.roleActionService.deleteRecommendations(
-          entity,
-          result.filter((elem) => elem.Type.value === 1)
-        );
+        if (entity) {
+          countAdd = await this.roleActionService.addRecommendation(
+            entity,
+            result.items?.filter((elem) => elem.Type.value === 0),
+          );
+          countRemove = await this.roleActionService.deleteRecommendations(
+            entity,
+            result.items?.filter((elem) => elem.Type.value === 1),
+          );
+        }
       } finally {
         this.busyServiceElemental.hide(overlay);
       }
 
-      let text: string;
+      let text: string | undefined = undefined;
       switch (true) {
         case countAdd === 0 && countRemove > 0:
           text = '#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.';
@@ -263,14 +303,14 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   private async navigate(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      const entity = this.dataManagementService.entityInteractive.GetEntity();
+      const entity = this.dataManagementService.entityInteractive?.GetEntity();
       const ds = await this.roleService.getEntitlements({
-        id: entity.GetKeys().join(','),
+        id: entity?.GetKeys().join(','),
         navigationState: this.navigationState,
       });
       this.entitlementTypes = new Map();
 
-      ds.Data.forEach(async (item) => {
+      ds?.Data.forEach(async (item) => {
         this.entitlementTypes.set(item.GetEntity().GetKeys().toString(), await this.getTypeDescription(item));
       });
 
@@ -291,14 +331,14 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
 
   private isDirectAssignment(entity: TypedEntity): boolean {
     const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
-    // tslint:disable-next-line:no-bitwise
-    return xorigin && XOrigin.Direct === (XOrigin.Direct & xorigin);
+    // eslint-disable-next-line no-bitwise
+    return (xorigin && XOrigin.Direct === (XOrigin.Direct & xorigin)) || false;
   }
 
   private isDynamicAssignment(entity: TypedEntity): boolean {
     const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
-    // tslint:disable-next-line:no-bitwise
-    return xorigin && XOrigin.Dynamic === (XOrigin.Dynamic & xorigin);
+    // eslint-disable-next-line no-bitwise
+    return (xorigin && XOrigin.Dynamic === (XOrigin.Dynamic & xorigin)) || false;
   }
 
   private isRequestCancellable(entity: TypedEntity): boolean {

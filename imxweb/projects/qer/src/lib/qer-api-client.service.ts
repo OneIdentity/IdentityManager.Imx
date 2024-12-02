@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,22 @@
  */
 
 import { Injectable } from '@angular/core';
-import { V2Client, Client, TypedClient } from 'imx-api-qer';
-import { ApiClient } from 'imx-qbm-dbts';
+import { TypedClient, V2Client } from '@imx-modules/imx-api-qer';
+import { ApiClient } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, ImxTranslationProviderService } from 'qbm';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class QerApiService {
   private tc: TypedClient;
   public get typedClient(): TypedClient {
+    // do lazy initialization fo the v2Client, to avoid
+    // problems with instantiating services in a different
+    // order.
+    if (!this._v2Client) {
+      this.initClient();
+    }
     return this.tc;
   }
 
@@ -42,7 +48,17 @@ export class QerApiService {
     return this.v2Client;
   }
 
-  public readonly v2Client: V2Client;
+  private _v2Client: V2Client;
+
+  public get v2Client(): V2Client {
+    // do lazy initialization fo the v2Client, to avoid
+    // problems with instantiating services in a different
+    // order.
+    if (!this._v2Client) {
+      this.initClient();
+    }
+    return this._v2Client;
+  }
 
   public get apiClient(): ApiClient {
     return this.config.apiClient;
@@ -51,13 +67,16 @@ export class QerApiService {
   constructor(
     private readonly config: AppConfigService,
     private readonly logger: ClassloggerService,
-    private readonly translationProvider: ImxTranslationProviderService) {
+    private readonly translationProvider: ImxTranslationProviderService,
+  ) {}
+
+  initClient() {
     try {
       this.logger.debug(this, 'Initializing QER API service');
 
       // Use schema loaded by QBM client
-      const schemaProvider = config.client;
-      this.v2Client = new V2Client(this.config.apiClient, schemaProvider);
+      const schemaProvider = this.config.client;
+      this._v2Client = new V2Client(this.config.apiClient, schemaProvider);
       this.tc = new TypedClient(this.v2Client, this.translationProvider);
     } catch (e) {
       this.logger.error(this, e);

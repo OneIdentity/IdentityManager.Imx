@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,23 +41,23 @@ describe('StatisticsHomePageComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([StatisticsHomePageComponent])
-    .mock(StatisticsDataService)
-    .mock(StatisticsConstantsService)
-    .mock(EuiLoadingService)
-    .mock(ElementRef)
-    .beforeCompileComponents(testBed => {
-      testBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers: [
-          {
-            provide: MatDialog,
-            useValue: {
-              open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of() })
-            }
-          }
-        ]
+      .mock(StatisticsDataService)
+      .mock(StatisticsConstantsService)
+      .mock(EuiLoadingService)
+      .mock(ElementRef)
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          providers: [
+            {
+              provide: MatDialog,
+              useValue: {
+                open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of() }),
+              },
+            },
+          ],
+        });
       });
-    });
   });
 
   beforeEach(() => {
@@ -68,7 +68,7 @@ describe('StatisticsHomePageComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

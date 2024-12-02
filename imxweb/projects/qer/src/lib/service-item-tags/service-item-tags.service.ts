@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,27 +27,31 @@
 import { Injectable } from '@angular/core';
 
 import { ClassloggerService } from 'qbm';
-import { PortalServiceitemsTags } from 'imx-api-qer';
-import { CollectionLoadParameters, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { PortalServiceitemsTags } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 /**
  * Provides methods to load, add and remove tags
  */
 export class ServiceItemTagsService {
-  constructor(private readonly apiClient: QerApiService, private logger: ClassloggerService) { }
+  constructor(
+    private readonly apiClient: QerApiService,
+    private logger: ClassloggerService,
+  ) {}
 
   /**
    * Gets all tags associated with the accProduct of an entitlement
    * @param entitlement the entitlement the tags belpong to
    * @param parameters additional load parameter
    */
-  public async getTags(uidAccProduct: string, parameters?: CollectionLoadParameters):
-    Promise<TypedEntityCollectionData<PortalServiceitemsTags>> {
+  public async getTags(
+    uidAccProduct: string,
+    parameters?: CollectionLoadParameters,
+  ): Promise<TypedEntityCollectionData<PortalServiceitemsTags>> {
     return this.apiClient.typedClient.PortalServiceitemsTags.Get(uidAccProduct, parameters);
   }
 
@@ -60,24 +64,28 @@ export class ServiceItemTagsService {
   public async updateTags(uidAccProduct: string, tagsAdd: string[], tagsRemove: string[]): Promise<void> {
     const assignedTags = await this.getTags(uidAccProduct);
 
-    await this.deleteTags(uidAccProduct, assignedTags.Data.filter(shop => ServiceItemTagsService.isForDeletion(shop, tagsRemove)));
+    await this.deleteTags(
+      uidAccProduct,
+      assignedTags.Data.filter((shop) => ServiceItemTagsService.isForDeletion(shop, tagsRemove)),
+    );
 
-    return this.addTags(uidAccProduct, tagsAdd.filter(shop => !ServiceItemTagsService.isAssigned(shop, assignedTags.Data)));
+    return this.addTags(
+      uidAccProduct,
+      tagsAdd.filter((shop) => !ServiceItemTagsService.isAssigned(shop, assignedTags.Data)),
+    );
   }
 
   private async addTags(uidAccProduct: string, tags: string[]): Promise<void> {
     for (const tag of tags) {
       this.logger.trace(this, `add tag: ${tag} for uid ${uidAccProduct}`);
-      await this.apiClient.client.
-      portal_serviceitems_tags_add_post(uidAccProduct, tag);
+      await this.apiClient.client.portal_serviceitems_tags_add_post(uidAccProduct, tag);
     }
   }
 
   private async deleteTags(uidAccProduct: string, items: PortalServiceitemsTags[]): Promise<void> {
     for (const tag of items) {
       this.logger.trace(this, `remove tag: ${tag.Ident_DialogTag} for uid ${uidAccProduct}`);
-      await this.apiClient.client.
-      portal_serviceitems_tags_delete(uidAccProduct, tag.GetEntity().GetKeys()[0]);
+      await this.apiClient.client.portal_serviceitems_tags_delete(uidAccProduct, tag.GetEntity().GetKeys()[0]);
     }
   }
 
@@ -87,7 +95,7 @@ export class ServiceItemTagsService {
    * @param tagsAssigned a list of tags that are already assigned
    */
   public static isAssigned(tag: string, tagsAssigned: PortalServiceitemsTags[]): boolean {
-    return tagsAssigned && tagsAssigned.find(shopAssigned => shopAssigned.Ident_DialogTag.value === tag) != null;
+    return tagsAssigned && tagsAssigned.find((shopAssigned) => shopAssigned.Ident_DialogTag.value === tag) != null;
   }
 
   /**
@@ -96,6 +104,6 @@ export class ServiceItemTagsService {
    * @param tagsForDeletion a list of tags, hat should be deleted
    */
   public static isForDeletion(tagItem: PortalServiceitemsTags, tagsForDeletion: string[]): boolean {
-    return tagsForDeletion && tagsForDeletion.find(shopElement => tagItem.Ident_DialogTag.value === shopElement) != null;
+    return tagsForDeletion && tagsForDeletion.find((shopElement) => tagItem.Ident_DialogTag.value === shopElement) != null;
   }
 }

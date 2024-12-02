@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,40 +24,35 @@
  *
  */
 
-import { Component, OnInit, Input, ErrorHandler } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
+import { PortalCalls, PortalCallsHistory } from '@imx-modules/imx-api-hds';
+import { CollectionLoadParameters, EntitySchema, IClientProperty, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalCalls, PortalCallsHistory } from 'imx-api-hds';
+import { DataViewInitParameters, DataViewSource, calculateSidesheetWidth } from 'qbm';
 import { HdsApiService } from '../../hds-api-client.service';
-import { DataSourceToolbarSettings, ClassloggerService, SettingsService, DataSourceWrapper, DataTableGroupedData, DataSourceToolbarFilter } from 'qbm';
-import { CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
 import { CallsHistorySidesheetComponent } from '../calls-history-sidesheet/calls-history-sidesheet.component';
 
 @Component({
   selector: 'imx-calls-history',
   templateUrl: './calls-history.component.html',
-  styleUrls: ['./calls-history.component.scss']
+  styleUrls: ['./calls-history.component.scss'],
+  providers: [DataViewSource],
 })
 export class CallsHistoryComponent implements OnInit {
-
-  @Input() public ticket: any;
+  @Input() public ticket: PortalCalls;
   public entitySchema: EntitySchema;
-  public dstSettings: DataSourceToolbarSettings;
   public displayedColumns: IClientProperty[] = [];
-  public collectionLoadParameters: CollectionLoadParameters;
-  public filterOptions: DataSourceToolbarFilter[] = [];
 
   constructor(
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
-    private readonly errorHandler: ErrorHandler,
     private readonly hdsApiService: HdsApiService,
-    private readonly settingsService: SettingsService,
-    private readonly euiLoadingService: EuiLoadingService) {
-      this.collectionLoadParameters = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
-      this.entitySchema = this.hdsApiService.typedClient.PortalCallsHistory.GetSchema();
-    }
-  
+    public dataSource: DataViewSource<PortalCallsHistory>,
+  ) {
+    this.entitySchema = this.hdsApiService.typedClient.PortalCallsHistory.GetSchema();
+  }
+
   public async ngOnInit() {
     this.displayedColumns = [
       this.entitySchema.Columns['UID_TroubleTicket'],
@@ -66,53 +61,27 @@ export class CallsHistoryComponent implements OnInit {
       this.entitySchema.Columns['UID_TroubleCallState'],
       this.entitySchema.Columns['ObjectKeySupporter'],
     ];
-    await this.loadHistory();
-  }
-
-  private async loadHistory(): Promise<void> {
-    let overlayRef = this.euiLoadingService.show();
-    try {
-      if (this.ticket?.EntityKeysData?.Keys?.length > 0)
-      {
-        let history = await this.hdsApiService.typedClient.PortalCallsHistory.Get(this.ticket.EntityKeysData.Keys[0],this.collectionLoadParameters);
-        this.dstSettings = {
-          displayedColumns: this.displayedColumns,
-          dataSource: history,
-          entitySchema: this.entitySchema,
-          navigationState: this.collectionLoadParameters,
-          filters: this.filterOptions,
-        };
-      }
-    }
-    catch (error) {
-      this.errorHandler.handleError(error);
-    }
-    finally {
-      this.euiLoadingService.hide(overlayRef);
-    }
-  }
-
-  public async onNavigationStateChanged(collectionLoadParameters?: CollectionLoadParameters): Promise<void> {
-    if (collectionLoadParameters) 
-      this.collectionLoadParameters = collectionLoadParameters;
-      
-    await this.loadHistory();
-  }
-
-  public async onSearch(keywords: string): Promise<void> {
-    this.collectionLoadParameters.StartIndex = 0;
-    this.collectionLoadParameters.search = keywords;
-    await this.loadHistory();
+    const dataViewInitParameters: DataViewInitParameters<PortalCallsHistory> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalCallsHistory>> =>
+        this.hdsApiService.typedClient.PortalCallsHistory.Get(this.ticket?.EntityKeysData?.Keys?.[0] || '', params),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      highlightEntity: (identity: PortalCallsHistory) => {
+        this.onSelected(identity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public async onSelected(history: PortalCallsHistory): Promise<void> {
     if (history) {
       let title = await this.translate.get('#LDS#Heading View Change Details').toPromise();
-      let sidesheetRef = this.sidesheet.open(CallsHistorySidesheetComponent, {
+      this.sidesheet.open(CallsHistorySidesheetComponent, {
         testId: 'calls-history-sidesheet',
         title: title,
+        subTitle: history.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(400px, 40%)',
+        width: calculateSidesheetWidth(700, 0.4),
         data: history,
       });
     }

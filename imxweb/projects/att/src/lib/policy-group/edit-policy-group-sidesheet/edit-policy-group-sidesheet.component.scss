@@ -4,17 +4,6 @@ h2 {
   margin-bottom: 10px;
 }
 
-.imx-action {
-  display: flex;
-  justify-content: flex-end;
+.eui-sidesheet-actions__padding {
   padding: 16px 32px;
-
-  .justify-start {
-    margin-right: auto;
-
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
 }

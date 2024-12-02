@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,4 +34,3 @@ export { PolicyViolationsModule } from './lib/policy-violations/policy-violation
 export { PolicyViolationsComponent } from './lib/policy-violations/policy-violations.component';
 export { PolicyAdminGuardService } from './lib/guards/policy-admin-guard.service';
 export { PermissionsService } from './lib/admin/permissions.service';
-

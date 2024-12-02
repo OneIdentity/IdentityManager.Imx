@@ -1,0 +1,12 @@
+
+@import 'base/mixins';
+:host{
+  @include flex-column-container-fill();
+  height: 100%
+}
+
+
+.trusteetype {
+  font-style: italic;
+}
+

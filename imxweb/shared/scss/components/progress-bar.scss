@@ -1,0 +1,66 @@
+@mixin standard-progress() {
+  flex: 1 1 auto;
+  width: auto;
+  align-self: center;
+}
+
+/* Elemental UI */
+
+/* Angular Material */
+mat-progress-bar {
+  @include standard-progress();
+}
+
+/* Imx */
+
+.imx-child-progress-bar {
+  margin-left: 10px;
+  max-width: 60%;
+}
+
+.imx-tree-text {
+  mat-progress-bar {
+    @include standard-progress();
+  }
+}
+
+imx-progress {
+  flex: 1 1 auto;
+}
+
+td .imx-progress-bar {
+  &-container {
+    padding: 0 10px;
+  }
+}
+
+.imx-progress-bar {
+  display: flex;
+  column-gap: 5px;
+  align-items: baseline;
+
+  .mat-mdc-progress-bar {
+    width: 200px;
+    flex-grow: 0;
+  }
+
+  &-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-texts {
+    font-size: 12px;
+    text-align: left;
+  }
+
+  &-line {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

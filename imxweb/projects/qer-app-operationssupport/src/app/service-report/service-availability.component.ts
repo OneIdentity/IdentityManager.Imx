@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,7 +39,7 @@ export class ServiceAvailabilityComponent {
 
   @ViewChild(JobServersGridviewComponent) private readonly jobGrid: JobServersGridviewComponent;
 
-  constructor(private translate: TranslateService){ }
+  constructor(private translate: TranslateService) {}
 
   public async Update(): Promise<void> {
     await this.jobGrid.refresh(true);

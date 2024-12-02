@@ -1,32 +1,32 @@
 <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
 <form [formGroup]="formGroup" *ngIf="!isLoading">
-  <div *ngFor="let terms of termsOfUse; index as i">
+  <div *ngFor="let item of termsOfUseItems; index as i">
     <fieldset class="imx-accept-terms-container">
-      <legend>{{ terms?.GetEntity()?.GetDisplay() }}</legend>
+      <legend>{{ item?.GetEntity()?.GetDisplay() }}</legend>
       <div class="imx-accept-terms-list-content">
-        {{ terms?.DisplayContent?.Column?.GetDisplayValue() }}
+        {{ item?.DisplayContent?.Column?.GetDisplayValue() }}
       </div>
       <div class="imx-accept-terms-list-heading">{{ itemsHeading | translate }}:</div>
       <ul class="imx-accept-terms-list-serviceitems">
-        <li *ngFor="let item of getTermsOfUseItems(terms?.GetEntity()?.GetKeys()[0])">
-          {{ item?.GetEntity()?.GetDisplay() }}
+        <li *ngFor="let product of getProducts(item?.GetEntity()?.GetKeys()?.[0] ?? '')">
+          {{ product?.GetEntity()?.GetDisplay() }}
         </li>
       </ul>
       <div class="imx-single-term">
         <button
           mat-stroked-button
-          *ngIf="terms?.HasFile?.value"
-          attr.data-imx-identifier="terms-of-use-list-button-download-term-no-{{ i }}"
-          [euiDownload]="getDownloadOptions(terms?.GetEntity()?.GetKeys()[0], terms?.GetEntity()?.GetDisplay())"
+          *ngIf="item?.HasFile?.value"
+          [attr.data-imx-identifier]="'terms-of-use-list-button-download-term-no-' + i"
+          [euiDownload]="termsOfUseService.getDownloadOptions(item)"
         >
           {{ '#LDS#Download terms of use' | translate }}
         </button>
       </div>
     </fieldset>
   </div>
-  <div *ngIf="termsOfUse.length > 0">
+  <div *ngIf="!!termsOfUseItems.length">
     <mat-checkbox
-      label="{{ '#LDS#Accept terms of use' | translate }}"
+      aria-label="{{ '#LDS#Accept terms of use' | translate }}"
       class="imx-accept-checkbox"
       data-imx-identifier="terms-of-use-list-checkbox-accept"
       formControlName="acceptTermsOfUseFormCtrl"

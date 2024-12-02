@@ -1,19 +1,7 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
-  background-color: $asher-gray;
-
-  .imx-table-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    > span {
-      margin-bottom: 10px;
-      display: block;
-    }
-  }
+  background-color: $color-gray-2
 }
 
 .eui-dark-theme {

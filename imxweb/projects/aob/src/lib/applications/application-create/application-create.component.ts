@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,18 @@
 
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { PortalApplicationNew } from 'imx-api-aob';
-import { IEntityColumn, IWriteValue, ValueStruct } from 'imx-qbm-dbts';
-import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
+import { PortalApplicationNew } from '@imx-modules/imx-api-aob';
+import { IEntityColumn, IWriteValue, ValueStruct } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
+import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
 
 @Component({
   selector: 'imx-application-create',
   templateUrl: './application-create.component.html',
-  styleUrls: ['./application-create.component.scss']
+  styleUrls: ['./application-create.component.scss'],
 })
 export class ApplicationCreateComponent implements OnDestroy {
   public readonly form = new UntypedFormGroup({});
@@ -53,10 +53,10 @@ export class ApplicationCreateComponent implements OnDestroy {
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) data: { application: PortalApplicationNew; },
+    @Inject(EUI_SIDESHEET_DATA) data: { application: PortalApplicationNew },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly translateService: TranslateService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
     this.imageColumn = data.application.JPegPhoto.Column;
 
@@ -65,35 +65,44 @@ export class ApplicationCreateComponent implements OnDestroy {
 
     this.description = new BaseCdr(data.application.Description.Column);
 
-    this.serviceCategory = new class {
+    this.serviceCategory = new (class {
       public get hint(): string {
-        return this.property.value?.length > 0 ? '' :
-        this.translateService.instant('#LDS#If you do not select a service category, a service category with the same name as the application is created and assigned.');
+        return this.property.value?.length > 0
+          ? ''
+          : this.translateService.instant(
+              '#LDS#If you do not select a service category, a service category with the same name as the application is created and assigned.',
+            );
       }
-      public readonly column = this.property.Column;
+      public readonly column: IEntityColumn;
       constructor(
         private readonly property: IWriteValue<string>,
         private readonly translateService: TranslateService,
-      ) {}
+      ) {
+        this.column = this.property.Column;
+      }
       public readonly isReadOnly = () => !this.property.GetMetadata().CanEdit();
-    }(data.application.UID_AccProductGroup, this.translateService);
+    })(data.application.UID_AccProductGroup, this.translateService);
 
     this.manager = new BaseCdr(data.application.UID_PersonHead.Column);
 
     this.owner = new BaseCdr(data.application.UID_AERoleOwner.Column);
 
-    this.subscriptions.push(sidesheetRef.closeClicked().subscribe(async () => {
-      if ((data.application.GetEntity().GetDiffData()?.Data?.length > 0 || !this.form.pristine) &&
-        !(await confirmation.confirmLeaveWithUnsavedChanges())) {
-        return;
-      }
+    this.subscriptions.push(
+      sidesheetRef.closeClicked().subscribe(async () => {
+        if (
+          (!!data.application.GetEntity().GetDiffData()?.Data?.length || !this.form.pristine) &&
+          !(await confirmation.confirmLeaveWithUnsavedChanges())
+        ) {
+          return;
+        }
 
-      sidesheetRef.close(false);
-    }));
+        sidesheetRef.close(false);
+      }),
+    );
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public async updateName(value: ValueStruct<string>): Promise<void> {

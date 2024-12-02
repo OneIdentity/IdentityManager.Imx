@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,22 @@
  *
  */
 
-import { Subject, BehaviorSubject } from 'rxjs';
 import { EventEmitter } from '@angular/core';
+import { BehaviorSubject, Subject } from 'rxjs';
 
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
+import { BusyService } from '../base/busy.service';
 import { TreeNode } from './tree-node';
 import { TreeNodeResultParameter } from './tree-node-result-parameter.interface';
-import { BusyService } from '../base/busy.service';
 
 /**
  * Data-provider for the data-tree.
  * When expanding a node in the tree, the data source of the tree will need to fetch children by using this class.
  */
 export abstract class TreeDatabase {
-  public readonly initialized = new Subject();
+  public readonly initialized = new Subject<void>();
   public busyService: BusyService;
-  public dataReloaded$ = new BehaviorSubject(undefined);
+  public dataReloaded$: BehaviorSubject<boolean | undefined> = new BehaviorSubject(undefined);
 
   /** set this parameter to true, if your implementation supports searching */
   public canSearch = false;
@@ -62,13 +62,13 @@ export abstract class TreeDatabase {
   protected hasChildrenColumnName = 'HasChildren';
 
   protected rootData: IEntity[] = [];
-  protected rootNodes: TreeNode[];
+  public rootNodes: TreeNode[];
 
   /** Initial data from database */
   public async initialize(navigationState: CollectionLoadParameters = {}): Promise<TreeNode[]> {
     // load the root entities
     const isBusy = this.busyService?.beginBusy();
-    let entities: TreeNodeResultParameter;
+    let entities: TreeNodeResultParameter | undefined;
     try {
       entities = await this.getData(true, { ...navigationState, ...{ ParentKey: '' } });
     } finally {
@@ -100,22 +100,20 @@ export abstract class TreeDatabase {
 
   /** return children for a given tree node including the information, if more elements are available on the server */
   public async getChildren(node: TreeNode, startIndex: number): Promise<{ nodes: TreeNode[]; canLoadMore: boolean }> {
-    const isBusy = this.busyService?.beginBusy();
-    let entities: TreeNodeResultParameter;
+    let entities: TreeNodeResultParameter | undefined;
     try {
       entities = await this.getData(false, { ParentKey: node.name, StartIndex: startIndex });
     } finally {
-      isBusy?.endBusy();
     }
-    const nodes = this.createSortedNodes(entities.entities, node.level + 1);
+    const nodes = this.createSortedNodes(entities?.entities ?? [], node.level + 1);
     return {
-      nodes: entities.entities.map((entity) => nodes.find((x) => this.getId(x.item) === this.getId(entity))),
-      canLoadMore: entities.canLoadMore,
+      nodes: entities?.entities.map((entity) => nodes.find((x) => this.getId(x.item) === this.getId(entity)) ?? new TreeNode()) ?? [],
+      canLoadMore: entities?.canLoadMore ?? false,
     };
   }
 
   /** abstract function, which have to be implemented  */
-  public async getData(showLoading: boolean, parameter: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
+  public async getData(showLoading: boolean, parameter: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter | undefined> {
     return undefined;
   }
 
@@ -139,16 +137,16 @@ export abstract class TreeDatabase {
       this.identifierColumnName ? item.GetColumn(this.identifierColumnName).GetValue() : '',
       this.getId(item),
       levelNumber,
-      item.GetColumn(this.hasChildrenColumnName).GetValue()
+      item.GetColumn(this.hasChildrenColumnName).GetValue(),
     );
   }
 
   /** gets an unique id by combining all id parts */
-  public getId(entity: IEntity): string {
+  public getId(entity: IEntity | undefined): string {
     return TreeDatabase.getId(entity);
   }
 
-  public static getId(entity: IEntity): string {
+  public static getId(entity: IEntity | undefined): string {
     return entity?.GetKeys() ? entity.GetKeys().join(',') : '';
   }
 }

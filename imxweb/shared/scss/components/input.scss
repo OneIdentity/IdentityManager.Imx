@@ -1,0 +1,64 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+.imx-input {
+  &-info {
+    color: $color-blue-60;
+  }
+
+  &-file-hidden {
+    &[type='file'] {
+      display: none;
+    }
+  }
+
+  &-login {
+    width: $IMX_PropertyLabel_Width;
+    box-sizing: content-box;
+    height: 30px;
+    padding-left: 6px;
+    width: calc(40vw - 6px);
+  }
+
+  &-searchbar {
+    border: 0 solid transparent !important;
+    color: inherit;
+    background-color: transparent;
+
+    &::placeholder {
+      font-style: italic;
+    }
+
+    &::-ms-clear {
+      /* hide input-clear button (the 'X') in > IE 10 */
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+}
+
+.imx-textarea {
+  &-content-box {
+    &.mat-mdc-input-element.cdk-textarea-autosize {
+      box-sizing: content-box;
+    }
+  }
+}
+
+/* Dark + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx-input {
+    &-info {
+      color: $color-blue-40;
+    }
+
+    &-login {
+      border: none;
+      color: $color-gray-0;
+    }
+  }
+}

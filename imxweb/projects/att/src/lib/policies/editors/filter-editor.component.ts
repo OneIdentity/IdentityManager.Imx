@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { EventEmitter, forwardRef, Component, Input, Output } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { ClassloggerService } from 'qbm';
@@ -39,9 +39,9 @@ import { FilterElementModel } from './filter-element-model';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => FilterEditorComponent),
       multi: true,
-    }
+    },
   ],
-  styleUrls: ['./filter-editor.component.scss']
+  styleUrls: ['./filter-editor.component.scss'],
 })
 export class FilterEditorComponent implements ControlValueAccessor {
   public onChange: (event: FilterElementModel) => void;
@@ -52,7 +52,7 @@ export class FilterEditorComponent implements ControlValueAccessor {
 
   @Output() public filterChanged = new EventEmitter<FilterChangedArgument>();
 
-  constructor(private readonly logger: ClassloggerService) { }
+  constructor(private readonly logger: ClassloggerService) {}
 
   public writeValue(filter: FilterElementModel): void {
     this.filterElementModel = filter;
@@ -69,14 +69,13 @@ export class FilterEditorComponent implements ControlValueAccessor {
   }
 
   public invokeFilterChangedElement(arg: FilterChangedArgument): void {
-    this.filterElementModel.parameterValue = arg.ParameterValue;
-    this.filterElementModel.parameterValue2 = arg.ParameterValue2;
+    this.filterElementModel.parameterValue = arg.ParameterValue || '';
+    this.filterElementModel.parameterValue2 = arg.ParameterValue2 || '';
 
     this.writeValue(this.filterElementModel);
 
     this.onTouch(this.filterElementModel);
     this.onChange(this.filterElementModel);
     this.filterChanged.emit(arg);
-
   }
 }

@@ -12,10 +12,10 @@ module.exports = function (config) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
       require('@angular-devkit/build-angular/plugins/karma'),
-      require('karma-junit-reporter')
+      require('karma-junit-reporter'),
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, 'results'),
@@ -23,7 +23,7 @@ module.exports = function (config) {
       fixWebpackSourcePaths: true,
       'report-config': {
         html: {
-          subdir: 'coverage-html'
+          subdir: 'coverage-html',
         },
       },
       thresholds: {
@@ -31,7 +31,7 @@ module.exports = function (config) {
         branches: 0,
         functions: 0,
         lines: 0,
-      }
+      },
     },
     junitReporter: {
       outputDir: require('path').join(__dirname, 'results'),
@@ -40,13 +40,14 @@ module.exports = function (config) {
     port: 9876,
     captureTimeout: 210000,
     browserDisconnectTolerance: 3,
-    browserDisconnectTimeout : 210000,
-    browserNoActivityTimeout : 210000,
+    browserDisconnectTimeout: 210000,
+    browserNoActivityTimeout: 210000,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
     restartOnFileChange: true,
     singleRun: false,
-    browsers: ['Chrome']
+    failOnEmptyTestSuite: false,
+    browsers: ['Chrome'],
   });
 };

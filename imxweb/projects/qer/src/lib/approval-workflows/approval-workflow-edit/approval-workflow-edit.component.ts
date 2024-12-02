@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,16 @@
  */
 
 import { Component, HostListener, Inject, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
+import { PortalRequestsWorkflowsSubmethods, PortalRequestsWorkflowsSubmethodsSteps, WorkflowStepBulkData } from '@imx-modules/imx-api-qer';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalRequestsWorkflowsSubmethodsInteractive, PortalRequestsWorkflowsSubmethodsSteps, PortalRequestsWorkflowsSubmethodsStepsInteractive, WorkflowStepBulkData } from 'imx-api-qer';
-import { ClassloggerService, SnackBarService, ConfirmationService } from 'qbm';
-import { ApprovalWorkflowDataService } from '../approval-workflow-data.service';
+import { ClassloggerService, ConfirmationService, HELP_CONTEXTUAL, SnackBarService, calculateSidesheetWidth } from 'qbm';
 import { Subscription } from 'rxjs';
+import { ApprovalWorkflowDataService } from '../approval-workflow-data.service';
 import { ApprovalWorkflowFormComponent } from '../approval-workflow-form/approval-workflow-form.component';
-import { RequestLevelData, RequestStepData, RequestWorkflowData, EditorData, GroupedHelp } from '../approval-workflow.interface';
+import { EditorData, GroupedHelp, RequestLevelData, RequestStepData, RequestWorkflowData } from '../approval-workflow.interface';
 
+import { MatMenuTrigger } from '@angular/material/menu';
 import cytoscape, {
   Core,
   EdgeDataDefinition,
@@ -45,18 +46,14 @@ import cytoscape, {
   NodeDataDefinition,
   NodeDefinition,
   NodeSingular,
-  Position
+  Position,
 } from 'cytoscape';
 import edgehandles, { EdgeHandlesInstance } from 'cytoscape-edgehandles';
-import _ from 'lodash';
-import { DomManagerService } from './dom-manager.service';
-import { ApprovalWorkflowConstantsService } from '../approval-workflow-constants.service';
 import { ApprovalLevelFormComponent } from '../approval-level-form/approval-level-form.component';
 import { ApprovalStepFormComponent } from '../approval-step-form/approval-step-form.component';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { MatDialog } from '@angular/material/dialog';
-import { ApprovalWorkflowEditInfoComponent } from './approval-workflow-edit-info/approval-workflow-edit-info.component';
+import { ApprovalWorkflowConstantsService } from '../approval-workflow-constants.service';
 import { EdgeType, LevelConnections } from './approval-workflow.model';
+import { DomManagerService } from './dom-manager.service';
 
 // Register extensions
 cytoscape.use(edgehandles);
@@ -72,12 +69,12 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
 
   public sliderText: string;
   public workFlowKey: string;
-  public workFlow: PortalRequestsWorkflowsSubmethodsInteractive;
-  public workFlowSteps: PortalRequestsWorkflowsSubmethodsSteps[];
-  public standbyStepInteractive: PortalRequestsWorkflowsSubmethodsStepsInteractive;
+  public workFlow: PortalRequestsWorkflowsSubmethods | undefined;
+  public workFlowSteps: PortalRequestsWorkflowsSubmethodsSteps[] | undefined;
+  public standbyStepInteractive: PortalRequestsWorkflowsSubmethodsSteps | undefined;
   public standbyPromise: Promise<any>;
-  public workFlowStepsInteractive: PortalRequestsWorkflowsSubmethodsStepsInteractive[] = [];
-  public workFlowStepsDeleteLater: PortalRequestsWorkflowsSubmethodsStepsInteractive[] = [];
+  public workFlowStepsInteractive: (PortalRequestsWorkflowsSubmethodsSteps | undefined)[] = [];
+  public workFlowStepsDeleteLater: PortalRequestsWorkflowsSubmethodsSteps[] = [];
 
   public workFlowStepsPromises: Promise<any>[] = [];
   public workFlowStepsAddLater: string[] = [];
@@ -91,7 +88,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   public interactiveKeys: string[] = [];
   public fitPadding = 5;
 
-  public menuTLPosition = {x: '0px', y: '0px'};
+  public menuTLPosition = { x: '0px', y: '0px' };
   // Initial state variables
   public isUpdateWorkFlow: boolean;
   public unsavedChanges = false;
@@ -99,6 +96,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   public isUpdate = false;
   public isDraw = false;
   public originalGrabbed: NodeSingular;
+  public isOriginalGrabbed: boolean;
   public originalPosition: Position;
   public nodeNeedsUpdate: NodeCollection;
 
@@ -111,7 +109,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   public defaultLevelName = 'Approval Level';
   public rootId = 'root';
   public rootNode: NodeSingular;
-
+  public helpContextId = HELP_CONTEXTUAL.ApprovalWorkflowManagerEdit;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -126,9 +124,8 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     private readonly logger: ClassloggerService,
     private readonly snackbar: SnackBarService,
     private readonly confirmation: ConfirmationService,
-    private dialogService: MatDialog,
   ) {
-    this.workFlowKey = data.WorkFlowKey;
+    this.workFlowKey = data?.WorkFlowKey ?? '';
     this.workFlow = data.WorkFlow;
     this.workFlowSteps = data.WorkFlowSteps;
 
@@ -137,14 +134,8 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
         if (!this.unsavedChanges || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
           this.sideSheetRef.close(this.isUpdate);
         }
-      })
+      }),
     );
-  }
-
-  public async showInfo(): Promise<void> {
-    await this.dialogService.open(ApprovalWorkflowEditInfoComponent, {
-      width: '500px'
-    }).afterClosed().toPromise();
   }
 
   // Data manipulation
@@ -176,20 +167,28 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.constantsService.translateText();
-    this.sideSheetRef.componentInstance.onOpen().subscribe(() => {
-      this.setupGraph();
-      this.setupGraphData();
-      this.alignWorkFlow();
-      this.approvalWorkflowDataService.handleCloseLoader();
-      this.backgroundCalls();
-    });
+    if (this.sideSheetRef?.componentInstance) {
+      this.subscriptions.push(
+        this.sideSheetRef.componentInstance?.onOpen().subscribe(() => {
+          this.setupGraph();
+          this.setupGraphData();
+          this.alignWorkFlow();
+          this.approvalWorkflowDataService.handleCloseLoader();
+          this.backgroundCalls();
+        }),
+      );
+    }
   }
 
   public switchGraphMode(): void {
     this.isDraw = !this.isDraw;
     if (this.isDraw) {
       this.edgeHandler.enableDrawMode();
-      this.domManagerService.toggleOnDomElements([this.constantsService.domClasses.nodeRoot, this.constantsService.domClasses.edge, this.constantsService.domClasses.nodeLevel]);
+      this.domManagerService.toggleOnDomElements([
+        this.constantsService.domClasses.nodeRoot,
+        this.constantsService.domClasses.edge,
+        this.constantsService.domClasses.nodeLevel,
+      ]);
       this.domManagerService.toggleOffDomElements([this.constantsService.domClasses.nodeStep]);
     } else {
       this.deselectAll();
@@ -206,7 +205,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   }
 
   public async getNextStep(): Promise<void> {
-    if (Promise.all([this.standbyPromise])) {
+    if (await Promise.all([this.standbyPromise])) {
       // If we aren't already waiting, then make a new call
       this.standbyStepInteractive = undefined;
       this.standbyPromise = this.approvalWorkflowDataService.getNewWorkflowStep(this.workFlowKey).then((step) => {
@@ -216,18 +215,20 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   }
 
   public backgroundCalls(): void {
-    for (const step of this.workFlowSteps) {
-      const stepKey = step.GetEntity().GetKeys()[0];
-      this.interactiveKeys.push(stepKey);
-      this.workFlowStepsInteractive.push(undefined);
-      const stepPromise = this.approvalWorkflowDataService
-        .getWorkFlowStepsInteractive(this.workFlowKey, stepKey)
-        .then((stepInteractive) => {
-          const stepInteractiveKey = stepInteractive.GetEntity().GetKeys()[0];
-          const index = this.interactiveKeys.indexOf(stepInteractiveKey);
-          this.workFlowStepsInteractive[index] = stepInteractive;
-        });
-      this.workFlowStepsPromises.push(stepPromise);
+    if (this.workFlowSteps) {
+      for (const step of this.workFlowSteps) {
+        const stepKey = step.GetEntity().GetKeys()[0];
+        this.interactiveKeys.push(stepKey);
+        this.workFlowStepsInteractive.push(undefined);
+        const stepPromise = this.approvalWorkflowDataService
+          .getWorkFlowStepsInteractive(this.workFlowKey, stepKey)
+          .then((stepInteractive) => {
+            const stepInteractiveKey = stepInteractive?.GetEntity().GetKeys()[0];
+            const index = this.interactiveKeys.indexOf(stepInteractiveKey);
+            this.workFlowStepsInteractive[index] = stepInteractive;
+          });
+        this.workFlowStepsPromises.push(stepPromise);
+      }
     }
     this.getNextStep();
   }
@@ -267,14 +268,20 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
 
   public isMultiReroutePresent(): boolean {
     const selector = '[type = "' + this.constantsService.edgeTypes.reroute.type + '"]';
-    const rerouteEdgesWithMultipleChildren = this.cy.edges(selector).toArray().filter(edge => {
-      return edge.source().children().length > 1;
-    });
+    const rerouteEdgesWithMultipleChildren = this.cy
+      .edges(selector)
+      .toArray()
+      .filter((edge) => {
+        return edge.source().children().length > 1;
+      });
     return rerouteEdgesWithMultipleChildren.length > 0;
   }
 
   public isEveryNodeUnique(): boolean {
-    const nodeNames: string[] = this.cy.nodes(':child').toArray().map(node => node.data('display'));
+    const nodeNames: string[] = this.cy
+      .nodes(':child')
+      .toArray()
+      .map((node) => node.data('display'));
     const uniqueNames = new Set(nodeNames);
     return nodeNames.length === uniqueNames.size;
   }
@@ -324,9 +331,9 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
 
   public async saveWorkFlow(): Promise<void> {
     if (this.isUpdateWorkFlow) {
-      this.logger.debug(this, 'Saving workflow: ', this.workFlow.Ident_PWODecisionSubMethod);
+      this.logger.debug(this, 'Saving workflow: ', this.workFlow?.Ident_PWODecisionSubMethod);
       try {
-        await this.workFlow.GetEntity().Commit(true);
+        await this.workFlow?.GetEntity().Commit(true);
       } finally {
         this.isUpdateWorkFlow = false;
       }
@@ -344,7 +351,10 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
         const levelConnections = this.grabEdges(parentNode);
         await this.writeStepValues(node, levelNumber, levelDisplay, levelConnections);
         const index = await this.getIndexFromKey(node.data('key'));
-        diffData.push(this.workFlowStepsInteractive[index].GetEntity().GetDiffData());
+        const data = this.workFlowStepsInteractive[index]?.GetEntity().GetDiffData();
+        if (data) {
+          diffData.push(data);
+        }
       }
       // Add delete calls
       for (const deleteStep of this.workFlowStepsDeleteLater) {
@@ -368,47 +378,47 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     node: NodeSingular,
     levelNumber: number,
     levelDisplay: string,
-    levelConnections: LevelConnections
+    levelConnections: LevelConnections,
   ): Promise<void> {
     const index = await this.getIndexFromKey(node.data('key'));
     const subLevelNumber = node.data('subLevelNumber');
     const stepInteractive = this.workFlowStepsInteractive[index];
 
-    if (stepInteractive.GetEntity().GetColumn('LevelDisplay').GetValue() !== levelDisplay) {
-      await stepInteractive.GetEntity().GetColumn('LevelDisplay').PutValue(levelDisplay);
+    if (stepInteractive?.GetEntity().GetColumn('LevelDisplay').GetValue() !== levelDisplay) {
+      await stepInteractive?.GetEntity().GetColumn('LevelDisplay').PutValue(levelDisplay);
     }
-    if (stepInteractive.GetEntity().GetColumn('LevelNumber').GetValue() !== levelNumber) {
-      await stepInteractive.GetEntity().GetColumn('LevelNumber').PutValueStruct({
+    if (stepInteractive?.GetEntity().GetColumn('LevelNumber').GetValue() !== levelNumber) {
+      await stepInteractive?.GetEntity().GetColumn('LevelNumber').PutValueStruct({
         DataValue: levelNumber,
         DisplayValue: levelNumber.toString(),
       });
     }
-    if (stepInteractive.GetEntity().GetColumn('SubLevelNumber').GetValue() !== subLevelNumber) {
-      await stepInteractive.GetEntity().GetColumn('SubLevelNumber').PutValueStruct({
+    if (stepInteractive?.GetEntity().GetColumn('SubLevelNumber').GetValue() !== subLevelNumber) {
+      await stepInteractive?.GetEntity().GetColumn('SubLevelNumber').PutValueStruct({
         DataValue: subLevelNumber,
         DisplayValue: subLevelNumber.toString(),
       });
     }
-    if (stepInteractive.GetEntity().GetColumn('PositiveSteps').GetValue() !== levelConnections.PositiveSteps) {
-      await stepInteractive.GetEntity().GetColumn('PositiveSteps').PutValueStruct({
+    if (stepInteractive?.GetEntity().GetColumn('PositiveSteps').GetValue() !== levelConnections.PositiveSteps) {
+      await stepInteractive?.GetEntity().GetColumn('PositiveSteps').PutValueStruct({
         DataValue: levelConnections.PositiveSteps,
         DisplayValue: levelConnections.PositiveSteps.toString(),
       });
     }
-    if (stepInteractive.GetEntity().GetColumn('NegativeSteps').GetValue() !== levelConnections.NegativeSteps) {
-      await stepInteractive.GetEntity().GetColumn('NegativeSteps').PutValueStruct({
+    if (stepInteractive?.GetEntity().GetColumn('NegativeSteps').GetValue() !== levelConnections.NegativeSteps) {
+      await stepInteractive?.GetEntity().GetColumn('NegativeSteps').PutValueStruct({
         DataValue: levelConnections.NegativeSteps,
         DisplayValue: levelConnections.NegativeSteps.toString(),
       });
     }
-    if (stepInteractive.GetEntity().GetColumn('EscalationSteps').GetValue() !== levelConnections.EscalationSteps) {
-      await stepInteractive.GetEntity().GetColumn('EscalationSteps').PutValueStruct({
+    if (stepInteractive?.GetEntity().GetColumn('EscalationSteps').GetValue() !== levelConnections.EscalationSteps) {
+      await stepInteractive?.GetEntity().GetColumn('EscalationSteps').PutValueStruct({
         DataValue: levelConnections.EscalationSteps,
         DisplayValue: levelConnections.EscalationSteps.toString(),
       });
     }
-    if (stepInteractive.GetEntity().GetColumn('DirectSteps').GetValue() !== levelConnections.DirectSteps) {
-      await stepInteractive.GetEntity().GetColumn('DirectSteps').PutValueStruct({
+    if (stepInteractive?.GetEntity().GetColumn('DirectSteps').GetValue() !== levelConnections.DirectSteps) {
+      await stepInteractive?.GetEntity().GetColumn('DirectSteps').PutValueStruct({
         DataValue: levelConnections.DirectSteps,
         DisplayValue: levelConnections.DirectSteps,
       });
@@ -446,7 +456,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   }
 
   public createRoot(): void {
-    const display = this.workFlow.GetEntity().GetColumn('Ident_PWODecisionSubMethod').GetValue();
+    const display = this.workFlow?.GetEntity().GetColumn('Ident_PWODecisionSubMethod').GetValue();
     const nodeData: NodeDataDefinition = {
       id: this.rootId,
       levelNumber: -1,
@@ -455,27 +465,29 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     this.rootNode = this.cy.add({ data: nodeData, classes: this.constantsService.graphClasses.nodeRoot });
   }
 
-  public createParent(step: PortalRequestsWorkflowsSubmethodsStepsInteractive): NodeDefinition {
-    const levelNumber = step.GetEntity().GetColumn('LevelNumber').GetValue();
+  public createParent(step: PortalRequestsWorkflowsSubmethodsSteps | undefined): NodeDefinition {
+    const levelNumber = step?.GetEntity().GetColumn('LevelNumber').GetValue();
     const display =
-      step.GetEntity().GetColumn('LevelDisplay').GetValue() !== ''
-        ? step.GetEntity().GetColumn('LevelDisplay').GetValue()
+      step?.GetEntity().GetColumn('LevelDisplay').GetValue() !== ''
+        ? step?.GetEntity().GetColumn('LevelDisplay').GetValue()
         : this.defaultLevelName;
     const node: NodeDataDefinition = {
       display,
       levelNumber,
     };
-    node[this.constantsService.edgeTypes.approval.type] = step.GetEntity().GetColumn('PositiveSteps').GetValue();
-    node[this.constantsService.edgeTypes.reject.type] = step.GetEntity().GetColumn('NegativeSteps').GetValue();
-    node[this.constantsService.edgeTypes.escalation.type] = step.GetEntity().GetColumn('EscalationSteps').GetValue();
+    node[this.constantsService.edgeTypes.approval.type] = step?.GetEntity().GetColumn('PositiveSteps').GetValue();
+    node[this.constantsService.edgeTypes.reject.type] = step?.GetEntity().GetColumn('NegativeSteps').GetValue();
+    node[this.constantsService.edgeTypes.escalation.type] = step?.GetEntity().GetColumn('EscalationSteps').GetValue();
     // Reroute is strange as it is a string
     const reroute =
-      step.GetEntity().GetColumn('DirectSteps').GetValue() !== '' ? parseInt(step.GetEntity().GetColumn('DirectSteps').GetValue(), 10) : 0;
+      step?.GetEntity().GetColumn('DirectSteps').GetValue() !== ''
+        ? parseInt(step?.GetEntity().GetColumn('DirectSteps').GetValue(), 10)
+        : 0;
     node[this.constantsService.edgeTypes.reroute.type] = reroute;
     return { data: node, classes: this.constantsService.graphClasses.nodeLevel };
   }
 
-  public createNodes(steps: PortalRequestsWorkflowsSubmethodsStepsInteractive[]): void {
+  public createNodes(steps: PortalRequestsWorkflowsSubmethodsSteps[]): void {
     const nodes: NodeDefinition[] = [];
     steps.forEach((step) => {
       let nodeData: NodeDefinition;
@@ -493,18 +505,18 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     this.cy.add(nodes);
   }
 
-  public formatDisplay(step: PortalRequestsWorkflowsSubmethodsStepsInteractive): string {
+  public formatDisplay(step: PortalRequestsWorkflowsSubmethodsSteps | undefined): string {
     return (
-      step.GetEntity().GetColumn('Ident_PWODecisionStep').GetValue() +
+      step?.GetEntity().GetColumn('Ident_PWODecisionStep').GetValue() +
       ' (' +
-      step.GetEntity().GetColumn('UID_PWODecisionRule').GetDisplayValue() +
+      step?.GetEntity().GetColumn('UID_PWODecisionRule').GetDisplayValue() +
       ')'
     );
   }
 
-  public createNode(step: PortalRequestsWorkflowsSubmethodsStepsInteractive, parentId: string): NodeDefinition {
-    const subLevelNumber = step.GetEntity().GetColumn('SubLevelNumber').GetValue();
-    const key = step.GetEntity().GetKeys()[0];
+  public createNode(step: PortalRequestsWorkflowsSubmethodsSteps | undefined, parentId: string): NodeDefinition {
+    const subLevelNumber = step?.GetEntity().GetColumn('SubLevelNumber').GetValue();
+    const key = step?.GetEntity().GetKeys()[0];
     const node: NodeDataDefinition = {
       parent: parentId,
       subLevelNumber,
@@ -523,23 +535,30 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     const edges: EdgeDefinition[] = [];
     parentNodes.forEach((parentNode) => {
       fromId = parentNode.id();
-      fromLevel =  parentNode.data('levelNumber');
+      fromLevel = parentNode.data('levelNumber');
       // Check each edge type
-      [this.constantsService.edgeTypes.approval, this.constantsService.edgeTypes.reject, this.constantsService.edgeTypes.escalation, this.constantsService.edgeTypes.reroute].forEach(edgeType => {
+      [
+        this.constantsService.edgeTypes.approval,
+        this.constantsService.edgeTypes.reject,
+        this.constantsService.edgeTypes.escalation,
+        this.constantsService.edgeTypes.reroute,
+      ].forEach((edgeType) => {
         relativeLevel = parentNode.data(edgeType.type);
         if (relativeLevel !== 0) {
           toLevel = fromLevel + relativeLevel;
           toId = this.getNodeIdFromLevelNumber(toLevel);
-          edges.push(this.createEdge({
-            fromId,
-            toId,
-            fromLevel,
-            toLevel,
-            edgeType,
-            edgeClass: [this.constantsService.graphClasses.edgeStep, edgeType?.class]
-          }))
+          edges.push(
+            this.createEdge({
+              fromId,
+              toId,
+              fromLevel,
+              toLevel,
+              edgeType,
+              edgeClass: [this.constantsService.graphClasses.edgeStep, edgeType?.class || ''],
+            }),
+          );
         }
-      })
+      });
       if (fromLevel === 0) {
         edges.push(this.createEdgeRoot(fromId, fromLevel));
       }
@@ -554,19 +573,18 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       fromLevel: -1,
       toLevel,
       edgeType: this.constantsService.edgeTypes.root,
-      edgeClass: [this.constantsService.graphClasses.edgeRoot]});
+      edgeClass: [this.constantsService.graphClasses.edgeRoot],
+    });
   }
 
-  public createEdge(
-    args: {
-      fromId: string,
-      toId: string,
-      fromLevel: number,
-      toLevel: number,
-      edgeType: EdgeType,
-      edgeClass: string[]
-    }
-  ): EdgeDefinition {
+  public createEdge(args: {
+    fromId: string;
+    toId: string;
+    fromLevel: number;
+    toLevel: number;
+    edgeType: EdgeType;
+    edgeClass: string[];
+  }): EdgeDefinition {
     const edge: EdgeDataDefinition = {
       source: args.fromId,
       target: args.toId,
@@ -582,16 +600,17 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   }
 
   public setupGraph(): void {
-    this.cy = this.constantsService.createCytoscape(this.graphId, this.rootId)
+    this.cy = this.constantsService.createCytoscape(this.graphId, this.rootId);
 
     // Handle compound node moving
     this.cy.on('grab', ':child', (event: EventObject) => {
+      this.isOriginalGrabbed = true;
       this.originalGrabbed = event.target;
       this.originalPosition = this.originalGrabbed.renderedPosition();
     });
 
     this.cy.on('drag', ':child', () => {
-      if (this.originalGrabbed) {
+      if (this.isOriginalGrabbed) {
         const parent = this.originalGrabbed.parent();
         const newPos = this.originalGrabbed.renderedPosition();
         const deltaVect = {
@@ -614,14 +633,17 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     });
 
     this.cy.on('free', ':child', () => {
-      this.originalGrabbed = null;
+      this.isOriginalGrabbed = false;
     });
 
     this.cy.on('mouseover', 'node, edge', (event: EventObject) => {
       if (event.target.hasClass(this.constantsService.graphClasses.edgeRoot)) {
         return;
       }
-      document.getElementById(this.graphId).style.cursor = 'pointer';
+      const graph = document.getElementById(this.graphId);
+      if (graph) {
+        graph.style.cursor = 'pointer';
+      }
       event.target.toggleClass(this.constantsService.graphClasses.hover);
     });
 
@@ -629,7 +651,10 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       if (event.target.hasClass(this.constantsService.graphClasses.edgeRoot)) {
         return;
       }
-      document.getElementById(this.graphId).style.cursor = 'move';
+      const graph = document.getElementById(this.graphId);
+      if (graph) {
+        graph.style.cursor = 'move';
+      }
       event.target.toggleClass(this.constantsService.graphClasses.hover);
     });
 
@@ -708,8 +733,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     });
     this.edgeHandler.disableDrawMode();
 
-    this.cy.on('ehcomplete', (
-      event: EventObject, ...extraParams: any[]) => {
+    this.cy.on('ehcomplete', (event: EventObject, ...extraParams: any[]) => {
       // Extra params: sourceNode: NodeSingular, targetNode: NodeSingular, edge: EdgeCollection
       this.unsavedChanges = true;
       const sourceNode: NodeSingular = extraParams[0];
@@ -761,23 +785,30 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       target: targetNode.id(),
       sourceLevelNumber: sourceNode.data('levelNumber'),
       targetLevelNumber: targetNode.data('levelNumber'),
-    }
+    };
     if (sourceNode.id() === this.rootId) {
       return {
-        data: {...edgeDef, ...this.constantsService.edgeTypes.root},
-        classes: this.constantsService.graphClasses.edgeProposedRoot
-      }
+        data: { ...edgeDef, ...this.constantsService.edgeTypes.root },
+        classes: this.constantsService.graphClasses.edgeProposedRoot,
+      };
     } else {
       return {
-        data: {...edgeDef, ...this.constantsService.edgeTypes.unfinished},
-        classes: this.constantsService.graphClasses.edgeStep
-      }
+        data: { ...edgeDef, ...this.constantsService.edgeTypes.unfinished },
+        classes: this.constantsService.graphClasses.edgeStep,
+      };
     }
   }
 
-  public emitAndFocus(element: Core | NodeSingular | EdgeSingular, elementDiv: Element): void {
-    element.emit('tap');
-    this.focusedDiv = document.getElementById(elementDiv.id);
+  public emitAndFocus(element: Core | NodeSingular | EdgeSingular, elementDiv: Element | null): void {
+    element?.emit('tap');
+
+    if (!elementDiv || !elementDiv.id) {
+      return;
+    }
+    const htmlElementDiv = document.getElementById(elementDiv.id);
+    if (htmlElementDiv) {
+      this.focusedDiv = htmlElementDiv;
+    }
   }
 
   public handleAccessibleEdgeCreation(targetNode: NodeSingular): void {
@@ -817,11 +848,11 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   @HostListener('document:keyup', ['$event'])
   public handleKeyboardEvent(event: KeyboardEvent): void {
     const activeElement = document.activeElement;
-    const id = activeElement.id;
-    const cls = activeElement.className;
+    const id = activeElement?.id ?? '';
+    const cls = activeElement?.className ?? '';
     const zoom = this.cy.zoom();
     const pan = this.cy.pan();
-    this.menuTLPosition = {x: '0px', y: '0px'};
+    this.menuTLPosition = { x: '0px', y: '0px' };
     if (event.key === 'Enter' || event.key === ' ') {
       if (id === this.graphId) {
         this.emitAndFocus(this.cy, activeElement);
@@ -840,7 +871,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       return;
     } else if (event.key === 'Backspace') {
       if (this.menuTriggers.reduce((anyOpen, menu) => anyOpen || menu.menuOpen, false)) {
-        this.menuTriggers.map(menu => menu.closeMenu());
+        this.menuTriggers.map((menu) => menu.closeMenu());
         this.focusedDiv.focus();
       }
       this.deselectAll();
@@ -855,7 +886,14 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       this.domManagerService.adjustElements(this.cy.elements(), zoom - 0.25, pan);
     } else if (event.key === 'Tab') {
       // If the element focused is not on screen, center on it
-      if ([this.constantsService.domClasses.nodeRoot, this.constantsService.domClasses.nodeLevel, this.constantsService.domClasses.nodeStep, this.constantsService.domClasses.edge].includes(cls)) {
+      if (
+        [
+          this.constantsService.domClasses.nodeRoot,
+          this.constantsService.domClasses.nodeLevel,
+          this.constantsService.domClasses.nodeStep,
+          this.constantsService.domClasses.edge,
+        ].includes(cls)
+      ) {
         const centerOn = this.cy.getElementById(id) as NodeSingular | EdgeSingular;
         if (!this.isInViewPort(centerOn, this.cy.extent())) {
           this.fitGraph();
@@ -877,7 +915,9 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
 
   public setupGraphData(): void {
     this.createRoot();
-    this.createNodes(this.workFlowSteps);
+    if (this.workFlowSteps) {
+      this.createNodes(this.workFlowSteps);
+    }
     this.createEdges(this.cy.nodes(':parent'));
   }
 
@@ -885,14 +925,14 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     const requestData: RequestWorkflowData = {
       Object: this.workFlow,
       Data: this.approvalWorkflowDataService.approvalWorkFlowRequestColumns,
-      HelpText: this.constantsService.sidesheetText.editWorkflow.HelpText as string
+      HelpText: this.constantsService.sidesheetText.editWorkflow.HelpText as string,
     };
     const response = await this.openWorkFlowForm(this.constantsService.sidesheetText.editWorkflow.Header, requestData);
 
     if (response === 'save') {
       this.unsavedChanges = true;
       this.isUpdateWorkFlow = true;
-      const ident = this.workFlow.GetEntity().GetColumn('Ident_PWODecisionSubMethod').GetValue();
+      const ident = this.workFlow?.GetEntity().GetColumn('Ident_PWODecisionSubMethod').GetValue();
       this.cy.getElementById(this.rootId).data('display', ident);
     }
   }
@@ -906,15 +946,16 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     const children = parentNode.children();
     // Take first step to use as the interactive entity
     const index = await this.getIndexFromKey(children.first().data('key'));
-    const requestData = {
+    const requestData: RequestLevelData = {
       Object: this.workFlowStepsInteractive[index],
       Data: this.approvalWorkflowDataService.approvalWorkFlowLevelRequestColumns,
       HelpText: this.constantsService.sidesheetText.editLevel.HelpText as string,
     };
+
     const response = await this.openLevelForm(this.translate.instant('#LDS#Heading Edit Approval Level'), requestData);
     if (response === 'save') {
       this.unsavedChanges = true;
-      const newDisplay = this.workFlowStepsInteractive[index].GetEntity().GetColumn('LevelDisplay').GetValue();
+      const newDisplay = this.workFlowStepsInteractive[index]?.GetEntity().GetColumn('LevelDisplay').GetValue();
 
       // Update parent display
       parentNode.data('display', newDisplay);
@@ -927,14 +968,14 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     const requestData: RequestStepData = {
       Object: this.workFlowStepsInteractive[index],
       Data: this.approvalWorkflowDataService.approvalWorkFlowStepsRequestColumns,
-      HelpText: this.constantsService.sidesheetText.editStep.HelpText as GroupedHelp
+      HelpText: this.constantsService.sidesheetText.editStep.HelpText as GroupedHelp,
     };
     const response = await this.openStepForm(this.translate.instant('#LDS#Heading Edit Approval Step'), 'edit', requestData);
 
     if (response === 'save') {
       this.unsavedChanges = true;
 
-      node.data('display', this.formatDisplay(this.workFlowStepsInteractive[index]));
+      node.data('display', this.formatDisplay(this.workFlowStepsInteractive[index]) || '');
     }
   }
 
@@ -985,7 +1026,6 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     edge.data('color', edgeType.color);
     edge.data('style', edgeType.style);
     edge.data('icon', edgeType?.icon);
-
 
     this.domManagerService.updateEdgeComponent(edge);
   }
@@ -1041,21 +1081,24 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
         this.workFlowStepsAddLater.splice(popIndex, 1);
       } else {
         await this.approvalWorkflowDataService.deleteWorkFlowStep(this.workFlowKey, deleteStep);
-        this.workFlowStepsDeleteLater.push(deleteStep);
+        if (deleteStep) {
+          this.workFlowStepsDeleteLater.push(deleteStep);
+        }
       }
     }
-
-
   }
 
   public async removeStep(): Promise<void> {
     const node = this.focusedElement as NodeSingular;
     // If only step, remove entire level
     if (node.parent().children().length === 1) {
-      if (await this.confirmation.confirm({
-        Title: '#LDS#Heading Delete Approval Step and Approval Level',
-        Message: '#LDS#If you delete this approval step, the corresponding approval level will also be deleted. Are you sure you want to delete the approval step?'
-      })) {
+      if (
+        await this.confirmation.confirm({
+          Title: '#LDS#Heading Delete Approval Step and Approval Level',
+          Message:
+            '#LDS#If you delete this approval step, the corresponding approval level will also be deleted. Are you sure you want to delete the approval step?',
+        })
+      ) {
         await this.removeLevel();
       }
       return;
@@ -1085,7 +1128,9 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       this.workFlowStepsAddLater.splice(popIndex, 1);
     } else {
       await this.approvalWorkflowDataService.deleteWorkFlowStep(this.workFlowKey, deleteStep);
-      this.workFlowStepsDeleteLater.push(deleteStep);
+      if (deleteStep) {
+        this.workFlowStepsDeleteLater.push(deleteStep);
+      }
     }
 
     // Remove from dom
@@ -1105,7 +1150,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     const requestData: RequestStepData = {
       Object: this.standbyStepInteractive,
       Data: this.approvalWorkflowDataService.approvalWorkFlowStepsRequestColumns,
-      HelpText: this.constantsService.sidesheetText.newStep.HelpText as GroupedHelp
+      HelpText: this.constantsService.sidesheetText.newStep.HelpText as GroupedHelp,
     };
     const response = await this.openStepForm(this.translate.instant('#LDS#Heading Create Approval Step'), 'add', requestData);
     if (response === 'save') {
@@ -1131,12 +1176,14 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       this.alignParent(parentNode);
 
       // Store values
-      const thisKey = this.standbyStepInteractive.GetEntity().GetKeys()[0];
+      const thisKey = this.standbyStepInteractive?.GetEntity().GetKeys()[0];
 
-      // Add to commit later
-      this.workFlowStepsAddLater.push(thisKey);
-      // Push to state arrays
-      this.interactiveKeys.push(thisKey);
+      if (thisKey) {
+        // Add to commit later
+        this.workFlowStepsAddLater.push(thisKey);
+        // Push to state arrays
+        this.interactiveKeys.push(thisKey);
+      }
       this.workFlowStepsInteractive.push(this.standbyStepInteractive);
       this.workFlowStepsPromises.push(this.standbyPromise);
 
@@ -1148,7 +1195,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     // Grab position before opening any sidesheets
     const position = {
       x: parseFloat(this.menuTLPosition.x.replace('px', '')),
-      y: parseFloat(this.menuTLPosition.y.replace('px', ''))
+      y: parseFloat(this.menuTLPosition.y.replace('px', '')),
     };
     if (this.standbyStepInteractive === undefined) {
       await this.approvalWorkflowDataService.waitForPromises([this.standbyPromise]);
@@ -1157,7 +1204,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     const requestData: RequestStepData = {
       Object: this.standbyStepInteractive,
       Data: this.approvalWorkflowDataService.approvalWorkFlowStepsRequestColumns,
-      HelpText: this.constantsService.sidesheetText.newLevel.HelpText as GroupedHelp
+      HelpText: this.constantsService.sidesheetText.newLevel.HelpText as GroupedHelp,
     };
 
     const response = await this.openStepForm(this.translate.instant('#LDS#Heading Create Approval Level'), 'add', requestData);
@@ -1171,7 +1218,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
       levelNumber += 1;
 
       // Create element on screen
-      const thisKey = this.standbyStepInteractive.GetEntity().GetKeys()[0];
+      const thisKey = this.standbyStepInteractive?.GetEntity().GetKeys()[0];
 
       const parentNodeData = this.createParent(this.standbyStepInteractive);
       parentNodeData.data.levelNumber = levelNumber;
@@ -1192,10 +1239,13 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
         const edgeData = this.createEdgeRoot(parentNode.id(), levelNumber);
         this.cy.add(edgeData);
       }
-      // Add to save later
-      this.workFlowStepsAddLater.push(thisKey);
-      // Push to state arrays
-      this.interactiveKeys.push(thisKey);
+
+      if (thisKey) {
+        // Add to save later
+        this.workFlowStepsAddLater.push(thisKey);
+        // Push to state arrays
+        this.interactiveKeys.push(thisKey);
+      }
       this.workFlowStepsPromises.push(this.standbyPromise);
       this.workFlowStepsInteractive.push(this.standbyStepInteractive);
 
@@ -1348,10 +1398,12 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
   }
 
   public async deleteWorkFlow(withReload: boolean = true): Promise<void> {
-    if (await this.confirmation.confirmLeaveWithUnsavedChanges(
-      this.translate.instant('#LDS#Heading Delete Approval Workflow'),
-      this.translate.instant('#LDS#Are you sure you want to delete the approval workflow?')
-      )) {
+    if (
+      await this.confirmation.confirmLeaveWithUnsavedChanges(
+        this.translate.instant('#LDS#Heading Delete Approval Workflow'),
+        this.translate.instant('#LDS#Are you sure you want to delete the approval workflow?'),
+      )
+    ) {
       this.approvalWorkflowDataService.handleOpenLoader();
       try {
         await this.approvalWorkflowDataService.workFlowDelete(this.workFlowKey);
@@ -1369,7 +1421,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
         icon: 'edit',
         panelClass: 'imx-sidesheet',
         padding: '0',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         disableClose: true,
         testId: 'srcApprovalWorkflow-form-sidesheet',
         data: requestData,
@@ -1387,7 +1439,7 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
         icon,
         panelClass: 'imx-sidesheet',
         padding: '0',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         disableClose: true,
         testId: 'srcApprovalStep-form-sidesheet',
         data: requestData,
@@ -1398,14 +1450,14 @@ export class ApprovalWorkflowEditComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  public async openLevelForm(sheetTitle: string, requestData: RequestLevelData): Promise<string> {
+  public async openLevelForm(sheetTitle: string, requestData: RequestLevelData | undefined): Promise<string> {
     const result: string = await this.sideForm
       .open(ApprovalLevelFormComponent, {
         title: sheetTitle,
         icon: 'edit',
         panelClass: 'imx-sidesheet',
         padding: '0',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         disableClose: true,
         testId: 'srcApprovalLevel-form-sidesheet',
         data: requestData,

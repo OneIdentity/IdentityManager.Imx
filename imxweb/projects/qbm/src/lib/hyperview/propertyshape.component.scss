@@ -1,4 +1,5 @@
-@import "variables.scss";
+@import 'base/variables';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 table.LayoutpPropItems {
   cursor: pointer;
@@ -7,17 +8,17 @@ table.LayoutpPropItems {
 
 .LayoutpPropRow {
   display: flex;
-  min-height: $propcellminheight;
+  min-height: $IMX_PropCell_MinHeight;
 }
 
 .LayoutpPropCol {
-  min-height: $propcellminheight;
+  min-height: $IMX_PropCell_MinHeight;
   padding: 2px 4px 3px 0;
   vertical-align: top;
 }
 
 .LayoutpPropCol:nth-child(1) {
-  width: $propertylabelwidth;
+  width: $IMX_PropertyLabel_Width;
 }
 
 .LayoutpPropCol0 {
@@ -42,7 +43,15 @@ table.LayoutpPropItems {
   display: table-cell;
 }
 
+.imx-hyperview-link {
+  &:focus,
+  &:hover {
+    cursor: pointer;
+    background-color: rgba($color: $color-gray-100, $alpha: 0.2);
+  }
+}
+
 .endsSection {
   border-bottom: solid 1px lightgray;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }

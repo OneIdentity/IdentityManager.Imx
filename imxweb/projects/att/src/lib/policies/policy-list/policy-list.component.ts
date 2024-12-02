@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,63 +25,61 @@
  */
 
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { MatButton } from '@angular/material/button';
 import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { MatButton } from '@angular/material/button';
 
+import { PolicyFilterData, PortalAttestationPolicy, PortalAttestationPolicyEdit } from '@imx-modules/imx-api-att';
+import { ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
+  CollectionLoadParameters,
+  CompareOperator,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FilterType,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
   ClassloggerService,
+  ClientPropertyForTableColumns,
   ConfirmationService,
   DataSourceToolbarFilter,
-  DataSourceToolbarGroupData,
-  DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
   DataTableGroupedData,
-  ClientPropertyForTableColumns,
+  DataViewInitParameters,
+  DataViewSource,
   SettingsService,
   SnackBarService,
   SystemInfoService,
-  createGroupData,
-  DataSourceToolbarViewConfig,
-  BusyService,
+  calculateSidesheetWidth,
 } from 'qbm';
-import {
-  DisplayColumns,
-  ValType,
-  ExtendedTypedEntityCollection,
-  EntitySchema,
-  FilterType,
-  CompareOperator,
-  DataModel,
-} from 'imx-qbm-dbts';
-import { PolicyFilterData, PortalAttestationPolicy, PortalAttestationPolicyEdit } from 'imx-api-att';
 import { UserModelService, ViewConfigService } from 'qer';
-import { PolicyService } from '../policy.service';
-import { EditMasterDataComponent } from '../edit-master-data/edit-master-data.component';
 import { AttestationCasesComponentParameter } from '../attestation-cases/attestation-cases-component-parameter.interface';
 import { AttestationCasesComponent } from '../attestation-cases/attestation-cases.component';
-import { PolicyLoadParameters } from './policy-load-parameters.interface';
-import { AttestationPolicy } from './attestation-policy';
+import { EditMasterDataComponent } from '../edit-master-data/edit-master-data.component';
 import { PolicyDetailsComponent } from '../policy-details/policy-details.component';
 import { PolicyCopyData } from '../policy.interface';
-import { ViewConfigData } from 'imx-api-qer';
+import { PolicyService } from '../policy.service';
+import { AttestationPolicy } from './attestation-policy';
 
 @Component({
   templateUrl: './policy-list.component.html',
   styleUrls: ['./policy-list.component.scss'],
+  providers: [DataViewSource],
 })
 export class PolicyListComponent implements OnInit {
   @ViewChild('deleteButton') public deleteButton: MatButton;
 
-  public dstSettings: DataSourceToolbarSettings;
-  public navigationState: PolicyLoadParameters;
   public readonly entitySchemaPolicy: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
   public groupedData: { [key: string]: DataTableGroupedData } = {};
   public isComplienceFrameworkEnabled = false;
   public busyService = new BusyService();
   public menuLoading = false;
-  private groupData: DataSourceToolbarGroupData;
 
   private filterOptions: DataSourceToolbarFilter[] = [];
   private prefilterOwner = false;
@@ -101,10 +99,10 @@ export class PolicyListComponent implements OnInit {
     private readonly userService: UserModelService,
     private readonly systemInfoService: SystemInfoService,
     private readonly settingsService: SettingsService,
-    private readonly changeDetector : ChangeDetectorRef,
+    private readonly changeDetector: ChangeDetectorRef,
     private readonly logger: ClassloggerService,
+    public dataSource: DataViewSource<AttestationPolicy>,
   ) {
-    this.navigationState = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaPolicy = policyService.AttestationPolicySchema;
     this.displayedColumns = [
       this.entitySchemaPolicy.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
@@ -124,8 +122,8 @@ export class PolicyListComponent implements OnInit {
     let prep: string[];
     try {
       this.dataModel = await this.policyService.getDataModel();
-      features = (await this.userService.getFeatures()).Features;
-      prep = (await this.systemInfoService.get()).PreProps;
+      features = (await this.userService.getFeatures()).Features || [];
+      prep = (await this.systemInfoService.get()).PreProps || [];
 
       this.prefilterOwner = !this.policyService.canSeeAllAttestations(prep, features);
       this.isComplienceFrameworkEnabled = await this.policyService.isComplienceFrameworkEnabled();
@@ -139,49 +137,13 @@ export class PolicyListComponent implements OnInit {
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
-  }
-
-  public async onNavigationStateChanged(newState: PolicyLoadParameters): Promise<void> {
-    this.navigationState = newState;
-    this.logger.trace(this, 'navigation state change to ', this.navigationState);
-    await this.navigate();
-  }
-
-  public async onSearch(keywords: string): Promise<void> {
-    this.navigationState = {
-      ...this.navigationState,
-      ...{
-        StartIndex: 0,
-        search: keywords,
-      },
-    };
-    this.logger.trace(this, 'navigation state change to ', this.navigationState);
-    return this.navigate();
-  }
-
-  public async onGroupingChange(groupKey: string): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-
-    try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.policyService.getPolicies(groupedData.navigationState);
-      groupedData.settings = {
-        displayedColumns: this.dstSettings.displayedColumns,
-        dataModel: this.dstSettings.dataModel,
-        dataSource: groupedData.data,
-        entitySchema: this.dstSettings.entitySchema,
-        navigationState: groupedData.navigationState,
-      };
-    } finally {
-      isBusy.endBusy();
-    }
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async menuOpened(policy: AttestationPolicy): Promise<void> {
@@ -196,76 +158,66 @@ export class PolicyListComponent implements OnInit {
     }
   }
 
-  public async editPolicy(policy: PortalAttestationPolicy): Promise<void> {
-    let data: ExtendedTypedEntityCollection<PortalAttestationPolicyEdit, {}>;
-
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.elementalBusyService.show()));
-    try {
-      data = await this.policyService.getPolicyEditInteractive(policy.GetEntity().GetKeys()[0]);
-    } finally {
-      setTimeout(() => this.elementalBusyService.hide(overlayRef));
-      if (data && data.Data.length > 0) {
-        await this.showPolicy(
-          data.Data[0],
-          data.extendedData[0],
-          await this.translator.get('#LDS#Heading Edit Attestation Policy').toPromise(),
-          false
-        );
-      }
+  public async editPolicy(policy: AttestationPolicy): Promise<void> {
+    this.elementalBusyService.show();
+    let data: ExtendedTypedEntityCollection<PortalAttestationPolicyEdit, {}> = await this.policyService.getPolicyEditInteractive(
+      policy.GetEntity().GetKeys()[0],
+    );
+    this.elementalBusyService.hide();
+    if (data && data.Data.length > 0) {
+      await this.showPolicy(
+        data.Data[0],
+        data.extendedData?.[0],
+        await this.translator.get('#LDS#Heading Edit Attestation Policy').toPromise(),
+        false,
+      );
     }
   }
 
   public async newPolicy(): Promise<void> {
-    let policy: PolicyCopyData;
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.elementalBusyService.show()));
-    try {
-      policy = await this.policyService.buildNewEntity();
-      this.logger.trace(this, 'new policy created', policy);
-    } finally {
-      setTimeout(() => this.elementalBusyService.hide(overlayRef));
-      if (policy) {
-        await this.showPolicy(
-          policy.data,
-          {
-            IsReadOnly: false,
-            Filter: { Elements: [], ConcatenationType: 'OR' },
-            InfoDisplay: [],
-          },
-          await this.translator.get('#LDS#Heading Create Attestation Policy').toPromise(),
-          true
-        );
-      }
+    if (this.elementalBusyService.overlayRefs.length === 0) {
+      // Its possible we enter this function from another that has used the busy service, check if there is an overlay before showing
+      this.elementalBusyService.show();
+    }
+    let policy: PolicyCopyData = await this.policyService.buildNewEntity();
+    this.logger.trace(this, 'new policy created', policy);
+    this.elementalBusyService.hide();
+    if (policy) {
+      await this.showPolicy(
+        policy.data,
+        {
+          IsReadOnly: false,
+          Filter: { Elements: [], ConcatenationType: 'OR' },
+          InfoDisplay: [],
+        },
+        await this.translator.get('#LDS#Heading Create Attestation Policy').toPromise(),
+        true,
+      );
     }
   }
 
   public async copy(policy: PortalAttestationPolicy): Promise<void> {
     let newPolicy: PolicyCopyData;
     let filter: PolicyFilterData;
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.elementalBusyService.show()));
-    try {
-      const data = await this.policyService.getPolicyEditInteractive(policy.GetEntity().GetKeys()[0]);
+    this.elementalBusyService.show();
+    const data = await this.policyService.getPolicyEditInteractive(policy.GetEntity().GetKeys()[0]);
 
-      if (data == null || data.Data.length === 0) {
-        return this.newPolicy();
-      }
+    if (!data || data.Data.length === 0) {
+      return this.newPolicy();
+    }
 
-      newPolicy = await this.policyService.buildNewEntity(data.Data[0], data.extendedData[0]?.Filter);
-      filter = data.extendedData[0];
-      this.logger.trace(this, 'copy for policy (old, new)', data, newPolicy);
-    } finally {
-      setTimeout(() => this.elementalBusyService.hide(overlayRef));
-      if (newPolicy) {
-        await this.showPolicy(
-          newPolicy.data,
-          filter,
-          await this.translator.get('#LDS#Heading Copy Attestation Policy').toPromise(),
-          true,
-          newPolicy.pickCategorySkipped
-        );
-      }
+    newPolicy = await this.policyService.buildNewEntity(data.Data[0], data.extendedData?.[0]?.Filter);
+    filter = data.extendedData?.[0] || { IsReadOnly: true };
+    this.logger.trace(this, 'copy for policy (old, new)', data, newPolicy);
+    this.elementalBusyService.hide();
+    if (newPolicy) {
+      await this.showPolicy(
+        newPolicy.data,
+        filter,
+        await this.translator.instant('#LDS#Heading Copy Attestation Policy'),
+        true,
+        newPolicy.pickCategorySkipped,
+      );
     }
   }
 
@@ -289,7 +241,7 @@ export class PolicyListComponent implements OnInit {
         key: '#LDS#The attestation policy "{0}" has been successfully deleted.',
         parameters: [policy.GetEntity().GetDisplay()],
       };
-      this.navigate();
+      this.dataSource.updateState();
       this.snackbar.open(message, '#LDS#Close');
     }
   }
@@ -300,8 +252,7 @@ export class PolicyListComponent implements OnInit {
 
   public async run(policy: PortalAttestationPolicy): Promise<void> {
     let data: AttestationCasesComponentParameter;
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.elementalBusyService.show()));
+    this.elementalBusyService.show();
     try {
       const policyEdit = await this.policyService.getPolicyEditInteractive(policy.GetEntity().GetKeys()[0]);
       this.logger.trace(this, 'interactive policy loaded', policyEdit);
@@ -321,7 +272,7 @@ export class PolicyListComponent implements OnInit {
         subtitle: policy.GetEntity().GetDisplay(),
       };
     } finally {
-       setTimeout(() => this.elementalBusyService.hide(overlayRef));
+      this.elementalBusyService.hide();
     }
 
     if (data) {
@@ -330,7 +281,7 @@ export class PolicyListComponent implements OnInit {
           title: await this.translator.get('#LDS#Heading Start Attestation').toPromise(),
           subTitle: policy.GetEntity().GetDisplay(),
           padding: '0px',
-          width: 'max(600px, 60%)',
+          width: calculateSidesheetWidth(),
           data,
           testId: 'policy-list-start-attestation-run-sidesheet',
         })
@@ -338,15 +289,14 @@ export class PolicyListComponent implements OnInit {
         .toPromise();
 
       if (result) {
-        this.navigate();
+        this.dataSource.updateState();
       }
     }
   }
 
   public async showDetails(policy: PortalAttestationPolicy): Promise<void> {
-    let singlePolicy: PortalAttestationPolicy;
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.elementalBusyService.show()));
+    let singlePolicy: PortalAttestationPolicy | undefined;
+    this.elementalBusyService.show();
     try {
       const policies = await this.policyService.getPolicies({
         filter: [
@@ -360,14 +310,14 @@ export class PolicyListComponent implements OnInit {
       });
       singlePolicy = policies.Data.length > 0 ? policies.Data[0] : undefined;
     } finally {
-      setTimeout(() => this.elementalBusyService.hide(overlayRef));
+      this.elementalBusyService.hide();
     }
     if (singlePolicy) {
       this.sideSheet.open(PolicyDetailsComponent, {
         title: await this.translator.get('#LDS#Heading View Attestation Runs').toPromise(),
         subTitle: singlePolicy.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         data: { policy: singlePolicy },
         testId: 'policy-list-view-details-sidesheet',
       });
@@ -375,27 +325,21 @@ export class PolicyListComponent implements OnInit {
   }
 
   private async navigate(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-
-    try {
-      const policies = await this.policyService.getPolicies(this.navigationState);
-      const exportMethod = this.policyService.exportPolicies(this.navigationState);
-      this.logger.trace(this, 'interactive policy loaded', policies);
-
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: policies,
-        filters: this.filterOptions,
-        groupData: this.groupData,
-        entitySchema: this.entitySchemaPolicy,
-        navigationState: this.navigationState,
-        dataModel: this.dataModel,
-        viewConfig: this.viewConfig,
-        exportMethod,
-      };
-    } finally {
-      isBusy.endBusy();
-    }
+    const dataViewInitParameters: DataViewInitParameters<AttestationPolicy> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<AttestationPolicy>> =>
+        this.policyService.getPolicies(params, signal),
+      schema: this.entitySchemaPolicy,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      groupExecute: (column: string, params: CollectionLoadParameters, signal: AbortSignal) =>
+        this.policyService.getGroupInfo({ ...params, by: column }),
+      exportFunction: this.policyService.exportPolicies(this.dataSource.state()),
+      viewConfig: this.viewConfig,
+      highlightEntity: (policy: AttestationPolicy) => {
+        this.editPolicy(policy);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   private async showPolicy(
@@ -403,16 +347,16 @@ export class PolicyListComponent implements OnInit {
     filterData: PolicyFilterData,
     display: string,
     isNew: boolean,
-    showSampleDataWarning: boolean = false
+    showSampleDataWarning: boolean = false,
   ): Promise<void> {
     const sidesheetRef = this.sideSheet.open(EditMasterDataComponent, {
       title: display,
       subTitle: isNew ? '' : policy.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px, 80%)',
+      width: calculateSidesheetWidth(1000),
       disableClose: true,
       data: { policy, filterData, isNew, isComplienceFrameworkEnabled: this.isComplienceFrameworkEnabled, showSampleDataWarning },
-      testId: 'policy-list-show-policy-sidesheet'
+      testId: 'policy-list-show-policy-sidesheet',
     });
 
     const shouldReload = await sidesheetRef.afterClosed().toPromise();
@@ -424,29 +368,30 @@ export class PolicyListComponent implements OnInit {
   private async initFilterAndGrouping(): Promise<void> {
     this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
     const defaultSet = this.viewConfigService.isDefaultConfigSet();
-    this.filterOptions = this.dataModel.Filters;
+    this.filterOptions = this.dataModel.Filters || [];
 
     // set initial value for OnlyActivePolicies
     const indexActive = this.filterOptions.findIndex((elem) => elem.Name === 'OnlyActivePolicies');
     if (indexActive > -1 && !defaultSet) {
       this.filterOptions[indexActive].InitialValue = '1';
-      this.navigationState.OnlyActivePolicies = '1';
+      this.filterOptions.map((filter) => {
+        if (filter.Name === 'OnlyActivePolicies') {
+          filter.CurrentValue = '1';
+        }
+      });
+      this.dataSource.state.update((state) => ({ ...state, OnlyActivePolicies: '1' }));
+      this.dataSource.predefinedFilters.set(this.filterOptions);
     }
 
     // remove filter myPolicies, if you are an owner only and not an attestation admin
     if (this.prefilterOwner && !defaultSet) {
-      this.navigationState.mypolicies = '1';
-      const index = this.filterOptions.findIndex((elem) => elem.Name === 'mypolicies');
-      if (index > -1) {
-        this.filterOptions.splice(index, 1);
-      }
+      this.filterOptions.map((filter) => {
+        if (filter.Name === 'mypolicies') {
+          filter.CurrentValue = '1';
+        }
+      });
+      this.dataSource.state.update((state) => ({ ...state, mypolicies: '1' }));
+      this.dataSource.predefinedFilters.set(this.filterOptions);
     }
-
-    this.groupData = createGroupData(this.dataModel, (parameters) =>
-      this.policyService.getGroupInfo({
-        ...{ PageSize: this.navigationState.PageSize, StartIndex: 0 },
-        ...parameters,
-      })
-    );
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { RequestDisplayInterface } from './request-display.interface';
 
 @Injectable()
 export class RequestDisplayService {
-  private registry: { [id: string]: Type<RequestDisplayInterface>; } = {};
+  private registry: { [id: string]: Type<RequestDisplayInterface> } = {};
 
   public getType(type: string): Type<RequestDisplayInterface> {
     return this.registry[type] || DefaultRequestDisplayComponent;

@@ -1,31 +1,35 @@
-<div class="imx-tab-content">
-  <div eui-sidesheet-content class="imx-tab-content-body">
-    <mat-card>
-      <form class="imx-cdr-group" [formGroup]="formGroup">
-        <ng-container *ngFor="let cdr of properties">
-          <imx-cdr-editor [cdr]="cdr" (valueChange)="onValueChanged()"
-            (controlCreated)="addControl(cdr.column.ColumnName, $event)">
-          </imx-cdr-editor>
-        </ng-container>
-      </form>
-    </mat-card>
-  </div>
-  <div eui-sidesheet-actions *ngIf="canEdit">
-    <button [matMenuTriggerFor]="ToolbarButton1" mat-stroked-button data-imx-identifier="roles-main-button-actions">
-      <eui-icon icon="ellipsisvertical"></eui-icon>
+<div eui-sidesheet-content class="imx-tab-content-body">
+  <mat-card class="imx-card-fill">
+    <form class="imx-cdr-group" [formGroup]="formGroup">
+      <ng-container *ngFor="let cdr of properties">
+        <imx-cdr-editor [cdr]="cdr" (valueChange)="onValueChanged()" (controlCreated)="addControl(cdr?.column?.ColumnName, $event)">
+        </imx-cdr-editor>
+      </ng-container>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions *ngIf="canEdit">
+  <button [matMenuTriggerFor]="ToolbarButton1" mat-stroked-button data-imx-identifier="roles-main-button-actions">
+    <eui-icon icon="ellipsisvertical"></eui-icon>
+  </button>
+  <mat-menu #ToolbarButton1="matMenu">
+    <button mat-menu-item data-imx-identifier="roles-compare" (click)="openCompareSidesheet()" *ngIf="canCompare">
+      {{ '#LDS#Compare and merge' | translate }}
     </button>
-    <mat-menu #ToolbarButton1="matMenu">
-      <button mat-menu-item data-imx-identifier="roles-compare" (click)="openCompareSidesheet()" *ngIf="canCompare">
-        {{ '#LDS#Compare and merge' | translate }}
-      </button>
-      <button mat-menu-item data-imx-identifier="roles-rollback" (click)="openRollbackSidesheet()">
-        {{ '#LDS#Reset to previous state' | translate }}
-      </button>
-      <button mat-menu-item data-imx-identifier="roles-main-split" (click)="splitRole()" *ngIf="canSplitRole">
-        {{ '#LDS#Split' | translate }}
-      </button>
-    </mat-menu>
-    <button data-imx-identifier="roles-main-save-button" mat-raised-button color="primary"
-      [disabled]="!formGroup.dirty || formGroup.invalid" (click)="onSave()"> {{ "#LDS#Save" | translate }}</button>
-  </div>
+    <button mat-menu-item data-imx-identifier="roles-rollback" (click)="openRollbackSidesheet()">
+      {{ '#LDS#Reset to previous state' | translate }}
+    </button>
+    <button mat-menu-item data-imx-identifier="roles-main-split" (click)="splitRole()" *ngIf="canSplitRole">
+      {{ '#LDS#Split' | translate }}
+    </button>
+  </mat-menu>
+  <button
+    data-imx-identifier="roles-main-save-button"
+    mat-flat-button
+    color="primary"
+    [disabled]="!formGroup.dirty || formGroup.invalid"
+    (click)="onSave()"
+  >
+    {{ '#LDS#Save' | translate }}
+  </button>
 </div>

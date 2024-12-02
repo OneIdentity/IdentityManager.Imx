@@ -1,23 +1,39 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab>
     <ng-template mat-tab-label>
       <div [matTooltip]="(softwareFormGroup.dirty ? '#LDS#You have unsaved changes' : '') | translate">
         <span translate>#LDS#Heading Main Data</span>&nbsp;
-        <eui-icon *ngIf="softwareFormGroup.dirty" icon="save" class="imx-dirty-indicator" size="s" [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+        <eui-icon
+          *ngIf="softwareFormGroup.dirty"
+          icon="save"
+          class="imx-dirty-indicator"
+          size="s"
+          [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"
+        ></eui-icon>
       </div>
     </ng-template>
     <div class="imx-tab-content">
       <div class="imx-tab-content-body">
         <div eui-sidesheet-content>
-          <mat-card>
+          <mat-card class="imx-card-sidesheet">
             <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
             <form [formGroup]="softwareFormGroup" [ngClass]="{ hidden: isLoading }">
-              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="softwareFormGroup.controls.array.push($event)"></imx-cdr-editor>
+              <imx-cdr-editor
+                *ngFor="let cdr of cdrList"
+                [cdr]="cdr"
+                (controlCreated)="softwareFormGroup.controls.array.push($event)"
+              ></imx-cdr-editor>
             </form>
           </mat-card>
         </div>
         <div eui-sidesheet-actions>
-          <button mat-flat-button color="primary" [disabled]="!softwareFormGroup.dirty || softwareFormGroup.invalid" data-imx-identifier="software-sidesheet-save-button" (click)="submit()">
+          <button
+            mat-flat-button
+            color="primary"
+            [disabled]="!softwareFormGroup.dirty || softwareFormGroup.invalid"
+            data-imx-identifier="software-sidesheet-save-button"
+            (click)="submit()"
+          >
             {{ '#LDS#Save' | translate }}
           </button>
         </div>
@@ -37,16 +53,27 @@
     <ng-template mat-tab-label>
       <div [matTooltip]="(serviceItemGroup.dirty ? '#LDS#You have unsaved changes' : '') | translate">
         <span translate>#LDS#Heading Service Item</span>&nbsp;
-        <eui-icon *ngIf="serviceItemGroup.dirty" icon="save" class="imx-dirty-indicator" size="s" [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+        <eui-icon
+          *ngIf="serviceItemGroup.dirty"
+          icon="save"
+          class="imx-dirty-indicator"
+          size="s"
+          [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"
+        ></eui-icon>
       </div>
     </ng-template>
     <div class="imx-tab-content">
       <div class="imx-tab-content-body">
         <div eui-sidesheet-content>
-          <mat-card>
+          <mat-card class="imx-card-sidesheet">
             <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
             <form class="imx-service-item-form" [formGroup]="serviceItemGroup" [ngClass]="{ hidden: isLoading }">
-              <imx-service-items-edit-form *ngIf="serviceItem" [busyService]="busyService" [serviceItem]="serviceItem" (formControlCreated)="serviceItemGroup.controls.serviceItemParameter.push($event)">
+              <imx-service-items-edit-form
+                *ngIf="serviceItem"
+                [busyService]="busyService"
+                [serviceItem]="serviceItem"
+                (formControlCreated)="serviceItemGroup.controls.serviceItemParameter.push($event)"
+              >
               </imx-service-items-edit-form>
             </form>
           </mat-card>

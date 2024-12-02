@@ -1,17 +1,9 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
   margin-top: 20px;
   display: block;
-}
-
-.helper-alert {
-  display: flex;
-  margin-bottom: 20px;
-
-  span {
-    display: block;
-  }
 }
 
 .property {
@@ -27,13 +19,10 @@
   }
 }
 
-.mat-card {
+.mat-mdc-card {
+  @include flex-column-container-fill();
   margin-bottom: 1em;
-  height: 100%;
   padding: 20px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .imx-snapshot-content {

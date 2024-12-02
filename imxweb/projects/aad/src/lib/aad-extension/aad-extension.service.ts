@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,14 +30,13 @@ import { AppConfigService } from 'qbm';
 import { AadPermissionsService } from '../admin/aad-permissions.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AadExtensionService {
-
   constructor(
     private readonly permissions: AadPermissionsService,
-    private appConfig: AppConfigService
-  ) { }
+    private appConfig: AppConfigService,
+  ) {}
 
   public async canReadInAzure(): Promise<boolean> {
     return this.permissions.canReadInAzure();
@@ -46,5 +45,4 @@ export class AadExtensionService {
   public getReportForSubSku(uidSubSku: string): string {
     return `${this.appConfig.BaseUrl}/portal/targetsystem/aadsubsku/${uidSubSku}/licenceoverview`;
   }
-
 }

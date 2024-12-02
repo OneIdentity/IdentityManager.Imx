@@ -1,0 +1,26 @@
+/* Elemental UI */
+
+/* Angular Material */
+mat-paginator {
+  box-shadow: none;
+
+  &.hide-paginator {
+    display: none;
+  }
+  &.mat-mdc-paginator {
+    border-top: unset;
+  }
+}
+
+.mat-mdc-paginator-navigation-next.mat-icon-button,
+.mat-mdc-paginator-navigation-previous.mat-icon-button {
+  background: transparent;
+  width: 16px;
+  margin-right: 10px;
+}
+
+/* Imx */
+
+/* Dark theme */
+
+/* High-contrast theme */

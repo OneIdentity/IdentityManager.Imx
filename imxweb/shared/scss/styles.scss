@@ -1,0 +1,680 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+@import 'base/colors';
+@import 'base/fonts';
+@import 'base/margins-paddings';
+@import 'base/mixins';
+@import 'base/variables';
+
+@import 'components/alert';
+@import 'components/autocomplete';
+@import 'components/badge';
+@import 'components/button';
+@import 'components/button-toggle';
+@import 'components/card';
+@import 'components/chart';
+@import 'components/checkbox';
+@import 'components/chips';
+@import 'components/scrollbar';
+@import 'components/search';
+@import 'components/sidesheet';
+@import 'components/side-navigation';
+@import 'components/clickable';
+@import 'components/data-source-toolbar';
+@import 'components/date-picker';
+@import 'components/dialog';
+@import 'components/divider';
+@import 'components/download';
+@import 'components/expansion-panel';
+@import 'components/form-field';
+@import 'components/icon';
+@import 'components/input';
+@import 'components/layout-grid';
+@import 'components/list';
+@import 'components/logo';
+@import 'components/masthead';
+@import 'components/menu';
+@import 'components/paginator';
+@import 'components/progress-bar';
+@import 'components/radio-button';
+@import 'components/ripple';
+@import 'components/spinner';
+@import 'components/select';
+@import 'components/slide-toggle';
+@import 'components/slider';
+@import 'components/stepper';
+@import 'components/table';
+@import 'components/tabs';
+@import 'components/theme-switcher';
+@import 'components/time-picker';
+@import 'components/toolbar';
+@import 'components/tooltip';
+@import 'components/tree';
+@import 'components/top-navigation';
+
+/* Imx */
+.imx-flex-container-100 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+}
+
+.imx-no-results {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.imx-hidden {
+  display: none !important;
+}
+
+/* #region VI_Styles_RendererSettings_Default (Flex styles) */
+/* not a smartphone and not a tablet... */
+@media not #{$IMX_Mediaquery_Smartphone} {
+  .imx-flex {
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+  }
+
+  .imx-flex-child {
+    flex: 1 1 auto;
+    overflow: auto;
+    &-hidden {
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+  }
+}
+
+/* This rule is a workaround for Safari bug Viper146020 */
+.imx-flex > * {
+  flex-shrink: 0;
+  flex-basis: auto;
+}
+
+.imx-flex-child {
+  flex: 1 1 auto;
+  overflow: auto;
+
+  &-hidden {
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+}
+
+.k-ie10 .imx-flex-child {
+  flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+}
+
+/*#endregion*/
+
+/* #region VI_Styles_RendererSettings_Default (Icon font) */
+/* CUI Icon Font */
+
+/* TODO replace cux-icon (TFS 806274)*/
+.cux-icon {
+  font-family: fa-identity;
+  font-style: normal;
+  text-align: center;
+  width: 1em;
+}
+
+.cux-icon,
+.cux-pane__collapse-icon,
+[data-icon]::before {
+  font-family: 'fa-identity' !important;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 1;
+  text-transform: none;
+}
+.cux-icon--caret-down:before {
+  content: '\f0d7';
+}
+
+.cux-icon--caret-right:before {
+  content: '\f0da';
+}
+
+.cux-icon--shopping-cart:before {
+  content: '\f07a';
+}
+
+.cux-icon--chain-broken:before {
+  content: '\f127';
+}
+
+.cux-icon--tasks:before {
+  content: '\f0ae';
+}
+
+.cux-icon--table:before {
+  content: '\f0ce';
+}
+/*#endregion*/
+
+/* #region VI_Styles_RendererSettings_Default (ReportStyles) */
+/* layout definition for reportviewer */
+.stidatepicker {
+  display: none;
+}
+
+.ReportViewer table {
+  table-layout: auto;
+}
+
+.ReportViewer {
+  height: 100% !important;
+}
+/*#endregion*/
+
+/* #region VI_Styles_RendererSettings_Default (AccessKeys) */
+/* display keyboard access keys */
+
+/* Display [] by the item with the accesskey */
+a[accesskey]:after,
+button[accesskey]:after,
+input[accesskey]:after,
+label[accesskey]:after,
+legend[accesskey]:after,
+textarea[accesskey]:after {
+  padding-left: 0.3em;
+  display: inline;
+  content: '[' attr(accesskey) ']';
+  color: $white;
+}
+/*#endregion*/
+
+/* #region VI_Styles_RendererSettings_Default (Timeline styles) */
+
+div.timeline-frame {
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+div.timeline-content {
+  overflow: hidden;
+  position: relative;
+}
+
+div.timeline-axis {
+  border-color: $color-gray-60;
+  border-top-style: solid;
+  border-width: 1px;
+  box-sizing: border-box;
+}
+
+div.timeline-axis-grid {
+  border-left-style: solid;
+  border-width: 1px;
+  box-sizing: border-box;
+}
+
+div.timeline-axis-grid-major,
+div.timeline-axis-grid-minor {
+  border-color: $black-c;
+}
+
+div.timeline-axis-text {
+  color: $color-gray-80;
+  padding: 3px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+div.timeline-event {
+  background-color: $black-6;
+  border-color: $black-6;
+  box-sizing: border-box;
+  color: $white;
+  display: inline-block;
+  font-size: 14px;
+}
+
+div.timeline-event-selected {
+  background-color: $color-blue-40;
+  border-color: $black-6;
+  color: $color-gray-80;
+  z-index: 999;
+}
+
+div.timeline-event-dot {
+  border-color: $iris-blue;
+  background-color: $iris-blue;
+}
+
+div.timeline-event-cluster {
+  background: $color-blue-40;
+  color: $color-gray-80;
+}
+
+div.timeline-event-cluster div.timeline-event-dot {
+  border-color: $color-blue-40;
+}
+
+div.timeline-event-box {
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  text-align: center;
+}
+
+div.timeline-event-dot {
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 5px;
+}
+
+div.timeline-event-range {
+  border-radius: 2px;
+  border-style: solid;
+  border-width: 1px;
+}
+
+div.timeline-event-range-drag-left {
+  cursor: w-resize;
+  z-index: 1000;
+}
+
+div.timeline-event-range-drag-right {
+  cursor: e-resize;
+  z-index: 1000;
+}
+
+div.timeline-event-line {
+  border-left-style: solid;
+  border-left-width: 1px;
+  box-sizing: border-box;
+}
+
+div.timeline-event-content {
+  margin: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+}
+
+div.timeline-groups-axis {
+  border-color: $color-gray-60;
+  border-width: 1px;
+  box-sizing: border-box;
+}
+
+div.timeline-groups-axis-onleft {
+  border-style: none solid none none;
+}
+
+div.timeline-groups-axis-onright {
+  border-style: none none none solid;
+}
+
+div.timeline-groups-text {
+  color: $color-gray-80;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+div.timeline-currenttime {
+  background-color: $color-orange-60;
+  box-sizing: border-box;
+  width: 2px;
+}
+
+div.timeline-customtime {
+  background-color: $iris-blue;
+  box-sizing: border-box;
+  cursor: move;
+  width: 2px;
+}
+
+div.timeline-navigation-delete,
+div.timeline-navigation-move-left,
+div.timeline-navigation-move-right,
+div.timeline-navigation-new,
+div.timeline-navigation-zoom-in,
+div.timeline-navigation-zoom-out {
+  box-sizing: border-box;
+  cursor: pointer;
+  float: left;
+  height: 36px;
+  padding: 10px;
+  text-decoration: none;
+  width: 36px;
+}
+
+div.timeline-navigation-new {
+  background: no-repeat center;
+}
+
+/* separator between new and navigation buttons */
+div.timeline-navigation-new-line {
+  border-right: 1px solid $color-gray-60;
+}
+
+div.imx-timeline-event-objectcreate,
+div.imx-timeline-event-propertychange {
+  border-color: $iris-blue;
+  background-color: $color-blue-40;
+}
+
+div.imx-timeline-event-addaccount,
+div.imx-timeline-event-addmembership,
+div.imx-timeline-event-addpermission,
+div.imx-timeline-event-addresponsibility,
+div.imx-timeline-event-removenoncompliance {
+  border-color: $aspen-green;
+  /* TODO use color variable */
+  background-color: lightgreen;
+}
+
+div.imx-timeline-event-addnoncompliance,
+div.imx-timeline-event-removeaccount,
+div.imx-timeline-event-removemembership,
+div.imx-timeline-event-removepermission,
+div.imx-timeline-event-removeresponsibility {
+  border-color: $phoenix-red;
+  background-color: $color-orange-60;
+}
+
+.imx-timeline-detail-header {
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+/*#endregion*/
+
+/* #region VI_Styles_RendererSettings_Default (Phone and Tablet Styles) */
+/* default state */
+.state-indicator {
+  position: absolute;
+  top: -999em;
+  left: -999em;
+}
+
+.state-indicator:before {
+  content: 'desktop';
+}
+
+/* small desktop */
+@media all and (max-width: 1200px) {
+  .state-indicator:before {
+    content: 'small-desktop';
+  }
+}
+
+/* tablet */
+@media all and (max-width: 1024px) {
+  .state-indicator:before {
+    content: 'tablet';
+  }
+}
+
+/* mobile phone */
+@media #{$IMX_Mediaquery_Smartphone} {
+  .state-indicator:before {
+    content: 'mobile';
+  }
+}
+/*#endregion*/
+
+/* #region VI_Styles_RendererSettings_Mobile (Performance improvements) */
+* {
+  text-shadow: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+/*#endregion*/
+
+/* #region Angular Material Komponenten*/
+
+.mat-primary .mat-mdc-pseudo-checkbox-checked,
+.mat-primary .mat-mdc-pseudo-checkbox-indeterminate {
+  background-color: $iris-blue;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+.simpleText {
+  color: $color-gray-80;
+}
+
+.mat-icon-button.imx-searchbar-tablecellsmall {
+  flex: 0 0 40px;
+  width: 32px;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+/*#endregion*/
+
+.mat-mdc-table {
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  font-family: $IMX_Base_FontFamily;
+}
+
+.imx-title {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: $color-gray-80;
+}
+
+.imx-subtitle {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.71;
+  letter-spacing: normal;
+  color: $color-gray-60;
+}
+
+.imx_processTitle {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.6;
+  letter-spacing: normal;
+  color: $color-gray-60;
+}
+
+.imx-normalCell {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 2;
+  letter-spacing: normal;
+  color: $color-gray-60;
+}
+
+/* #region overrides Angular Material styles*/
+
+/* z-index of overlays have to been larger than of modal dialogs
+.cdk-overlay-container {
+  z-index: 1051;
+}
+
+/*#endregion*/
+
+.imx-messageDialog {
+  margin: auto auto;
+  max-width: $IMX_MessageDialog_MaxWidth;
+  min-width: 550px;
+  font-size: 14px;
+  top: 100px;
+  position: absolute !important;
+}
+
+/* Extends the properties of .imx-messageDialog */
+.imx-messageDialog-error {
+  @extend .imx-messageDialog;
+  border-left: 4px solid $color-red-60;
+  border-radius: 6px;
+}
+
+/* Sets the error icon style in the error dialog */
+.imx-error-icon-in-error-dialog {
+  display: inline-block;
+  color: $color-red-60;
+  margin-right: 10px;
+}
+
+/* Sets the h2 tag style in the error dialog */
+.h2-in-error-dialog,
+.h2-in-session-expired-dialog {
+  display: inline-block !important;
+  vertical-align: sub;
+}
+
+.h2-in-session-expired-dialog {
+  color: $color-red-60;
+}
+
+.eui-dark-theme {
+  .imx-messageDialog-error {
+    border-left-color: $color-red-40;
+  }
+
+  .imx-error-icon-in-error-dialog {
+    color: $color-red-40;
+  }
+
+  .h2-in-session-expired-dialog {
+    color: $color-red-40;
+  }
+}
+
+/* #region Elemental UI fixes */
+
+.mat-mdc-form-field-infix .mat-mdc-select-trigger {
+  vertical-align: baseline;
+
+  .mat-mdc-select-arrow-wrapper {
+    transform: none;
+  }
+}
+
+button {
+  letter-spacing: normal;
+}
+
+.mat-mdc-card-title {
+  margin-bottom: 16px;
+}
+/*#endregion*/
+
+/* #region Fix for the bug with mat-hint of Angular Material */
+.imx-form .mat-mdc-form-field .mat-mdc-form-field-wrapper {
+  padding-bottom: 0;
+  .mat-mdc-form-field-underline {
+    position: initial;
+    display: block;
+    margin-top: -1px;
+  }
+  .mat-mdc-form-field-subscript-wrapper,
+  .mat-mdc-form-field-ripple {
+    position: relative;
+    display: inline-flex;
+
+    .mat-mdc-form-field-hint-wrapper {
+      flex-wrap: wrap;
+    }
+  }
+  .mat-mdc-form-field-subscript-wrapper {
+    min-height: calc(1em + 1px);
+  }
+}
+/* #endregion */
+
+/* bugfix for the mat-error overlapping error
+for more information see:
+https://github.com/angular/components/issues/4580#issuecomment-510290576
+*/
+// mat-form-field {
+// &.ng-valid {
+//   .mat-mdc-form-field-wrapper {
+//     padding-bottom: 1.25em;
+//   }
+// }
+
+// &.ng-invalid,
+// &.mat-mdc-form-field-invalid {
+//   .mat-mdc-form-field-wrapper {
+//     padding-bottom: 7px;
+//   }
+// }
+
+// &.ng-untouched {
+//   .mat-mdc-form-field-wrapper {
+//     padding-bottom: 1.25em;
+//   }
+// }
+
+//   .mat-mdc-form-field {
+//     &-underline {
+//       position: static;
+//     }
+
+//     &-subscript-wrapper {
+//       position: static;
+//     }
+//   }
+// }
+
+/* remove the max-width of the menu-panel #304731*/
+.cdk-overlay-pane .mat-mdc-menu-panel {
+  max-width: initial;
+}
+/* Show recaptcha badge only in login page */
+.recaptcha .grecaptcha-badge {
+  visibility: visible;
+}
+.grecaptcha-badge {
+  visibility: hidden;
+}
+
+.eui-dark-theme {
+  .imx-title {
+    color: $color-gray-5;
+  }
+
+  .simpleText {
+    color: $color-gray-5;
+  }
+}
+
+.eui-contrast-theme {
+  .imx-title {
+    color: $color-gray-0;
+  }
+
+  .simpleText {
+    color: $color-gray-0;
+  }
+}

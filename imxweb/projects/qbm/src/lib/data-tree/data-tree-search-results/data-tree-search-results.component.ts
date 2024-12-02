@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,24 +28,23 @@ import { Component, ContentChild, EventEmitter, Input, OnChanges, Output, Simple
 import { MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
+import { SettingsService } from '../../settings/settings-service';
 import { TreeDatabase } from '../tree-database';
-import { SettingsService} from '../../settings/settings-service';
 
 @Component({
   selector: 'imx-data-tree-search-results',
   templateUrl: './data-tree-search-results.component.html',
-  styleUrls: ['./data-tree-search-results.component.scss', '../data-tree-no-results.scss']
+  styleUrls: ['./data-tree-search-results.component.scss', '../data-tree-no-results.scss'],
 })
 
 /** A component, that can display the search result for a{@link DataTreeComponent|data tree} */
 export class DataTreeSearchResultsComponent implements OnChanges {
-
   /** determines whether the control allows multiselect or not  */
   @Input() public withMultiSelect: boolean;
   /** currently selected entities */
-  @Input() public selectedEntities: IEntity[] = [];
+  @Input() public selectedEntities: (IEntity | undefined)[] = [];
 
   /**
    * This text will be displayed when a search or filter is applied but there is no data as a result
@@ -93,7 +92,10 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   /** event, that fires, after the checked nodes list has been updated */
   @Output() public checkedNodesChanged = new EventEmitter();
 
-  constructor(private readonly logger: ClassloggerService, private readonly settings: SettingsService) {
+  constructor(
+    private readonly logger: ClassloggerService,
+    private readonly settings: SettingsService,
+  ) {
     this.paginatorPageSize = this.settings?.DefaultPageSize ?? 25;
   }
 
@@ -107,7 +109,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   public compareFunction = (o1: any, o2: any) => {
     this.logger.log(this, 'compare', o1, o2);
     return this.getId(o1) === this.getId(o2);
-  }
+  };
 
   /**
    * clears all selected nodes for the tree and listings
@@ -118,13 +120,12 @@ export class DataTreeSearchResultsComponent implements OnChanges {
 
   public async reload(): Promise<void> {
     this.loading = true;
-    const data = await this.database.getData(true, this.navigationState);
+    const data = await this.database?.getData(true, this.navigationState);
     this.loading = false;
-    this.paginatorLength = data.totalCount;
-    this.searchResults = data.entities;
-    this.selectedOptions = this.searchResults.filter(elem => this.entityIsChecked(elem));
+    this.paginatorLength = data?.totalCount ?? 0;
+    this.searchResults = data?.entities ?? [];
+    this.selectedOptions = this.searchResults.filter((elem) => this.entityIsChecked(elem));
   }
-
 
   /** @ignore updates the selection list an emits the according events */
   public onSelectionChanged(selection: MatSelectionListChange): void {
@@ -149,39 +150,44 @@ export class DataTreeSearchResultsComponent implements OnChanges {
       ...{
         StartIndex: newState.pageIndex * newState.pageSize,
         PageSize: newState.pageSize,
-      }
+      },
     };
-    const data = await this.database.getData(true, state);
+    const data = await this.database?.getData(true, state);
     this.loading = false;
-    this.searchResults = data.entities;
-    this.selectedOptions = this.searchResults.filter(elem => this.entityIsChecked(elem));
-    this.paginatorLength = data.totalCount;
+    this.searchResults = data?.entities ?? [];
+    this.selectedOptions = this.searchResults.filter((elem) => this.entityIsChecked(elem));
+    this.paginatorLength = data?.totalCount ?? 0;
   }
 
   /** @ignore checks, if an element is selected or not */
   public isSelected(value: IEntity): boolean {
-    if (this.withMultiSelect) { return false; }
-    return this.selectedEntities.some(elem => this.getId(elem) === this.getId(value));
+    if (this.withMultiSelect) {
+      return false;
+    }
+    return this.selectedEntities.some((elem) => this.getId(elem) === this.getId(value));
   }
 
   private updateSelectedEntities(current: IEntity, checked: boolean): void {
     if (checked) {
       this.selectedEntities.push(current);
     } else {
-      const index = this.selectedEntities.findIndex(elem => this.getId(elem) === this.getId(current));
+      const index = this.selectedEntities.findIndex((elem) => this.getId(elem) === this.getId(current));
       this.selectedEntities.splice(index, 1);
     }
   }
 
   private entityIsChecked(entity: IEntity): boolean {
-    this.logger.log(this, 'Keys',
+    this.logger.log(
+      this,
+      'Keys',
       this.selectedEntities,
-      this.getId(entity), this.selectedEntities.some(elem => this.getId(entity) === this.getId(elem)));
-    return this.selectedEntities.some(elem => this.getId(entity) === this.getId(elem));
+      this.getId(entity),
+      this.selectedEntities.some((elem) => this.getId(entity) === this.getId(elem)),
+    );
+    return this.selectedEntities.some((elem) => this.getId(entity) === this.getId(elem));
   }
 
-  private getId(entity: IEntity): string {
+  private getId(entity: IEntity | undefined): string {
     return TreeDatabase.getId(entity);
-   }
-
+  }
 }

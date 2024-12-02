@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .FilterIcon,
@@ -72,26 +72,24 @@
 
 .eui-dark-theme {
   :host {
+    .FilterContentClassChecked {
+      color: $color-gray-60;
+    }
 
-      .FilterContentClassChecked {
-        color: $color-gray-60;
-      }
-
-      .FilterMatCard {
-        background-color: $color-gray-70;
-      }
+    .FilterMatCard {
+      background-color: $color-gray-70;
+    }
   }
 }
 
 .eui-contrast-theme {
   :host {
+    .FilterContentClassChecked {
+      color: $color-gray-80;
+    }
 
-      .FilterContentClassChecked {
-        color: $color-gray-80;
-      }
-
-      .FilterMatCard {
-        background-color: $color-gray-90;
-      }
+    .FilterMatCard {
+      background-color: $color-gray-90;
+    }
   }
 }

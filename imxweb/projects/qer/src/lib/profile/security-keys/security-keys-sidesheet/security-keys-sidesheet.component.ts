@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,26 +25,22 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
-import { PortalWebauthnkey } from 'imx-api-qer';
-import { IEntity } from 'imx-qbm-dbts';
+import { PortalWebauthnkey } from '@imx-modules/imx-api-qer';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, BusyService, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { SecurityKeysService } from '../security-keys.service';
 
 @Component({
   templateUrl: './security-keys-sidesheet.component.html',
-  styleUrls: ['./security-keys-sidesheet.component.scss']
 })
 export class SecurityKeysSidesheetComponent implements OnDestroy {
-  public readonly formGroup = new UntypedFormGroup({
-    DisplayName: new UntypedFormControl(this.data.DisplayName.value, { updateOn: 'blur', validators: [Validators.required] }),
-  });
+  public readonly formGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[];
   public busyService = new BusyService();
   private subscriptions: Subscription[] = [];
-
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: PortalWebauthnkey,
@@ -54,13 +50,18 @@ export class SecurityKeysSidesheetComponent implements OnDestroy {
     private readonly confirmation: ConfirmationService,
   ) {
     const entity = data.GetEntity();
+    this.formGroup = new FormGroup({
+      DisplayName: new UntypedFormControl(data.DisplayName.value, { updateOn: 'blur', validators: [Validators.required] }),
+    });
     this.cdrList = this.createCdrList(entity);
 
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (this.formGroup.pristine || await this.confirmation.confirmLeaveWithUnsavedChanges()) {
-        this.sidesheetRef.close();
-      }
-    }));
+    this.subscriptions.push(
+      this.sidesheetRef.closeClicked().subscribe(async () => {
+        if (this.formGroup.pristine || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
+          this.sidesheetRef.close();
+        }
+      }),
+    );
   }
 
   /**
@@ -69,8 +70,10 @@ export class SecurityKeysSidesheetComponent implements OnDestroy {
    * @returns Base cdr list
    */
   private createCdrList(entity: IEntity): BaseCdr[] {
-    const cdrList = [];
-    const columnNames: string[] = Object.keys(this.data).reverse().filter((column) => column !== "DisplayName");
+    const cdrList: BaseCdr[] = [];
+    const columnNames: string[] = Object.keys(this.data)
+      .reverse()
+      .filter((column) => column !== 'DisplayName');
     columnNames?.forEach((name) => {
       try {
         cdrList.push(new BaseCdr(entity.GetColumn(name)));
@@ -88,7 +91,7 @@ export class SecurityKeysSidesheetComponent implements OnDestroy {
       const confirmMessage = '#LDS#The security key has been successfully saved.';
 
       try {
-        this.data.DisplayName.Column.PutValue(this.formGroup.get('DisplayName').value);
+        this.data.DisplayName.Column.PutValue(this.formGroup.get('DisplayName')?.value);
         await this.data.GetEntity().Commit(true);
         this.formGroup.markAsPristine();
         this.sidesheetRef.close(true);
@@ -103,12 +106,11 @@ export class SecurityKeysSidesheetComponent implements OnDestroy {
    * Deletes the security key
    */
   public async deleteSecurityKey() {
-    await this.securityKeysService.delete(this.data.EntityKeysData.Keys[0]);
+    await this.securityKeysService.delete(this.data.EntityKeysData.Keys?.[0] || '');
     this.sidesheetRef.close('delete');
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
-
 }

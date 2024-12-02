@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,33 +24,31 @@
  *
  */
 
-import { Component, Output, EventEmitter, ErrorHandler, Inject } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Component, ErrorHandler, EventEmitter, Inject, Output } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalApplication, PortalShops } from 'imx-api-aob';
-import { DbObjectKey, TypedEntity } from 'imx-qbm-dbts';
-import { ShopsService } from '../../shops/shops.service';
-import { AccountsService } from '../../accounts/accounts.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PortalApplication, PortalShops } from '@imx-modules/imx-api-aob';
+import { DbObjectKey, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import {
   ClassloggerService,
-  SnackBarService,
-  TypedEntitySelectionData,
   ConfirmationService,
   LdsReplacePipe,
-  TranslationEditorComponent
+  SnackBarService,
+  TranslationEditorComponent,
+  TypedEntitySelectionData,
 } from 'qbm';
-import { SelectionContainer } from './selection-container';
+import { AccountsService } from '../../accounts/accounts.service';
+import { ShopsService } from '../../shops/shops.service';
 import { ApplicationContent } from '../application-content.interface';
-import { MatDialog } from '@angular/material/dialog';
+import { SelectionContainer } from './selection-container';
 
 @Component({
   selector: 'imx-edit-application',
   templateUrl: './edit-application.component.html',
-  styleUrls: ['./edit-application.component.scss']
 })
-
 export class EditApplicationComponent implements ApplicationContent {
   public readonly applicationForm = new UntypedFormGroup({});
 
@@ -74,7 +72,7 @@ export class EditApplicationComponent implements ApplicationContent {
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
     @Inject(EUI_SIDESHEET_DATA) public application: PortalApplication,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
   ) {
     this.sidesheetRef.closeClicked().subscribe(async () => {
       if (!this.hasUnsavedChanges()) {
@@ -91,8 +89,8 @@ export class EditApplicationComponent implements ApplicationContent {
     this.shopsData = this.getShopsData();
   }
 
-  public shopSelectionChanged(selection: PortalShops[]): void {
-    this.shopsSelection.selected = selection;
+  public shopSelectionChanged(selection: TypedEntity[]): void {
+    this.shopsSelection.selected = selection as PortalShops[];
   }
 
   public accountSelectionChanged(selection: TypedEntity[]): void {
@@ -108,7 +106,9 @@ export class EditApplicationComponent implements ApplicationContent {
   }
 
   public async submitData(): Promise<void> {
-    const overlayRef = this.busyService.show();
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       await this.saveShops();
 
@@ -123,7 +123,7 @@ export class EditApplicationComponent implements ApplicationContent {
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
       this.sidesheetRef.close();
     }
   }
@@ -138,41 +138,48 @@ export class EditApplicationComponent implements ApplicationContent {
     this.sidesheetRef.close();
   }
 
-  public editTranslation(){
-      const dialogConfig = {
-        data: this.application,
-        width: '600px'
-      }
-      this.dialog.open(TranslationEditorComponent,dialogConfig);
+  public editTranslation() {
+    const dialogConfig = {
+      data: this.application,
+      width: '600px',
+    };
+    this.dialog.open(TranslationEditorComponent, dialogConfig);
   }
 
-  private getShopsData(): TypedEntitySelectionData {
+  public addAndValidate(event: { name: string; control: AbstractControl }) {
+    this.applicationForm.addControl(event.name, event.control);
+    event.control.updateValueAndValidity();
+  }
+
+  private getShopsData(): TypedEntitySelectionData<PortalShops> {
     return {
       title: '#LDS#Heading Edit IT Shop Structures',
       valueWrapper: {
         display: this.shopsProvider.display,
         name: 'shops',
-        canEdit: true
+        canEdit: true,
       },
       getInitialDisplay: async () => {
         const info = await this.shopsProvider.getFirstAndCount(this.application.UID_AOBApplication.value);
-        return this.buildInitalValue(info.first, info.count);
+        if (info.first) {
+          return this.buildInitalValue(info.first, info.count);
+        }
+        return '';
       },
       getSelected: async () => {
-        this.shopsSelection.init((await this.shopsProvider.getApplicationInShop(
-          this.application.UID_AOBApplication.value, { PageSize: 100000 }
-        ))?.Data);
+        this.shopsSelection.init(
+          (await this.shopsProvider.getApplicationInShop(this.application.UID_AOBApplication.value, { PageSize: 100000 }))?.Data || [],
+        );
         return this.shopsSelection.selected;
       },
-      getTyped: parameters => this.shopsProvider.get(parameters),
+      getTyped: (parameters) => this.shopsProvider.get(parameters),
     };
   }
 
   private async saveShops(): Promise<void> {
     if (this.shopsData) {
       this.logger.debug(this, 'submitData - update shops...');
-      const result =
-        await this.shopsProvider.updateApplicationInShops(this.application, this.shopsSelection.getChangeSet());
+      const result = await this.shopsProvider.updateApplicationInShops(this.application, this.shopsSelection.getChangeSet());
       if (!result) {
         this.logger.error(this, 'Attempt to update the shops failed');
       }
@@ -185,27 +192,29 @@ export class EditApplicationComponent implements ApplicationContent {
       valueWrapper: {
         display: this.accountsProvider.display,
         name: 'accounts',
-        canEdit: true
+        canEdit: true,
       },
       getInitialDisplay: async () => {
         const info = await this.accountsProvider.getFirstAndCount(this.application.UID_AOBApplication.value);
-        return this.buildInitalValue(info.first, info.count);
+        if (info.first) {
+          return this.buildInitalValue(info.first, info.count);
+        }
+        return '';
       },
       getSelected: async () => {
-        this.accountsSelection.init(await this.accountsProvider.getAssigned(
-          this.application.UID_AOBApplication.value,
-          { PageSize: 100000 }
-        ));
+        this.accountsSelection.init(
+          await this.accountsProvider.getAssigned(this.application.UID_AOBApplication.value, { PageSize: 100000 }),
+        );
         return this.accountsSelection.selected;
       },
       dynamicFkRelation: {
         tables: this.accountsProvider.getCandidateTables(),
-        getSelectedTableName: selected => {
+        getSelectedTableName: (selected) => {
           if (selected?.length > 0) {
             return DbObjectKey.FromXml(selected[0].GetEntity().GetColumn('XObjectKey').GetValue()).TableName;
           }
-          return undefined;
-        }
+          return '';
+        },
       },
     };
   }
@@ -213,8 +222,7 @@ export class EditApplicationComponent implements ApplicationContent {
   private async saveAccounts(): Promise<void> {
     if (this.accountsData) {
       this.logger.debug(this, 'submitData - update accounts...');
-      const result =
-        await this.accountsProvider.updateApplicationUsesAccounts(this.application, this.accountsSelection.getChangeSet());
+      const result = await this.accountsProvider.updateApplicationUsesAccounts(this.application, this.accountsSelection.getChangeSet());
       if (!result) {
         this.logger.error(this, 'Attempt to update the accounts failed');
       }
@@ -222,8 +230,10 @@ export class EditApplicationComponent implements ApplicationContent {
   }
 
   private async buildInitalValue(entity: TypedEntity, count: number): Promise<string> {
-    return count < 1 ? '' :
-    count === 1 ? entity.GetEntity().GetDisplay() :
-      this.ldsReplace.transform(await this.translate.get('#LDS#{0} items selected').toPromise(), count);
+    return count < 1
+      ? ''
+      : count === 1
+        ? entity.GetEntity().GetDisplay()
+        : this.ldsReplace.transform(await this.translate.get('#LDS#{0} items selected').toPromise(), count);
   }
 }

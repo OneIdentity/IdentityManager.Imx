@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,10 +34,9 @@ import { FilterElementModel } from './filter-element-model';
 
 @Component({
   templateUrl: './edit-name.component.html',
-  selector: 'imx-edit-name'
+  selector: 'imx-edit-name',
 })
 export class EditNameComponent implements OnChanges, OnDestroy {
-
   @Input() public filterElementModel: FilterElementModel;
   @Input() public identifier: string;
   @Input() public testId = '';
@@ -62,10 +61,10 @@ export class EditNameComponent implements OnChanges, OnDestroy {
     if (this.valueChangedSubscription) {
       this.valueChangedSubscription.unsubscribe();
     }
-    this.valueChangedSubscription = control.valueChanges.subscribe(value => {
+    this.valueChangedSubscription = control.valueChanges.subscribe((value) => {
       this.valueChanged.emit({
         ParameterValue: value,
-        displays: [value]
+        displays: [value],
       });
     });
   }

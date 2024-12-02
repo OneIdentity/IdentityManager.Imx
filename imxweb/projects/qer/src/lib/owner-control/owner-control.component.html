@@ -1,6 +1,13 @@
 <mat-card *ngIf="!isReadOnly; else readOnlyTemplate" class="product-owner-datasource-container">
-  <span translate>#LDS#Product owner<eui-icon class="help-icon" icon="help" [matTooltip]="'#LDS#Specify where to select the product owner from.' | translate"></eui-icon></span>
-  <mat-radio-group [formControl]="ownerSelectionCtrl">
+  <span translate
+    >#LDS#Product owner<eui-icon
+      class="imx-icon-info"
+      icon="help"
+      size="16px"
+      [matTooltip]="'#LDS#Specify where to select the product owner from.' | translate"
+    ></eui-icon
+  ></span>
+  <mat-radio-group [formControl]="ownerSelectionCtrl" class="imx-margin-bottom-10">
     <mat-radio-button [value]="ownerCandidateOptions.roles">
       <span translate>#LDS#Select from roles</span>
     </mat-radio-button>

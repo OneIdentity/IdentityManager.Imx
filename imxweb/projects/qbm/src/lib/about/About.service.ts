@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,24 +24,46 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
-import { ImxSysteminfoThirdparty } from 'imx-api-qbm';
-import { imx_SessionService } from '../session/imx-session.service';
-import { TypedEntityCollectionData, CollectionLoadParameters, EntitySchema } from 'imx-qbm-dbts';
+import { AdminSysteminfoThirdparty } from '@imx-modules/imx-api-qbm';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AboutService {
-  constructor(private readonly session: imx_SessionService) { }
+// Create a more general type from either admin or ops since it is available in qbm - use this in qer later
+export type SysteminfoThirdparty = { [K in keyof AdminSysteminfoThirdparty]: AdminSysteminfoThirdparty[K] } & TypedEntity;
 
-  public get EntitySchema(): EntitySchema {
-    return this.session.TypedClient.ImxSysteminfoThirdparty.GetSchema();
+/**
+ * Abstract implementation for getting portal specific metadata.
+ */
+@Injectable()
+export abstract class AboutService implements OnDestroy {
+  protected abortController: AbortController;
+  constructor() {
+    this.abortController = new AbortController();
   }
-  
-  public async get(parameters: CollectionLoadParameters = {}):
-    Promise<TypedEntityCollectionData<ImxSysteminfoThirdparty>> {
-    return this.session.TypedClient.ImxSysteminfoThirdparty.Get(parameters);
+
+  ngOnDestroy(): void {
+    this.abortCall();
   }
+
+  /**
+   * Handles aborting any current requests managed by this service.
+   */
+  public abortCall(): void {
+    this.abortController.abort();
+    this.abortController = new AbortController();
+  }
+
+  /**
+   * Abstract getter for exposing the entity schema via the service.
+   */
+  abstract get EntitySchema(): EntitySchema;
+
+  /**
+   * Abstract method for getting data from the server
+   * @param parameters Additional request parameters for the method
+   */
+  abstract get(
+    parameters?: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<SysteminfoThirdparty, unknown> | null | undefined>;
 }

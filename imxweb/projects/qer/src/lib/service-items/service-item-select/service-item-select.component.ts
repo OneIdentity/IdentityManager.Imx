@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,15 +29,15 @@ import { UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TypedEntity } from 'imx-qbm-dbts';
-import { LdsReplacePipe } from 'qbm';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { LdsReplacePipe, calculateSidesheetWidth } from 'qbm';
 import { ServiceItemsSelectorComponent } from '../service-items-selector/service-items-selector.component';
 import { TypedEntitySelectionData } from './typed-entity-selection-data.interface';
 
 @Component({
   selector: 'imx-service-item-select',
   templateUrl: './service-item-select.component.html',
-  styleUrls: ['./service-item-select.component.scss']
+  styleUrls: ['./service-item-select.component.scss'],
 })
 export class ServiceItemSelectComponent implements OnChanges {
   @Input() data: TypedEntitySelectionData;
@@ -51,7 +51,7 @@ export class ServiceItemSelectComponent implements OnChanges {
   public readonly columnContainer = {
     display: '',
     canEdit: true,
-    isValueRequired: false
+    isValueRequired: false,
   };
 
   public loading = false;
@@ -59,8 +59,8 @@ export class ServiceItemSelectComponent implements OnChanges {
   constructor(
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    private readonly sidesheet: EuiSidesheetService
-  ) { }
+    private readonly sidesheet: EuiSidesheetService,
+  ) {}
 
   public async ngOnChanges(__: SimpleChanges): Promise<void> {
     if (this.data) {
@@ -71,20 +71,20 @@ export class ServiceItemSelectComponent implements OnChanges {
   }
 
   public async editAssignment(): Promise<void> {
-    const selection = await this.sidesheet.open(
-      ServiceItemsSelectorComponent,
-      {
+    const selection = await this.sidesheet
+      .open(ServiceItemsSelectorComponent, {
         title: await this.translate.get(this.data.title).toPromise(),
         subTitle: this.data.parent.GetEntity().GetDisplay(),
         padding: '0',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         data: {
           getTyped: this.data.getTyped,
           isMultiValue: true,
-          preselectedEntities: this.data.selected
-        }
-      }
-    ).afterClosed().toPromise();
+          preselectedEntities: this.data.selected,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (selection) {
       if (!this.columnContainer.canEdit) {
@@ -99,18 +99,16 @@ export class ServiceItemSelectComponent implements OnChanges {
   }
 
   private async update(selection: TypedEntity[], emitEvent: boolean = true): Promise<void> {
-    const entities = selection?.map(item => item.GetEntity());
+    const entities = selection?.map((item) => item.GetEntity());
     if (entities?.length > 0) {
       this.control.setValue(
-        entities.length === 1 ? entities[0].GetDisplay() :
-          this.ldsReplace.transform(await this.translate.get('#LDS#{0} items selected').toPromise(), entities.length),
-        { emitEvent }
+        entities.length === 1
+          ? entities[0].GetDisplay()
+          : this.ldsReplace.transform(await this.translate.get('#LDS#{0} items selected').toPromise(), entities.length),
+        { emitEvent },
       );
     } else {
-      this.control.setValue(
-        undefined,
-        { emitEvent }
-      );
+      this.control.setValue(undefined, { emitEvent });
     }
   }
 }

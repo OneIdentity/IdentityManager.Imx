@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,40 +24,33 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatListModule } from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { LdsReplaceModule, DataTableModule, DataSourceToolbarModule, DataTilesModule, FkAdvancedPickerModule } from 'qbm';
-import { ServiceitemListComponent } from './serviceitem-list/serviceitem-list.component';
+import { MatCardModule } from '@angular/material/card';
+import { DataSourceToolbarModule, DataTableModule, DataTilesModule, FkAdvancedPickerModule, LdsReplaceModule } from 'qbm';
+import { ItshopModule } from '../itshop/itshop.module';
 import { ServiceItemInfoComponent } from './service-item-info/service-item-info.component';
 import { ServiceItemSelectComponent } from './service-item-select/service-item-select.component';
 import { ServiceItemsSelectorComponent } from './service-items-selector/service-items-selector.component';
-import { ItshopModule } from '../itshop/itshop.module';
+import { ServiceitemListComponent } from './serviceitem-list/serviceitem-list.component';
 
 @NgModule({
-  declarations: [
-    ServiceitemListComponent,
-    ServiceItemInfoComponent,
-    ServiceItemSelectComponent,
-    ServiceItemsSelectorComponent
-  ],
-  exports: [
-    ServiceitemListComponent,
-    ServiceItemSelectComponent
-  ],
+  declarations: [ServiceitemListComponent, ServiceItemInfoComponent, ServiceItemSelectComponent, ServiceItemsSelectorComponent],
+  exports: [ServiceitemListComponent, ServiceItemSelectComponent],
   imports: [
     CommonModule,
     DataSourceToolbarModule,
@@ -69,6 +62,7 @@ import { ItshopModule } from '../itshop/itshop.module';
     ItshopModule,
     LdsReplaceModule,
     MatButtonModule,
+    MatCardModule,
     MatCheckboxModule,
     MatDialogModule,
     MatListModule,
@@ -80,7 +74,7 @@ import { ItshopModule } from '../itshop/itshop.module';
     MatFormFieldModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class ServiceItemsModule { }
+export class ServiceItemsModule {}

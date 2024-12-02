@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,7 +23,6 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -41,22 +40,21 @@ import {
   DateModule,
   HELP_CONTEXTUAL,
   HelpContextualModule,
-  InfoButtonComponent,
   InfoModalDialogModule,
   MenuItem,
   MenuService,
   ParameterizedTextModule,
   QbmModule,
-  RouteGuardService
+  RouteGuardService,
 } from 'qbm';
 
-import { ItshopModule } from '../itshop/itshop.module';
-import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
-import { JustificationModule } from '../justification/justification.module';
-import { ArchivedRequestsComponent } from './archived-requests.component';
-import {ArchivedRequestsService} from './archived-requests.service';
-import { RequestHistoryModule } from '../request-history/request-history.module';
 import { isShopAdmin } from '../admin/qer-permissions-helper';
+import { ItshopModule } from '../itshop/itshop.module';
+import { JustificationModule } from '../justification/justification.module';
+import { RequestHistoryModule } from '../request-history/request-history.module';
+import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
+import { ArchivedRequestsComponent } from './archived-requests.component';
+import { ArchivedRequestsService } from './archived-requests.service';
 
 const routes: Routes = [
   {
@@ -64,10 +62,10 @@ const routes: Routes = [
     component: ArchivedRequestsComponent,
     canActivate: [RouteGuardService, RequestsFeatureGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.ArchivedRequest
-    }
-  }
+    data: {
+      contextId: HELP_CONTEXTUAL.ArchivedRequest,
+    },
+  },
 ];
 
 @NgModule({
@@ -89,54 +87,42 @@ const routes: Routes = [
     TranslateModule,
     RequestHistoryModule,
     HelpContextualModule,
-    InfoModalDialogModule
+    InfoModalDialogModule,
   ],
-  declarations: [
-    ArchivedRequestsComponent
-  ],
-  exports: [
-    ArchivedRequestsComponent
-  ],
-  providers: [
-    ArchivedRequestsService
-  ]
+  declarations: [ArchivedRequestsComponent],
+  exports: [ArchivedRequestsComponent],
+  providers: [ArchivedRequestsService],
 })
 export class ArchivedRequestsModule {
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ ArchivedRequestsModule loaded');
     this.setupMenu();
   }
 
   private async setupMenu(): Promise<void> {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      const items: MenuItem[] = [];
+      if (isShopAdmin(features)) {
+        items.push({
+          id: 'QER_Request_ArchivedRequest',
+          route: 'archivedrequest',
+          title: '#LDS#Menu Entry Archived requests',
+          sorting: '10-40',
+        });
+      }
 
-        const items: MenuItem[] = [];
-        if (isShopAdmin(features)) {
-          items.push(
-            {
-              id: 'QER_Request_ArchivedRequest',
-              route: 'archivedrequest',
-              title: '#LDS#Menu Entry Archived requests',
-              sorting: '10-40',
-            }
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Request',
-          title: '#LDS#Requests',
-          sorting: '10',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return;
+      }
+      return {
+        id: 'ROOT_Request',
+        title: '#LDS#Requests',
+        sorting: '10',
+        items,
+      };
+    });
   }
 }
-

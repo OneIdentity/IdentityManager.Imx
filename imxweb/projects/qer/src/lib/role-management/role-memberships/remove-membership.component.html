@@ -1,61 +1,79 @@
 <div eui-sidesheet-content>
-  <eui-alert *ngIf="data.nonDeletableMemberships.length > 0" class="imx-helper-alert" type="warning" [condensed]="true"
-    [colored]="true">
-    <p class="imx-nondeletable-hint">
-      {{'#LDS#You cannot unsubscribe the following memberships because you are neither their requestor nor recipient.' |
-      translate}}
-    </p>
-    <div class="imx-nondeletable-memberships">
-      <div *ngFor="let membership of data.nonDeletableMemberships" class="imx-nondeletable-memberships">
-        {{ membership?.GetEntity()?.columns.UID_Person.GetDisplayValue()}}
+  <eui-alert *ngIf="!!data.nonDeletableMemberships.length" type="warning" [condensed]="true" [colored]="true">
+    <eui-alert-header>
+      {{ '#LDS#You cannot unsubscribe the following memberships because you are neither their requestor nor recipient.' | translate }}
+    </eui-alert-header>
+    <eui-alert-content>
+      <div *ngFor="let membership of data.nonDeletableMemberships">
+        {{ membership?.GetEntity()?.GetColumn('UID_Person')?.GetDisplayValue() }}
       </div>
-    </div>
+    </eui-alert-content>
   </eui-alert>
 
   <form class="imx-form" [formGroup]="dynamicExclusionForm">
     <mat-card *ngIf="data.countDirect > 0">
-      <mat-checkbox [ngClass]="{'hideBox': !withCheckboxes}" formControlName="deleteDirect" data-imx-identifier="remove-membership-checkbox-direct">
-        {{'#LDS#Delete {0} direct assignments' | translate | ldsReplace:data.countDirect }}
+      <mat-checkbox
+        [ngClass]="{ hideBox: !withCheckboxes }"
+        formControlName="deleteDirect"
+        data-imx-identifier="remove-membership-checkbox-direct"
+      >
+        {{ '#LDS#Delete {0} direct assignments' | translate | ldsReplace: data.countDirect }}
       </mat-checkbox>
     </mat-card>
 
     <mat-card *ngIf="data.countRequested > 0">
-      <mat-checkbox [ngClass]="{'hideBox': !withCheckboxes}" formControlName="abortRequested" data-imx-identifier="remove-membership-checkbox-requested">
-        {{'#LDS#Unsubscribe {0} memberships' | translate | ldsReplace:data.countRequested}}
+      <mat-checkbox
+        [ngClass]="{ hideBox: !withCheckboxes }"
+        formControlName="abortRequested"
+        data-imx-identifier="remove-membership-checkbox-requested"
+      >
+        {{ '#LDS#Unsubscribe {0} memberships' | translate | ldsReplace: data.countRequested }}
       </mat-checkbox>
 
-      <div class="beneath-checkbox" *ngIf="formAbortRequested.value">
-        <mat-form-field appearance="outline">
-          <input matInput formControlName="descriptionRequests" data-imx-identifier="remove-membership-input-requested-reason">
+      <div class="imx-margin-left-30 imx-margin-top-5" *ngIf="formAbortRequested.value">
+        <mat-form-field class="imx-form-field-width-full" appearance="outline">
+          <input matInput formControlName="descriptionRequests" data-imx-identifier="remove-membership-input-requested-reason" />
           <mat-label translate>#LDS#Reason for unsubscribing the membership</mat-label>
         </mat-form-field>
       </div>
-
     </mat-card>
 
     <mat-card *ngIf="data.countDynamic > 0">
-
-      <mat-checkbox [ngClass]="{'hideBox': !withCheckboxes}" formControlName="excludeDynamic" data-imx-identifier="remove-membership-checkbox-dynamic">
-        {{'#LDS#Exclude {0} members assigned by a dynamic role' | translate | ldsReplace: data.countDynamic}}
+      <mat-checkbox
+        [ngClass]="{ hideBox: !withCheckboxes }"
+        formControlName="excludeDynamic"
+        data-imx-identifier="remove-membership-checkbox-dynamic"
+      >
+        {{ '#LDS#Exclude {0} members assigned by a dynamic role' | translate | ldsReplace: data.countDynamic }}
       </mat-checkbox>
 
-      <div class="beneath-checkbox" *ngIf="formExcludeDynamic.value">
-        <mat-form-field appearance="outline">
-          <input matInput formControlName="description" data-imx-identifier="remove-membership-input-dynamic-reason">
+      <div class="imx-margin-left-30 imx-margin-top-5" *ngIf="formExcludeDynamic.value">
+        <mat-form-field class="imx-form-field-width-full" appearance="outline">
+          <input matInput formControlName="description" data-imx-identifier="remove-membership-input-dynamic-reason" />
           <mat-label translate>#LDS#Reason for excluding the members</mat-label>
         </mat-form-field>
       </div>
     </mat-card>
   </form>
-
 </div>
 <div eui-sidesheet-actions>
-  <button mat-raised-button color="primary" (click)="cancel()" *ngIf="data.selectedEntities.length === 0"
-    data-imx-identifier="remove-membership-button-cancel">
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="cancel()"
+    *ngIf="data.selectedEntities.length === 0"
+    data-imx-identifier="remove-membership-button-cancel"
+  >
     <span translate>#LDS#Close</span>
   </button>
-  <button mat-stroked-button color="warn" *ngIf="data.selectedEntities.length > 0" [disabled]="noneSelected"
-    (click)="save()" data-imx-identifier="remove-membership-button-save">
+  <button
+    mat-stroked-button
+    color="warn"
+    *ngIf="!!data.selectedEntities.length"
+    [disabled]="noneSelected"
+    (click)="save()"
+    data-imx-identifier="remove-membership-button-save"
+  >
     <eui-icon icon="delete"></eui-icon>
     <span translate>#LDS#Remove memberships</span>
   </button>

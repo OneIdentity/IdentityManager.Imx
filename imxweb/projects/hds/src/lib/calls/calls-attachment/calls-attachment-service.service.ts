@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,20 @@
  */
 
 import { ErrorHandler, Injectable } from '@angular/core';
-import { HelpdeskConfig, StoredDirectoryInfo } from 'imx-api-hds';
-import { Subject } from 'rxjs';
+import { HelpdeskConfig, StoredDirectoryInfo } from '@imx-modules/imx-api-hds';
+import { TranslateService } from '@ngx-translate/core';
 import { HdsApiService } from '../../hds-api-client.service';
 import { CallsAttachmentNode, CallsAttachmentType } from './calls-attachment.model';
-import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CallsAttachmentServiceService {
-  constructor(private readonly hdsApiService: HdsApiService, private readonly errorHandler: ErrorHandler, private readonly translator: TranslateService) {}
+  constructor(
+    private readonly hdsApiService: HdsApiService,
+    private readonly errorHandler: ErrorHandler,
+    private readonly translator: TranslateService,
+  ) {}
 
   public async getInitialData(callId: string): Promise<CallsAttachmentNode> {
     let initalFormatData: CallsAttachmentNode = {
@@ -74,27 +77,26 @@ export class CallsAttachmentServiceService {
 
   public uploadFile(callId: string, path: string, file: Blob): Promise<void> {
     return this.hdsApiService.client.portal_calls_attachments_file_post(callId, path, file);
-
   }
 
   public formatData(obj: StoredDirectoryInfo, level: number, parent?: CallsAttachmentNode): CallsAttachmentNode[] {
     let formattedData: CallsAttachmentNode[] = [];
-    obj.Directories.map((item) => {
+    obj.Directories?.map((item) => {
       formattedData.push({
-        name: item.Name,
+        name: item.Name || '',
         children: [],
         type: CallsAttachmentType.folder,
-        path: !!parent && !!parent.path ? `${parent.path}/${item.Name}` : item.Name,
+        path: !!parent && !!parent.path ? `${parent.path}/${item.Name}` : item.Name || '',
         level: level,
         isSelected: false,
         parent: parent,
       });
     });
-    obj.Files.map((item) => {
+    obj.Files?.map((item) => {
       formattedData.push({
-        name: item.Name,
+        name: item.Name || '',
         type: CallsAttachmentType.file,
-        path: !!parent && !!parent.path ? `${parent.path}/${item.Name}` : item.Name,
+        path: !!parent && !!parent.path ? `${parent.path}/${item.Name}` : item.Name || '',
         level: level,
         isSelected: false,
         parent: parent,

@@ -1,86 +1,120 @@
-<div eui-sidesheet-content>
-  <mat-tab-group (selectedTabChange)="onSelectedTabChanged($event)">
-    <mat-tab [label]="'#LDS#Details' | translate" data-imx-identifier="itshop-pattern-sidesheet-tab-details">
-      <ng-template matTabContent>
-        <div class="imx-tab-content">
-          <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
-            {{ (data.canEditAndDelete ? editableDetailsInfoText : detailsInfoText) | translate}}
-          </eui-alert>
-          <mat-card>
-            <eui-badge *ngIf="!data.pattern.IsPublicPattern.value">
-              {{ '#LDS#Private product bundle' | translate}}
-            </eui-badge>
-            <eui-badge color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
-              {{'#LDS#Public product bundle' | translate}}
-            </eui-badge>
-            <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)">
-            </imx-cdr-editor>
-          </mat-card>
-        </div>
-      </ng-template>
-    </mat-tab>
-    <mat-tab [label]="'#LDS#Heading Products' | translate" data-imx-identifier="itshop-pattern-sidesheet-tab-products">
-      <ng-template matTabContent>
-        <div class="imx-tab-content">
-          <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
-            {{ (data.canEditAndDelete ? editableProductsInfoText : productsInfoText) | translate}}
-          </eui-alert>
-          <mat-card>
-            <div class="imx-table-container">
-              <imx-data-source-toolbar #dst [options]="['search']" [settings]="dstSettings" [busyService]="busyService"
-                (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
-                data-imx-identifier="itshop-pattern-sidesheet-dst">
-              </imx-data-source-toolbar>
-              <imx-data-table #dataTable [dst]="dst" class="imx-patterns-table" [detailViewVisible]="false"
-                mode="manual" [selectable]="data.canEditAndDelete" [showSelectedItemsMenu]="false"
-                (selectionChanged)="onSelectionChanged($event)"
-                (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
-                data-imx-identifier="itshop-pattern-sidesheet-datatable">
-                <imx-data-table-column [entityColumn]="dstWrapper?.propertyDisplay"
-                  data-imx-identifier="itshop-pattern-sidesheet-table-column-display">
-                </imx-data-table-column>
-              </imx-data-table>
-              <imx-data-source-paginator data-imx-identifier="itshop-pattern-paginator" [dst]="dst">
-              </imx-data-source-paginator>
-            </div>
-          </mat-card>
-        </div>
-      </ng-template>
-    </mat-tab>
-  </mat-tab-group>
-</div>
+<mat-tab-group mat-stretch-tabs="false" (selectedTabChange)="onSelectedTabChanged($event)">
+  <mat-tab [label]="'#LDS#Details' | translate" data-imx-identifier="itshop-pattern-sidesheet-tab-details">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <eui-alert type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+          {{ (data.canEditAndDelete ? editableDetailsInfoText : detailsInfoText) | translate }}
+        </eui-alert>
+        <mat-card>
+          <eui-badge class="imx-margin-bottom-20" *ngIf="!data.pattern.IsPublicPattern.value">
+            {{ '#LDS#Private product bundle' | translate }}
+          </eui-badge>
+          <eui-badge class="imx-margin-bottom-20" color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
+            {{ '#LDS#Public product bundle' | translate }}
+          </eui-badge>
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
+        </mat-card>
+      </div>
+    </ng-template>
+  </mat-tab>
+  <mat-tab [label]="'#LDS#Heading Products' | translate" data-imx-identifier="itshop-pattern-sidesheet-tab-products">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content class="imx-tab-content">
+        <eui-alert type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+          {{ (data.canEditAndDelete ? editableProductsInfoText : productsInfoText) | translate }}
+        </eui-alert>
+        <mat-card class="imx-card-fill">
+          <div class="imx-table-container">
+            <imx-data-source-toolbar
+              #dst
+              [options]="['search']"
+              [settings]="dstSettings"
+              [busyService]="busyService"
+              (search)="getData({ search: $event })"
+              (navigationStateChanged)="getData($event)"
+              data-imx-identifier="itshop-pattern-sidesheet-dst"
+            >
+            </imx-data-source-toolbar>
+            <imx-data-table
+              #dataTable
+              [dst]="dst"
+              class="imx-patterns-table"
+              [detailViewVisible]="false"
+              mode="manual"
+              [selectable]="data.canEditAndDelete"
+              [showSelectedItemsMenu]="false"
+              (selectionChanged)="onSelectionChanged($event)"
+              (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
+              data-imx-identifier="itshop-pattern-sidesheet-datatable"
+            >
+              <imx-data-table-column
+                [entityColumn]="dstWrapper?.propertyDisplay"
+                data-imx-identifier="itshop-pattern-sidesheet-table-column-display"
+              >
+              </imx-data-table-column>
+            </imx-data-table>
+            <imx-data-source-paginator data-imx-identifier="itshop-pattern-paginator" [dst]="dst"> </imx-data-source-paginator>
+          </div>
+        </mat-card>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
 <ng-container *ngIf="selectedTabIndex === 0; else productsActions">
   <div eui-sidesheet-actions>
-    <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-pattern" color="warn"
-      *ngIf="data.canEditAndDelete" (click)="delete()">
+    <button
+      mat-stroked-button
+      data-imx-identifier="itshop-pattern-sidesheet-button-delete-pattern"
+      color="warn"
+      *ngIf="data.canEditAndDelete"
+      (click)="delete()"
+    >
       <eui-icon icon="delete"></eui-icon>
       {{ '#LDS#Delete' | translate }}
     </button>
-    <button mat-stroked-button class="justify-start"
+    <button
+      mat-stroked-button
+      class="justify-start"
       data-imx-identifier="itshop-pattern-sidesheet-button-toggle-create-copy"
-      (click)="createPrivateCopy()">
-      {{'#LDS#Copy product bundle'| translate }}
+      (click)="createPrivateCopy()"
+    >
+      {{ '#LDS#Copy product bundle' | translate }}
     </button>
-    <button mat-raised-button data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
-      *ngIf="data.isMyPattern && data.adminMode" (click)="togglePublic()">
+    <button
+      mat-stroked-button
+      data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
+      *ngIf="data.isMyPattern && data.adminMode"
+      (click)="togglePublic()"
+    >
       {{ (data.pattern.IsPublicPattern.value ? '#LDS#Unshare' : '#LDS#Share') | translate }}
     </button>
-    <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
-      [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid" *ngIf="data.canEditAndDelete" (click)="save()">
+    <button
+      mat-flat-button
+      color="primary"
+      data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
+      [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid"
+      *ngIf="data.canEditAndDelete"
+      (click)="save()"
+    >
       {{ '#LDS#Save' | translate }}
     </button>
   </div>
 </ng-container>
 
 <ng-template #productsActions>
-  <div eui-sidesheet-actions  *ngIf="data.canEditAndDelete">
-    <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="warn"
-      class="justify-start" [disabled]="!selectedItemsCanBeDeleted()" (click)="deleteProducts()">
+  <div eui-sidesheet-actions *ngIf="data.canEditAndDelete">
+    <button
+      mat-stroked-button
+      data-imx-identifier="itshop-pattern-sidesheet-button-delete-products"
+      color="warn"
+      class="justify-start"
+      [disabled]="!selectedItemsCanBeDeleted()"
+      (click)="deleteProducts()"
+    >
       <eui-icon icon="delete"></eui-icon>
       {{ '#LDS#Remove' | translate }}
     </button>
-    <button mat-raised-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="primary"
-      (click)="addProducts()">
+    <button mat-flat-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="primary" (click)="addProducts()">
       {{ '#LDS#Add products' | translate }}
     </button>
   </div>

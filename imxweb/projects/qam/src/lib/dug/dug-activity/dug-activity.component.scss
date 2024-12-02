@@ -1,0 +1,9 @@
+
+@import 'base/mixins';
+:host{
+  @include flex-column-container-fill();
+  height: 100%
+}
+.imx-no-results .eui-icon {
+    font-size: 100px;
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,22 +28,29 @@ import { Component, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRules } from 'imx-api-cpl';
-import { CplPermissionsService } from './admin/cpl-permissions.service';
-import { ViewConfigData } from 'imx-api-qer';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
+import { PortalRules } from '@imx-modules/imx-api-cpl';
+import { ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
-  DataSourceToolbarFilter,
-  DataSourceToolbarSettings,
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
+  calculateSidesheetWidth,
   ClientPropertyForTableColumns,
   DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
   SystemInfoService,
-  BusyService,
 } from 'qbm';
 import { ViewConfigService } from 'qer';
+import { CplPermissionsService } from './admin/cpl-permissions.service';
 import { MitigatingControlsRulesService } from './mitigating-controls-rules/mitigating-controls-rules.service';
 import { RulesMitigatingControls } from './mitigating-controls-rules/rules-mitigating-controls';
-import { RuleParameter } from './rule-parameter';
 import { RulesSidesheetComponent } from './rules-sidesheet/rules-sidesheet.component';
 import { RulesService } from './rules.service';
 
@@ -51,20 +58,16 @@ import { RulesService } from './rules.service';
   selector: 'imx-rules',
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss'],
+  providers: [DataViewSource],
 })
 export class RulesComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public ruleSchema: EntitySchema;
   public isMControlPerViolation: boolean;
-
   public busyService = new BusyService();
-
+  public canRecalculate = false;
   private displayedColumns: ClientPropertyForTableColumns[] = [];
   private dataModel: DataModel;
-  private filterOptions: DataSourceToolbarFilter[] = [];
-  private navigationState: RuleParameter = {};
-  public canRecalculate = false;
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'rules';
 
@@ -75,7 +78,8 @@ export class RulesComponent implements OnInit {
     private readonly sideSheetService: EuiSidesheetService,
     private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService,
-    private readonly permissionService: CplPermissionsService
+    private readonly permissionService: CplPermissionsService,
+    public dataSource: DataViewSource<PortalRules>,
   ) {
     this.ruleSchema = rulesProvider.ruleSchema;
     this.displayedColumns = [
@@ -99,26 +103,15 @@ export class RulesComponent implements OnInit {
     const isBusy = this.busyService.beginBusy();
     try {
       this.dataModel = await this.rulesProvider.getDataModel();
-      this.filterOptions = this.dataModel.Filters;
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
       this.isMControlPerViolation = (await this.rulesProvider.featureConfig()).MitigatingControlsPerViolation;
-
-      // We will check the configs for default state only on init
-      if (!this.viewConfigService.isDefaultConfigSet()) {
-        // If we have no default settings, we have a default
-        const indexActive = this.filterOptions.findIndex((elem) => elem.Name === 'active');
-        if (indexActive > -1) {
-          this.filterOptions[indexActive].InitialValue = '1';
-          this.navigationState.active = '1';
-        }
-      }
 
       this.canRecalculate = await this.permissionService.isRuleStatistics();
 
       if (!this.canRecalculate) {
         this.displayedColumns.pop();
       }
-      await this.navigate({});
+      await this.getData();
     } finally {
       isBusy.endBusy();
     }
@@ -127,16 +120,17 @@ export class RulesComponent implements OnInit {
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
-  public async showDetails(selectedRule: PortalRules): Promise<void> {
+  public async showDetails(entity: PortalRules): Promise<void> {
+    const selectedRule = entity;
     this.rulesProvider.handleOpenLoader();
     let mControls: RulesMitigatingControls[];
     try {
@@ -145,14 +139,14 @@ export class RulesComponent implements OnInit {
       this.rulesProvider.handleCloseLoader();
     }
 
-    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes('RISKINDEX');
+    const hasRiskIndex = !!(await this.systemInfoService.get()).PreProps?.includes('RISKINDEX');
 
     await this.sideSheetService
       .open(RulesSidesheetComponent, {
         title: await this.translate.get('#LDS#Heading View Compliance Rule Details').toPromise(),
         subTitle: selectedRule.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(1200px, 80%)',
+        width: calculateSidesheetWidth(1200, 0.7),
         testId: 'rule-details-sidesheet',
         data: {
           selectedRule,
@@ -170,32 +164,25 @@ export class RulesComponent implements OnInit {
     this.rulesProvider.handleOpenLoader();
     try {
       await this.rulesProvider.recalculate(selectedRule.GetEntity().GetKeys().join(','));
-      await this.navigate(this.navigationState);
+      await this.dataSource.updateState();
     } finally {
       this.rulesProvider.handleCloseLoader();
     }
   }
 
-  public async navigate(parameter: CollectionLoadParameters): Promise<void> {
-    this.navigationState = { ...this.navigationState, ...parameter };
-
-    const isBusy = this.busyService.beginBusy();
-    try {
-      const data = await this.rulesProvider.getRules(this.navigationState);
-      const exportMethod = this.rulesProvider.exportRules(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
-        dataModel: this.dataModel,
-        entitySchema: this.ruleSchema,
-        navigationState: this.navigationState,
-        filters: this.filterOptions,
-        viewConfig: this.viewConfig,
-        exportMethod,
-      };
-    } finally {
-      isBusy.endBusy();
-    }
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<PortalRules> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalRules>> =>
+        this.rulesProvider.getRules(params, signal),
+      schema: this.ruleSchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      exportFunction: this.rulesProvider.exportRules(this.dataSource.state()),
+      viewConfig: this.viewConfig,
+      highlightEntity: (identity: PortalRules) => {
+        this.showDetails(identity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 }

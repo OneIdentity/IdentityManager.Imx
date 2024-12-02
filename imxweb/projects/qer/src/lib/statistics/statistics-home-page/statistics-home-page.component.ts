@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { DataSourceToolbarComponent, DataSourceToolbarSettings } from 'qbm';
+import { fromEvent, Subscription } from 'rxjs';
 import { StatisticsConstantsService } from './statistics-constants.service';
-import { StatisticsDataService, StatisticsToolbarSettings } from './statistics-data.service';
+import { GenericStatisticEntity, StatisticsDataService } from './statistics-data.service';
 @Component({
   selector: 'imx-statistics-home-page',
   templateUrl: './statistics-home-page.component.html',
-  styleUrls: ['./statistics-home-page.component.scss']
+  styleUrls: ['./statistics-home-page.component.scss'],
 })
 export class StatisticsHomePageComponent implements OnInit, OnDestroy {
   @ViewChild('allStatsDST') public allStatsDST: DataSourceToolbarComponent;
@@ -55,7 +55,7 @@ export class StatisticsHomePageComponent implements OnInit, OnDestroy {
     private dataService: StatisticsDataService,
     private loader: EuiLoadingService,
     private hostElement: ElementRef,
-    ) { }
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     // Subscribe to search clear
@@ -63,30 +63,28 @@ export class StatisticsHomePageComponent implements OnInit, OnDestroy {
       this.dataService.clearSearch$.subscribe(() => {
         this.allStatsDST.searchControl.setValue('');
         this.allStatsDST.searchTerms = [];
-      })
+      }),
     );
 
     // Subscribe to fav data
     this.subscriptions$.push(
-      this.dataService.favStats$.subscribe(favStats => {
+      this.dataService.favStats$.subscribe((favStats) => {
         this.myFavoritesSettings = {
           dataSource: {
             Data: favStats,
-            totalCount: favStats.length
+            totalCount: favStats.length,
           },
           entitySchema: this.dataService.getGenericSchema(),
           navigationState: {
             PageSize: 500,
-            StartIndex: 0
-          }
+            StartIndex: 0,
+          },
         };
-      })
-    )
+      }),
+    );
 
     // Subscribe to resize charts when window size changes
-    this.subscriptions$.push(
-      fromEvent(window, 'resize').subscribe(() => this.dataService.flushCharts())
-    );
+    this.subscriptions$.push(fromEvent(window, 'resize').subscribe(() => this.dataService.flushCharts()));
 
     this.loader.show();
     await this.setConstants();
@@ -97,8 +95,8 @@ export class StatisticsHomePageComponent implements OnInit, OnDestroy {
         entitySchema: this.dataService.getGenericSchema(),
         navigationState: {
           PageSize: 500,
-          StartIndex: 0
-        }
+          StartIndex: 0,
+        },
       };
     } finally {
       this.loader.hide();
@@ -106,7 +104,7 @@ export class StatisticsHomePageComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions$.forEach(sub => sub.unsubscribe());
+    this.subscriptions$.forEach((sub) => sub.unsubscribe());
   }
 
   public async setConstants(): Promise<void> {
@@ -114,28 +112,27 @@ export class StatisticsHomePageComponent implements OnInit, OnDestroy {
     await this.constantService.getAndStoreTranslatedText();
   }
 
-  public onAllStatsSettingsChanged(settings: StatisticsToolbarSettings): void {
-    const isSearch = settings.navigationState.search?.length > 0 || this.allStatsDST.searchTerms.length > 0;
-    const searchStats = isSearch ? settings.dataSource.Data : [];
+  public onAllStatsSettingsChanged(settings: DataSourceToolbarSettings): void {
+    const isSearch = !!settings.navigationState.search?.length || this.allStatsDST.searchTerms.length > 0;
+    const searchStats = isSearch ? settings.dataSource?.Data : [];
     // Close sidenav when searching
     if (isSearch) {
       this.dataService.observeSideNavExpanded(false);
     }
 
     this.dataService.isSearch$.next(isSearch);
-    this.dataService.observeSearch(searchStats);
+    this.dataService.observeSearch(searchStats as GenericStatisticEntity[]);
   }
 
-  public onMyFavoritesSettingsChanged(settings: StatisticsToolbarSettings): void {
-    const isSearch = settings.navigationState.search?.length > 0 || this.favStatsDST.searchTerms.length > 0;;
-    const searchStats = isSearch ? settings.dataSource.Data : [];
+  public onMyFavoritesSettingsChanged(settings: DataSourceToolbarSettings): void {
+    const isSearch = !!settings.navigationState.search?.length || this.favStatsDST.searchTerms.length > 0;
+    const searchStats = isSearch ? settings.dataSource?.Data : [];
     this.dataService.isFavSearch$.next(isSearch);
-    this.dataService.observeFavSearch(searchStats);
+    this.dataService.observeFavSearch(searchStats as GenericStatisticEntity[]);
   }
 
   public onTabChange(change: MatTabChangeEvent): void {
     this.tabIndex = change.index;
     this.dataService.flushCharts();
   }
-
 }

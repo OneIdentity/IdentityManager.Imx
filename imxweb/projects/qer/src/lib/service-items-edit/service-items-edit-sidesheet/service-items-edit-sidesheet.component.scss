@@ -3,60 +3,13 @@
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-
-  .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    padding: 0;
-
-    ::ng-deep .mat-tab-group {
-      height: 100%;
-      flex-grow: 1;
-      overflow: auto;
-
-      .mat-tab-header {
-        padding: 0 32px;
-      }
-
-      .mat-tab-body-wrapper {
-        height: 100%;
-
-        .mat-tab-body-content {
-          display: flex;
-          flex-direction: column;
-
-        }
-      }
-    }
-
-    .imx-tab-content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
-
-      .imx-tab-content-body {
-        flex: 1;
-        padding: 20px;
-        padding-top: 0;
-        overflow: auto;
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  }
 }
-imx-help-contextual{
+
+imx-help-contextual {
   justify-content: end;
 }
 
-.eui-sidesheet-actions {
-  button {
-    margin-right: 10px;
-  }
-
-  > *:not(:first-child) {
-    margin-left: 10px;
-  }
+imx-service-items-edit-form {
+  height: 100%;
+  overflow: hidden;
 }

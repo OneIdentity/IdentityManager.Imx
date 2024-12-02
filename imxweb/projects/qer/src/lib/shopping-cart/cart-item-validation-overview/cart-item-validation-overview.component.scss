@@ -1,14 +1,62 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/eui_palette.scss';
 
-.mat-list .mat-list-item .mat-line {
+.mat-mdc-list .mat-mdc-list-item .mat-line {
   word-wrap: break-word;
   white-space: normal;
+  height: inherit;
 }
 
-.imx-validation-errors {
-  color: $phoenix-red;
+.iconedList.mat-mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line {
+  height: inherit;
+  margin-bottom: 16px;
 }
 
-.imx-validation-warnings {
-  color: $corbin-orange;
+// Themeing
+
+.eui-light-theme {
+  :host {
+    .mdc-list-item--with-leading-icon .mdc-list-item__start.imx-validation-errors {
+      color: $color-red-60;
+    }
+
+    .mdc-list-item--with-leading-icon .mdc-list-item__start.imx-validation-warnings {
+      color: $color-orange-60;
+    }
+
+    .mdc-list-item--with-leading-icon .mdc-list-item__start {
+      color: $color-gray-100;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .mdc-list-item--with-leading-icon .mdc-list-item__start.imx-validation-errors {
+      color: $color-red-40;
+    }
+
+    .mdc-list-item--with-leading-icon .mdc-list-item__start.imx-validation-warnings {
+      color: $color-orange-40;
+    }
+
+    .mdc-list-item--with-leading-icon .mdc-list-item__start {
+      color: $color-gray-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .mdc-list-item--with-leading-icon .mdc-list-item__start.imx-validation-errors {
+      color: $color-red-40;
+    }
+
+    .mdc-list-item--with-leading-icon .mdc-list-item__start.imx-validation-warnings {
+      color: $color-orange-40;
+    }
+
+    .mdc-list-item--with-leading-icon .mdc-list-item__start {
+      color: $color-gray-0;
+    }
+  }
 }

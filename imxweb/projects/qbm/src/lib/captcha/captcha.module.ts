@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,21 +35,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CaptchaComponent } from './captcha.component';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        EuiCoreModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        TranslateModule
-    ],
-    declarations: [
-        CaptchaComponent
-    ],
-    exports: [
-        CaptchaComponent
-    ]
+  imports: [CommonModule, FormsModule, EuiCoreModule, MatButtonModule, MatFormFieldModule, MatInputModule, TranslateModule],
+  declarations: [CaptchaComponent],
+  exports: [CaptchaComponent],
 })
-export class CaptchaModule {
-}
+export class CaptchaModule {}

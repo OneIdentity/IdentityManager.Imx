@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { LossPreview } from '../loss-preview.interface';
 @Component({
   selector: 'imx-loss-preview-dialog',
   templateUrl: './loss-preview-dialog.component.html',
-  styleUrls: ['./loss-preview-dialog.component.scss']
+  styleUrls: ['./loss-preview-dialog.component.scss'],
 })
 export class LossPreviewDialogComponent implements OnInit {
   public lossPreview: LossPreview;
@@ -39,10 +39,9 @@ export class LossPreviewDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<LossPreviewDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public readonly data: LossPreview,
-  ) {
-  }
+  ) {}
   public ngOnInit(): void {
-      this.lossPreview = this.data;
+    this.lossPreview = this.data;
   }
 
   public onDeny(): void {

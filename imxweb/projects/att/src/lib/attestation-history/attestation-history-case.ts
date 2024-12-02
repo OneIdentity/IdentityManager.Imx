@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,23 @@
  *
  */
 
-import { AttCaseDataRead, AttestationCaseData, PortalAttestationCase } from 'imx-api-att';
-import { IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
-import { ParameterDataContainer, WorkflowDataWrapper } from 'qer';
+import { AttCaseDataRead, AttestationCaseData, PortalAttestationCase } from '@imx-modules/imx-api-att';
+import { IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
+import { ParameterDataContainer, WorkflowDataWrapper } from 'qer';
 import { AttestationCaseAction } from '../attestation-action/attestation-case-action.interface';
 
 export class AttestationHistoryCase extends PortalAttestationCase implements AttestationCaseAction {
-  public get attestationParameters(): IEntityColumn[] { return this.parameterDataContainer.columns; }
-  public get isPending(): boolean { return this.AttestationState.value !== 'approved' && this.AttestationState.value !== 'denied'; }
+  public get attestationParameters(): IEntityColumn[] {
+    return this.parameterDataContainer.columns;
+  }
+  public get isPending(): boolean {
+    return this.AttestationState.value !== 'approved' && this.AttestationState.value !== 'denied';
+  }
 
   public readonly propertyInfo: ColumnDependentReference[];
   public readonly key: string;
-  public readonly data: AttestationCaseData;
+  public readonly data: AttestationCaseData | undefined;
 
   public readonly canRecallDecision: boolean;
 
@@ -48,7 +52,7 @@ export class AttestationHistoryCase extends PortalAttestationCase implements Att
   constructor(
     private readonly baseObject: PortalAttestationCase,
     private readonly parameterDataContainer: ParameterDataContainer,
-    extendedCollectionData: { index: number } & AttCaseDataRead
+    extendedCollectionData: { index: number } & AttCaseDataRead,
   ) {
     super(baseObject.GetEntity());
 
@@ -66,13 +70,15 @@ export class AttestationHistoryCase extends PortalAttestationCase implements Att
       this.PropertyInfo4,
       this.ToSolveTill,
       this.RiskIndex,
-      this.UID_AttestationPolicy
-    ].filter(property => property.value != null && property.value !== '')
-      .map(property => new BaseCdr(property.Column, extendedCollectionData[property.Column.ColumnName]));
+      this.UID_AttestationPolicy,
+    ]
+      .filter((property) => property.value != null && property.value !== '')
+      .map((property) => new BaseCdr(property.Column, extendedCollectionData[property.Column.ColumnName]));
 
     this.data = extendedCollectionData.Data ? extendedCollectionData.Data[extendedCollectionData.index] : undefined;
 
     if (this.data) {
+      this.data.WorkflowSteps = extendedCollectionData.WorkflowSteps;
       this.workflowWrapper = new WorkflowDataWrapper(this.data);
       this.canRecallDecision = this.data.CanRecallDecision;
     }
@@ -87,4 +93,3 @@ export class AttestationHistoryCase extends PortalAttestationCase implements Att
     return this.workflowWrapper?.canRevokeDelegatedApprover(userUid, this.DecisionLevel.value);
   }
 }
-

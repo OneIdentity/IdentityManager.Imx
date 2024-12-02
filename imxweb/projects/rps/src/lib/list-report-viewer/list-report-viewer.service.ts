@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection, GroupInfoData } from 'imx-qbm-dbts';
-import { ListReportContentData, PortalReportData } from 'imx-api-rps';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection, GroupInfoData } from '@imx-modules/imx-qbm-dbts';
+import { ListReportContentData, PortalReportData } from '@imx-modules/imx-api-rps';
 import { RpsApiService } from '../rps-api-client.service';
 import { ListReportDataProvider } from './list-report-data-provider.interface';
 

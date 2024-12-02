@@ -1,12 +1,17 @@
 <div class="imx-top-container">
-  <h1 class="mat-headline">
+  <h2 class="mat-headline-5">
     <span translate>#LDS#Heading New Request</span>
     <span *ngIf="referenceUser || uidPersonPeerGroup"
       >&nbsp;-
       {{ (referenceUser ? '#LDS#Heading By Reference User' : '#LDS#Heading By Peer Group') | translate }}
     </span>
     <imx-help-contextual></imx-help-contextual>
-    <button [matMenuTriggerFor]="ToolbarButton1" mat-button class="imx-actions-button" data-imx-identifier="productselection-button-actions">
+    <button
+      [matMenuTriggerFor]="ToolbarButton1"
+      mat-button
+      class="imx-actions-button"
+      data-imx-identifier="productselection-button-actions"
+    >
       <eui-icon icon="ellipsisvertical"></eui-icon>
     </button>
     <mat-menu #ToolbarButton1="matMenu">
@@ -27,13 +32,18 @@
       <button mat-menu-item (click)="selectReferenceUser()" *ngIf="canSelectByRefUser">
         {{ '#LDS#Select a reference user' | translate }}
       </button>
-      <button mat-menu-item (click)="setPeerGroupPerson(recipients.value)" [disabled]="uidPersonPeerGroup" *ngIf="canSelectByRefUser && isSinglePersonRequest()">
+      <button
+        mat-menu-item
+        (click)="setPeerGroupPerson(recipients.value)"
+        [disabled]="uidPersonPeerGroup"
+        *ngIf="canSelectByRefUser && isSinglePersonRequest()"
+      >
         {{ '#LDS#Show products other identities requested' | translate }}
       </button>
     </mat-menu>
-  </h1>
+  </h2>
 
-  <!-- <eui-alert #infobox *ngIf="referenceUser || uidPersonPeerGroup" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" dismissable="true"  (dismissed)="infoboxVisible = false">
+  <!-- <eui-alert #infobox *ngIf="referenceUser || uidPersonPeerGroup" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true"  (dismissed)="infoboxVisible = false">
     <div class="imx-flex-alert">
       <div>
         <span #dummyText>
@@ -86,7 +96,13 @@
     (valueChange)="onRecipientsChanged()"
   ></imx-cdr-editor>
 
-  <eui-icon #infoIcon [style.visibility]="referenceUser || uidPersonPeerGroup ? 'visible' : 'hidden'" icon="info" class="imx-info-icon" [matTooltip]="infoboxTooltip"></eui-icon>
+  <eui-icon
+    #infoIcon
+    [style.visibility]="referenceUser || uidPersonPeerGroup ? 'visible' : 'hidden'"
+    icon="info"
+    class="imx-icon-info"
+    [matTooltip]="infoboxTooltip"
+  ></eui-icon>
 
   <imx-servicecategory-list
     class="imx-categories"
@@ -106,7 +122,7 @@
 <ng-container *ngTemplateOutlet="referenceUser || uidPersonPeerGroup ? reference_or_peer : normal_request"></ng-container>
 
 <ng-template #normal_request>
-  <mat-tab-group *ngIf="canSelectFromTemplate; else serviceItemList" (selectedTabChange)="onTableChange($event)">
+  <mat-tab-group mat-stretch-tabs="false" *ngIf="canSelectFromTemplate; else serviceItemList" (selectedTabChange)="onTableChange($event)">
     <mat-tab [label]="'#LDS#Heading Products' | translate">
       <div class="imx-tab-body-content">
         <ng-container *ngTemplateOutlet="serviceItemList"></ng-container>
@@ -131,7 +147,7 @@
 </ng-template>
 
 <ng-template #reference_or_peer>
-  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+  <mat-tab-group mat-stretch-tabs="false" (selectedTabChange)="onTabChange($event)">
     <mat-tab [label]="'#LDS#Heading Products' | translate">
       <div class="imx-tab-body-content">
         <ng-container *ngTemplateOutlet="serviceItemList"></ng-container>
@@ -174,7 +190,9 @@
 <ng-container>
   <div data-imx-identifier="productselection-div-buttonbar" class="imx-button-bar">
     <ng-container *ngIf="displayProducts; else selectedRolesDisplay">
-      <button mat-stroked-button (click)="onSelectall()" data-imx-identifier="productselection-select-all">{{ '#LDS#Select all on page' | translate }}</button>
+      <button mat-stroked-button (click)="onSelectall()" data-imx-identifier="productselection-select-all">
+        {{ '#LDS#Select all on page' | translate }}
+      </button>
       <button
         mat-stroked-button
         (click)="onDeselectAll()"
@@ -185,8 +203,15 @@
       </button>
     </ng-container>
     <ng-template #selectedRolesDisplay>
-      <button mat-stroked-button (click)="selectAllRolesOnPage()" data-imx-identifier="productselection-roles-select-all">{{ '#LDS#Select all on page' | translate }}</button>
-      <button mat-stroked-button (click)="deselectAllRoles()" data-imx-identifier="productselection-roles-deselect-all" [disabled]="!selectedRoles?.length">
+      <button mat-stroked-button (click)="selectAllRolesOnPage()" data-imx-identifier="productselection-roles-select-all">
+        {{ '#LDS#Select all on page' | translate }}
+      </button>
+      <button
+        mat-stroked-button
+        (click)="deselectAllRoles()"
+        data-imx-identifier="productselection-roles-deselect-all"
+        [disabled]="!selectedRoles?.length"
+      >
         {{ '#LDS#Deselect all' | translate }}
       </button>
     </ng-template>
@@ -197,7 +222,7 @@
 
     <button
       [disabled]="(!selectedItems?.length && !selectedTemplates?.length && !selectedRoles?.length) || !requesterSelected()"
-      mat-raised-button
+      mat-flat-button
       color="primary"
       (click)="onAddItemsToCart()"
       data-imx-identifier="productselection-button-add-to-cart"
@@ -222,19 +247,19 @@
         </VI_Roles_EntitlementDetective>
         -->
   </div>
-  <mat-dialog-actions align="end">
+  <mat-dialog-actions>
     <button mat-button mat-dialog-close>{{ '#LDS#Close' | translate }}</button>
   </mat-dialog-actions>
 </ng-template>
 
 <ng-template #CallAction12>
-  <h1 mat-dialog-title>{{ '#LDS#Select product bundle' | translate }}</h1>
+  <h2 mat-dialog-title>{{ '#LDS#Select product bundle' | translate }}</h2>
   <mat-dialog-content>
     <!-- TODO later
         <imx-itshop-patternselection></imx-itshop-patternselection>
         -->
   </mat-dialog-content>
-  <mat-dialog-actions align="end">
+  <mat-dialog-actions>
     <button mat-button mat-dialog-close>{{ '#LDS#Close' | translate }}</button>
   </mat-dialog-actions>
 </ng-template>

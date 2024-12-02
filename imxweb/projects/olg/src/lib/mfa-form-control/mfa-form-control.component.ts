@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,10 +27,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, forwardRef } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-import { ActivateFactorData, AuthFactor, VerifyPollingResult } from 'imx-api-olg';
+import { ActivateFactorData, AuthFactor, VerifyPollingResult } from '@imx-modules/imx-api-olg';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, BusyService, ColumnDependentReference, EntityService } from 'qbm';
 import { AuthenticationFactors } from 'qer';
-import { ValType } from 'imx-qbm-dbts';
 import { PortalMfaService } from '../mfa/portal-mfa.service';
 
 /**
@@ -66,7 +66,7 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
   public authFactorInfo: AuthFactorInfo[] = [];
 
   /** currently activated factor */
-  public activatedFactor: ActivateFactorData;
+  public activatedFactor: ActivateFactorData | undefined;
 
   /**
    * Gets whether the user is authenticated or not
@@ -82,7 +82,7 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
   public onTouch: (event: boolean) => void;
 
   /** The form control associated with this control */
-  public readonly formControl = new FormControl<boolean>(false);
+  public readonly formControl = new FormControl<boolean>(false, { nonNullable: true });
 
   /** The id of the object that is tested*/
   @Input() public itemId: string;
@@ -95,7 +95,10 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
 
   private ldsLoginFail: string = '#LDS#Authentication failed. Please try again.';
 
-  constructor(private readonly mfa: PortalMfaService, private readonly entityService: EntityService) {}
+  constructor(
+    private readonly mfa: PortalMfaService,
+    private readonly entityService: EntityService,
+  ) {}
 
   // ---------begin methods from value accessor-----------------
   /**
@@ -135,8 +138,8 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
    * @param factorName name of the factor to check
    * @returns true, if  one time password is used
    */
-  public isOTP(factorName: string): boolean {
-    return ['OneLogin Email', 'SMS'].includes(factorName);
+  public isOTP(factorName: string | undefined): boolean {
+    return factorName ? ['OneLogin Email', 'SMS'].includes(factorName) : false;
   }
 
   /**
@@ -144,7 +147,7 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
    * @param factorName name of the factor to check
    * @returns true, if the OneLogin protectopr app is used
    */
-  public isProtect(factorName: string): boolean {
+  public isProtect(factorName: string | undefined): boolean {
     return factorName === 'OneLogin';
   }
 
@@ -153,13 +156,13 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
    * @param factorName name of the factor to check
    * @returns true, if authenticator app is used
    */
-  public isAuthenticator(factorName: string): boolean {
+  public isAuthenticator(factorName: string | undefined): boolean {
     return factorName === 'Google Authenticator';
   }
 
   /** Checks, if a cdr is valid */
-  public isCDRValid(cdr: ColumnDependentReference): boolean {
-    return cdr.column.GetValue().length > 0;
+  public isCDRValid(cdr: ColumnDependentReference | undefined): boolean {
+    return cdr?.column.GetValue().length > 0;
   }
 
   /** Checks, if a factor is activated */
@@ -172,9 +175,9 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
 
   /** resets the state of an authenticator */
   public resetState(index: number): void {
-    this.authFactorInfo[index].authCdr.column.PutValue('');
+    this.authFactorInfo[index].authCdr?.column.PutValue('');
     this.authFactorInfo.forEach((elem) => (elem.showCdr = false));
-    this.activatedFactor = null;
+    this.activatedFactor = undefined;
   }
 
   /**
@@ -183,7 +186,11 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
    * @param deviceId the id for the device that should be used
    * @param index the number of the factor in the factor information array
    */
-  public async activateFactor(factorName: string, deviceId: string, index: number): Promise<void> {
+  public async activateFactor(factorName: string | undefined, deviceId: string | undefined, index: number): Promise<void> {
+    if (!deviceId) {
+      throw Error('This factor has an incorrect deviceId');
+      return;
+    }
     this.authFactorInfo[index].activating = true;
     try {
       this.authFactorInfo.forEach((elem) => {
@@ -207,11 +214,14 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
   public async verifyWithOTP(index: number): Promise<void> {
     this.authFactorInfo[index].loading = true;
     try {
-      const result = await this.mfa.verifyWithVerificationId(
-        this.itemId,
-        this.activatedFactor.id,
-        this.authFactorInfo[index].authCdr.column.GetValue()
-      );
+      const result =
+        this.activatedFactor && this.activatedFactor.id
+          ? await this.mfa.verifyWithVerificationId(
+              this.itemId,
+              this.activatedFactor.id,
+              this.authFactorInfo[index].authCdr?.column.GetValue(),
+            )
+          : null;
       if (result) {
         this.writeValue(true);
       } else {
@@ -230,12 +240,15 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
   public async verifyWithOTPAndDevice(index: number): Promise<void> {
     this.authFactorInfo[index].loading = true;
     try {
-      const result = await this.mfa.verifyWithVerificationId(
-        this.itemId,
-        this.activatedFactor.id,
-        this.authFactorInfo[index].authCdr.column.GetValue(),
-        this.activatedFactor.device_id
-      );
+      const result =
+        this.activatedFactor && this.activatedFactor.id
+          ? await this.mfa.verifyWithVerificationId(
+              this.itemId,
+              this.activatedFactor.id,
+              this.authFactorInfo[index].authCdr?.column.GetValue(),
+              this.activatedFactor.device_id,
+            )
+          : null;
       if (result) {
         this.writeValue(true);
       } else {
@@ -255,7 +268,8 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
     this.authFactorInfo[index].loading = true;
 
     try {
-      const pollResult = await this.mfa.verifyWithPolling(this.itemId, this.activatedFactor.id);
+      const pollResult =
+        this.activatedFactor && this.activatedFactor.id ? await this.mfa.verifyWithPolling(this.itemId, this.activatedFactor.id) : null;
       if (pollResult === VerifyPollingResult.Accepted) {
         this.writeValue(true);
       } else {
@@ -272,7 +286,7 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
    */
   private async initFacorInfo(): Promise<void> {
     const factors = await this.mfa.getFactors();
-    factors.Factors.forEach((factor) => {
+    factors?.Factors?.forEach((factor) => {
       this.authFactorInfo.push({
         factor,
         authCdr: new BaseCdr(
@@ -281,7 +295,7 @@ export class MfaFormControlComponent implements OnInit, ControlValueAccessor, Au
             Type: ValType.Text,
             MinLen: 1,
           }),
-          '#LDS#One-Time Password'
+          '#LDS#One-Time Password',
         ),
         showCdr: false,
         authMessage: '',

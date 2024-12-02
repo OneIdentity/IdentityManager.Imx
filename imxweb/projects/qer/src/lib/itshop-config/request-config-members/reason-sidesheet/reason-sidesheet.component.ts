@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,7 +32,7 @@ import { BaseCdr } from 'qbm';
 @Component({
   selector: 'imx-reason-sidesheet',
   templateUrl: './reason-sidesheet.component.html',
-  styleUrls: ['./reason-sidesheet.component.scss']
+  styleUrls: ['./reason-sidesheet.component.scss'],
 })
 export class ReasonSidesheetComponent {
   public readonly formGroup = new UntypedFormGroup({});
@@ -42,10 +42,10 @@ export class ReasonSidesheetComponent {
     @Inject(EUI_SIDESHEET_DATA)
     public readonly data: {
       actionParameters: {
-        justification: BaseCdr,
-        reason: BaseCdr
-      },
-    }
+        justification: BaseCdr;
+        reason: BaseCdr;
+      };
+    },
   ) {}
 
   /**
@@ -54,5 +54,4 @@ export class ReasonSidesheetComponent {
   public sendReason(): void {
     this.sidesheetRef.close(this.formGroup.getRawValue().reason);
   }
-
 }

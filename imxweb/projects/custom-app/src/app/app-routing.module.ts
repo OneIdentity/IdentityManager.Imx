@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { InjectionToken, NgModule } from '@angular/core';
-import { Routes, RouterModule, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterModule, Routes } from '@angular/router';
 import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
 import { StartComponent } from './start.component';
 
@@ -36,19 +36,19 @@ const routes: Routes = [
     path: '',
     component: LoginComponent,
     canActivate: [AuthenticationGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'start',
     component: StartComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
-  { path: '**', redirectTo: 'start' }
+  { path: '**', redirectTo: 'start' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
   providers: [
     {
@@ -58,9 +58,8 @@ const routes: Routes = [
         if (externalUrl && externalUrl.toLocaleLowerCase() !== 'undefined') {
           window.open(externalUrl, '_self');
         }
-      }
+      },
     },
   ],
 })
-
-export class AppRoutingModule { }
+export class AppRoutingModule {}

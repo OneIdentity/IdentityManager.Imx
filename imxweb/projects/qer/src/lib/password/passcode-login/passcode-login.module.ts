@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,10 +35,8 @@ import { MatInputModule } from '@angular/material/input';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthConfigProvider, AuthenticationService, CaptchaModule } from 'qbm';
-import { PasscodeLoginFlow } from './passcode-login-flow';
+import { CaptchaModule } from 'qbm';
 import { PasscodeLoginComponent } from './passcode-login.component';
-
 
 @NgModule({
   imports: [
@@ -52,21 +50,9 @@ import { PasscodeLoginComponent } from './passcode-login.component';
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    TranslateModule
+    TranslateModule,
   ],
-  declarations: [
-    PasscodeLoginComponent
-  ]
+  declarations: [PasscodeLoginComponent],
 })
 export class PasscodeLoginModule {
-
-  constructor(authService: AuthenticationService) {
-    const passCodeLoginProvider: AuthConfigProvider = {
-      display: '#LDS#Log in with passcode',
-      name: 'CustomPasscode',
-      authProps: [],
-      customAuthFlow: new PasscodeLoginFlow()
-    };
-    authService.registerAuthConfigProvider(passCodeLoginProvider);
-  }
 }

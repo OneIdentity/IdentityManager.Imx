@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,47 +25,49 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ClassloggerService, DataSourceToolbarExportMethod } from 'qbm';
 import {
-  CollectionLoadParameters,
-  TypedEntityCollectionData,
-  FilterType,
-  CompareOperator,
-  DataModelFilter,
-  EntitySchema,
-  FilterTreeData,
-  DataModel,
-  EntityCollectionData,
-  MethodDescriptor,
-  MethodDefinition
-} from 'imx-qbm-dbts';
-import {
+  EntityWriteDataBulk,
+  PortalRespUnsgroup,
+  PortalTargetsystemUnsDirectmembers,
   PortalTargetsystemUnsGroup,
   PortalTargetsystemUnsGroupServiceitem,
   PortalTargetsystemUnsGroupmembers,
-  EntityWriteDataBulk,
-  PortalTargetsystemUnsDirectmembers,
   PortalTargetsystemUnsNestedmembers,
-  PortalRespUnsgroup,
-  V2ApiClientMethodFactory
-} from 'imx-api-tsb';
-import { GroupsFilterTreeParameters, GetGroupsOptionalParameters } from './groups.models';
+  V2ApiClientMethodFactory,
+} from '@imx-modules/imx-api-tsb';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  DataModel,
+  DataModelFilter,
+  EntityCollectionData,
+  EntitySchema,
+  FilterData,
+  FilterTreeData,
+  FilterType,
+  MethodDefinition,
+  MethodDescriptor,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import { ClassloggerService, DataSourceToolbarExportMethod } from 'qbm';
+import { DbObjectKeyBase } from '../target-system/db-object-key-wrapper.interface';
+import { TargetSystemDynamicMethodService } from '../target-system/target-system-dynamic-method.service';
 import { TsbApiService } from '../tsb-api-client.service';
 import { GroupTypedEntity } from './group-typed-entity';
-import { TargetSystemDynamicMethodService } from '../target-system/target-system-dynamic-method.service';
-import { DbObjectKeyBase } from '../target-system/db-object-key-wrapper.interface';
+import { GetGroupsOptionalParameters, GroupsFilterTreeParameters } from './groups.models';
 
 @Injectable({ providedIn: 'root' })
 export class GroupsService {
   constructor(
     private readonly tsbClient: TsbApiService,
     private readonly logger: ClassloggerService,
-    private readonly dynamicMethod: TargetSystemDynamicMethodService
-  ) { }
+    private readonly dynamicMethod: TargetSystemDynamicMethodService,
+  ) {}
 
   public unsGroupsSchema(isAdmin: boolean): EntitySchema {
-    return isAdmin ? this.tsbClient.typedClient.PortalTargetsystemUnsGroup.GetSchema() :
-      this.tsbClient.typedClient.PortalRespUnsgroup.GetSchema();
+    return isAdmin
+      ? this.tsbClient.typedClient.PortalTargetsystemUnsGroup.GetSchema()
+      : this.tsbClient.typedClient.PortalRespUnsgroup.GetSchema();
   }
 
   public get UnsGroupMembersSchema(): EntitySchema {
@@ -84,8 +86,11 @@ export class GroupsService {
     return this.tsbClient.client.portal_targetsystem_uns_group_filtertree_get(options);
   }
 
-  public async getGroups(navigationState: GetGroupsOptionalParameters): Promise<TypedEntityCollectionData<PortalTargetsystemUnsGroup>> {
-    return this.tsbClient.typedClient.PortalTargetsystemUnsGroup.Get(navigationState);
+  public async getGroups(
+    navigationState: GetGroupsOptionalParameters,
+    signal: AbortSignal,
+  ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsGroup>> {
+    return this.tsbClient.typedClient.PortalTargetsystemUnsGroup.Get(navigationState, { signal });
   }
 
   public exportGroups(navigationState: GetGroupsOptionalParameters): DataSourceToolbarExportMethod {
@@ -94,17 +99,20 @@ export class GroupsService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_targetsystem_uns_group_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_targetsystem_uns_group_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_targetsystem_uns_group_get({...navigationState, withProperties})
+          method = factory.portal_targetsystem_uns_group_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
-  public async getGroupsResp(navigationState: GetGroupsOptionalParameters): Promise<TypedEntityCollectionData<PortalRespUnsgroup>> {
-    return this.tsbClient.typedClient.PortalRespUnsgroup.Get(navigationState);
+  public async getGroupsResp(
+    navigationState: GetGroupsOptionalParameters,
+    signal: AbortSignal,
+  ): Promise<TypedEntityCollectionData<PortalRespUnsgroup>> {
+    return this.tsbClient.typedClient.PortalRespUnsgroup.Get(navigationState, { signal });
   }
 
   public exportGroupsResp(navigationState: GetGroupsOptionalParameters): DataSourceToolbarExportMethod {
@@ -113,13 +121,13 @@ export class GroupsService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_resp_unsgroup_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_resp_unsgroup_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_resp_unsgroup_get({...navigationState, withProperties})
+          method = factory.portal_resp_unsgroup_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
   public async getGroupDetails(dbObjectKey: DbObjectKeyBase): Promise<GroupTypedEntity> {
@@ -131,14 +139,14 @@ export class GroupsService {
   }
 
   public async getGroupServiceItem(key: string): Promise<PortalTargetsystemUnsGroupServiceitem> {
-    const navigationState: CollectionLoadParameters = { filter: [] };
-    navigationState.filter.push({
+    const filter: FilterData[] = [];
+    filter.push({
       ColumnName: 'UID_AccProduct',
       Type: FilterType.Compare,
       CompareOp: CompareOperator.Equal,
       Value1: key,
     });
-    return (await this.tsbClient.typedClient.PortalTargetsystemUnsGroupServiceitem.Get(navigationState)).Data[0];
+    return (await this.tsbClient.typedClient.PortalTargetsystemUnsGroupServiceitem.Get({ filter })).Data[0];
   }
 
   public async bulkUpdateGroupServiceItems(updateData: EntityWriteDataBulk): Promise<void> {
@@ -147,20 +155,22 @@ export class GroupsService {
 
   public async getGroupDirectMembers(
     groupId: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
+    signal?: AbortSignal,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsDirectmembers>> {
     this.logger.debug(this, `Retrieving group direct memberships`);
     this.logger.trace('GroupId', groupId);
-    return this.tsbClient.typedClient.PortalTargetsystemUnsDirectmembers.Get(groupId, navigationState);
+    return this.tsbClient.typedClient.PortalTargetsystemUnsDirectmembers.Get(groupId, navigationState, { signal });
   }
 
   public async getGroupNestedMembers(
     groupId: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
+    signal?: AbortSignal,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsNestedmembers>> {
     this.logger.debug(this, `Retrieving group nested memberships`);
     this.logger.trace('GroupId', groupId);
-    return this.tsbClient.typedClient.PortalTargetsystemUnsNestedmembers.Get(groupId, navigationState);
+    return this.tsbClient.typedClient.PortalTargetsystemUnsNestedmembers.Get(groupId, navigationState, { signal });
   }
 
   public async deleteGroupMembers(dbObjectKey: DbObjectKeyBase, uidAccountList: string[]): Promise<any[]> {
@@ -171,20 +181,19 @@ export class GroupsService {
 
     const groupId = dbObjectKey.Keys[0];
 
-    return Promise.all(uidAccountList.map(accountId =>
-      this.dynamicMethod.delete(
-        dbObjectKey.TableName,
-        {
+    return Promise.all(
+      uidAccountList.map((accountId) =>
+        this.dynamicMethod.delete(dbObjectKey.TableName, {
           path: '{groupId}/memberships/{accountId}',
-          parameters: { groupId, accountId }
-        }
-      )
-    ));
+          parameters: { groupId, accountId },
+        }),
+      ),
+    );
   }
 
   public async getGroupsGroupMembers(
     groupId: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsGroupmembers>> {
     this.logger.debug(this, `Retrieving groups group memberships`);
     this.logger.trace('GroupId', groupId);
@@ -192,16 +201,19 @@ export class GroupsService {
   }
 
   public async getFilterOptions(forAdmin: boolean): Promise<DataModelFilter[]> {
-    return forAdmin ? (await this.tsbClient.client.portal_targetsystem_uns_group_datamodel_get(undefined)).Filters
+    const filters = forAdmin
+      ? (await this.tsbClient.client.portal_targetsystem_uns_group_datamodel_get(undefined)).Filters
       : (await this.tsbClient.client.portal_resp_unsgroup_datamodel_get(undefined)).Filters;
+    return filters ?? [];
   }
 
   public async getDataModel(forAdmin: boolean): Promise<DataModel> {
-    return forAdmin ? this.tsbClient.client.portal_targetsystem_uns_group_datamodel_get(undefined)
+    return forAdmin
+      ? this.tsbClient.client.portal_targetsystem_uns_group_datamodel_get(undefined)
       : this.tsbClient.client.portal_resp_unsgroup_datamodel_get(undefined);
   }
 
-  public async updateMultipleOwner(uidAccProducts: string[], uidPerson: { uidPerson?: string; uidRole?: string; }): Promise<string> {
+  public async updateMultipleOwner(uidAccProducts: string[], uidPerson: { uidPerson?: string; uidRole?: string }): Promise<string> {
     let confirmMessage = '#LDS#The product owner has been successfully assigned.';
     try {
       for (const data of uidAccProducts) {
@@ -212,8 +224,6 @@ export class GroupsService {
             CopyAllMembers: true,
           };
           confirmMessage = '#LDS#The product owner has been successfully assigned. It may take some time for the changes to take effect.';
-        } else {
-          product.extendedData = undefined;
         }
         if (uidPerson.uidRole) {
           product.UID_OrgRuler.value = uidPerson.uidRole;

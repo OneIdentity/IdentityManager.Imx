@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,18 @@
 
 import { fakeAsync, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 
-import { IValueMetadata } from 'imx-qbm-dbts';
-import { EntityColumnStub } from '../../testing/entity-column-stub.spec';
-import { clearStylesFromDOM } from '../../testing/clear-styles.spec';
-import { EditFkMultiComponent } from './edit-fk-multi.component';
-import { MultiValueService } from '../../multi-value/multi-value.service';
+import { IValueMetadata } from '@imx-modules/imx-qbm-dbts';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
-import { CdrModule } from '../cdr.module';
 import { QbmDefaultMocks } from '../../../default-mocks.spec';
+import { MultiValueService } from '../../multi-value/multi-value.service';
+import { clearStylesFromDOM } from '../../testing/clear-styles.spec';
+import { EntityColumnStub } from '../../testing/entity-column-stub.spec';
+import { CdrModule } from '../cdr.module';
+import { EditFkMultiComponent } from './edit-fk-multi.component';
 
 describe('EditFkMultiComponent', () => {
   let component: EditFkMultiComponent;
@@ -105,7 +105,7 @@ describe('EditFkMultiComponent', () => {
       valueStructs: [],
       expected: {
         value: undefined,
-        display: undefined,
+        display: '',
         controlValue: undefined,
       },
       canEdit: true,
@@ -114,7 +114,7 @@ describe('EditFkMultiComponent', () => {
       valueStructs: [],
       expected: {
         value: undefined,
-        display: undefined,
+        display: '',
         controlValue: undefined,
       },
       canEdit: false,
@@ -163,8 +163,8 @@ describe('EditFkMultiComponent', () => {
           expect(component.control.value).toEqual(start.display);
           expect(component.columnContainer.value).toEqual(start.value);
         }
-      })
-    )
+      }),
+    ),
   );
 
   for (const testcase of [
@@ -194,7 +194,7 @@ describe('EditFkMultiComponent', () => {
         } else {
           expect(component.control.errors).toBeNull();
         }
-      }
+      },
     );
   }
 });

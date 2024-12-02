@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,11 @@
  *
  */
 
-import { Component, Input, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input } from '@angular/core';
 
-import { ShapeData } from 'imx-api-qbm';
+import { ShapeData, ShapeProperty } from '@imx-modules/imx-api-qbm';
+import { EntityColumnData } from '@imx-modules/imx-qbm-dbts';
 import { ShapeClickArgs } from './hyperview-types';
-import { EntityColumnData } from 'imx-qbm-dbts';
 
 /**
  * A shape component that lists all {@link ShapeProperties|properties} of an object.
@@ -43,7 +43,21 @@ export class PropertyShapeComponent {
 
   @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
 
-  public GetPropertyDisplayValue(property: EntityColumnData): string {
-    return property.DisplayValue != null ? property.DisplayValue : property.Value;
+  public GetPropertyDisplayValue(property: EntityColumnData | undefined): string {
+    return property?.DisplayValue != null ? property.DisplayValue : property?.Value ?? '';
+  }
+
+  /**
+   * Emit selection event for this {@link ShapeProperty|element}.
+   * @param shape the element the user clicked
+   */
+  public onClick(shape: ShapeProperty): void {
+    if (this.isLinkEnabled() && !!shape.ObjectKey) {
+      this.selected.emit({ objectKey: shape.ObjectKey, caption: this.GetPropertyDisplayValue(shape.Value) });
+    }
+  }
+
+  public isLinkEnabled(): boolean {
+    return this.selected.observers.length > 0;
   }
 }

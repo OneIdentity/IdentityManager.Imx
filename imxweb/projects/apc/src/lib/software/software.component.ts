@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,14 +28,25 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 import {
   BusyService,
   DataSourceToolbarSettings,
+  DataViewInitParameters,
+  DataViewSource,
   HelpContextualValues,
   LdsReplacePipe,
   MetadataService,
   SideNavigationComponent,
+  calculateSidesheetWidth,
 } from 'qbm';
 import { SoftwareSidesheetComponent } from './software-sidesheet/software-sidesheet.component';
 import { SoftwareService } from './software.service';
@@ -43,6 +54,7 @@ import { SoftwareService } from './software.service';
 @Component({
   templateUrl: './software.component.html',
   styleUrls: ['./software.component.scss'],
+  providers: [DataViewSource],
 })
 export class SoftwareComponent implements OnInit, SideNavigationComponent {
   @Input() public contextId: HelpContextualValues;
@@ -64,6 +76,7 @@ export class SoftwareComponent implements OnInit, SideNavigationComponent {
     private readonly sidesheet: EuiSidesheetService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly translate: TranslateService,
+    public dataSource: DataViewSource,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -76,35 +89,31 @@ export class SoftwareComponent implements OnInit, SideNavigationComponent {
       isBusy.endBusy();
     }
 
-    this.tablenameDisplay = this.metadata.tables['Application'].Display;
+    this.tablenameDisplay = this.metadata.tables?.['Application']?.Display ?? '';
     this.displayColumns = [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
 
     if (this.entitySchema.Columns.Requestable) {
       this.displayColumns.splice(1, 0, this.entitySchema.Columns.Requestable);
     }
 
-    this.navigate();
-  }
-
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.navigationState = newState;
-    }
-    await this.navigate();
-  }
-
-  public async onSearch(keywords: string): Promise<void> {
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    await this.navigate();
+    const dataViewInitParameters: DataViewInitParameters<TypedEntity> = {
+      execute: (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<TypedEntity>> => this.resourceProvider.get(params),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayColumns,
+      dataModel: this.dataModel,
+      highlightEntity: (entity: TypedEntity) => {
+        this.showDetails(entity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public async showDetails(item: TypedEntity): Promise<void> {
     const sidesheetRef = this.sidesheet.open(SoftwareSidesheetComponent, {
       title: this.ldsReplace.transform(await this.translate.get('#LDS#Heading Edit {0}').toPromise(), this.tablenameDisplay),
-      headerColour: 'blue',
+      subTitle: item.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
       disableClose: true,
       testId: 'software-sidesheet',
       data: {
@@ -114,24 +123,8 @@ export class SoftwareComponent implements OnInit, SideNavigationComponent {
 
     sidesheetRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.navigate();
+        await this.dataSource.updateState();
       }
     });
-  }
-
-  private async navigate(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = {
-        dataSource: await this.resourceProvider.get(this.navigationState),
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-        filters: this.dataModel.Filters,
-        dataModel: this.dataModel,
-      };
-    } finally {
-      isBusy.endBusy();
-    }
   }
 }

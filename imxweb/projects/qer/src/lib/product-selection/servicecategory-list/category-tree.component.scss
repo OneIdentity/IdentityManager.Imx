@@ -3,11 +3,11 @@
 :host {
   display: flex;
   flex-direction: row;
-  overflow:auto;
+  overflow: auto;
   height: 100%;
 
   > imx-data-tree-wrapper {
     flex: 1 1 auto;
-    overflow:auto;
+    overflow: auto;
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Inject,OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FilterWizardSidesheetData } from '../filter-wizard.interfaces';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
@@ -34,10 +34,7 @@ import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
   styleUrls: ['./predefined-filter-tree.component.scss'],
 })
 export class PredefinedFilterTreeComponent implements OnInit {
-
   constructor(@Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData) {}
 
-  public async ngOnInit(): Promise<void> {
-  }
-
+  public async ngOnInit(): Promise<void> {}
 }

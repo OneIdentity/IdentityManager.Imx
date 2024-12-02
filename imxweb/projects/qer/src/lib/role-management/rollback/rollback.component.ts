@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,16 @@
  *
  */
 
-import { Component, OnInit, Inject, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { ColumnDependentReference, DataSourceToolbarComponent, DataSourceToolbarSettings, MetadataService, SnackBarService } from 'qbm';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { QerApiService } from '../../qer-api-client.service';
-import { UiActionData } from 'imx-api-qer';
-import { RollebackService } from './rollback.service';
+import { ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { UiActionData } from '@imx-modules/imx-api-qer';
+import { IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { ColumnDependentReference, DataSourceToolbarComponent, DataSourceToolbarSettings, MetadataService, SnackBarService } from 'qbm';
 import { ComparisonItem, RollbackItem } from './rollback-item';
 import { RollbackItemBuilder } from './rollback-item-builder';
-import { IClientProperty } from 'imx-qbm-dbts';
+import { RollebackService } from './rollback.service';
 
 @Component({
   templateUrl: './rollback.component.html',
@@ -48,7 +47,7 @@ export class RollbackComponent implements OnInit {
   public comparisonItems: ComparisonItem[] = [];
 
   public displayedColumns: IClientProperty[] = [];
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public ldsChangesQueued = '#LDS#The object has been successfully reset. It may take some time for the changes to take effect.';
   public dateCdr: ColumnDependentReference;
   public dateForm = new UntypedFormGroup({}, this.workaroundValidator());
@@ -71,7 +70,6 @@ export class RollbackComponent implements OnInit {
   private calculateActions = true;
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
-
   constructor(
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
@@ -83,7 +81,7 @@ export class RollbackComponent implements OnInit {
       tableName: string;
       uid: string;
     },
-    private readonly cdref: ChangeDetectorRef
+    private readonly cdref: ChangeDetectorRef,
   ) {
     this.dateCdr = this.rollbackService.createCdrDate();
     this.displayedColumns = [
@@ -100,7 +98,7 @@ export class RollbackComponent implements OnInit {
   public resetControls(): void {
     this.calculateActions = true;
     this.calculateCompareItems = true;
-    this.comparisonForm.get('helperInput').setValue(undefined);
+    this.comparisonForm.get('helperInput')?.setValue(undefined);
     this.comparisonItems = [];
     this.selected = [];
     this.dst?.clearSelection();
@@ -114,10 +112,10 @@ export class RollbackComponent implements OnInit {
     this.cdref.detectChanges();
   }
 
-  public selectionChanged(selection: RollbackItem[]): void {
-    this.selected = selection;
+  public selectionChanged(selection: TypedEntity[]): void {
+    this.selected = selection as RollbackItem[];
     this.calculateActions = true;
-    this.comparisonForm.get('helperInput').setValue(this.selected.length > 0 ? 'filled' : undefined);
+    this.comparisonForm.get('helperInput')?.setValue(this.selected.length > 0 ? 'filled' : undefined);
   }
 
   public async loadCompareItems(): Promise<void> {
@@ -176,7 +174,7 @@ export class RollbackComponent implements OnInit {
         {
           CompareDate: this.dateCdr.column.GetValue(),
           CompareId: this.selected.map((s) => s.Id.value).reduce((a, b) => a + ',' + b),
-        }
+        },
       );
       this.completed = true;
 
@@ -199,9 +197,9 @@ export class RollbackComponent implements OnInit {
   }
 
   private async enhanceWithTypeDisplay(obj: ComparisonItem[]): Promise<void> {
-    await this.metadata.updateNonExisting(obj.map((i) => i.TableName));
+    await this.metadata.updateNonExisting(obj.map((i) => i.TableName || ''));
     obj.forEach((element) => {
-      element.TypeDisplay = this.metadata.tables[element.TableName].DisplaySingular;
+      element.TypeDisplay = element.TableName == null ? '' : this.metadata.tables[element.TableName]?.DisplaySingular || '';
     });
   }
 
@@ -218,7 +216,7 @@ export class RollbackComponent implements OnInit {
         CompareDate: this.dateCdr.column.GetValue(),
         CompareId: this.selected.map((s) => s.Id.value).reduce((a, b) => a + ',' + b),
       });
-      this.uidActions = this.actions.filter((a) => a.CanExecute).map((a) => a.Id);
+      this.uidActions = this.actions.filter((a) => a.CanExecute).map((a) => a.Id || '');
     } finally {
       this.calculateActions = false;
       this.busyService.hide(overlay);

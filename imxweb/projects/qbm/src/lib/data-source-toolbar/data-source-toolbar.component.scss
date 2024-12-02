@@ -1,17 +1,18 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 .imx-data-source-toolbar-container {
   display: flex;
   flex-direction: column;
-  
+
   .imx-data-source-toolbar {
     display: flex;
-    overflow: hidden;
     justify-content: space-between;
 
     &.no-toolbar-options-visible {
       height: 0;
+      visibility: hidden;
     }
   }
 
@@ -34,10 +35,6 @@
 
   .imx-data-source-toolbar-search {
     width: 100%;
-
-    .eui-search {
-      width: 100%;
-    }
   }
 
   .imx-chip-container {
@@ -48,47 +45,23 @@
 
   .imx-data-source-selected-filters {
     display: block;
-    margin: 10px 5px;
+    margin: 10px 10px;
 
-    .mat-chip-list-wrapper > span {
-      margin-right: 5px;
-    }
-
-    .mat-chip {
+    .mat-mdc-chip {
       cursor: pointer;
-
-      .eui-icon {
-        &.remove {
-          font-size: 18px;
-          margin-right: -10px;
-        }
-      }
 
       span.tag-name {
         font-size: 13px;
         white-space: nowrap;
       }
-
-      &.isRegex {
-        background-color: $color-blue-60;
-
-        .eui-icon {
-          &.remove {
-            color: $color-gray-0;
-          }
-        }
-        span.tag-name {
-          color: $color-gray-0;
-        }
-      }
     }
   }
 }
 
-.mat-menu-panel {
-
+.mat-mdc-menu-panel {
   &.imx-sort-menu {
     max-width: 40vw;
+    padding: 12px;
 
     .imx-sort-options {
       max-height: 30vh;
@@ -102,13 +75,13 @@
       padding: 0 5px;
       gap: 5px;
     }
+
     .imx-sort-buttons {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
     }
   }
-
 
   &.imx-filters-menu {
     padding: 0 8px;
@@ -121,96 +94,44 @@
   }
 }
 
-
-
-.imx-filter-tree-dialog
-> .mat-dialog-container {
-  display: flex;
-  flex-direction: column;
+.imx-filter-tree-dialog>.mat-mdc-dialog-container {
+  @include flex-column-container();
 }
 
-.mat-menu-content {
+.mat-mdc-menu-content {
   max-width: none;
-  .imx-data-source-filter-menu {
-    margin: 2px 15px 20px;
 
-    p {
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .mat-checkbox {
-      display: block;
-    }
-
-    .mat-radio-button {
-      display: block;
-      margin-right: 5px;
-
-      label.mat-radio-label {
-        white-space: normal;
-      }
-    }
-
-    .mat-select .mat-select-trigger {
-      margin-top: 5px;
-    }
-
-    .mat-select .mat-select-value {
-      max-width: none;
-      white-space: normal;
-      .mat-select-value-text {
-        white-space: normal;
-      }
-    }
-
-    .mat-checkbox-layout {
-      white-space: normal;
-    }
-  }
-
-  .link-button {
-    color: $iris-blue;
-  }
-
-  .mat-menu-item:disabled > .link-button {
+  .mat-mdc-menu-item:disabled>.imx-info {
     color: inherit;
   }
 
-  button.mat-menu-item {
+  button.mat-mdc-menu-item {
     white-space: break-spaces;
     min-height: 48px;
     height: auto;
+
+    .mat-mdc-menu-item-text {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
   }
 }
 
 .dst-saved-config-menu {
   .dst-saved-config-menu-item {
-    display: flex;
-    justify-content: space-between;
+    .mdc-list-item__primary-text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
   }
 
   .dst-saved-config-menu-item-action-buttons {
     margin-left: 15px;
   }
-}
-
-.cdk-overlay-pane .mat-select-panel .mat-option {
-  line-height: normal;
-  height: 100%;
-
-  .mat-option-text {
-    white-space: normal;
-    margin: 5px 16px;
-  }
-}
-
-.imx-data-source-filter-select {
-  background-color: $asher-gray;
-}
-
-.imx-warning-icon {
-  color: $corbin-orange;
 }
 
 // Theming
@@ -220,42 +141,12 @@ imx-data-source-toolbar {
     border-radius: 5px;
   }
 
-  .mat-form-field-outline-thick {
-    opacity: 0.2;
-  }
-
   .eui-search-icon {
     color: $color-blue-60;
   }
 
   .imx-data-source-filter-select {
     background-color: $color-gray-10;
-  }
-
-  .imx-warning-icon {
-    color: $color-orange-60;
-  }
-
-  .imx-data-source-selected-filters {
-    .mat-chip {
-      .eui-icon.remove {
-        color: $color-gray-60;
-      }
-
-      span.tag-name {
-        color: $color-gray-80;
-      }
-    }
-  }
-}
-
-.mat-menu-content {
-  .link-button {
-    color: $color-blue-60;
-  }
-
-  .dst-saved-config-delete-button {
-    color: $color-red-60;
   }
 }
 
@@ -266,51 +157,12 @@ imx-data-source-toolbar {
       border-radius: 5px;
     }
 
-    .mat-form-field-outline-thick {
-      opacity: 0.2;
-    }
-
     .eui-search-icon {
       color: $color-blue-40;
     }
 
     .imx-data-source-filter-select {
       background-color: $color-gray-10;
-    }
-
-    .imx-warning-icon {
-      color: $color-orange-40;
-    }
-
-    .imx-data-source-selected-filters {
-      .mat-chip {
-        .eui-icon.remove {
-          opacity: unset;
-          color: $color-gray-0;
-        }
-        span.tag-name {
-          color: $color-gray-0;
-        }
-        &.isRegex {
-          background-color: $color-blue-40;
-
-          .eui-icon {
-            &.remove {
-              color: $color-gray-10;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .mat-menu-content {
-    .link-button {
-      color: $color-blue-40;
-    }
-
-    .dst-saved-config-delete-button {
-      color: $color-red-40;
     }
   }
 }
@@ -322,10 +174,6 @@ imx-data-source-toolbar {
       border-radius: 4px;
     }
 
-    .mat-form-field-outline-thick {
-      opacity: 0.2;
-    }
-
     .eui-search-icon {
       color: $color-blue-40;
     }
@@ -333,42 +181,13 @@ imx-data-source-toolbar {
     .imx-data-source-filter-select {
       background-color: $color-gray-10;
     }
-
-    .imx-warning-icon {
-      color: $color-orange-40;
-    }
-
-    .mat-menu-content {
-      .link-button {
-        color: $color-blue-40;
-      }
-
-      .dst-saved-config-delete-button {
-        color: $color-red-40;
-      }
-    }
-
-    .imx-data-source-selected-filters {
-      .mat-chip {
-        border: 1px solid $color-gray-0;
-
-        .eui-icon.remove {
-          opacity: unset;
-          color: $color-gray-0;
-        }
-        span.tag-name {
-          color: $color-gray-0;
-        }
-      }
-    }
   }
 }
-
 
 @media only screen and (max-width: 768px) {
   .imx-data-source-toolbar-container {
     .imx-data-source-toolbar-middle {
-      .eui-search.mat-form-field.mat-form-field-appearance-outline {
+      .eui-search.mat-mdc-form-field.mat-form-field-appearance-outline {
         min-width: unset;
       }
     }

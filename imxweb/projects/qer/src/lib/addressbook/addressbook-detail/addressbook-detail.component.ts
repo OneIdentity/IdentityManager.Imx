@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 
 import { AddressbookDetail } from './addressbook-detail.interface';
@@ -34,19 +34,18 @@ import { AddressbookDetail } from './addressbook-detail.interface';
 @Component({
   selector: 'imx-addressbook-detail',
   templateUrl: './addressbook-detail.component.html',
-  styleUrls: ['./addressbook-detail.component.scss']
 })
 export class AddressbookDetailComponent implements OnInit {
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly data: AddressbookDetail,
     private readonly qerConfig: ProjectConfigurationService,
     public readonly sidesheetRef: EuiSidesheetRef,
-    public readonly router: Router
-  ) { }
+    public readonly router: Router,
+  ) {}
 
   public isShowOrgChart: boolean;
 
   ngOnInit(): void {
-    this.qerConfig.getConfig().then(config => this.isShowOrgChart = config.PersonConfig.ShowOrgChart);
+    this.qerConfig.getConfig().then((config) => (this.isShowOrgChart = config.PersonConfig?.ShowOrgChart ?? false));
   }
 }

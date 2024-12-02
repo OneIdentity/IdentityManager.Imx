@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,25 +26,26 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalSubscription, PortalSubscriptionInteractive } from 'imx-api-rps';
-import { CollectionLoadParameters, EntitySchema, ExtendedEntityCollectionData, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalSubscription, PortalSubscriptionInteractive } from '@imx-modules/imx-api-rps';
+import {
+  CollectionLoadParameters,
+  EntitySchema,
+  ExtendedEntityCollectionData,
+  ExtendedTypedEntityCollection,
+} from '@imx-modules/imx-qbm-dbts';
 import { RpsApiService } from '../rps-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SubscriptionsService {
-
-  constructor(private readonly api: RpsApiService) {
-  }
+  constructor(private readonly api: RpsApiService) {}
 
   public get PortalSubscriptionSchema(): EntitySchema {
     return this.api.typedClient.PortalSubscription.GetSchema();
   }
 
-  public async getSubscriptions(parameters?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalSubscription, any>> {
-
+  public async getSubscriptions(parameters?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalSubscription, any>> {
     return this.api.typedClient.PortalSubscription.Get(parameters);
   }
 

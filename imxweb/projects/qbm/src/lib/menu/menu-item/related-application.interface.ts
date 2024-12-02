@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 /** Represents a link to an external web site that should be displayed in the menu. */
 export interface RelatedApplication {
-    displayType: 'NR' | 'PP' | 'NV' | 'NT';
-    uid: string;
-    displayName: string;
-    description: string;
-    uidParent: string;
+  displayType: 'NR' | 'PP' | 'NV' | 'NT';
+  uid: string;
+  displayName: string;
+  description: string;
+  uidParent: string;
 }

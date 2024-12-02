@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,56 +24,56 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { RouterModule, Routes } from '@angular/router';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import {
   BulkPropertyEditorModule,
+  BusyIndicatorModule,
   CdrModule,
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
+  DataViewModule,
   DateModule,
   EntityModule,
+  HelpContextualModule,
   LdsReplaceModule,
   MenuItem,
   MenuService,
-  BusyIndicatorModule,
   RouteGuardService,
   SelectedElementsModule,
-  HelpContextualModule,
-  HELP_CONTEXTUAL
 } from 'qbm';
 
-import { ApprovalsComponent } from './approvals.component';
-import { ApprovalsTableComponent } from './approvals-table.component';
-import { ApprovalsService } from './approvals.service';
-import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
-import { QueryPersonComponent } from './workflow-actions/query-person.component';
-import { WorkflowActionComponent } from './workflow-action/workflow-action.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ItshopModule } from '../itshop/itshop.module';
+import { JustificationModule } from '../justification/justification.module';
 import { RequestHistoryModule } from '../request-history/request-history.module';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
-import { JustificationModule } from '../justification/justification.module';
-import { WorkflowMultiActionComponent } from './workflow-action/workflow-multi-action/workflow-multi-action.component';
-import { WorkflowSingleActionComponent } from './workflow-action/workflow-single-action/workflow-single-action.component';
+import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
+import { ApprovalsTableComponent } from './approvals-table.component';
+import { ApprovalsComponent } from './approvals.component';
+import { ApprovalsService } from './approvals.service';
+import { InquiriesComponent } from './inquiries/inquiries.component';
 import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
 import { ApprovalHistoryComponent } from './workflow-action/approval-history/approval-history.component';
 import { HistoryFilterComponent } from './workflow-action/approval-history/history-filter/history-filter.component';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { InquiriesComponent } from './inquiries/inquiries.component'
+import { WorkflowActionComponent } from './workflow-action/workflow-action.component';
+import { WorkflowMultiActionComponent } from './workflow-action/workflow-multi-action/workflow-multi-action.component';
+import { WorkflowSingleActionComponent } from './workflow-action/workflow-single-action/workflow-single-action.component';
+import { QueryPersonComponent } from './workflow-actions/query-person.component';
 
 const routes: Routes = [
   {
     path: 'itshop/approvals',
     component: ApprovalsComponent,
     canActivate: [RouteGuardService, RequestsFeatureGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
 ];
 
@@ -89,7 +89,7 @@ const routes: Routes = [
     RecommendationSidesheetComponent,
     InquiriesComponent,
     ApprovalHistoryComponent,
-    HistoryFilterComponent
+    HistoryFilterComponent,
   ],
   imports: [
     BulkPropertyEditorModule,
@@ -114,52 +114,44 @@ const routes: Routes = [
     TranslateModule,
     SelectedElementsModule,
     HelpContextualModule,
+    DataViewModule,
   ],
-  providers: [
-    ApprovalsService
-  ],
-  exports: [
-    RecommendationSidesheetComponent
-  ]
+  providers: [ApprovalsService],
+  exports: [RecommendationSidesheetComponent, WorkflowActionComponent],
 })
 export class ApprovalsModule {
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ ApprovalsModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (preProps.includes('ITSHOP')) {
+        items.push({
+          id: 'QER_Request_PendingRequests',
+          navigationCommands: {
+            commands: ['itshop', 'approvals'],
+          },
+          title: '#LDS#Menu Entry Pending requests',
+          sorting: '10-30',
+        });
+      }
 
-        if (preProps.includes('ITSHOP')) {
-          items.push(
-            {
-              id: 'QER_Request_PendingRequests',
-              navigationCommands: {
-                commands: ['itshop', 'approvals']
-              },
-              title: '#LDS#Menu Entry Pending requests',
-              sorting: '10-30',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Request',
-          title: '#LDS#Requests',
-          sorting: '10',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return;
+      }
+      return {
+        id: 'ROOT_Request',
+        title: '#LDS#Requests',
+        sorting: '10',
+        items,
+      };
+    });
   }
 }

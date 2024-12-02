@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-export function isQERPolicyAdmin(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_QERPolicyAdmin') != null;
+export function isQERPolicyAdmin(features: string[] | undefined): boolean {
+  return features?.find((item) => item === 'Portal_UI_QERPolicyAdmin') != null;
 }
 
-export function isQERPolicyOwner(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_QERPolicyOwner') != null;
+export function isQERPolicyOwner(features: string[] | undefined): boolean {
+  return features?.find((item) => item === 'Portal_UI_QERPolicyOwner') != null;
 }

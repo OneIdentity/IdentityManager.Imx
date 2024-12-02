@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, Inject } from '@angular/core';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
-import { CollectionLoadParameters, EntityCollectionData, FilterTreeData, TypedEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, FilterTreeData, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { BusyService } from 'qbm';
 
 @Component({
@@ -44,7 +44,7 @@ export class MemberSelectorComponent {
       get: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>;
       GetFilterTree?: (parentKey: string) => Promise<FilterTreeData>;
       isMultiValue: boolean;
-    }
+    },
   ) {}
 
   public selectionChanged(items: TypedEntity[]): void {
@@ -55,10 +55,10 @@ export class MemberSelectorComponent {
     if (selected) {
       this.selectedItems = [selected];
     }
-    const selectedValues = [];
+    const selectedValues: string[] = [];
     this.selectedItems.forEach((typedEntity) => {
       const keys = typedEntity.GetEntity().GetKeys();
-      const val = keys?.length ? keys[0] : undefined;
+      const val = !!keys?.length ? keys[0] : '';
       selectedValues.push(val);
     });
     this.dialogRef.close(selectedValues);

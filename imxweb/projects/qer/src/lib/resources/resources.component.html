@@ -1,7 +1,7 @@
 <mat-card class="imx-data-tree-container">
-  <div class="data-explorer-card-header" >
-    <div class="data-explorer-card-header-bg">
-      <span>{{ tablenameDisplay }}</span>
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3>{{ tablenameDisplay }}</h3>
       <ng-container *ngIf="contextId">
         <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
       </ng-container>
@@ -11,33 +11,34 @@
 </mat-card>
 
 <ng-template #content>
-  <imx-data-source-toolbar
-    #dst
-    [busyService]="busyService"
-    data-imx-identifier="resources-data-source-toolbar"
-    [settings]="dstSettings"
-    [options]="['sort', 'search', 'filter', 'settings']"
-    [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
     (updateConfig)="updateConfig($event)"
     (deleteConfigById)="deleteConfigById($event)"
-  >
-  </imx-data-source-toolbar>
-  <imx-data-table #dataTable data-imx-identifier="resources-data-table" [dst]="dst"
-    detailViewVisible="false" mode="manual" (highlightedEntityChanged)="showDetails($event)">
-    <imx-data-table-column *ngIf="entitySchema"
-      [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-      <ng-template let-item>
+  ></imx-data-view-toolbar>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME" *ngIf="entitySchema">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
         <div>
           {{ item?.GetEntity()?.GetDisplay() }}
         </div>
-      </ng-template>
-    </imx-data-table-column>
-
-    <imx-data-table-column *ngIf="entitySchema && entitySchema.Columns.Requestable"
-      [entityColumn]="entitySchema.Columns.Requestable"> </imx-data-table-column>
-  </imx-data-table>
-  <imx-data-source-paginator data-imx-identifier="resources-paginator"
-    [dst]="dst"></imx-data-source-paginator>
+      </td>
+    </ng-container>
+    <ng-container *ngIf="entitySchema && entitySchema.Columns?.Requestable" [matColumnDef]="entitySchema?.Columns?.Requestable?.ColumnName">
+      <ng-container>
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.Requestable?.Display }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>
+          {{ item.Requestable.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </ng-template>

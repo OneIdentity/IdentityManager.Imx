@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,11 @@
  *
  */
 
-import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, IWriteValue, MultiValue, CompareOperator, FilterType, EntitySchema } from 'imx-qbm-dbts';
-import { PortalShopCategories } from 'imx-api-qer';
+import { PortalShopCategories } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, CompareOperator, EntitySchema, FilterType, IWriteValue, MultiValue } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService, SettingsService } from 'qbm';
 import { ProductSelectionService } from '../product-selection.service';
 import { ServicecategoryTreeDatabase } from './servicecategory-tree-database';
@@ -38,7 +37,7 @@ import { ServicecategoryTreeDatabase } from './servicecategory-tree-database';
 @Component({
   templateUrl: './servicecategory-list.component.html',
   styleUrls: ['./servicecategory-list.component.scss'],
-  selector: 'imx-servicecategory-list'
+  selector: 'imx-servicecategory-list',
 })
 export class ServiceCategoryListComponent implements OnInit, OnChanges {
   @Input() public selectedServiceCategory: PortalShopCategories;
@@ -61,7 +60,8 @@ export class ServiceCategoryListComponent implements OnInit, OnChanges {
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     settings: SettingsService,
-    private readonly productSelectionService: ProductSelectionService) {
+    private readonly productSelectionService: ProductSelectionService,
+  ) {
     this.treeDatabase = new ServicecategoryTreeDatabase(busyService, settings, productSelectionService);
     this.navigationState = { PageSize: 100000, StartIndex: 0, filter: [] };
     this.entitySchema = productSelectionService.entitySchemaShopCategories;
@@ -99,8 +99,8 @@ export class ServiceCategoryListComponent implements OnInit, OnChanges {
         ColumnName: 'UID_AccProductGroup',
         Type: FilterType.Compare,
         CompareOp: CompareOperator.Equal,
-        Value1: uid
-      }
+        Value1: uid,
+      },
     ];
     return (await this.getData(this.navigationState))?.[0];
   }
@@ -111,20 +111,21 @@ export class ServiceCategoryListComponent implements OnInit, OnChanges {
     const opts = {
       ...this.navigationState,
       UID_Person: recipients.length === 1 ? recipients[0] : undefined,
-      UID_AccProductGroupParent: this.selectedServiceCategory.UID_AccProductGroup.value
+      UID_AccProductGroupParent: this.selectedServiceCategory.UID_AccProductGroup.value,
     } as CollectionLoadParameters;
     return this.getData(opts);
   }
 
   private async getData(navigationState: CollectionLoadParameters): Promise<PortalShopCategories[]> {
     let childCategories: PortalShopCategories[];
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       this.logger.debug(this, `loading service-categories`);
       childCategories = (await this.productSelectionService.getServiceCategories(navigationState))?.Data;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
     return childCategories;
   }
@@ -135,10 +136,6 @@ export class ServiceCategoryListComponent implements OnInit, OnChanges {
 
     const children = await this.getChildren();
 
-    this.selectedServiceCategoryTree = [
-      ...(parent ? [parent] : []),
-      this.selectedServiceCategory,
-      ...(children ? children : [])
-    ];
+    this.selectedServiceCategoryTree = [...(parent ? [parent] : []), this.selectedServiceCategory, ...(children ? children : [])];
   }
 }

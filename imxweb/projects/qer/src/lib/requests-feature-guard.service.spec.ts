@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,28 +26,24 @@
 
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { QerApiService } from './qer-api-client.service';
 import { RequestsFeatureGuardService } from './requests-feature-guard.service';
+import { UserModelService } from './user/user-model.service';
 import { StartComponent } from './wport/start/start.component';
 
 describe('RequestsFeatureGuardService', () => {
   let service: RequestsFeatureGuardService;
 
-  const sessionServiceStub = {
-    client: {
-      portal_person_config_get: jasmine.createSpy('portal_person_config_get').and.returnValue(Promise.resolve([{}])),
-    }
-  };
+  const userModelServiceStub = {};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule.withRoutes([{ path: '', component: StartComponent }])],
       providers: [
         {
-          provide: QerApiService,
-          useValue: sessionServiceStub
-        }
-      ]
+          provide: UserModelService,
+          useValue: userModelServiceStub,
+        },
+      ],
     });
     service = TestBed.inject(RequestsFeatureGuardService);
   });

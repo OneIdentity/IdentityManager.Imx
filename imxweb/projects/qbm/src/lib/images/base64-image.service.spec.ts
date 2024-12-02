@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,11 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import * as TypeMoq from 'typemoq';
 
+import { IWriteValue } from '@imx-modules/imx-qbm-dbts';
 import { Base64ImageService } from './base64-image.service';
-import { IWriteValue } from 'imx-qbm-dbts';
 
 describe('Base64ImageService', () => {
-
-
   it('should be created', () => {
     const service: Base64ImageService = TestBed.get(Base64ImageService);
     expect(service).toBeTruthy();
@@ -42,30 +39,29 @@ describe('Base64ImageService', () => {
     { description: 'null image', image: null, expect: { hasImage: false, data: '' } },
     { description: 'empty image', image: '', expect: { hasImage: false, data: '' } },
     { description: 'image', image: '5642', expect: { hasImage: true, data: 'data:image/png;base64,5642' } },
-  ].forEach(testcase =>
+  ].forEach((testcase) =>
     it(`can handle an image with ${testcase.description}`, () => {
       // Arrange
       const service: Base64ImageService = TestBed.get(Base64ImageService);
-      const writeValueMock = TypeMoq.Mock.ofType<IWriteValue<string>>();
-      writeValueMock.setup(wm => wm.value).returns(() => testcase.image);
-
+      const writeValueMock = { value: testcase.image } as IWriteValue<string>;
 
       // Act & Assert
-      expect(service.getImageUrl(writeValueMock.object)).toBe(testcase.expect.data);
-    }));
-
+      expect(service.getImageUrl(writeValueMock)).toBe(testcase.expect.data);
+    }),
+  );
 
   [
     { description: 'null url', image: null, expect: '' },
     { description: 'empty url', image: '', expect: '' },
     { description: 'url', image: '5642', expect: '5642' },
     { description: 'url', image: 'data:image/png;base64,5642', expect: '5642' },
-  ].forEach(testcase =>
+  ].forEach((testcase) =>
     it(`can handle an url with ${testcase.description}`, () => {
       // Arrange
       const service: Base64ImageService = TestBed.get(Base64ImageService);
 
       // Act & Assert
       expect(service.getImageData(testcase.image)).toBe(testcase.expect);
-    }));
+    }),
+  );
 });

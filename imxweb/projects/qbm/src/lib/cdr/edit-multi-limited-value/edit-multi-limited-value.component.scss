@@ -1,11 +1,7 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   flex-grow: 1;
-}
-
-.mat-form-field {
-  width: 100%;
 }
 
 .imx-error-margin {
@@ -16,12 +12,6 @@
 .imx-multi-value-container {
   display: flex;
   flex-flow: column;
-}
-
-.imx-red-checkbox {
-  ::ng-deep .mat-checkbox-frame {
-    border-color: $phoenix-red;
-  }
 }
 
 .imx-suffix-container {

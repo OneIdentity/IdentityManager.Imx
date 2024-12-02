@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,27 +42,27 @@ const routes: Routes = [
         path: 'navigation',
         component: ApplicationNavigationComponent,
         canActivate: [RouteGuardService],
-        resolve: [RouteGuardService]
+        resolve: [RouteGuardService],
       },
       {
         path: 'detail',
         component: ApplicationDetailComponent,
         outlet: 'content',
         canActivate: [RouteGuardService],
-        resolve: [RouteGuardService]
+        resolve: [RouteGuardService],
       },
       {
         path: '',
         redirectTo: 'navigation',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
-  { path: ':create:id', redirectTo: 'applications', pathMatch: 'full' }
+  { path: ':create:id', redirectTo: 'applications', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class ApplicationsRoutingModule { }
+export class ApplicationsRoutingModule {}

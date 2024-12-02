@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -126,9 +126,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    DashboardPluginComponent
-  ],
+  declarations: [DashboardPluginComponent],
   imports: [
     CommonModule,
     TilesModule,
@@ -139,11 +137,13 @@ const routes: Routes = [
     MatListModule,
     TranslateModule,
     EuiCoreModule,
-  ]
+  ],
 })
 export class AttConfigModule {
   constructor(
-    private readonly initializer: InitService, private readonly logger: ClassloggerService) {
+    private readonly initializer: InitService,
+    private readonly logger: ClassloggerService,
+  ) {
     this.logger.info(this, '🔥 ATT loaded');
     this.initializer.onInit(routes);
     this.logger.info(this, '▶️ ATT initialized');

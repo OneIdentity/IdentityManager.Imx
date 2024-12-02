@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,15 @@
 
 import { Component, Input } from '@angular/core';
 
-import { IReadValue } from 'imx-qbm-dbts';
+import { IReadValue } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   selector: 'imx-peer-group',
   templateUrl: './peer-group.component.html',
-  styleUrls: ['./peer-group.component.scss']
+  styleUrls: ['./peer-group.component.scss'],
 })
 export class PeerGroupComponent {
-  @Input() public item: { CountInPeerGroup: IReadValue<number>; };
+  @Input() public item: { CountInPeerGroup: IReadValue<number> };
   @Input() public peerGroupSize: number;
   @Input() public width = '100%';
 

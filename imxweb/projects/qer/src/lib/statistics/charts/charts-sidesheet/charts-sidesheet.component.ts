@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,17 @@
  */
 
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { ChartDisplayType, ChartDto } from '@imx-modules/imx-api-qer';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { Chart, ChartOptions } from 'billboard.js';
-import { ChartDto, ChartInfoDto } from 'imx-api-qer';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { isBoolean } from 'lodash';
 import { CdrFactoryService, ColumnDependentReference, DataSourceToolbarSettings } from 'qbm';
-import { fromEvent, Subscription } from 'rxjs';
-import { PointStatTyped } from '../chart-tile/point-stat-visual/point-stat-typed';
+import { Subscription, fromEvent } from 'rxjs';
+import { ChartInfoTyped } from '../../statistics-home-page/chart-info-typed';
 import { StatisticsSidesheetResponse } from '../../statistics-home-page/statistics-cards-visuals/statistics-cards-visuals.component';
 import { ChartDataTyped } from '../chart-data-typed';
-import { isBoolean } from 'lodash';
-import { ChartInfoTyped } from '../../statistics-home-page/chart-info-typed';
+import { PointStatTyped } from '../chart-tile/point-stat-visual/point-stat-typed';
 
 @Component({
   selector: 'imx-charts-sidesheet',
@@ -47,8 +47,7 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
   public isLoading = true;
   public chart: Chart;
   public chartOptions: ChartOptions;
-  public cdrList: ColumnDependentReference[];
-  public readonly referrer: ChartInfoTyped;
+  public cdrList: (ColumnDependentReference | undefined)[];
 
   public dstSettings: DataSourceToolbarSettings;
 
@@ -70,13 +69,15 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
       isUserAdmin?: boolean;
     },
     private cdrService: CdrFactoryService,
-    private sidesheetRef: EuiSidesheetRef
-  ) {
-    this.referrer = data.chartInfo;
-  }
+    private sidesheetRef: EuiSidesheetRef,
+  ) {}
 
   public get isPoint(): boolean {
     return !!this.data?.pointStatStatus;
+  }
+
+  public get isTableType(): boolean {
+    return this.data?.chartInfo?.DisplayType?.value == ChartDisplayType.Table;
   }
 
   public get canToggle(): boolean {
@@ -88,21 +89,23 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
       this.subscriptions$.push(
         this.sidesheetRef.closeClicked().subscribe(() => {
           const response: StatisticsSidesheetResponse = {
-            isFavorite: this.data?.isFavorite,
-            isOrg: this.data?.isOrg,
+            isFavorite: this.data?.isFavorite as boolean,
+            isOrg: this.data?.isOrg as boolean,
           };
           this.sidesheetRef.close(response);
-        })
+        }),
       );
     }
 
     if (this.data?.pointStatStatus) {
       this.cdrList = this.cdrService.buildCdrFromColumnList(this.data.pointStatStatus.GetEntity(), ['Trend', 'Value', 'Description'], true);
+    } else {
+      this.cdrList = this.cdrService.buildCdrFromColumnList(this.data.chartInfo?.GetEntity(), ['Description'], true);
     }
 
     if (this.sidesheetRef?.componentInstance) {
       this.subscriptions$.push(
-        this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
+        this.sidesheetRef.componentInstance?.onOpen().subscribe(() => {
           if (this.chart) {
             this.chart.resize({
               height: this.chartWrapper.nativeElement.offsetHeight,
@@ -110,7 +113,7 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
             });
             this.isLoading = false;
           }
-        })
+        }),
       );
     }
 
@@ -122,12 +125,12 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
             width: this.chartWrapper.nativeElement.offsetWidth,
           });
         }
-      })
+      }),
     );
   }
 
   public get isZoomable(): boolean {
-    return this.data.chartOptions?.zoom?.enabled;
+    return !!this.data.chartOptions?.zoom?.enabled;
   }
 
   public get showChart(): boolean {
@@ -135,11 +138,11 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public get pointClass(): string {
-    return this.isPoint ? this.data.pointStatStatus.StatusClass.value : '';
+    return this.isPoint && this.data?.pointStatStatus?.StatusClass?.value ? this.data.pointStatStatus.StatusClass.value : '';
   }
 
   public get pointIcon(): string {
-    return this.isPoint ? this.data.pointStatStatus.StatusIconString.value : '';
+    return this.isPoint && this.data?.pointStatStatus?.StatusIconString?.value ? this.data.pointStatStatus.StatusIconString.value : '';
   }
 
   public ngOnDestroy(): void {

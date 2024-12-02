@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DataModelViewConfig } from 'imx-qbm-dbts';
+import { DataModelViewConfig } from '@imx-modules/imx-qbm-dbts';
 
 export interface DSTViewConfig extends DataModelViewConfig {
   /**
@@ -51,7 +51,7 @@ export interface DSTViewConfig extends DataModelViewConfig {
 
   /** Storage for arbitrary URL filter parameter values. */
   AdditionalParameters?: {
-      [key: string]: string;
+    [key: string]: string;
   };
 }
 
@@ -65,5 +65,4 @@ export interface DataSourceToolbarViewConfig {
    * The list of available configs
    */
   viewId: string;
-
 }

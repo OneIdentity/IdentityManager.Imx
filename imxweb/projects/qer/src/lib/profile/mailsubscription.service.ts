@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,18 +30,18 @@ import { QerApiService } from '../qer-api-client.service';
 
 @Injectable()
 export class MailSubscriptionService {
-  constructor(private readonly apiClient: QerApiService) { }
+  constructor(private readonly apiClient: QerApiService) {}
 
   public async getMailsThatCanBeUnsubscribed(uidPerson: string): Promise<MailInfoType[]> {
-    return (await this.GetMailInfo(uidPerson)).filter(mail => mail.AllowUnsubscribe);
+    return (await this.GetMailInfo(uidPerson)).filter((mail) => mail.AllowUnsubscribe);
   }
 
   public getMailsToUnsubscribe(mails: MailInfoType[], selected: string[]): MailInfoType[] {
-    return mails.filter(m => m.IsSubscribed && !selected.includes(m.UidMail));
+    return mails.filter((m) => m.IsSubscribed && !selected.includes(m.UidMail));
   }
 
   public getMailsToSubscribe(mails: MailInfoType[], selected: string[]): MailInfoType[] {
-    return mails.filter(m => !m.IsSubscribed && selected.includes(m.UidMail));
+    return mails.filter((m) => !m.IsSubscribed && selected.includes(m.UidMail));
   }
 
   public async unsubscribe(uidPerson: string, uidMail: string[]): Promise<void> {
@@ -53,31 +53,27 @@ export class MailSubscriptionService {
   }
 
   private async GetMailInfo(uidPerson: string): Promise<MailInfoType[]> {
-    return (await this.apiClient.typedClient.PortalPersonEmail.Get(uidPerson)).Data
-      .map(r => ({
-        Display: r.GetEntity().GetDisplay(),
-        Description: r.Description.Column.GetDisplayValue(),
-        UidMail: r.GetEntity().GetKeys()[0],
-        IsSubscribed: r.IsSubscribed.value,
-        AllowUnsubscribe: r.AllowUnsubscribe.value
-      }));
+    return (await this.apiClient.typedClient.PortalPersonEmail.Get(uidPerson)).Data.map((r) => ({
+      Display: r.GetEntity().GetDisplay(),
+      Description: r.Description.Column.GetDisplayValue(),
+      UidMail: r.GetEntity().GetKeys()[0],
+      IsSubscribed: r.IsSubscribed.value,
+      AllowUnsubscribe: r.AllowUnsubscribe.value,
+    }));
   }
 
   private async changeSubscription(uidPerson: string, uidMail: string[], unsubscribe: boolean): Promise<void> {
-    return this.apiClient.client.portal_person_email_post(
-      uidPerson,
-      {
-        UidMail: uidMail,
-        Unsubscribe: unsubscribe
-      }
-    );
+    return this.apiClient.client.portal_person_email_post(uidPerson, {
+      UidMail: uidMail,
+      Unsubscribe: unsubscribe,
+    });
   }
 }
 
 export type MailInfoType = {
-  UidMail: string,
-  Display: string,
-  Description: string,
-  IsSubscribed: boolean,
-  AllowUnsubscribe: boolean
+  UidMail: string;
+  Display: string;
+  Description: string;
+  IsSubscribed: boolean;
+  AllowUnsubscribe: boolean;
 };

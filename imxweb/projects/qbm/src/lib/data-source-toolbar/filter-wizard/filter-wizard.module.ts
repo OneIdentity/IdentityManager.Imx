@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,30 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { TranslateModule } from '@ngx-translate/core';
-import { ClassloggerModule } from '../../classlogger/classlogger.module';
-import { LdsReplaceModule } from '../../lds-replace/lds-replace.module';
-import { FilterWizardComponent } from './filter-wizard.component';
-import { SqlWizardModule } from '../../sqlwizard/sqlwizard.module';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
-import { PredefinedFilterComponent } from './predefined-filter/predefined-filter.component';
-import { PredefinedFilterTreeComponent } from './predefined-filter-tree/predefined-filter-tree.component';
-import { SidenavTreeModule } from '../../sidenav-tree/sidenav-tree.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { BusyIndicatorModule } from '../../busy-indicator/busy-indicator.module';
+import { ClassloggerModule } from '../../classlogger/classlogger.module';
+import { LdsReplaceModule } from '../../lds-replace/lds-replace.module';
+import { CustomTreeControlComponent } from '../../sidenav-tree/custom-tree-control.component';
+import { SqlWizardModule } from '../../sqlwizard/sqlwizard.module';
 import { DataSourceToolbarModule } from '../data-source-toolbar.module';
+import { FilterTreeSidesheetComponent } from './filter-tree-sidesheet/filter-tree-sidesheet.component';
+import { FilterWizardComponent } from './filter-wizard.component';
+import { PredefinedFilterTreeComponent } from './predefined-filter-tree/predefined-filter-tree.component';
+import { PredefinedFilterComponent } from './predefined-filter/predefined-filter.component';
 
 @NgModule({
-  declarations: [FilterWizardComponent, PredefinedFilterComponent, PredefinedFilterTreeComponent],
+  declarations: [FilterWizardComponent, PredefinedFilterComponent, PredefinedFilterTreeComponent, FilterTreeSidesheetComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -62,8 +64,9 @@ import { DataSourceToolbarModule } from '../data-source-toolbar.module';
     LdsReplaceModule,
     ClassloggerModule,
     SqlWizardModule,
-    SidenavTreeModule,
-    DataSourceToolbarModule
+    DataSourceToolbarModule,
+    BusyIndicatorModule,
+    CustomTreeControlComponent,
   ],
   exports: [FilterWizardComponent],
 })

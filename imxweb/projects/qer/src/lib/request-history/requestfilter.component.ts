@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, ViewChild, TemplateRef, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -32,19 +32,18 @@ import { imx_SessionService } from 'qbm';
 import { RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
 
 @Component({
-    templateUrl: './requestfilter.component.html',
-    selector: 'imx-request-filter',
-    styleUrls: ['./requestfilter.component.scss']
+  templateUrl: './requestfilter.component.html',
+  selector: 'imx-request-filter',
+  styleUrls: ['./requestfilter.component.scss'],
 })
 export class RequestFilterComponent implements OnInit {
+  @ViewChild('Call1') public tplCall1: TemplateRef<any>;
 
-    @ViewChild('Call1') public tplCall1: TemplateRef<any>;
+  @Input() public filter: RequestHistoryLoadParameters;
 
-    @Input() public filter: RequestHistoryLoadParameters;
+  public headLine: string;
 
-    public headLine: string;
-
-    /* TODO
+  /* TODO
     Column({"DataType":"System.String","Name":"UID_PersonApproved","ForeignKey",
        "DataSource":"ReadWriteData","DBColumnName":"\"UID_Person\"","DBTableName":"\"Person\"",
        "FKWhereClause":"sqlor(sqlcompareuid(\"uid_person\", getuseraudit()),
@@ -52,92 +51,96 @@ export class RequestFilterComponent implements OnInit {
                variable( IsNullOrEmpty( getconfig(\"VI_Employee_Person_Filter\"), \"1=1\")))))"});
     */
 
-
-
-    /* TODO
+  /* TODO
     DataEventHandler({"DataTable":"Vars","ScriptItemUID":"DataEventHandler1","Operation":"Update"}, () => {
     this.Search();
     DataEventHandlerColumn({"DataColumn":"UID_PersonAudit"});
     });
     */
 
-    @Input() public setuseraudit: string;
+  @Input() public setuseraudit: string;
 
-    public uidPersonAudit: string;
+  public uidPersonAudit: string;
 
-    @Input() public showaudit: boolean;
+  @Input() public showaudit: boolean;
 
-    @Input() public form = 'Requester';
+  @Input() public form = 'Requester';
 
-    constructor(private session: imx_SessionService, private translator: TranslateService, private dialogService: MatDialog) { }
+  constructor(
+    private session: imx_SessionService,
+    private translator: TranslateService,
+    private dialogService: MatDialog,
+  ) {}
 
-    public Button3(): void {
-        this.dialogService.open(this.tplCall1);
+  public Button3(): void {
+    this.dialogService.open(this.tplCall1);
+  }
+
+  public isManagerOfOthers(): boolean {
+    return true; // TODO exists("person", getconfig("VI_Employee_Person_Filter"))
+  }
+
+  public async ngOnInit(): Promise<void> {
+    this.SetInitial();
+
+    if (this.showaudit && !this.getuseraudit()) {
+      if (this.showfor('Requester')) {
+        this.headLine = await this.translator.get('#LDS#The page displays all requests.').toPromise();
+      } else if (this.showfor('Approver')) {
+        this.headLine = await this.translator.get('#LDS#The page displays all requests.').toPromise();
+      }
+    } else if (this.setuseraudit) {
+      if (this.showfor('Requester')) {
+        this.headLine = await this.translator.get('#LDS#This page displays all requests of the selected identity.').toPromise();
+      } else if (this.showfor('Approver')) {
+        this.headLine = await this.translator
+          .get(
+            '#LDS#The page displays all approvals of the selected identity where the selected identity was involved in the approval process.',
+          )
+          .toPromise();
+      }
+    } else if (!this.showaudit && !this.setuseraudit) {
+      if (this.showfor('Approver')) {
+        this.headLine = await this.translator.get('#LDS#This page shows the history of your approval decisions.').toPromise();
+      } else {
+        this.headLine = await this.translator.get('#LDS#This page shows the history of your requested products.').toPromise();
+      }
     }
+  }
 
-    public isManagerOfOthers(): boolean {
-        return true; // TODO exists("person", getconfig("VI_Employee_Person_Filter"))
+  public SetInitial(): void {
+    if (this.setuseraudit) {
+      this.uidPersonAudit = this.setuseraudit;
     }
+    this.filter = {};
+  }
 
-    public async ngOnInit(): Promise<void> {
-        this.SetInitial();
+  public Search(): void {
+    // TODO integrate
+  }
 
-        if (this.showaudit && !this.getuseraudit()) {
-            if (this.showfor('Requester')) {
-                this.headLine = await this.translator.get('#LDS#The page displays all requests.').toPromise();
-            } else if (this.showfor('Approver')) {
-                this.headLine = await this.translator.get('#LDS#The page displays all requests.').toPromise();
-            }
-        } else if (this.setuseraudit) {
-            if (this.showfor('Requester')) {
-                this.headLine = await this.translator.get('#LDS#This page displays all requests of the selected identity.').toPromise();
-            } else if (this.showfor('Approver')) {
-                this.headLine = await this.translator.get('#LDS#The page displays all approvals of the selected identity where the selected identity was involved in the approval process.').toPromise();
-            }
-        } else if (!this.showaudit && !this.setuseraudit) {
-            if (this.showfor('Approver')) {
-                this.headLine = await this.translator.get('#LDS#This page shows the history of your approval decisions.').toPromise();
-            } else {
-                this.headLine = await this.translator.get('#LDS#This page shows the history of your requested products.').toPromise();
-            }
-        }
+  public auditmode(): boolean {
+    return !!this.uidPersonAudit;
+  }
+
+  public getuseraudit(): string {
+    if (!this.uidPersonAudit && !this.showaudit) {
+      return this.session.SessionState.UserUid || '';
+    } else {
+      return this.uidPersonAudit;
     }
+  }
 
-    public SetInitial(): void {
-        if (this.setuseraudit) {
-            this.uidPersonAudit = this.setuseraudit;
-        }
-        this.filter = { };
-    }
+  public showfor(type: string): boolean {
+    return this.form === type;
+  }
 
-    public Search(): void {
+  public Button1(): void {
+    this.SetInitial();
+    this.Search();
+  }
 
-        // TODO integrate
-    }
-
-    public auditmode(): boolean {
-        return !!this.uidPersonAudit;
-    }
-
-    public getuseraudit(): string {
-        if (!this.uidPersonAudit && !this.showaudit) {
-            return this.session.SessionState.UserUid;
-        } else {
-            return this.uidPersonAudit;
-        }
-    }
-
-    public showfor(type: string): boolean {
-        return this.form === type;
-    }
-
-    public Button1(): void {
-        this.SetInitial();
-        this.Search();
-    }
-
-    public Button2(): void {
-        this.Search();
-    }
-
+  public Button2(): void {
+    this.Search();
+  }
 }

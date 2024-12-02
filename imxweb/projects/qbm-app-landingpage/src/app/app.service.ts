@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,25 @@
  */
 
 import { Injectable } from '@angular/core';
+import { TypedClient } from '@imx-modules/imx-api-qbm';
 import { TranslateService } from '@ngx-translate/core';
-import { TypedClient } from 'imx-api-qbm';
-import { AppConfigService, CdrRegistryService, ImxTranslationProviderService, ClassloggerService, imx_SessionService, AuthenticationService } from 'qbm';
+import {
+  AppConfigService,
+  AuthenticationService,
+  CaptchaService,
+  CdrRegistryService,
+  ClassloggerService,
+  ImxTranslationProviderService,
+  SystemInfoService,
+  imx_SessionService,
+} from 'qbm';
 import { environment } from '../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppService {
+  public recaptchaSiteKeyV3: string | null = null;
   constructor(
     private logger: ClassloggerService,
     private readonly config: AppConfigService,
@@ -41,21 +51,33 @@ export class AppService {
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
     public readonly registry: CdrRegistryService,
-    private readonly authentication: AuthenticationService
-  ) { }
+    private readonly authentication: AuthenticationService,
+    private readonly systemInfoService: SystemInfoService,
+    private readonly captchaService: CaptchaService,
+  ) {}
 
   public async init(): Promise<void> {
     await this.config.init(environment.clientUrl);
 
-    this.translateService.addLangs(this.config.Config.Translation.Langs);
-    const browserCulture = this.translateService.getBrowserCultureLang();
+    if (this.config.Config.Translation?.Langs) {
+      this.translateService.addLangs(this.config.Config.Translation.Langs);
+    }
+    const browserCulture = this.translateService.getBrowserCultureLang() as string;
     this.logger.debug(this, 'Set default language to', browserCulture);
     this.translateService.setDefaultLang(browserCulture);
     await this.translateService.use(browserCulture).toPromise();
 
-    this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
+    this.authentication.onSessionResponse.subscribe((sessionState) => this.translationProvider.init(sessionState?.culture));
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
+
+    const imxConfig = await this.systemInfoService.getImxConfig();
+
+    if (imxConfig.RecaptchaPublicKey) {
+      this.captchaService.enableReCaptcha(imxConfig.RecaptchaPublicKey);
+      this.recaptchaSiteKeyV3 = imxConfig.RecaptchaPublicKey;
+    }
+    this.captchaService.captchaImageUrl = 'admin/captchaimage';
   }
 
   public static init(app: AppService): () => Promise<any> {

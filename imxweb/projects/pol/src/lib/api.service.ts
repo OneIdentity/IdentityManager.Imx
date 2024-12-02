@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { Injectable } from '@angular/core';
 
-import { V2Client, TypedClient } from 'imx-api-pol';
-import { ApiClient } from 'imx-qbm-dbts';
+import { V2Client, TypedClient } from '@imx-modules/imx-api-pol';
+import { ApiClient } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, ImxTranslationProviderService } from 'qbm';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private tc: TypedClient;
@@ -51,7 +51,8 @@ export class ApiService {
   constructor(
     private readonly config: AppConfigService,
     private readonly logger: ClassloggerService,
-    private readonly translationProvider: ImxTranslationProviderService) {
+    private readonly translationProvider: ImxTranslationProviderService,
+  ) {
     try {
       this.logger.debug(this, 'Initializing POL API service');
 

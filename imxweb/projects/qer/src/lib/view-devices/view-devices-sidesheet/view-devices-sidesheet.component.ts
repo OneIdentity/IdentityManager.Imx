@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
-import { Component, Inject, OnDestroy } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
-import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from "@elemental-ui/core";
-import { PortalDevices } from "imx-api-qer";
-import { IEntity } from "imx-qbm-dbts";
-import { BaseCdr, ColumnDependentReference, ConfirmationService, SnackBarService } from "qbm";
-import { ViewDevicesService } from "../view-devices.service";
-import { Subscription } from "rxjs";
-import { OverlayRef } from "@angular/cdk/overlay";
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalDevices } from '@imx-modules/imx-api-qer';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
+import { Subscription } from 'rxjs';
+import { ViewDevicesService } from '../view-devices.service';
 
 @Component({
   selector: 'imx-view-devices-sidesheet',
   templateUrl: './view-devices-sidesheet.component.html',
-  styleUrls: ['./view-devices-sidesheet.component.scss']
+  styleUrls: ['./view-devices-sidesheet.component.scss'],
 })
 export class ViewDevicesSidesheetComponent implements OnDestroy {
   public readonly formGroup = new UntypedFormGroup({});
@@ -59,15 +58,17 @@ export class ViewDevicesSidesheetComponent implements OnDestroy {
 
     this.canEdit = data.device.UID_HardwareType.GetMetadata().CanEdit();
 
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (this.formGroup.pristine || await this.confirmation.confirmLeaveWithUnsavedChanges()) {
-        this.sidesheetRef.close();
-      }
-    }));
+    this.subscriptions.push(
+      this.sidesheetRef.closeClicked().subscribe(async () => {
+        if (this.formGroup.pristine || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
+          this.sidesheetRef.close();
+        }
+      }),
+    );
   }
 
   private createCdrList(entity: IEntity): BaseCdr[] {
-    const cdrList = [];
+    const cdrList: BaseCdr[] = [];
     const columnNames: string[] = this.data.deviceEntityConfig;
     columnNames?.forEach((name) => {
       try {
@@ -99,21 +100,24 @@ export class ViewDevicesSidesheetComponent implements OnDestroy {
         Message: '#LDS#Are you sure you want to delete the device?',
       })
     ) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.euiBusyService.show()));
+      if (this.euiBusyService.overlayRefs.length === 0) {
+        this.euiBusyService.show();
+      }
       let confirmMessage = '#LDS#The device has been successfully deleted.';
       try {
-        const uid = this.data.device.EntityKeysData.Keys[0];
-        await this.viewDevicesService.deleteDevice(uid);
+        const uid = this.data.device.EntityKeysData.Keys?.[0] ?? '';
+        if (uid != '') {
+          await this.viewDevicesService.deleteDevice(uid);
+        }
         this.sidesheetRef.close(true);
         this.snackbar.open({ key: confirmMessage });
       } finally {
-        setTimeout(() => this.euiBusyService.hide(overlayRef));
+        this.euiBusyService.hide();
       }
     }
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 }

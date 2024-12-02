@@ -1,0 +1,31 @@
+/* Elemental UI */
+
+/* Angular Material */
+mat-spinner {
+  margin: auto;
+  align-self: center;
+}
+
+/* Imx */
+.mat-mdc-progress-spinner.imx-spinner-inline {
+  display: inline-block;
+}
+
+.mat-mdc-progress-spinner.imx-spinner-inline-flex {
+  display: inline-flex;
+}
+
+.mat-mdc-progress-spinner.imx-sprinner-tile,
+.mat-mdc-progress-spinner.imx-sprinner-tile svg {
+  max-height: 40px;
+  max-width: 40px;
+}
+
+.imx-small-spinner {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

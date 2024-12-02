@@ -1,7 +1,4 @@
-.eui-sidesheet-content {
-  flex-direction: column;
-  display: flex;
-}
+@import 'base/mixins';
 
 .imx-text-container {
   overflow: auto;
@@ -9,13 +6,11 @@
   margin-bottom: 10px;
 }
 
-.mat-card{
-  display: flex;
-  flex-direction: column;
+.mat-mdc-card {
+  @include flex-column-container($max-height: 100%);
   flex: 1 1 auto;
-  max-height: 100%;
 
-  .mat-card-content{
-   overflow: auto; 
+  .mat-mdc-card-content {
+    overflow: auto;
   }
 }

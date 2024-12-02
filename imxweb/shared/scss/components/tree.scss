@@ -1,0 +1,117 @@
+/* Elemental UI */
+
+/* Angular Material */
+.mat-tree-node .mat-icon-button.mat-mdc-button-base {
+  flex: 0 0 40px;
+}
+
+.mat-tree {
+  flex-grow: 1;
+}
+
+/* Imx */
+
+.imx-snavigation-side-content {
+  flex: 1 1 auto;
+  mat-tree {
+    background-color: transparent !important;
+  }
+
+  .mat-tree-node {
+    border-radius: 4px;
+  }
+
+  /*
+   * This padding sets alignment of the nested nodes.
+   */
+  .tree .mat-nested-tree-node div[role='group'] {
+    margin-left: 20px;
+  }
+
+  .tree-item-button {
+    width: 100%;
+    padding: 0;
+    color: unset;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    .mdc-button__label {
+      width: 100%;
+    }
+  }
+  .tree-invisible {
+    display: none;
+  }
+}
+
+.imx-upper-case {
+  text-transform: uppercase;
+  align-items: center;
+}
+
+/* Dark theme */
+
+.eui-light-theme {
+  .mat-mdc-button.mat-primary.tree-item-button:not(.mat-tree-node--selected) {
+    color: unset;
+  }
+
+  .mat-tree-node--selected {
+    background-color: $color-gray-0;
+    border: 1px solid $color-blue-40;
+    color: $color-orange-60;
+  }
+
+  .imx-tree-control {
+    .imx-snavigation-side-content {
+      background-color: $color-blue-10;
+      border: 1px solid $color-blue-20;
+    }
+  }
+}
+
+.eui-dark-theme {
+  .mat-tree-node--selected {
+    background-color: $color-gray-80;
+    border: 1px solid $color-blue-40;
+    color: $color-orange-40;
+
+    .imx-tree-root {
+      color: $color-orange-40;
+    }
+  }
+
+  .imx-tree-control {
+    .imx-snavigation-side-content {
+      background-color: $color-blue-80;
+      border: 1px solid $color-blue-40;
+    }
+  }
+}
+
+/* High-contrast theme */
+
+.eui-contrast-theme {
+  .mat-tree-node--selected {
+    background-color: $color-gray-20;
+    border: 1px solid $color-blue-40;
+    color: $color-orange-80;
+  }
+  .imx-tree-root {
+    color: $color-gray-0;
+  }
+  .imx-tree-root--selected {
+    color: $color-orange-80;
+    .imx-icon-warning {
+      color: $color-orange-80;
+    }
+  }
+
+  .imx-tree-control {
+    .imx-snavigation-side-content {
+      background-color: $color-gray-100;
+      border: 1px solid $color-gray-0;
+    }
+  }
+}

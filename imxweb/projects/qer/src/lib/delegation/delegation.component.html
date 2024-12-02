@@ -1,13 +1,13 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline-5">
   <span>{{ '#LDS#Heading Create Delegation' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 
 <mat-card class="imx-delegation-stepper">
   <div>
     <imx-busy-indicator *ngIf="!initialized"></imx-busy-indicator>
     <ng-container *ngIf="initialized && isManager && !completed">
-      <mat-radio-group class="imx-type-selector" [(ngModel)]="withSubordinates" data-imx-identifier="withSubordinates" (change)="resetDelegation()">
+      <mat-radio-group [(ngModel)]="withSubordinates" data-imx-identifier="withSubordinates" (change)="resetDelegation()">
         <mat-radio-button [value]="false" data-imx-identifier="withSubordinates-false">
           {{ '#LDS#Create delegation for me' | translate }}
         </mat-radio-button>
@@ -16,7 +16,13 @@
         </mat-radio-button>
       </mat-radio-group>
     </ng-container>
-    <mat-stepper [ngClass]="{ hidden: completed }" orientation="vertical" #stepper [linear]="true" (selectionChange)="selectedStepChanged($event)">
+    <mat-stepper
+      [ngClass]="{ hidden: completed }"
+      orientation="vertical"
+      #stepper
+      [linear]="true"
+      (selectionChange)="selectedStepChanged($event)"
+    >
       <mat-step *ngIf="withSubordinates" data-imx-identifier="imx-delegation-step-0" [stepControl]="senderFormGroup">
         <ng-template matStepLabel>
           {{ '#LDS#Select the identity whose memberships and responsibilities you want to delegate' | translate }}
@@ -28,8 +34,14 @@
             (controlCreated)="addControl(senderFormGroup, cdrPersonSender.column.ColumnName, $event)"
           ></imx-cdr-editor>
         </div>
-        <div class="imx-step-button">
-          <button data-imx-identifier="imx-delegation-step-0-next" mat-stroked-button color="primary" matStepperNext [disabled]="senderFormGroup.invalid">
+        <div class="imx-button-stepper">
+          <button
+            data-imx-identifier="imx-delegation-step-0-next"
+            mat-stroked-button
+            color="primary"
+            matStepperNext
+            [disabled]="senderFormGroup?.invalid"
+          >
             {{ '#LDS#Next' | translate }}
           </button>
         </div>
@@ -46,19 +58,29 @@
           >
           </imx-cdr-editor>
         </div>
-        <div class="imx-step-button">
-          <button data-imx-identifier="imx-delegation-step-1-next" mat-stroked-button color="primary" matStepperNext [disabled]="recipientFormGroup.invalid">
+        <div class="imx-button-stepper">
+          <button
+            data-imx-identifier="imx-delegation-step-1-next"
+            mat-stroked-button
+            color="primary"
+            matStepperNext
+            [disabled]="recipientFormGroup?.invalid"
+          >
             {{ '#LDS#Next' | translate }}
           </button>
         </div>
       </mat-step>
 
-      <mat-step data-imx-identifier="imx-delegation-step-2" [stepControl]="delegationTypeForm">
+      <mat-step
+        data-imx-identifier="imx-delegation-step-2"
+        [stepControl]="delegationTypeForm"
+        *ngIf="canDelegateAll && canDelegateSelected"
+      >
         <ng-template matStepLabel>{{ '#LDS#Select the type of delegation' | translate }}</ng-template>
         <div class="imx-delegation-type">
           <mat-radio-group [(ngModel)]="isGlobalDelegation">
             <mat-radio-button [value]="true">
-              <span translate>#LDS#Delegate all memberships and responsibilities</span>
+              <span translate>#LDS#Delegate memberships and responsibilities grouped by topic</span>
             </mat-radio-button>
             <mat-radio-button [value]="false">
               <span translate>#LDS#Select individual memberships and responsibilities to delegate</span>
@@ -66,7 +88,7 @@
           </mat-radio-group>
         </div>
 
-        <div class="imx-step-button">
+        <div class="imx-button-stepper">
           <button data-imx-identifier="imx-delegation-step-2-back" mat-stroked-button matStepperPrevious>
             {{ '#LDS#Back' | translate }}
           </button>
@@ -90,7 +112,10 @@
                 </mat-checkbox>
               </p>
               <p>
-                <mat-checkbox [(ngModel)]="globalDelegation.UseForShopCompliance" data-imx-identifier="globaldelegation-Useforshopcompliance">
+                <mat-checkbox
+                  [(ngModel)]="globalDelegation.UseForShopCompliance"
+                  data-imx-identifier="globaldelegation-Useforshopcompliance"
+                >
                   {{ '#LDS#Delegate compliance violation approval decisions' | translate }}
                 </mat-checkbox>
               </p>
@@ -103,7 +128,7 @@
                     {{ '#LDS#Delegate manager responsibilities for one identity' | translate }}
                   </ng-container>
                   <ng-container *ngIf="countReports > 1">
-                    {{ '#LDS#Delegate manager responsibilities for {0} identities' | translate | ldsReplace : countReports }}
+                    {{ '#LDS#Delegate manager responsibilities for {0} identities' | translate | ldsReplace: countReports }}
                   </ng-container>
                 </mat-checkbox>
               </p>
@@ -112,7 +137,7 @@
                   {{ '#LDS#Delegate attestation approval decisions' | translate }}
                 </mat-checkbox>
               </p>
-              <ng-container *ngIf="roleClasses.length > 0">
+              <ng-container *ngIf="!!roleClasses.length">
                 <p class="imx-class-title">{{ '#LDS#Delegate responsibilities for roles of the following role classes' | translate }}:</p>
                 <p>
                   <mat-selection-list [(ngModel)]="globalDelegation.UidOrgRoot">
@@ -127,7 +152,7 @@
                         {{
                           (roleClass.CountRolesOwned.value > 1 ? '#LDS#Responsible for {0} roles' : '#LDS#Responsible for one role')
                             | translate
-                            | ldsReplace : roleClass.CountRolesOwned.value
+                            | ldsReplace: roleClass.CountRolesOwned.value
                         }}</span
                       >
                     </mat-list-option>
@@ -139,10 +164,10 @@
 
           <div class="imx-delegatable-elements" *ngIf="!isGlobalDelegation">
             <div class="imx-delegatable-elements">
-              <div class="imx-delegation-list">
+              <div class="imx-list-container">
                 <eui-search
                   *ngIf="!!delegateableItems?.length || navigationState.search"
-                  class="multi-select-formcontrol-eui-search"
+                  class="imx-multi-select"
                   data-imx-identifier="delegation-eui-search"
                   [placeholder]="'#LDS#Search' | translate"
                   [searchControl]="searchControl"
@@ -161,9 +186,11 @@
                       >
                         <div>
                           <span>{{ delegateable.TargetObjectKey.Column.GetDisplayValue() }}</span>
-                          <span *ngIf="delegateable.TargetType.value != 'Person'"> ({{ delegateable.TargetType.Column.GetDisplayValue() }})</span>
+                          <span *ngIf="delegateable.TargetType.value != 'Person'">
+                            ({{ delegateable.TargetType.Column.GetDisplayValue() }})</span
+                          >
                         </div>
-                        <div class="subtext">({{ delegateable.Criteria.Column.GetDisplayValue() }})</div>
+                        <div class="imx-list-option-subtitle">({{ delegateable.Criteria.Column.GetDisplayValue() }})</div>
                       </mat-list-option>
                     </mat-selection-list>
 
@@ -186,11 +213,15 @@
             </div>
           </div>
         </div>
-        <div class="imx-step-button">
-          <imx-selected-elements *ngIf="!isGlobalDelegation" [selectedElements]="selections" class="imx-margin-right-10"></imx-selected-elements>
+        <div class="imx-button-stepper">
+          <imx-selected-elements
+            *ngIf="!isGlobalDelegation"
+            [selectedElements]="selections"
+            class="imx-margin-right-10"
+          ></imx-selected-elements>
 
           <button
-            *ngIf="!isGlobalDelegation && delegateableItems?.length > 0"
+            *ngIf="!isGlobalDelegation && !!delegateableItems?.length"
             mat-stroked-button
             (click)="onSelectall()"
             data-imx-identifier="productselection-select-all"
@@ -199,7 +230,7 @@
             {{ '#LDS#Select all on page' | translate }}
           </button>
           <button
-            *ngIf="!isGlobalDelegation && delegateableItems?.length > 0"
+            *ngIf="!isGlobalDelegation && !!delegateableItems?.length"
             mat-stroked-button
             (click)="onDeselectAll()"
             data-imx-identifier="productselection-deselect-all"
@@ -222,7 +253,13 @@
         </div>
       </mat-step>
 
-      <mat-step data-imx-identifier="imx-delegation-step-4" [editable]="!completed" [completed]="completed" [state]="state" [stepControl]="delegationForm">
+      <mat-step
+        data-imx-identifier="imx-delegation-step-4"
+        [editable]="!completed"
+        [completed]="completed"
+        [state]="state"
+        [stepControl]="delegationForm"
+      >
         <ng-template matStepLabel>{{ '#LDS#Specify additional options' | translate }}</ng-template>
         <form [formGroup]="delegationForm" *ngIf="!completed">
           <div class="imx-additional-informations">
@@ -230,29 +267,32 @@
               [attr.data-imx-identifier]="'imx-delegation-step-4' + cdr.column.ColumnName"
               *ngFor="let cdr of cdrTimeSpan"
               [cdr]="cdr"
-              (controlCreated)="addControl(delegationForm, cdr.column.ColumnName, $event)"
+              (controlCreated)="addControl(delegationForm, cdr?.column?.ColumnName ?? '', $event)"
             >
             </imx-cdr-editor>
             <mat-error class="imx-small-error" *ngIf="delegationForm.errors?.validFromLargerThanUntil">
-              {{ '#LDS#The specified validity period is invalid. The validity end date is before the validity start date. Please change the validity period.' | translate }}
+              {{
+                '#LDS#The specified validity period is invalid. The validity end date is before the validity start date. Please change the validity period.'
+                  | translate
+              }}
             </mat-error>
             <ng-container *ngFor="let cdr of cdrList">
               <imx-cdr-editor
-                [attr.data-imx-identifier]="'imx-delegation-step-4' + cdr.column.ColumName"
+                [attr.data-imx-identifier]="'imx-delegation-step-4' + cdr.column.ColumnName"
                 *ngIf="isShowCdr(cdr)"
                 [cdr]="cdr"
-                (controlCreated)="addControl(delegationForm, cdr.column.ColumnName, $event)"
+                (controlCreated)="addControl(delegationForm, cdr?.column?.ColumnName ?? '', $event)"
               >
               </imx-cdr-editor>
             </ng-container>
           </div>
-          <div class="imx-step-button">
+          <div class="imx-button-stepper">
             <button data-imx-identifier="imx-delegation-step-4-back" mat-stroked-button matStepperPrevious [disabled]="isSaving">
               {{ '#LDS#Back' | translate }}
             </button>
             <button
               data-imx-identifier="imx-delegation-step-4-save"
-              mat-raised-button
+              mat-flat-button
               color="primary"
               matStepperNext
               (click)="saveDelegation()"
@@ -271,16 +311,21 @@
       class="imx-delegation-success"
       *ngIf="completed"
       type="info"
-      condensed="true"
+      [condensed]="true"
       [colored]="true"
       [dismissable]="false"
     >
-      <div class="imx-alert-content">
+      <div class="imx-alert-flex-column-end">
         <div class="imx-message imx-message-ok">
           {{ '#LDS#The delegation has been successfully created. It may take some time for the changes to take effect.' | translate }}
         </div>
-        <div class="imx-step-button-save">
-          <button data-imx-identifier="imx-delegation-result-new-delegation" mat-raised-button color="primary" (click)="resetDelegation(); stepper.reset()">
+        <div class="imx-button-stepper">
+          <button
+            data-imx-identifier="imx-delegation-result-new-delegation"
+            mat-flat-button
+            color="primary"
+            (click)="resetDelegation(); stepper.reset()"
+          >
             {{ '#LDS#Create another delegation' | translate }}
           </button>
         </div>
@@ -289,9 +334,22 @@
   </div>
 </mat-card>
 
+<div class="imx-button-bar-transparent">
+  <button mat-stroked-button routerLink="/requesthistory" [queryParams]="{ showDelegations: true }">
+    <eui-icon icon="forward" class="imx-margin-right-5"></eui-icon><span translate>#LDS#Show my delegations</span>
+  </button>
+</div>
+
 <ng-template #noDelegatableItems>
-  <div class="imx-no-delegatable-items">
+  <div class="imx-no-results">
     <eui-icon icon="table"></eui-icon>
-    <p>{{ '#LDS#There are no role memberships or responsibilities you can delegate.' | translate }}</p>
+    <p>
+      {{
+        (navigationState.search
+          ? '#LDS#There are no role memberships or responsibilities matching your search.'
+          : '#LDS#There are no role memberships or responsibilities you can delegate.'
+        ) | translate
+      }}
+    </p>
   </div>
 </ng-template>

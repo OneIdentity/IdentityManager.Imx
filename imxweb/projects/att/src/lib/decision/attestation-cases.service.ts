@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,20 +28,6 @@ import { Injectable } from '@angular/core';
 import { EuiDownloadOptions } from '@elemental-ui/core';
 
 import {
-  CollectionLoadParameters,
-  EntityCollectionData,
-  GroupInfoData,
-  DataModel,
-  MethodDefinition,
-  TypedEntity,
-  TypedEntityBuilder,
-  TypedEntityCollectionData,
-  EntitySchema,
-  IReadValue,
-  FilterTreeData,
-  MethodDescriptor,
-} from 'imx-qbm-dbts';
-import {
   ApiClientMethodFactory,
   AttestationCaseData,
   DecisionInput,
@@ -54,14 +40,29 @@ import {
   PwoQueryInput,
   ReasonInput,
   V2ApiClientMethodFactory,
-} from 'imx-api-att';
+} from '@imx-modules/imx-api-att';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  FilterTreeData,
+  GroupInfoData,
+  IReadValue,
+  MethodDefinition,
+  MethodDescriptor,
+  TypedEntity,
+  TypedEntityBuilder,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import { AppConfigService, DataSourceToolbarExportMethod, ElementalUiConfigService } from 'qbm';
+import { ApproverContainer, ParameterDataLoadParameters, ParameterDataService } from 'qer';
 import { ApiService } from '../api.service';
-import { AttestationCase } from './attestation-case';
-import { ParameterDataService, ParameterDataLoadParameters, ApproverContainer } from 'qer';
-import { AppConfigService, DataSourceToolbarExportMethod, ElementalUiConfigService, ParameterizedTextComponent } from 'qbm';
-import { AttestationDecisionLoadParameters } from './attestation-decision-load-parameters';
-import { Approvers } from './approvers.interface';
 import { AttestationCaseLoadParameters } from '../attestation-history/attestation-case-load-parameters.interface';
+import { AttestationHistoryCase } from '../attestation-history/attestation-history-case';
+import { Approvers } from './approvers.interface';
+import { AttestationCase } from './attestation-case';
+import { AttestationDecisionLoadParameters } from './attestation-decision-load-parameters';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +76,7 @@ export class AttestationCasesService {
     private readonly attClient: ApiService,
     private readonly parameterDataService: ParameterDataService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
-    private readonly config: AppConfigService
+    private readonly config: AppConfigService,
   ) {}
 
   public get attestationApproveSchema(): EntitySchema {
@@ -86,11 +87,18 @@ export class AttestationCasesService {
     return this.attClient.typedClient.PortalAttestationCase.GetSchema();
   }
 
-  public async get(attDecisionParameters?: AttestationDecisionLoadParameters, isUserEscalationApprover= false): Promise<TypedEntityCollectionData<AttestationCase>> {
+  public async get(
+    attDecisionParameters?: AttestationDecisionLoadParameters,
+    isUserEscalationApprover = false,
+    signal?: AbortSignal,
+  ): Promise<TypedEntityCollectionData<AttestationCase>> {
+    const navigationState = {
+      ...attDecisionParameters,
+      Escalation:
+        ((attDecisionParameters?.uid_attestationcase ?? '') !== '' && isUserEscalationApprover) || attDecisionParameters?.Escalation,
+    };
 
-    const navigationState = { ...attDecisionParameters, Escalation: (attDecisionParameters.uid_attestationcase !== '' && isUserEscalationApprover) || attDecisionParameters.Escalation  };
-   
-    const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(navigationState);
+    const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(navigationState, { signal });
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
@@ -99,7 +107,7 @@ export class AttestationCasesService {
           item.GetEntity(),
           { ...collection.extendedData, ...{ index } },
           (parameters) => this.getParameterCandidates(parameters),
-          (treefilterparameter) => this.getFilterTree(treefilterparameter)
+          (treefilterparameter) => this.getFilterTree(treefilterparameter),
         );
 
         return new AttestationCase(item, this.isChiefApproval, parameterDataContainer, { ...collection.extendedData, ...{ index } });
@@ -113,13 +121,13 @@ export class AttestationCasesService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_attestation_approve_get({...attDecisionParameters, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_attestation_approve_get({ ...attDecisionParameters, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_attestation_approve_get({...attDecisionParameters, withProperties})
+          method = factory.portal_attestation_approve_get({ ...attDecisionParameters, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
   public async getNumberOfPending(parameters: AttestationCaseLoadParameters): Promise<number> {
@@ -141,31 +149,41 @@ export class AttestationCasesService {
   }
 
   public async getApprovers(
-    attestationCase: TypedEntity & {
-      DecisionLevel: IReadValue<number>;
-      UID_QERWorkingMethod: IReadValue<string>;
-      data: AttestationCaseData;
-    }
+    attestationCase:
+      | (TypedEntity & {
+          DecisionLevel: IReadValue<number>;
+          UID_QERWorkingMethod: IReadValue<string>;
+          data: AttestationCaseData;
+        })
+      | AttestationHistoryCase
+      | AttestationCase,
   ): Promise<Approvers> {
+    const pwoData = {
+      WorkflowHistory: attestationCase.data?.WorkflowHistory,
+      WorkflowData: attestationCase.data?.WorkflowData,
+      WorkflowSteps: attestationCase.data?.WorkflowSteps,
+    };
     const approverContainer = new ApproverContainer({
       decisionLevel: attestationCase.DecisionLevel.value,
       qerWorkingMethod: attestationCase.UID_QERWorkingMethod.value,
-      pwoData: attestationCase.data,
-      approvers: (await this.attClient.client.portal_attestation_persondecision_get(this.getKey(attestationCase))).Entities.map(
-        (item) => item.Columns.UID_Person.Value
-      ),
+      pwoData,
+      approvers:
+        (await this.attClient.client.portal_attestation_persondecision_get(this.getKey(attestationCase))).Entities?.map(
+          (item) => item.Columns?.UID_Person.Value,
+        ) || [],
     });
 
     return {
       current: approverContainer.approverNow,
       future: approverContainer.approverFuture,
+      canSeeSteps: approverContainer.canSeeSteps,
     };
   }
 
-  public createHistoryTypedEntities(data: AttestationCaseData): TypedEntityCollectionData<PortalAttestationCaseHistory> {
+  public createHistoryTypedEntities(data?: AttestationCaseData): TypedEntityCollectionData<PortalAttestationCaseHistory> {
     return this.historyBuilder.buildReadWriteEntities(
-      data.WorkflowHistory,
-      this.attClient.typedClient.PortalAttestationCaseHistory.GetSchema()
+      data?.WorkflowHistory || { TotalCount: 0 },
+      this.attClient.typedClient.PortalAttestationCaseHistory.GetSchema(),
     );
   }
 
@@ -295,9 +313,9 @@ export class AttestationCasesService {
     };
     return this.attClient.client.portal_attestation_approve_parameter_candidates_post(
       parameters.columnName,
-      parameters.fkTableName,
-      parameters.diffData,
-      parameter
+      parameters.fkTableName || '',
+      parameters.diffData || {},
+      parameter,
     );
   }
 
@@ -308,9 +326,9 @@ export class AttestationCasesService {
     };
     return this.attClient.client.portal_attestation_approve_parameter_candidates_filtertree_post(
       parameters.columnName,
-      parameters.fkTableName,
-      parameters.diffData,
-      parameter
+      parameters.fkTableName || '',
+      parameters.diffData || {},
+      parameter,
     );
   }
 }

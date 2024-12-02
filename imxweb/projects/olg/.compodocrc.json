@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - olg Library",
-  "output": "../../documentation/v92/olg",
+  "output": "../../documentation/v93/olg",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

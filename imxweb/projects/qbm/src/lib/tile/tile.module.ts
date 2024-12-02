@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,23 +33,9 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @NgModule({
-  declarations: [
-    TileComponent,
-    ChartTileComponent
-  ],
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    EuiCoreModule,
-    TranslateModule,
-    EuiMaterialModule
-  ],
-  exports: [
-    ChartTileComponent,
-    TileComponent
-  ]
+  declarations: [TileComponent, ChartTileComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, EuiCoreModule, TranslateModule, EuiMaterialModule],
+  exports: [ChartTileComponent, TileComponent],
 })
-export class TileModule { }
+export class TileModule {}

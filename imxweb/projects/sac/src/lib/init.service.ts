@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,18 @@
  *
  */
 
-import { Injectable } from "@angular/core";
-import { ExtService } from "qbm";
-import { SapComplianceViolationComponent } from "./sap-compliance-violation/sap-compliance-violation.component";
+import { Injectable } from '@angular/core';
+import { ExtService } from 'qbm';
+import { SapComplianceViolationComponent } from './sap-compliance-violation/sap-compliance-violation.component';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
-
-  constructor(
-    private readonly extService: ExtService
-  ) { }
+  constructor(private readonly extService: ExtService) {}
 
   onInit() {
-    this.extService.register('RuleViolationsTab', { instance: SapComplianceViolationComponent, inputData: {label: '#LDS#Heading SAP Functions'}});
+    this.extService.register('RuleViolationsTab', {
+      instance: SapComplianceViolationComponent,
+      inputData: { label: '#LDS#Heading SAP Functions' },
+    });
   }
 }

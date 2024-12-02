@@ -2,42 +2,60 @@
   <div *ngIf="isSelected" class="imx-selected-icon-container">
     <eui-icon icon="check" class="imx-selected-icon"></eui-icon>
   </div>
-  <div class="badgeContainer" *ngIf="badges?.length > 0">
-    <eui-badge #badge *ngFor="let badge of badges" color="{{badge.color}}" [ngStyle]="{color: badge.textColor ?? 'white'}" class="imx-badge"
-      (click)="onBadgeClick(badge)">{{badge.content | translate}}</eui-badge>
+  <div class="badgeContainer" *ngIf="!!badges?.length">
+    <eui-badge
+      #badge
+      *ngFor="let badge of badges"
+      color="{{ badge.color }}"
+      [ngStyle]="{ color: badge.textColor ?? 'white' }"
+      class="imx-badge"
+      (click)="onBadgeClick(badge)"
+      >{{ badge.content | translate }}</eui-badge
+    >
   </div>
-  <mat-card [style.width]="width" [style.height]="height" (click)="toggleSelection()"
-    class="imx-data-tile-container" [class.mat-elevation-z8]="isSelected" [class.mat-elevation-z1]="!isSelected"
-    [attr.data-imx-identifier]="'datatile-card-' + typedEntity?.GetEntity()?.GetDisplay()">
+  <mat-card
+    [style.width]="width"
+    [style.height]="height"
+    (click)="toggleSelection()"
+    class="imx-data-tile-container imx-card-border"
+    [class.mat-elevation-z8]="isSelected"
+    [class.mat-elevation-z1]="!isSelected"
+    [attr.data-imx-identifier]="'datatile-card-' + typedEntity?.GetEntity()?.GetDisplay()"
+  >
     <div *ngIf="!hasImage">
       <eui-icon mat-card-avatar size="l" class="mat-card-avatar imx-fallbackicon" [icon]="icon"></eui-icon>
     </div>
     <ng-container *ngIf="hasImage">
       <ng-container *ngIf="!isLoadingImage; else imageLoadingSpinner">
-        <img *ngIf="imageUrl; else imageFallbackIcon" [src]="imageUrl" mat-card-avatar>
+        <img *ngIf="imageUrl; else imageFallbackIcon" [src]="imageUrl" mat-card-avatar />
         <ng-template #imageFallbackIcon>
-          <div *ngIf="fallbackIcon === 'DefaultTypeNameImage'" class="mat-card-avatar imx-fallbackicon"
-            [ngClass]="getDefaultTypeNameImage()"></div>
-          <eui-icon *ngIf="fallbackIcon !== 'DefaultTypeNameImage'" mat-card-avatar size="l"
-            class="mat-card-avatar imx-fallbackicon" [icon]="fallbackIcon"></eui-icon>
+          <div
+            *ngIf="fallbackIcon === 'DefaultTypeNameImage'"
+            class="mat-card-avatar imx-fallbackicon"
+            [ngClass]="getDefaultTypeNameImage()"
+          ></div>
+          <eui-icon
+            *ngIf="fallbackIcon !== 'DefaultTypeNameImage'"
+            mat-card-avatar
+            size="l"
+            class="mat-card-avatar imx-fallbackicon"
+            [icon]="fallbackIcon"
+          ></eui-icon>
         </ng-template>
       </ng-container>
       <ng-template #imageLoadingSpinner>
         <mat-spinner diameter="30"></mat-spinner>
       </ng-template>
     </ng-container>
-    <div *ngIf="titleObject" class="imx-data-tile-title mat-subheading-1"
-      [matTooltip]="getTitleDisplayValue(titleObject.ColumnName)">
-      {{getTitleDisplayValue(titleObject.ColumnName)}}
+    <div *ngIf="titleObject" class="imx-data-tile-title mat-body-2" [matTooltip]="getTitleDisplayValue(titleObject.ColumnName)">
+      {{ getTitleDisplayValue(titleObject.ColumnName) }}
     </div>
-    <div *ngIf="subtitleObject || additionalSubtitleObjects?.length" class="imx-data-tile-subtitle mat-subheading-1">
-      <div *ngIf="subtitleObject"
-        [matTooltip]="getTitleDisplayValue(subtitleObject.ColumnName)">
-        {{getTitleDisplayValue(subtitleObject.ColumnName)}}
+    <div *ngIf="subtitleObject || additionalSubtitleObjects?.length" class="imx-data-tile-subtitle mat-body-2">
+      <div *ngIf="subtitleObject" [matTooltip]="getTitleDisplayValue(subtitleObject.ColumnName)">
+        {{ getTitleDisplayValue(subtitleObject.ColumnName) }}
       </div>
-      <div *ngIf="additionalSubtitleObjects"
-        [matTooltip]="getAdditionalColumnText()">
-        {{getAdditionalColumnText()}}
+      <div *ngIf="additionalSubtitleObjects" [matTooltip]="getAdditionalColumnText()">
+        {{ getAdditionalColumnText() }}
       </div>
     </div>
     <div class="imx-data-tile-custom-content">
@@ -50,12 +68,17 @@
         </button>
         <mat-menu #menu="matMenu">
           <button *ngFor="let action of actions" mat-menu-item (click)="menuItemClicked(action)">
-            {{ action.description | translate }}
+            {{ action.description ?? '' | translate }}
           </button>
         </mat-menu>
         <ng-container *ngIf="useActionMenu === false">
-          <button mat-stroked-button *ngFor="let action of filteredActions" class="imx-margin-right" (click)="menuItemClicked(action, $event)">
-            {{ action.description | translate }}
+          <button
+            mat-stroked-button
+            *ngFor="let action of filteredActions"
+            class="imx-margin-right"
+            (click)="menuItemClicked(action, $event)"
+          >
+            {{ action.description ?? '' | translate }}
           </button>
         </ng-container>
       </ng-container>

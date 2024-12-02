@@ -1,31 +1,38 @@
-<div eui-sidesheet-content>
-  <eui-alert *ngIf="showHelperAlert && !data.createOnly" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
-    [dismissable]="true" (dismissed)="onHelperDismissed()">
-    {{ LdsAddOrCreate | translate }}
+<div eui-sidesheet-content class="imx-sidesheet-content__overflow">
+  <eui-alert *ngIf="showHelperAlert" type="info" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    {{ (data.createOnly ? LdsCreate : LdsAddOrCreate) | translate }}
   </eui-alert>
-  <mat-card class="imx-content-card">
-
+  <mat-card class="imx-sidesheet-content__flex">
     <mat-radio-group [(ngModel)]="type" (change)="typeChanged($event)" *ngIf="!data.createOnly">
       <mat-radio-button [value]="'new'" data-imx-identifier="add-to-role-new">
-        {{'#LDS#Create new system role' | translate}}
+        {{ '#LDS#Create new system role' | translate }}
       </mat-radio-button>
       <mat-radio-button [value]="'existing'" data-imx-identifier="add-to-role-existing">
-        {{'#LDS#Add to existing system role' | translate}}
+        {{ '#LDS#Add to existing system role' | translate }}
       </mat-radio-button>
     </mat-radio-group>
     <form [formGroup]="form" *ngIf="type === 'new'">
       <mat-form-field appearance="outline">
         <mat-label translate>#LDS#Name</mat-label>
-        <input matInput formControlName="name" data-imx-identifier="system-role-config-new-system-role-input">
+        <input matInput formControlName="name" data-imx-identifier="system-role-config-new-system-role-input" />
       </mat-form-field>
     </form>
-    <ng-container *ngIf="type === 'existing' ">
-      <cdk-virtual-scroll-viewport *ngIf="candidates?.length > 0" #viewport [itemSize]="50" minBufferPx="300"
-        maxBufferPx="800" class="imx-viewport">
+    <ng-container *ngIf="type === 'existing'">
+      <cdk-virtual-scroll-viewport
+        *ngIf="!!candidates?.length"
+        #viewport
+        [itemSize]="50"
+        minBufferPx="300"
+        maxBufferPx="800"
+        class="imx-viewport"
+      >
         <mat-selection-list [multiple]="false" (selectionChange)="updateSelected($event)">
-          <mat-list-option *cdkVirtualFor="let candidate of candidates; index as i" [value]="candidate"
+          <mat-list-option
+            *cdkVirtualFor="let candidate of candidates; index as i"
+            [value]="candidate"
             class="imx-candidate-option"
-            [attr.data-imx-identifier]="'multi-select-formcontrol-list' + candidate.GetEntity().GetKeys()[0]">
+            [attr.data-imx-identifier]="'multi-select-formcontrol-list' + candidate.GetEntity().GetKeys()[0]"
+          >
             <div class="imx-candidate-content">
               <div class="imx-candidate-display">{{ candidate.GetEntity().GetDisplay() }}</div>
             </div>
@@ -37,17 +44,28 @@
         <p translate>#LDS#There are currently no system roles.</p>
       </div>
     </ng-container>
-
   </mat-card>
 </div>
 
-<div eui-sidesheet-actions >
-  <button *ngIf="type === 'new'" mat-raised-button color="primary" [disabled]="form.invalid || !form.dirty"
-    (click)="close(true)" data-imx-identifier="system-role-config-create-new-system-role-button">
-    {{'#LDS#Create new system role' | translate}}
+<div eui-sidesheet-actions>
+  <button
+    *ngIf="type === 'new'"
+    mat-flat-button
+    color="primary"
+    [disabled]="form.invalid || !form.dirty"
+    (click)="close(true)"
+    data-imx-identifier="system-role-config-create-new-system-role-button"
+  >
+    {{ '#LDS#Create system role' | translate }}
   </button>
-  <button [disabled]="selectedRole == null" *ngIf="type !== 'new'" mat-raised-button color="primary"
-    (click)="close(false)" data-imx-identifier="system-role-config-add-to-existing-system-role-button">
-    {{'#LDS#Add to system role' | translate}}
+  <button
+    [disabled]="selectedRole == null"
+    *ngIf="type !== 'new'"
+    mat-flat-button
+    color="primary"
+    (click)="close(false)"
+    data-imx-identifier="system-role-config-add-to-existing-system-role-button"
+  >
+    {{ '#LDS#Add to system role' | translate }}
   </button>
 </div>

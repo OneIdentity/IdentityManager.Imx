@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,10 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit, Output, ElementRef } from '@angular/core';
-import { bar, Chart, ChartOptions, donut, line } from 'billboard.js';
-import { ChartDto } from 'imx-api-qer';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, afterNextRender, afterRender } from '@angular/core';
+import { ChartDisplayType, ChartDto } from '@imx-modules/imx-api-qer';
+import { Chart, ChartOptions, bar, donut, line } from 'billboard.js';
+import { ChartInfoTyped } from '../../statistics-home-page/chart-info-typed';
 import { StatisticsChartHandlerService } from '../statistics-chart-handler.service';
 import { ChartDetails } from './chart-details';
 import { PointStatTyped } from './point-stat-visual/point-stat-typed';
@@ -35,14 +36,17 @@ import { PointStatVisualService } from './point-stat-visual/point-stat-visual.se
 @Component({
   selector: 'imx-chart-tile',
   templateUrl: './chart-tile.component.html',
-  styleUrls: ['./chart-tile.component.scss']
+  styleUrls: ['./chart-tile.component.scss'],
 })
 export class ChartTileComponent implements OnInit {
+  @Input() public chartInfo: ChartInfoTyped;
   @Input() public summaryStat: ChartDto;
 
   @Output() chart = new EventEmitter<Chart>();
   @Output() chartDetails = new EventEmitter<ChartDetails>();
 
+  public type: string = 'no-data';
+  public currentChart: Chart;
   public chartOptions: ChartOptions;
   public dataHasNonZero: boolean;
   public pointStatStatus: PointStatTyped;
@@ -52,50 +56,89 @@ export class ChartTileComponent implements OnInit {
   constructor(
     private chartHandler: StatisticsChartHandlerService,
     private pointStatService: PointStatVisualService,
-    private elementRef: ElementRef<HTMLElement>
-  ) { }
+    private elementRef: ElementRef<HTMLElement>,
+  ) {
+    afterNextRender(() => {
+      if (this.chartOptions) {
+        this.chartOptions.size = {
+          height: this.elementRef?.nativeElement?.parentElement?.offsetTop,
+          width: this.elementRef?.nativeElement?.parentElement?.offsetLeft,
+        };
+      }
+    });
 
-  public get isPoint(): boolean {
-    return !!this.pointStatStatus
+    afterRender(() => {
+      if (this.currentChart) {
+        this.currentChart.resize();
+      }
+    });
+  }
+
+  public determineType(): void {
+    switch (true) {
+      case !!this.pointStatStatus:
+        this.type = 'point';
+        return;
+      case this.chartInfo?.DisplayType?.value == ChartDisplayType.Table:
+        this.type = 'table';
+        return;
+      case this.dataHasNonZero && !!this.chartOptions:
+        this.type = 'chart';
+        return;
+      case !this.dataHasNonZero:
+        this.type = 'no-data';
+        return;
+    }
   }
 
   public ngOnInit(): void {
-    this.determinePlot();
+    if (this.chartInfo?.DisplayType?.value == ChartDisplayType.Auto) {
+      this.autoPlot();
+    }
+    this.determineType();
     this.chartDetails.emit({
       type: this.chartOptions?.data?.type,
       pointStatus: this.pointStatStatus,
       hasUniqueObjectDisplay: this.hasUniqueObjectDisplay,
       dataHasNonZero: this.dataHasNonZero,
-      icon: this.determineIcon()
+      icon: this.determineIcon(),
     });
   }
 
   public cacheChart(chart: Chart): void {
+    this.currentChart = chart;
     this.chart.emit(chart);
   }
 
-  public isSmallButNot1(x: number): boolean {
-    return x > 1 && x < this.smallCutoff;
+  /**
+   * Checks to see if the array has less then a cutoff value
+   * @param len length of the array
+   * @returns
+   */
+  public isSmallButNot1(len: number | undefined): boolean {
+    if (!len) {
+      return false;
+    }
+    return len > 1 && len < this.smallCutoff;
   }
 
-  public determinePlot(): void {
+  public autoPlot(): void {
+    if (!this.summaryStat.Data) {
+      // No data,
+      return;
+    }
     // Point stat: History > 0, Data = 1 OR History > 0, Data = 1, Points = !small but not 1
-    if (this.summaryStat.Data.length === 1 && !this.isSmallButNot1(this.summaryStat.Data[0].Points.length)) {
+    if (this.summaryStat.Data?.length === 1 && !this.isSmallButNot1(this.summaryStat?.Data[0]?.Points?.length)) {
       this.pointStatStatus = this.pointStatService.extractStatus(this.summaryStat);
       return;
     }
     // Check if any of the remaining plots have uninteresting plots
     this.dataHasNonZero = this.chartHandler.dataHasNonZero(this.summaryStat);
     // Bar chart: History = 0, Data > 1
-    if (this.summaryStat.HistoryLength === 0 && this.summaryStat.Data.length > 1) {
-
-      this.hasUniqueObjectDisplay = this.chartHandler.hasUniqueObjectDisplay(this.summaryStat.Data)
+    if (this.summaryStat.HistoryLength === 0 && this.summaryStat?.Data?.length > 1) {
+      this.hasUniqueObjectDisplay = this.chartHandler.hasUniqueObjectDisplay(this.summaryStat.Data);
       this.chartOptions = this.chartHandler.getBarData(this.summaryStat, {
         dataLimit: 5,
-        size: {
-          height: this.elementRef.nativeElement.parentElement.offsetTop,
-          width: this.elementRef.nativeElement.parentElement.offsetLeft,
-        },
         hasUniqueObjectDisplay: this.hasUniqueObjectDisplay,
       });
       return;
@@ -104,29 +147,27 @@ export class ChartTileComponent implements OnInit {
     if (this.summaryStat.HistoryLength > 0 && this.summaryStat.Data.length > 1) {
       this.chartOptions = this.chartHandler.getPieData(this.summaryStat, {
         dataLimit: 5,
-        size: {
-          height: this.elementRef.nativeElement.parentElement.offsetTop,
-          width: this.elementRef.nativeElement.parentElement.offsetLeft,
-        },
       });
       return;
     }
     // Line chart: History > 0, Data = 1, Points ~ small but not 1
-    if (this.summaryStat.HistoryLength > 0 && this.summaryStat.Data.length === 1 && this.isSmallButNot1(this.summaryStat.Data[0].Points.length)) {
+    if (
+      this.summaryStat.HistoryLength > 0 &&
+      this.summaryStat.Data.length === 1 &&
+      this.isSmallButNot1(this.summaryStat?.Data[0]?.Points?.length)
+    ) {
       this.chartOptions = this.chartHandler.getLineData(this.summaryStat, {
         dataLimit: 5,
         pointLimit: 10,
-        size: {
-          height: this.elementRef.nativeElement.parentElement.offsetTop,
-          width: this.elementRef.nativeElement.parentElement.offsetLeft,
-        },
       });
       return;
     }
   }
 
-  public determineIcon(): string | null {
+  public determineIcon(): string | undefined {
     switch (true) {
+      case this.chartInfo?.DisplayType?.value == ChartDisplayType.Table:
+        return 'table';
       case !!this.pointStatStatus:
         return 'arrowsvertical';
       case this.chartOptions?.data?.type === donut():
@@ -136,8 +177,7 @@ export class ChartTileComponent implements OnInit {
       case this.chartOptions?.data?.type === line():
         return 'linechart';
       default:
-        return null;
+        return;
     }
   }
-
 }

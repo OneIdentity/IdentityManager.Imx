@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,8 +46,7 @@ import { MatColumnDef } from '@angular/material/table';
  */
 @Component({
   selector: 'imx-data-table-generic-column',
-  templateUrl: './data-table-generic-column.component.html',
-  styleUrls: ['./data-table-generic-column.component.scss']
+  templateUrl: './data-table-generic-column.component.html'
 })
 export class DataTableGenericColumnComponent implements OnInit {
   /**

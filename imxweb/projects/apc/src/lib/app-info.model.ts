@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
+import { EntitySchema, DataModel, FilterData } from '@imx-modules/imx-qbm-dbts';
 
 export interface ResourceDataModel {
   getModel(filter: FilterData[]): Promise<DataModel>;
@@ -32,7 +32,7 @@ export interface ResourceDataModel {
 
 export interface ResourceInfo {
   table: string;
-  caption?:string;
+  caption?: string;
   admin?: ResourceInfoApiWrapper;
   resp?: ResourceInfoApiWrapper;
   accProduct?: any;

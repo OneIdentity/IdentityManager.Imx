@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,7 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { IClientProperty } from 'imx-qbm-dbts';
-
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
 
 @Pipe({
   name: 'excludedColumns',
@@ -41,8 +40,6 @@ export class ExcludedColumnsPipe implements PipeTransform {
     // filter items array, items which match and return true will be
     // kept, false will be filtered out
 
-    return items.filter(elem=> !filter.includes(elem.ColumnName ?? ''));
+    return items.filter((elem) => !filter.includes(elem.ColumnName ?? ''));
   }
-
- 
 }

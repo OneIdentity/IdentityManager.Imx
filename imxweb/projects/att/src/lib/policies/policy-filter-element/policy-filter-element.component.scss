@@ -1,52 +1,13 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-
-
-:host ::ng-deep .mat-expansion-panel-body {
-  display: flex;
-  flex-direction: column;
-  background-color: $color-gray-2;
-  padding-top: 10px;
-}
-
-.imx-panel-title-with-number,
-.imx-title {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.imx-panel-title-with-number > :first-child {
-  flex: 1;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
+.imx-panel-title-with-number{
+  max-width: calc(100% - 52px);
+  &> :first-child {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  }
 
 .imx-small-error {
   font-size: small;
-}
-
-.mat-expansion-panel-header-title {
-  align-items: center;
-  margin-right: 0;
-}
-
-.eui-icon {
-  color: $color-gray-50;
-}
-
-.eui-dark-theme {
-  :host {
-    ::ng-deep .mat-expansion-panel-body{
-      background-color: $color-gray-80;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-expansion-panel-body{
-      background-color: $color-gray-100;
-    }
-  }
 }

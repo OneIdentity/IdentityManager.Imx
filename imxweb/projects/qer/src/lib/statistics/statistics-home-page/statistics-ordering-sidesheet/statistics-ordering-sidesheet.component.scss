@@ -1,8 +1,7 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-@import "../../stat-mixins.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../stat-mixins.scss';
 
 :host {
-
   .eui-sidesheet-content {
     overflow: hidden;
   }
@@ -17,10 +16,9 @@
       width: max(50%, 300px);
     }
 
-    button .colored-icon:hover {
-      @include Ease-Transition;
+    button .eui-icon:hover {
+      @include ease-transition;
     }
-
   }
 
   .two-panel {
@@ -28,13 +26,14 @@
     height: 90%;
   }
 
-  .left-list, .right-list {
+  .left-list,
+  .right-list {
     display: flex;
     flex-direction: column;
     width: 50%;
     height: fit-content;
     max-height: 100%;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
   }
 
   .left-list {
@@ -50,18 +49,9 @@
 
     .left-header {
       display: flex;
+      gap: 6px;
       span {
         line-height: 40px;
-      }
-    }
-
-    button {
-      span {
-        margin-left: 8px;
-      }
-
-      :not(.mat-button-disabled) {
-        @include Ease-Transition;
       }
     }
   }
@@ -83,7 +73,8 @@
     overflow-y: auto;
   }
 
-  .list-item, .order-item {
+  .list-item,
+  .order-item {
     min-height: 48px;
     padding: 5px 10px;
     display: flex;
@@ -114,11 +105,6 @@
       margin-right: 15px;
     }
   }
-
-  // Handle line sizing on checkbox
-  ::ng-deep .mat-checkbox-label {
-    line-height: unset;
-  }
 }
 
 // CDK drag styling
@@ -127,7 +113,7 @@
   justify-content: space-between;
   align-items: center;
   border-radius: 4px;
-  @include EUI-Elevation-3;
+  @include eui-elevation-3;
   padding: 0 10px;
 }
 
@@ -144,7 +130,8 @@
       flex-direction: column;
     }
 
-    .left-list, .right-list {
+    .left-list,
+    .right-list {
       max-height: 50%;
       width: 100%;
     }
@@ -158,27 +145,9 @@
 // Theming
 .eui-light-theme {
   :host {
-    .above {
-      button {
-        .colored-icon {
-          color: $color-blue-60;
-        }
-        .colored-icon:hover {
-          color: $color-orange-60;
-        }
-      }
-
-    }
-
     .list-header {
       color: $color-blue-60;
       border-bottom: 2px solid $color-blue-60;
-
-      button:not(.mat-button-disabled) {
-        eui-icon:hover {
-          color: $color-orange-60;
-        }
-      }
     }
 
     .list-empty {
@@ -190,7 +159,8 @@
       }
     }
 
-    .list-item, .order-item {
+    .list-item,
+    .order-item {
       background-color: $color-gray-0;
       border-bottom: 1px solid $color-gray-10;
 
@@ -216,27 +186,9 @@
 
 .eui-dark-theme {
   :host {
-    .above {
-      button {
-        .colored-icon {
-          color: $color-blue-40;
-        }
-        .colored-icon:hover {
-          color: $color-orange-40;
-        }
-      }
-
-    }
-
     .list-header {
       color: $color-blue-40;
       border-bottom: 2px solid $color-blue-40;
-
-      button:not(.mat-button-disabled) {
-        eui-icon:hover {
-          color: $color-orange-40;
-        }
-      }
     }
 
     .list-empty {
@@ -248,7 +200,8 @@
       }
     }
 
-    .list-item, .order-item {
+    .list-item,
+    .order-item {
       background-color: $color-gray-70;
       border-bottom: 1px solid $color-gray-60;
 
@@ -275,27 +228,9 @@
 
 .eui-contrast-theme {
   :host {
-    .above {
-      button {
-        .colored-icon {
-          color: $color-blue-40;
-        }
-        .colored-icon:hover {
-          color: $color-orange-40;
-        }
-      }
-
-    }
-
     .list-header {
       color: $color-blue-40;
       border-bottom: 2px solid $color-blue-40;
-
-      button:not(.mat-button-disabled) {
-        eui-icon:hover {
-          color: $color-orange-40;
-        }
-      }
     }
 
     .list-empty {
@@ -307,7 +242,8 @@
       }
     }
 
-    .list-item, .order-item {
+    .list-item,
+    .order-item {
       background-color: $color-gray-90;
       border-bottom: 1px solid $color-gray-80;
 

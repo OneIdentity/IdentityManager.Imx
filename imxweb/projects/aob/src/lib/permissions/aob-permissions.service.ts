@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,16 +30,21 @@ import { UserModelService } from 'qer';
 import { isAobApplicationAdmin, isAobApplicationOwner } from './aob-permissions-helper';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AobPermissionsService {
-  constructor(private readonly userService: UserModelService) { }
+  constructor(private readonly userService: UserModelService) {}
 
   public async isAobApplicationOwner(): Promise<boolean> {
-    return isAobApplicationOwner((await this.userService.getFeatures()).Features);
+    return isAobApplicationOwner((await this.userService.getFeatures()).Features || []);
   }
 
   public async isAobApplicationAdmin(): Promise<boolean> {
-    return isAobApplicationAdmin((await this.userService.getFeatures()).Features);
+    return isAobApplicationAdmin((await this.userService.getFeatures()).Features || []);
+  }
+
+  public async isAobApplicationOwnerOrAdmin(): Promise<boolean> {
+    const features = (await this.userService.getFeatures()).Features || [];
+    return isAobApplicationAdmin(features) || isAobApplicationOwner(features);
   }
 }

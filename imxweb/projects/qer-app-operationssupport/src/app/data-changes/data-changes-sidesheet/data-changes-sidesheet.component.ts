@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { HistoryOperation, HistoryOperationColumn } from '@imx-modules/imx-api-qbm';
+import { IEntityColumn, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { HistoryOperation, HistoryOperationColumn } from 'imx-api-qbm';
-import { IEntityColumn, ValType } from 'imx-qbm-dbts';
 import { BaseReadonlyCdr, ColumnDependentReference, EntityService } from 'qbm';
 import { Subscription } from 'rxjs';
 
@@ -39,6 +39,7 @@ import { Subscription } from 'rxjs';
 })
 export class DataChangesSidesheetComponent implements OnInit {
   public isOpening = true;
+  public isMulti: boolean;
   private openSub$: Subscription;
   public cdrList: ColumnDependentReference[] = [];
 
@@ -46,17 +47,16 @@ export class DataChangesSidesheetComponent implements OnInit {
     @Inject(EUI_SIDESHEET_DATA) public data: HistoryOperation,
     private sidesheetRef: EuiSidesheetRef,
     private entityService: EntityService,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
-  public get isMulti(): boolean {
-    return this.data?.Columns && this.data.Columns.length > 1;
-  }
-
   public ngOnInit(): void {
-    this.openSub$ = this.sidesheetRef.componentInstance.onOpen().subscribe((_) => {
-      this.isOpening = false;
-    });
+    this.isMulti = (this.data?.Columns && this.data.Columns.length > 1) ?? false;
+    if (this.sidesheetRef.componentInstance) {
+      this.openSub$ = this.sidesheetRef.componentInstance.onOpen().subscribe((_) => {
+        this.isOpening = false;
+      });
+    }
   }
 
   public ngOnDestroy(): void {
@@ -65,9 +65,9 @@ export class DataChangesSidesheetComponent implements OnInit {
 
   public getCdrList(column: HistoryOperationColumn): ColumnDependentReference[] {
     return [
-      this.buildEntiyColumn('name', this.translate.instant('#LDS#Column name'), column.ColumnDisplay),
-      this.buildEntiyColumn('old', this.translate.instant('#LDS#Old value'), column.OldValueDisplay),
-      this.buildEntiyColumn('new', this.translate.instant('#LDS#New value'), column.NewValueDisplay),
+      this.buildEntiyColumn('name', this.translate.instant('#LDS#Column name'), column.ColumnDisplay ?? ''),
+      this.buildEntiyColumn('old', this.translate.instant('#LDS#Old value'), column.OldValueDisplay ?? ''),
+      this.buildEntiyColumn('new', this.translate.instant('#LDS#New value'), column.NewValueDisplay ?? ''),
     ].map((col) => new BaseReadonlyCdr(col));
   }
 

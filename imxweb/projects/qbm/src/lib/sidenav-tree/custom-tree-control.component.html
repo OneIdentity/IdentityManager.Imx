@@ -1,0 +1,111 @@
+<!-- Nested Tree -->
+<mat-card *ngIf="dataSource" class="imx-snavigation-side-content">
+  <eui-scroll class="imx-scroll-pad-left">
+    <mat-tree *ngIf="!initializingData" [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
+      <mat-tree-node *matTreeNodeDef="let node">
+        <div class="mat-tree-node" [ngClass]="{ 'mat-tree-node--selected': isSelected(node) }">
+          <button mat-icon-button disabled>
+            <eui-icon size="s"></eui-icon>
+          </button>
+          <button mat-button class="tree-item-button" data-imx-identifier="sidenav-tree-child-select" (click)="selectNode(node)">
+            <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>
+          </button>
+        </div>
+      </mat-tree-node>
+
+      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+        <div class="mat-tree-node" [ngClass]="{ 'mat-tree-node--selected': isSelected(node) }">
+          <button
+            mat-icon-button
+            matTreeNodeToggle
+            [attr.aria-label]="'#LDS#Expand' | translate"
+            data-imx-identifier="sidenav-tree-parent-toggle"
+          >
+            <eui-icon size="s" [icon]="treeControl.isExpanded(node) ? 'chevrondown' : 'chevronright'"></eui-icon>
+          </button>
+          <button mat-button class="tree-item-button" data-imx-identifier="sidenav-tree-parent-select" (click)="selectNode(node)">
+            <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>
+          </button>
+        </div>
+        <div [class.tree-invisible]="!treeControl.isExpanded(node)" role="group">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </div>
+      </mat-nested-tree-node> </mat-tree
+  ></eui-scroll>
+</mat-card>
+
+<!-- Dynamic tree -->
+<mat-card
+  *ngIf="dynamicDataSource"
+  class="imx-snavigation-side-content"
+  [ngClass]="{ 'imx-snavigation-side-content--center': initializingData || !hasData }"
+>
+  <eui-scroll class="imx-scroll-pad-left">
+    <mat-spinner *ngIf="initializingData" [diameter]="100" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
+    <div *ngIf="!initializingData && !hasData" class="imx-no-results">
+      <eui-icon icon="content-alert"></eui-icon>
+      <span>{{ noResultText | translate }}</span>
+    </div>
+    <mat-tree *ngIf="!initializingData" [dataSource]="dynamicDataSource" [treeControl]="treeControl" class="tree">
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="20">
+        <div class="mat-tree-node" [ngClass]="{ 'mat-tree-node--selected': isSelected(node) }">
+          <button mat-icon-button disabled>
+            <eui-icon size="s"></eui-icon>
+          </button>
+          <button
+            mat-button
+            color="primary"
+            class="tree-item-button"
+            data-imx-identifier="sidenav-tree-child-select"
+            (click)="selectNode(node)"
+          >
+            <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>
+          </button>
+        </div>
+      </mat-tree-node>
+
+      <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="20">
+        <div class="mat-tree-node" [ngClass]="{ 'mat-tree-node--selected': isSelected(node) }">
+          <button
+            mat-icon-button
+            matTreeNodeToggle
+            [attr.aria-label]="'#LDS#Expand' | translate"
+            data-imx-identifier="sidenav-tree-parent-toggle"
+          >
+            <eui-icon size="s" [icon]="treeControl.isExpanded(node) ? 'chevrondown' : 'chevronright'"></eui-icon>
+          </button>
+          <button
+            mat-button
+            color="primary"
+            class="tree-item-button"
+            data-imx-identifier="sidenav-tree-parent-select"
+            (click)="selectNode(node)"
+          >
+            <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>
+          </button>
+          <mat-progress-bar
+            *ngIf="isLoading(node)"
+            mode="indeterminate"
+            class="imx-child-progress-bar"
+            [attr.aria-label]="'#LDS#Loading...' | translate"
+          ></mat-progress-bar>
+        </div>
+        <div *ngIf="treeControl.isExpanded(node)" role="group">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </div>
+      </mat-tree-node>
+    </mat-tree>
+    <button *ngIf="!initializingData && anyNodeOpen && canLoadMore && !isLoadingMore" mat-button color="primary" (click)="onLoadMore()">
+      <span>{{ '#LDS#Show more' | translate }}</span>
+    </button>
+    <mat-progress-bar
+      *ngIf="!initializingData && isLoadingMore"
+      mode="indeterminate"
+      [attr.aria-label]="'#LDS#Loading...' | translate"
+    ></mat-progress-bar>
+  </eui-scroll>
+</mat-card>
+
+<ng-template #treeNodeTemplate let-node let-selected="selected">
+  <ng-content *ngTemplateOutlet="nodeContent; context: { $implicit: node, selected: selected }"></ng-content>
+</ng-template>

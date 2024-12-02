@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,19 @@
  *
  */
 
-import { ChartData } from 'imx-api-qer';
-import { DisplayPattern, EntityColumnData, EntityData, EntitySchema, ExtendedTypedEntityCollection, IClientProperty, IEntity, IReadValue, TypedEntity, TypedEntityBuilder, ValType } from 'imx-qbm-dbts';
+import { ChartData } from '@imx-modules/imx-api-qer';
+import {
+  DisplayPattern,
+  EntityColumnData,
+  EntityData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  IReadValue,
+  TypedEntity,
+  TypedEntityBuilder,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 
 export class ChartDataTyped extends TypedEntity {
   public readonly Name: IReadValue<string> = this.GetEntityValue('Name');
@@ -33,8 +44,6 @@ export class ChartDataTyped extends TypedEntity {
   public readonly Value: IReadValue<number> = this.GetEntityValue('Value');
   public readonly Percentage: IReadValue<number> = this.GetEntityValue('Percentage');
   public readonly Date: IReadValue<Date> = this.GetEntityValue('Date');
-
-
 
   public GetDisplay(): string {
     return this.Name.value;
@@ -46,28 +55,27 @@ export class ChartDataTyped extends TypedEntity {
     ret.Name = {
       Type: ValType.String,
       ColumnName: 'Name',
-      Display: '#LDS#Name'
+      Display: '#LDS#Name',
     };
     ret.ObjectDisplay = {
       Type: ValType.String,
       ColumnName: 'ObjectDisplay',
-      Display: '#LDS#Display name'
+      Display: '#LDS#Display name',
     };
     ret.Value = {
       Type: ValType.Double,
       ColumnName: 'Value',
-      Display: '#LDS#Value'
+      Display: '#LDS#Value',
     };
     ret.Percentage = {
       Type: ValType.Double,
       ColumnName: 'Percentage',
-      Display: '#LDS#Percentage'
-
+      Display: '#LDS#Percentage',
     };
     ret.Date = {
       Type: ValType.Date,
       ColumnName: 'Date',
-      Display: '#LDS#Data retrieved on'
+      Display: '#LDS#Data retrieved on',
     };
 
     return {
@@ -82,21 +90,23 @@ export class ChartDataTyped extends TypedEntity {
     return builder.buildReadWriteEntities(
       {
         TotalCount: entityData.length,
-        Entities: entityData
+        Entities: entityData,
       },
-      ChartDataTyped.GetEntitySchema()
+      ChartDataTyped.GetEntitySchema(),
     );
   }
 
   public static buildEntityData(chartData: ChartData): EntityData[] {
-    return chartData.Points.map(point => {
-      const ret: { [key: string]: EntityColumnData } = {};
-      ret.Name = {Value: chartData.Name, IsReadOnly: true};
-      ret.ObjectDisplay = {Value: chartData?.ObjectDisplay, IsReadOnly: true};
-      ret.Value = {Value: point.Value, IsReadOnly: true};
-      ret.Percentage = {Value: point?.Percentage, IsReadOnly: true};
-      ret.Date = {Value: point.Date, IsReadOnly: true};
-      return {Columns: ret}
-    });
+    return (
+      chartData.Points?.map((point) => {
+        const ret: { [key: string]: EntityColumnData } = {};
+        ret.Name = { Value: chartData.Name, IsReadOnly: true };
+        ret.ObjectDisplay = { Value: chartData?.ObjectDisplay, IsReadOnly: true };
+        ret.Value = { Value: point.Value, IsReadOnly: true };
+        ret.Percentage = { Value: point?.Percentage, IsReadOnly: true };
+        ret.Date = { Value: point.Date, IsReadOnly: true };
+        return { Columns: ret };
+      }) ?? []
+    );
   }
 }

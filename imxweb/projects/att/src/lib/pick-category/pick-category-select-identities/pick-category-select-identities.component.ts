@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,36 +25,35 @@
  */
 
 import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { PortalPersonAll, PortalPickcategoryItems } from 'imx-api-qer';
+import { PortalPersonAll, PortalPickcategoryItems } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   CompareOperator,
   DbObjectKey,
   DisplayColumns,
+  EntitySchema,
   FilterData,
   FilterType,
   IClientProperty,
-  TypedEntity
-} from 'imx-qbm-dbts';
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 
-import { DataSourceToolbarSettings, DataSourceWrapper, MetadataService } from 'qbm';
+import { DataViewInitParameters, DataViewSource, MetadataService } from 'qbm';
 import { IdentitiesService } from 'qer';
-import { PickCategoryService } from '../pick-category.service';
 
 @Component({
   selector: 'imx-pick-category-select-identities',
   templateUrl: './pick-category-select-identities.component.html',
   styleUrls: ['./pick-category-select-identities.component.scss'],
+  providers: [DataViewSource],
 })
-
 export class PickCategorySelectIdentitiesComponent implements OnInit {
-
-  public readonly dstWrapper: DataSourceWrapper<PortalPersonAll>;
-  public dstSettings: DataSourceToolbarSettings;
   public displayColumns: IClientProperty[];
-  public selection: TypedEntity[];
+  public selection: PortalPersonAll[];
+  public entitySchema: EntitySchema;
+  public DisplayColumns = DisplayColumns;
 
   @Input() public embeddedMode = false;
 
@@ -62,37 +61,30 @@ export class PickCategorySelectIdentitiesComponent implements OnInit {
     @Inject(EUI_SIDESHEET_DATA) public selectedItems: PortalPickcategoryItems[],
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly identityService: IdentitiesService,
-    private readonly pickCategoryService: PickCategoryService,
     private readonly metadataService: MetadataService,
+    public dataSource: DataViewSource<PortalPersonAll>,
   ) {
-    const entitySchema = this.identityService.personAllSchema;
-
-    this.dstWrapper = new DataSourceWrapper(
-      state => this.identityService.getAllPerson(state),
-      [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
-      entitySchema
-    );
+    this.entitySchema = this.identityService.personAllSchema;
   }
 
   public async ngOnInit(): Promise<void> {
     await this.getData();
   }
 
-  public async getData(navigationState?: CollectionLoadParameters): Promise<void> {
-    this.pickCategoryService.handleOpenLoader();
-
-    try {
-      navigationState = {
-        ...navigationState,
-        ... { filter: await this.getFilter() }
-      };
-      this.dstSettings = await this.dstWrapper.getDstSettings(navigationState);
-    } finally {
-      this.pickCategoryService.handleCloseLoader();
-    }
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<PortalPersonAll> = {
+      execute: async (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalPersonAll>> => {
+        const filters = await this.getFilter();
+        return this.identityService.getAllPerson({ ...params, filter: [...(params.filter || []), ...filters] }, signal);
+      },
+      schema: this.entitySchema,
+      columnsToDisplay: [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
+      selectionChange: (selection: Array<PortalPersonAll>) => this.onSelectionChanged(selection),
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
-  public onSelectionChanged(selection: TypedEntity[]): void {
+  public onSelectionChanged(selection: PortalPersonAll[]): void {
     this.selection = selection;
   }
 
@@ -102,21 +94,20 @@ export class PickCategorySelectIdentitiesComponent implements OnInit {
 
   private async getFilter(): Promise<FilterData[]> {
     if (this.selectedItems && this.selectedItems.length > 0) {
-
       const tableName = DbObjectKey.FromXml(this.selectedItems[0].ObjectKeyItem.value).TableName;
       await this.metadataService.updateNonExisting([tableName]);
 
       const tableMetadata = this.metadataService.tables[tableName];
 
-      return this.selectedItems.map(item => {
+      return this.selectedItems.map((item) => {
         return {
-          ColumnName: tableMetadata.PrimaryKeyColumns[0],
+          ColumnName: tableMetadata?.PrimaryKeyColumns?.[0] || '',
           Type: FilterType.Compare,
           CompareOp: CompareOperator.NotEqual,
-          Value1: DbObjectKey.FromXml(item.ObjectKeyItem.value).Keys[0]
+          Value1: DbObjectKey.FromXml(item.ObjectKeyItem.value).Keys[0],
         };
       });
     }
+    return [];
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,38 +26,36 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { BaseCdr, ColumnDependentReference} from 'qbm';
-import { PortalCallsHistory } from 'imx-api-hds';
+import { BaseCdr, ColumnDependentReference } from 'qbm';
+import { PortalCallsHistory } from '@imx-modules/imx-api-hds';
 
 @Component({
   selector: 'imx-calls-history-sidesheet',
   templateUrl: './calls-history-sidesheet.component.html',
-  styleUrls: ['./calls-history-sidesheet.component.scss']
+  styleUrls: ['./calls-history-sidesheet.component.scss'],
 })
 export class CallsHistorySidesheetComponent implements OnInit {
-
   public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
 
-  constructor( 
+  constructor(
     @Inject(EUI_SIDESHEET_DATA) public portalCallsHistory: PortalCallsHistory,
     private readonly euiLoadingService: EuiLoadingService,
     public formBuilder: UntypedFormBuilder,
   ) {
     this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
-   }
+  }
 
-   public async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     await this.setup();
   }
 
   public async setup(): Promise<void> {
     let entity = this.portalCallsHistory.GetEntity();
     let columnNames = await this.getColumnNames();
-    columnNames.forEach(columnName => {
+    columnNames.forEach((columnName) => {
       let column = entity.GetColumn(columnName);
-      if (column)
-        this.cdrList.push(new BaseCdr(column));
+      if (column) this.cdrList.push(new BaseCdr(column));
     });
   }
 

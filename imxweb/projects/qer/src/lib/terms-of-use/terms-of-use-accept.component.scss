@@ -12,7 +12,6 @@
   display: flex;
 
   .helper-alert {
-    margin: 0px 0px 30px 0px;
     align-self: flex-end;
     width: 100%;
   }
@@ -42,13 +41,3 @@ eui-alert,
   flex-direction: column;
 }
 
-.eui-sidesheet-actions {
-  padding: 16px;
-  .justify-start {
-    margin-right: auto;
-  }
-
-  button:not(:last-of-type):not(.justify-start) {
-    margin-right: 10px;
-  }
-}

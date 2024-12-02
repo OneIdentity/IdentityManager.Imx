@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,15 +32,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { QbmModule } from 'qbm';
 import { ObjectSearchComponent } from './object-search.component';
 
-
 @NgModule({
   declarations: [ObjectSearchComponent],
-  imports: [
-    CommonModule,
-    QbmModule,
-    MatTooltipModule,
-    TranslateModule
-  ],
-  exports: [ObjectSearchComponent]
+  imports: [CommonModule, QbmModule, MatTooltipModule, TranslateModule],
+  exports: [ObjectSearchComponent],
 })
-export class ObjectSearchModule { }
+export class ObjectSearchModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
+// eslint-disable-next-line max-classes-per-file
 import { Component, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
-import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 
-import { IStateOverviewItem, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { IStateOverviewItem, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { SettingsService } from '../../settings/settings-service';
 
 interface IColumn {
@@ -45,7 +45,7 @@ class Column implements IColumn {
   public title: string;
 }
 
-function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: number, skip: number }): T[] {
+function getLocalDataForPage<T>(allData: T[], state: { page: number; pageSize: number; skip: number }): T[] {
   if (state) {
     const currentIndex = state.page * state.pageSize;
     return allData.slice(currentIndex, currentIndex + state.pageSize);
@@ -54,15 +54,15 @@ function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: n
   return allData;
 }
 
-// tslint:disable-next-line: max-classes-per-file
+// eslint-disable-next-line max-classes-per-file
 @Component({
   selector: 'imx-object-history-state-overview',
   templateUrl: './object-history-state-overview.component.html',
-  styleUrls: ['./object-history-state-overview.component.scss']
+  styleUrls: ['./object-history-state-overview.component.scss'],
 })
 export class ObjectHistoryStateOverviewComponent implements OnInit, OnChanges {
   public get columns(): string[] {
-    return this.columnDefs.map(c => c.id);
+    return this.columnDefs.map((c) => c.id);
   }
 
   public dataCollection: TypedEntityCollectionData<IStateOverviewItem>;
@@ -72,18 +72,18 @@ export class ObjectHistoryStateOverviewComponent implements OnInit, OnChanges {
     size: 5,
     sizeOptions: [20, 50, 100],
     showFirstLastButtons: false,
-    hidden: false
+    hidden: false,
   };
 
   @Input() public stateOverviewItems: IStateOverviewItem[];
 
-  private stateCached: { page: number, pageSize: number, skip: number };
+  private stateCached: { page: number; pageSize: number; skip: number };
   @ViewChild(MatPaginator) private paginator: MatPaginator;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private translationProvider: TranslateService,
-    settings: SettingsService
+    settings: SettingsService,
   ) {
     this.paginatorConfig.size = settings.DefaultPageSize;
   }
@@ -98,32 +98,32 @@ export class ObjectHistoryStateOverviewComponent implements OnInit, OnChanges {
         return textCurrent;
       }
       return new Date(date).toLocaleString(browserCulture);
-    }
+    };
 
     await this.addColumnDef({
       id: 'PropertyDisplay',
       title: '#LDS#Changed property',
-      getValue: (row: IStateOverviewItem) => row.PropertyDisplay
+      getValue: (row: IStateOverviewItem) => row.PropertyDisplay ?? '',
     });
     await this.addColumnDef({
       id: 'StateTypeDisplay',
       title: '#LDS#Type of changed property',
-      getValue: (row: IStateOverviewItem) => row.StateTypeDisplay
+      getValue: (row: IStateOverviewItem) => row.StateTypeDisplay ?? '',
     });
     await this.addColumnDef({
       id: 'ValueDisplay',
       title: '#LDS#Value',
-      getValue: (row: IStateOverviewItem) => row.ValueDisplay
+      getValue: (row: IStateOverviewItem) => row.ValueDisplay ?? '',
     });
     await this.addColumnDef({
       id: 'DateBegin',
       title: '#LDS#Value used since',
-      getValue: (row: IStateOverviewItem) => formatDate(row.DateBegin)
+      getValue: (row: IStateOverviewItem) => formatDate(row.DateBegin),
     });
     await this.addColumnDef({
       id: 'DateEnd',
       title: '#LDS#Value used until',
-      getValue: (row: IStateOverviewItem) => formatDate(row.DateEnd)
+      getValue: (row: IStateOverviewItem) => formatDate(row.DateEnd),
     });
   }
 
@@ -135,7 +135,7 @@ export class ObjectHistoryStateOverviewComponent implements OnInit, OnChanges {
     this.updateDataCollection({
       skip: e.pageIndex * e.pageSize,
       page: e.pageIndex,
-      pageSize: e.pageSize
+      pageSize: e.pageSize,
     });
   }
 
@@ -155,7 +155,7 @@ export class ObjectHistoryStateOverviewComponent implements OnInit, OnChanges {
     this.columnDefs.push(column);
   }
 
-  private updateDataCollection(state?: { page: number, pageSize: number, skip: number }): void {
+  private updateDataCollection(state?: { page: number; pageSize: number; skip: number }): void {
     if (state) {
       this.stateCached = state;
     }
@@ -163,15 +163,15 @@ export class ObjectHistoryStateOverviewComponent implements OnInit, OnChanges {
       this.stateCached = {
         skip: this.paginatorConfig.index * this.paginatorConfig.size,
         page: this.paginatorConfig.index,
-        pageSize: this.paginatorConfig.size
+        pageSize: this.paginatorConfig.size,
       };
     }
 
     const table = this.activatedRoute.snapshot.paramMap.get('table');
     this.dataCollection = {
-      tableName: table,
+      tableName: table ?? '',
       totalCount: this.stateOverviewItems.length,
-      Data: getLocalDataForPage(this.stateOverviewItems, this.stateCached)
+      Data: getLocalDataForPage(this.stateOverviewItems, this.stateCached),
     };
   }
 }

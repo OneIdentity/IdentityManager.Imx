@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,22 @@
  */
 
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { IEntityColumn } from 'imx-qbm-dbts';
-import { BehaviorSubject } from 'rxjs';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
+import { BehaviorSubject } from 'rxjs';
 
-import { MultiValueService, AuthenticationService } from 'qbm';
+import { AuthenticationService, MultiValueService } from 'qbm';
 import { PersonService } from 'qer';
 import { ReportSubscription } from '../../report-subscription/report-subscription';
+
+type NameAddress = { name: string; address: string };
 
 @Component({
   selector: 'imx-subscription-overview',
   templateUrl: './subscription-overview.component.html',
-  styleUrls: ['./subscription-overview.component.scss']
+  styleUrls: ['./subscription-overview.component.scss'],
 })
 export class SubscriptionOverviewComponent implements OnInit, OnDestroy {
-
   public userIsMissingEMail = false;
   public additionalRecipientWithoutEmail: string[] = [];
   public setProperties: IEntityColumn[] = [];
@@ -55,14 +55,15 @@ export class SubscriptionOverviewComponent implements OnInit, OnDestroy {
     private readonly multiValue: MultiValueService,
     private readonly busyService: EuiLoadingService,
     private readonly personService: PersonService,
-    authentication: AuthenticationService) {
-    authentication.onSessionResponse.subscribe(state => this.currentUserId = state.UserUid);
+    authentication: AuthenticationService,
+  ) {
+    authentication.onSessionResponse.subscribe((state) => (this.currentUserId = state.UserUid ?? ''));
   }
 
   public ngOnInit(): void {
     if (this.subscribersChanged) {
       this.subscribersChanged.subscribe(async () => {
-        if (this.subscription != null) {
+        if (this.subscription) {
           this.setProperties = this.subscription.getDisplayableColums();
         }
         await this.checkEmailAddresses();
@@ -77,35 +78,37 @@ export class SubscriptionOverviewComponent implements OnInit, OnDestroy {
   }
 
   private async checkEmailAddresses(): Promise<void> {
-    if (this.subscription == null) {
+    if (!this.subscription) {
       return;
     }
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
-
       this.userIsMissingEMail = (await this.getPersonNameAndAddress(this.currentUserId)).address === '';
 
-      const subscribers = this.multiValue.getValues(this.subscription.subscription.AddtlSubscribers.value);
-      const subscriberMails = [];
+      const subscribers = this.multiValue.getValues(this.subscription.subscription.AddtlSubscribers.value) ?? [];
+      const subscriberMails: NameAddress[] = [];
       for (const value of subscribers) {
         const mail = await this.getPersonNameAndAddress(value);
         subscriberMails.push(mail);
       }
       this.additionalRecipientWithoutEmail = subscriberMails
-        .filter(elem => elem.address == null || elem.address === '').map(elem => elem.name);
+        .filter((elem) => elem.address == null || elem.address === '')
+        .map((elem) => elem.name);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
-  private async getPersonNameAndAddress(uid: string): Promise<{ name: string, address: string }> {
+  private async getPersonNameAndAddress(uid: string): Promise<NameAddress> {
     const user = await this.personService.get(uid);
-    return user.Data.length > 0 ? {
-      name: user.Data[0].GetEntity().GetDisplay(),
-      address: user.Data[0].DefaultEmailAddress.value
-    } : null;
+    return user.Data.length > 0
+      ? {
+          name: user.Data[0].GetEntity().GetDisplay(),
+          address: user.Data[0].DefaultEmailAddress.value,
+        }
+      : { name: '', address: '' };
   }
 }
-

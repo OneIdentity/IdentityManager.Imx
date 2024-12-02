@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,11 @@
  *
  */
 
-import { IEntity } from 'imx-qbm-dbts';
-import { PwoData, PortalItshopRequests } from 'imx-api-qer';
+import { PortalItshopRequests, PwoData } from '@imx-modules/imx-api-qer';
+import { IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 import { RequestParameterDataEntity } from '../itshop/request-info/request-parameter-data-entity.interface';
 import { WorkflowDataWrapper } from '../itshop/workflow-data-wrapper';
-import { IEntityColumn } from 'imx-qbm-dbts';
 
 export class ItshopRequest extends PortalItshopRequests implements RequestParameterDataEntity {
   public get orderState(): string {
@@ -39,7 +38,7 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
     return this.UID_QERWorkingMethod.value;
   }
 
-  public readonly parameterColumns: IEntityColumn[];
+  public readonly parameterColumns: (IEntityColumn | undefined)[];
   public readonly propertyInfo: ColumnDependentReference[];
   public readonly canProlongate: boolean;
   public readonly canRecallLastQuestion: boolean;
@@ -51,17 +50,17 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
   public isArchived = false;
   public readonly pwoData: PwoData;
   public readonly canEscalateDecision: boolean;
-  public readonly canCopyItems:boolean;
+  public readonly canCopyItems: boolean;
 
-  constructor(entity: IEntity, pwoData: PwoData, parameterColumns: IEntityColumn[], userUid: string) {
+  constructor(entity: IEntity, pwoData: PwoData, parameterColumns: (IEntityColumn | undefined)[], userUid: string) {
     super(entity);
 
     const isAffectedEmployee = this.UID_PersonInserted.value === userUid || this.UID_PersonOrdered.value === userUid;
 
     // If the user can unsubscribe, we consider that the user can also renew
-    this.canProlongate = this.UiOrderState.value === 'Assigned' && this.UnsubscribeRequestAllowed.value;
-    
-    this.canCopyItems = this.UID_PersonInserted.value === userUid && this.CanCopy.value; 
+    this.canProlongate = this.UnsubscribeRequestAllowed.value;
+
+    this.canCopyItems = this.UID_PersonInserted.value === userUid && this.CanCopy.value;
     if (pwoData) {
       this.pwoData = pwoData;
 
@@ -76,7 +75,7 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
         if (this.UID_PersonHead.value === userUid) {
           this.canRecallDecision = this.pwoData.CanRecallDecision;
 
-          const question = this.pwoData.WorkflowData.Entities.find((entityData) => entityData.Columns.Decision.Value === 'Q');
+          const question = this.pwoData.WorkflowData?.Entities?.find((entityData) => entityData.Columns?.Decision?.Value === 'Q');
 
           this.canRecallLastQuestion = this.IsReserved.value && question != null;
           this.canRevokeHoldStatus = this.IsReserved.value && question == null;
@@ -106,7 +105,7 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
         (property) =>
           property.value != null &&
           property.value !== '' &&
-          !this.parameterColumns.find((column) => column.ColumnName === property.Column.ColumnName)
+          !this.parameterColumns.find((column) => column?.ColumnName === property.Column.ColumnName),
       )
       .map((property) => new BaseReadonlyCdr(property.Column));
 

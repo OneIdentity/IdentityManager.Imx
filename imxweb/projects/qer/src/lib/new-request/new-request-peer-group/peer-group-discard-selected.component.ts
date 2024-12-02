@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,37 +32,35 @@ import { Subscription } from 'rxjs';
 import { NewRequestAddToCartService } from '../new-request-add-to-cart.service';
 import { NewRequestSelectionService } from '../new-request-selection.service';
 
-/** 
- * Component that is displayed when more than one Recipient and at least one product has 
+/**
+ * Component that is displayed when more than one Recipient and at least one product has
  * been selected, asking the user how to handle this situation.
-*/
+ */
 @Component({
   selector: 'imx-peer-group-discard-selected',
   templateUrl: './peer-group-discard-selected.component.html',
-  styleUrls: ['./peer-group-discard-selected.component.scss'],
 })
 export class PeerGroupDiscardSelectedComponent implements OnInit, OnDestroy {
-  
   public readonly dialogMessage =
     '#LDS#Recommended products can only be displayed for one recipient, but you have selected multiple recipients. If you proceed, the selected recipients are reset to one recipient and you have to add your selected products to the shopping cart or discard them.';
 
   private readonly subscriptions: Subscription[] = [];
-  
+
   constructor(
     private readonly router: Router,
     private readonly selection: NewRequestSelectionService,
     private readonly addToCartService: NewRequestAddToCartService,
-    private readonly dialogRef: MatDialogRef<PeerGroupDiscardSelectedComponent>
+    private readonly dialogRef: MatDialogRef<PeerGroupDiscardSelectedComponent>,
   ) {
     this.subscriptions.push(
-      this.dialogRef.keydownEvents().subscribe(event => {
+      this.dialogRef.keydownEvents().subscribe((event) => {
         if (event.key === 'Escape') {
-            this.onDoNotDiscardSelection();
+          this.onDoNotDiscardSelection();
         }
       }),
       this.dialogRef.backdropClick().subscribe(() => {
-        this.onDoNotDiscardSelection()     
-      })
+        this.onDoNotDiscardSelection();
+      }),
     );
   }
 
@@ -75,7 +73,7 @@ export class PeerGroupDiscardSelectedComponent implements OnInit, OnDestroy {
    * @ignore Used internally.
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   /**

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,30 +24,28 @@
  *
  */
 
-import { NgModule } from "@angular/core";
-import { UserProcessComponent } from "./user-process.component";
-import { CommonModule } from "@angular/common";
-import { DateModule, RouteGuardService } from "qbm";
-import { EuiCoreModule, EuiMaterialModule } from "@elemental-ui/core";
-import { TranslateModule } from "@ngx-translate/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RouterModule, Routes } from "@angular/router";
-import { MatCardModule } from "@angular/material/card";
-import { MatTableModule } from "@angular/material/table";
+import { NgModule } from '@angular/core';
+import { UserProcessComponent } from './user-process.component';
+import { CommonModule } from '@angular/common';
+import { DateModule, RouteGuardService } from 'qbm';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
 
 const routes: Routes = [
   {
     path: 'userprocess',
     component: UserProcessComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
-  declarations: [
-    UserProcessComponent
-  ],
+  declarations: [UserProcessComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -60,8 +58,6 @@ const routes: Routes = [
     EuiMaterialModule,
     DateModule,
   ],
-  exports: [
-    UserProcessComponent
-  ],
+  exports: [UserProcessComponent],
 })
 export class UserProcessModule {}

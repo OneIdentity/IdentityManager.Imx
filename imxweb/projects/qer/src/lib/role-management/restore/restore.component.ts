@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { DeletedObjectInfo, UiActionData } from 'imx-api-qer';
-import { DbObjectKey } from 'imx-qbm-dbts';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { DeletedObjectInfo, UiActionData } from '@imx-modules/imx-api-qer';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import { SnackBarService } from 'qbm';
 import { IRoleRestoreContext } from './restore-handler';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 interface RoleForm {
   role: FormControl<DeletedObjectInfo[]>;
@@ -43,8 +43,8 @@ interface RoleForm {
 })
 export class RestoreComponent implements OnInit {
   public wizardForm = new FormGroup<RoleForm>({
-    role: new FormControl<DeletedObjectInfo[]>(undefined,Validators.required),
-    uidActions: new FormControl<string[]>(undefined),
+    role: new FormControl<DeletedObjectInfo[]>([], { nonNullable: true, validators: Validators.required }),
+    uidActions: new FormControl<string[]>([], { nonNullable: true }),
   });
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
@@ -54,13 +54,13 @@ export class RestoreComponent implements OnInit {
     },
     private readonly busySvc: EuiLoadingService,
     private readonly snackbar: SnackBarService,
-    private readonly sidesheetRef: EuiSidesheetRef
+    private readonly sidesheetRef: EuiSidesheetRef,
   ) {}
 
   public busy = false;
   public roles: DeletedObjectInfo[] = [];
   public actions: UiActionData[] = [];
-  private uidRole: string;
+  private uidRole: string | undefined;
 
   public async ngOnInit(): Promise<void> {
     this.roles = [];
@@ -77,9 +77,10 @@ export class RestoreComponent implements OnInit {
     try {
       this.busy = true;
       this.actions = [];
-      this.uidRole = DbObjectKey.FromXml(this.wizardForm.controls.role.value[0].DbObjectKey).Keys[0];
-      this.actions = (await this.data.restore.getRestoreActions(this.uidRole)).Actions;
-			this.wizardForm.controls.uidActions.setValue(this.actions.filter((a) => a.CanExecute).map((a) => a.Id));
+      const key = this.wizardForm.controls.role.value[0].DbObjectKey;
+      this.uidRole = key == null ? undefined : DbObjectKey.FromXml(key).Keys[0];
+      this.actions = this.uidRole == null ? [] : (await this.data.restore.getRestoreActions(this.uidRole))?.Actions || [];
+      this.wizardForm.controls.uidActions.setValue(this.actions.filter((a) => a.CanExecute).map((a) => a.Id || '') || []);
     } finally {
       this.busy = false;
     }
@@ -88,10 +89,14 @@ export class RestoreComponent implements OnInit {
   public async Execute(): Promise<void> {
     const b = this.busySvc.show();
     try {
-      await this.data.restore.restore(this.uidRole, { ActionId: this.wizardForm.controls.uidActions.value });
+      if (this.uidRole != null) {
+        await this.data.restore.restore(this.uidRole, { ActionId: this.wizardForm.controls.uidActions.value });
+      }
 
       this.sidesheetRef.close(true);
-      this.snackbar.open({ key: this.LdsSuccessMessage });
+      if (this.uidRole != null) {
+        this.snackbar.open({ key: this.LdsSuccessMessage });
+      }
     } finally {
       this.busySvc.hide(b);
     }

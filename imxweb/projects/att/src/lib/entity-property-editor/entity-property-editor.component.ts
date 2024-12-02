@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,16 +26,16 @@
 
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
-import { EntityValue } from 'imx-qbm-dbts';
+import { EntityValue } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
 
 @Component({
   selector: 'imx-entity-property-editor',
   templateUrl: './entity-property-editor.component.html',
-  styleUrls: ['./entity-property-editor.component.scss']
+  styleUrls: ['./entity-property-editor.component.scss'],
 })
 export class EntityPropertyEditorComponent implements OnChanges {
-  public cdr: ColumnDependentReference;
+  public cdr: ColumnDependentReference | undefined;
 
   @Input() public property: EntityValue<any>;
   @Input() public hideIfEmpty = true;
@@ -43,8 +43,10 @@ export class EntityPropertyEditorComponent implements OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.property) {
-      this.cdr = this.property && (!this.hideIfEmpty || (this.property.value != null && this.property.value !== '')) ?
-        new BaseCdr(this.property.Column, this.caption) : undefined;
+      this.cdr =
+        this.property && (!this.hideIfEmpty || (this.property.value != null && this.property.value !== ''))
+          ? new BaseCdr(this.property.Column, this.caption)
+          : undefined;
     }
   }
 }

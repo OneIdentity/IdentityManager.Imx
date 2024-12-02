@@ -1,71 +1,87 @@
-<imx-data-source-toolbar #dst
-  [settings]="dstSettings" [itemStatus]="itemStatus"
-  data-imx-identifier="cart-items-dst" hidden>
-</imx-data-source-toolbar>
 <div class="imx-table-container">
-    <imx-data-table [dst]="dst" [detailViewVisible]="false" [selectable]="true" mode="manual"
-        (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="cart-items-data-table">
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-            columnLabel="{{'#LDS#Product' | translate}}" data-imx-identifier="cart-items-data-table-column-default">
-            <ng-template let-cartItem>
-                <div class="imx-display-column">
-                    <div class="imx-placeholder" *ngIf="cartItem.UID_ShoppingCartItemParent.value"></div>
-                    <div>
-                        <imx-cart-item-display [cartItem]="cartItem"></imx-cart-item-display>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ '#LDS#Product' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let cartItem" role="gridcell" class="imx-table-cell">
+        <div class="imx-display-column">
+          <div class="imx-placeholder" *ngIf="cartItem.UID_ShoppingCartItemParent.value"></div>
+          <div>
+            <imx-cart-item-display [cartItem]="cartItem"></imx-cart-item-display>
 
-                        <div class="imx-subtext" *ngIf="cartItem.RequestType.value === 'Prolongate'">
-                            {{'#LDS#Renewal' | translate}}
-                        </div>
-                        <div class="imx-subtext"
-                            *ngIf="['Unsubscribe', 'UnsubscribeWithDate'].includes(cartItem.RequestType.value)">
-                            {{'#LDS#Request cancelation' | translate}}
-                        </div>
+            <div class="imx-subtext" *ngIf="cartItem.RequestType.value === 'Prolongate'">
+              {{ '#LDS#Renewal' | translate }}
+            </div>
+            <div class="imx-subtext" *ngIf="['Unsubscribe', 'UnsubscribeWithDate'].includes(cartItem.RequestType.value)">
+              {{ '#LDS#Request cancelation' | translate }}
+            </div>
 
-                        <div class="imx-subtext" *ngIf="cartItem.UID_ShoppingCartItemParent.value">
-                            {{ (cartItem.IsOptionalChild.value ?
-                                '#LDS#Optional product' :
-                                '#LDS#Mandatory product') | translate
-                            }}
-                        </div>
-                    </div>
-                </div>
-
-            </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column *ngIf="!forLater" [entityColumn]="entitySchema?.Columns.CheckResult" [align]="'center'" [width]="'150px'">
-          <ng-template let-cartItem>
-            <button mat-stroked-button *ngIf="cartItem.CheckResult.value !== CartItemCheckStatus.notChecked"
-              class="imx-validation-button"
-              (click)="showValidationOverview(cartItem)"
-              [color]="setValidationOverviewButtonColor(cartItem)"
-              data-imx-identifier="cartitem-button-checkResult">
-              <div [attr.data-imx-identifier]="'cartitem-button-checkResult-' + CartItemCheckStatus[cartItem.CheckResult.value]">{{cartItem.CheckResult.Column.GetDisplayValue()}}</div>
-            </button>
-            <div *ngIf="cartItem.CheckResult.value === CartItemCheckStatus.notChecked"
-              [attr.data-imx-identifier]="'cartitem-button-checkResult-' + CartItemCheckStatus[cartItem.CheckResult.value]">{{cartItem.CheckResult.Column.GetDisplayValue()}}</div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME]"
-            columnLabel="{{'#LDS#Actions' | translate}}" [align]="'center'">
-            <ng-template let-cartItem>
-                <button mat-stroked-button
-                  [attr.data-imx-identifier]="'cartitem-button-edit-' + cartItem.UID_AccProduct.Column.GetDisplayValue()"
-                  (click)="editCartItem(cartItem)">
-                  {{'#LDS#Edit' | translate }}</button>
-            </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-generic-column columnName="removeItemButton" [columnLabel]="''">
-          <ng-template let-cartItem>
-            <button mat-stroked-button
-              color="warn"
-              *ngIf="cartItem.UID_ShoppingCartItemParent.value == null || cartItem.UID_ShoppingCartItemParent.value === '' || cartItem.IsOptionalChild.value"
-              class="imx-remove-button"
-              [attr.data-imx-identifier]="'cartitem-button-remove-' + cartItem.UID_AccProduct.Column.GetDisplayValue()"
-              (click)="removeHighlightedItem(cartItem)">
-              <eui-icon icon="delete"></eui-icon>
-              {{ removeButtonLabel }}</button>
-          </ng-template>
-        </imx-data-table-generic-column>
-    </imx-data-table>
+            <div class="imx-subtext" *ngIf="cartItem.UID_ShoppingCartItemParent.value">
+              {{ (cartItem.IsOptionalChild.value ? '#LDS#Optional product' : '#LDS#Mandatory product') | translate }}
+            </div>
+          </div>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.CheckResult.ColumnName" *ngIf="!forLater">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.CheckResult?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let cartItem" role="gridcell" class="imx-table-cell">
+        <button
+          mat-stroked-button
+          *ngIf="cartItem.CheckResult.value !== CartItemCheckStatus.notChecked"
+          class="imx-validation-button"
+          (click)="showValidationOverview(cartItem)"
+          [color]="setValidationOverviewButtonColor(cartItem)"
+          data-imx-identifier="cartitem-button-checkResult"
+        >
+          <div [attr.data-imx-identifier]="'cartitem-button-checkResult-' + CartItemCheckStatus[cartItem.CheckResult.value]">
+            {{ cartItem.CheckResult.Column.GetDisplayValue() }}
+          </div>
+        </button>
+        <div
+          *ngIf="cartItem.CheckResult.value === CartItemCheckStatus.notChecked"
+          [attr.data-imx-identifier]="'cartitem-button-checkResult-' + CartItemCheckStatus[cartItem.CheckResult.value]"
+        >
+          {{ cartItem.CheckResult.Column.GetDisplayValue() }}
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_LONG_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ '#LDS#Actions' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let cartItem" role="gridcell" class="imx-table-cell">
+        <button
+          mat-stroked-button
+          [attr.data-imx-identifier]="'cartitem-button-edit-' + cartItem.UID_AccProduct.Column.GetDisplayValue() ?? ''"
+          (click)="editCartItem(cartItem)"
+        >
+          {{ '#LDS#Edit' | translate }}
+        </button>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'removeItemButton'">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let cartItem" role="gridcell" class="imx-table-cell">
+        <button
+          mat-stroked-button
+          color="warn"
+          *ngIf="
+            cartItem.UID_ShoppingCartItemParent.value == null ||
+            cartItem.UID_ShoppingCartItemParent.value === '' ||
+            cartItem.IsOptionalChild.value
+          "
+          class="imx-button-icon-14"
+          [attr.data-imx-identifier]="'cartitem-button-remove-' + cartItem.UID_AccProduct.Column.GetDisplayValue() ?? ''"
+          (click)="removeHighlightedItem(cartItem)"
+        >
+          <eui-icon icon="delete"></eui-icon>
+          {{ removeButtonLabel }}
+        </button>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
 </div>
-

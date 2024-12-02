@@ -1,0 +1,90 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
+:host {
+  @include flex-column-container-fill();
+  height: 100%;
+
+  .imx-bold-text {
+    font-weight: 900;
+    vertical-align: sub;
+  }
+
+  .imx-filter-sheet {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: inherit;
+  }
+
+  .imx-tree-control {
+    @include flex-row-container-fill();
+  }
+
+  .imx-top-line {
+    @include flex-row-container-fill();
+    overflow: hidden;
+    align-items: center;
+    p {
+      flex: 1 1 auto;
+      overflow: hidden;
+
+      @include flex-row-container-fill();
+      span {
+        vertical-align: middle;
+        text-wrap: nowrap;
+      }
+
+      span[boldtext] {
+        font-weight: 700;
+        margin-right: 10px;
+      }
+
+      span[content] {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+:host {
+  .imx-filter-tree-node.imx-selected-text {
+    color: $color-orange-60;
+    .eui-icon {
+      color: $color-orange-60;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-filter-tree-node {
+      color: $color-gray-0;
+    }
+
+    .imx-filter-tree-node.imx-selected-text {
+      color: $color-orange-40;
+      .eui-icon {
+        color: $color-orange-40;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-filter-tree-node {
+      color: $color-gray-0;
+    }
+
+    .imx-filter-tree-node.imx-selected-text {
+      color: $color-orange-80;
+      .eui-icon {
+        color: $color-orange-80;
+      }
+    }
+  }
+}

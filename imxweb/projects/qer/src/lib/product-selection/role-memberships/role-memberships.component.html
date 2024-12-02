@@ -1,7 +1,14 @@
 <ng-container *ngIf="dstSettings">
-  <imx-data-source-toolbar #dst [options]="options" [settings]="dstSettings"
-    (search)="getData({ search: $event })" (viewSelectionChanged)="viewSelectionChanged($event)" [initalView]="dataSourceView.selected"
-    (navigationStateChanged)="getData($event)" data-imx-identifier="rolememberships-dst">
+  <imx-data-source-toolbar
+    #dst
+    [options]="options"
+    [settings]="dstSettings"
+    (search)="getData({ search: $event })"
+    (viewSelectionChanged)="viewSelectionChanged($event)"
+    [initalView]="dataSourceView.selected"
+    (navigationStateChanged)="getData($event)"
+    data-imx-identifier="rolememberships-dst"
+  >
   </imx-data-source-toolbar>
   <div class="imx-data-view-container" *ngIf="!isLoading">
     <imx-data-tiles
@@ -9,28 +16,36 @@
       *ngIf="dataSourceView.selected === 'cardlist'"
       height="150px"
       [dst]="dst"
-      (selectionChanged)="selectionChanged.emit($event)"
+      (selectionChanged)="onSelectionChanged($event)"
       [useActionMenu]="false"
       fallbackIcon="request"
       [noItemsFoundText]="noDataText"
       [selectable]="true"
       [actions]="[{ name: 'edit', description: '#LDS#Add to cart' | translate }]"
       [titleObject]="dstWrapper?.propertyDisplay"
-      [subtitleObject]="dstSettings.entitySchema?.Columns.FullPath"
-      (actionSelected)="addItemToCart.emit($event.typedEntity)"
+      [subtitleObject]="dstSettings.entitySchema?.Columns?.FullPath"
+      (actionSelected)="onActionSelected($event.typedEntity)"
       [contentTemplate]="peerGroupDisplay"
     >
     </imx-data-tiles>
-    <imx-data-table *ngIf="dataSourceView.selected === 'table'" mode="manual"
-      [dst]="dst" [detailViewVisible]="false" data-imx-identifier="rolememberships-datatable" [noDataText]="noDataText"
-      [selectable]="true" (selectionChanged)="selectionChanged.emit($event)" [showSelectedItemsMenu]="false">
+    <imx-data-table
+      *ngIf="dataSourceView.selected === 'table'"
+      mode="manual"
+      [dst]="dst"
+      [detailViewVisible]="false"
+      data-imx-identifier="rolememberships-datatable"
+      [noDataText]="noDataText"
+      [selectable]="true"
+      (selectionChanged)="onSelectionChanged($event)"
+      [showSelectedItemsMenu]="false"
+    >
       <imx-data-table-column [entityColumn]="dstWrapper?.propertyDisplay">
         <ng-template let-item>
           <p>{{ item.GetEntity().GetDisplay() }}</p>
           <ng-container *ngTemplateOutlet="peerGroupDisplay; context: { $implicit: item }"></ng-container>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="dstSettings.entitySchema?.Columns.FullPath"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="dstSettings.entitySchema?.Columns?.FullPath"></imx-data-table-column>
       <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="'#LDS#Request' | translate">
         <ng-template let-item>
           <button
@@ -45,13 +60,16 @@
       </imx-data-table-generic-column>
     </imx-data-table>
   </div>
-  <imx-data-source-paginator data-imx-identifier="rolememberships-paginator" [dst]="dst" *ngIf="!isLoading">
-  </imx-data-source-paginator>
+  <imx-data-source-paginator data-imx-identifier="rolememberships-paginator" [dst]="dst" *ngIf="!isLoading"> </imx-data-source-paginator>
 </ng-container>
 
 <ng-template #peerGroupDisplay let-item>
   <ng-container *ngIf="personPeerGroupUid">
-    <imx-peer-group [item]="item" [peerGroupSize]="dstWrapper?.extendedData?.PeerGroupSize" [width]="dataSourceView.selected === 'cardlist' ? '140px' : '100%'">
+    <imx-peer-group
+      [item]="item"
+      [peerGroupSize]="dstWrapper?.extendedData?.PeerGroupSize"
+      [width]="dataSourceView.selected === 'cardlist' ? '140px' : '100%'"
+    >
     </imx-peer-group>
   </ng-container>
 </ng-template>

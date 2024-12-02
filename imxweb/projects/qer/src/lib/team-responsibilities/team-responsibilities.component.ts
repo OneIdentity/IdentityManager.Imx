@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,132 +25,192 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { TeamResponsibilitiesService } from './team-responsibilities.service';
-import { BusyService, ClientPropertyForTableColumns, DataModelWrapper, DataSourceToolbarFilter, DataSourceToolbarSettings, DataSourceWrapper } from 'qbm';
-import { PortalRespTeamResponsibilities, ResponsibilitiesExtendedData, ResponsibilityData } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ValType } from 'imx-qbm-dbts';
-import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { PortalRespTeamResponsibilities, ResponsibilitiesExtendedData, ResponsibilityData } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, ValType } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { BusyService, calculateSidesheetWidth, ClientPropertyForTableColumns, DataViewInitParameters, DataViewSource } from 'qbm';
+import { TeamResponsibilitiesService } from './team-responsibilities.service';
+import { TeamResponsibilityAssignSidesheetComponent } from './team-responsibility-assign-sidesheet/team-responsibility-assign-sidesheet.component';
+import { TeamResponsibilityDialogComponent } from './team-responsibility-dialog/team-responsibility-dialog.component';
 import { TeamResponsibilitySidesheetComponent } from './team-responsibility-sidesheet/team-responsibility-sidesheet.component';
 
 @Component({
   selector: 'imx-team-responsibilities',
   templateUrl: './team-responsibilities.component.html',
   styleUrls: ['./team-responsibilities.component.scss'],
+  providers: [DataViewSource],
 })
 export class TeamResponsibilitiesComponent implements OnInit {
-  public dataModelWrapper: DataModelWrapper;
-  public dstWrapper: DataSourceWrapper<PortalRespTeamResponsibilities, ResponsibilitiesExtendedData>;
   public entitySchema: EntitySchema;
-  public dstSettings: DataSourceToolbarSettings;
   public busyService = new BusyService();
   public displayColumns: ClientPropertyForTableColumns[];
+  public tableSelection: PortalRespTeamResponsibilities[] = [];
+  public customFilterValue = true;
+  public extendedData: Map<string, ResponsibilityData | undefined> = new Map();
 
   constructor(
     private readonly teamResponsibilitiesService: TeamResponsibilitiesService,
     private readonly sideSheet: EuiSidesheetService,
-    private readonly translateService: TranslateService
+    private readonly translateService: TranslateService,
+    public dataSource: DataViewSource<PortalRespTeamResponsibilities, ResponsibilitiesExtendedData>,
+    private readonly dialogService: MatDialog,
   ) {
     this.entitySchema = this.teamResponsibilitiesService.responsibilitySchema;
   }
 
   public async ngOnInit(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    try {
-      this.dataModelWrapper = {
-        dataModel: await this.teamResponsibilitiesService.getDataModel(),
-      };
-    } finally {
-      isBusy.endBusy();
-    }
     this.setDisplayColumns();
-    this.dstWrapper = new DataSourceWrapper(
-      (state) => this.teamResponsibilitiesService.get(state),
-      this.displayColumns,
-      this.entitySchema,
-      this.dataModelWrapper,
-      'team-responsibilites',
-    );
-    this.getInitialData();
+    this.setupDataSource();
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
-    const isbusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
-    } finally {
-      isbusy.endBusy();
-    }
+  public isActionNeeded(responsibility: PortalRespTeamResponsibilities): boolean {
+    return !!responsibility.ExitDate.value || responsibility.PersonIsInactive.value;
   }
 
-  public isResponsibilityOrphaned(responsibility: PortalRespTeamResponsibilities): boolean {
+  public identitiesCount(responsibility: PortalRespTeamResponsibilities): number {
     const extendedData = this.getExtendedData(responsibility);
-    return extendedData?.OtherIdentities?.length == 0;
+    return 1 + (extendedData?.OtherIdentities || []).length;
   }
-  public isResponsibilityDeletable(responsibility: PortalRespTeamResponsibilities): boolean {
-    const extendedData = this.getExtendedData(responsibility);
-    return extendedData?.CanDelete;
+  public isResponsibilitiesDeletable(): boolean {
+    return this.tableSelection.some((responsibility) => !!responsibility.UID_SourceColumn.value);
   }
 
-  public onDeleteResponsibility(responsibility: PortalRespTeamResponsibilities): void {
-    console.log(responsibility);
+  public isDirectResponsibility(responsibility: PortalRespTeamResponsibilities): boolean {
+    return !!responsibility.UID_SourceColumn.value;
+  }
+
+  public onCustomFilterChange(): void {
+    this.dataSource.selection.clear();
+    this.dataSource.updateState();
   }
 
   public onOpenDetails(responsibility: PortalRespTeamResponsibilities): void {
     const extendedData = this.getExtendedData(responsibility);
-    this.sideSheet.open(TeamResponsibilitySidesheetComponent, {
-      title: this.translateService.instant('#LDS#Heading Other Identities Responsible for the Object'),
-      subTitle: responsibility.DisplayName.Column.GetDisplayValue(),
-      padding: '0',
-      width: 'max(600px, 60%)',
-      disableClose: false,
-      testId: 'team-responsibilities-sidesheet',
-      data: {
-        extendedData,
-      },
-    });
+    this.sideSheet
+      .open(TeamResponsibilitySidesheetComponent, {
+        title: this.translateService.instant('#LDS#Heading View Responsibility Details'),
+        subTitle: responsibility.GetEntity().GetDisplayLong(),
+        icon: 'info',
+        padding: '0',
+        width: calculateSidesheetWidth(600, 0.4),
+        disableClose: false,
+        testId: 'team-responsibilities-sidesheet',
+        data: {
+          extendedData,
+          responsibility,
+        },
+      })
+      .afterClosed()
+      .subscribe((reload: boolean) => {
+        if (reload) {
+          this.dataSource.selection.clear();
+          this.dataSource.updateState();
+        }
+      });
   }
 
-  private getExtendedData(responsibility: PortalRespTeamResponsibilities): ResponsibilityData {
-    const index = this.dstSettings.dataSource.Data.indexOf(responsibility);
-    return this.dstWrapper.extendedData?.Data[index];
-  }
-
-  private async getInitialData(): Promise<void> {
-    const filters: DataSourceToolbarFilter[] = this.dataModelWrapper.dataModel.Filters;
-    filters.map( filter => {
-      if(filter.Name === 'forinactive'){
-        filter.InitialValue = '1';
-      }
-    })
-    const isbusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = {
-        dataSource: {Data: [], totalCount: 0},
-        entitySchema: this.entitySchema,
-        filters,
-        navigationState: {'forinactive': '1'},
-        displayedColumns: this.displayColumns
-      };
-    } finally {
-      isbusy.endBusy();
+  public onDeleteResponsibilities(): void {
+    if (!!this.tableSelection.length) {
+      this.dialogService
+        .open(TeamResponsibilityDialogComponent, { data: this.tableSelection })
+        .afterClosed()
+        .subscribe(async (result) => {
+          if (result) {
+            await this.teamResponsibilitiesService.removeResponsibilities(this.tableSelection);
+            this.dataSource.selection.clear();
+            this.dataSource.updateState();
+          }
+        });
     }
   }
 
-  private setDisplayColumns():void{
-    this.displayColumns =
-    [
+  public onReassignResponsibilities(): void {
+    const responsibilities: PortalRespTeamResponsibilities[] = [];
+    this.tableSelection.map((responsibility, index) => {
+      if (responsibilities.every((resp) => resp.XObjectKey.value !== responsibility.XObjectKey.value)) {
+        responsibilities.push(responsibility);
+      }
+    });
+    const extendedData: (ResponsibilityData | undefined)[] = responsibilities.map((responsibility) => this.getExtendedData(responsibility));
+    this.sideSheet
+      .open(TeamResponsibilityAssignSidesheetComponent, {
+        title: this.translateService.instant(
+          responsibilities.length > 1 ? '#LDS#Heading Reassign Responsibilities' : '#LDS#Heading Reassign Responsibility',
+        ),
+        subTitle: responsibilities.length > 1 ? undefined : responsibilities[0].GetEntity().GetDisplay(),
+        icon: 'forward',
+        padding: '0',
+        width: calculateSidesheetWidth(600, 0.4),
+        testId: 'team-responsibilities-assign-sidesheet',
+        data: { responsibility: responsibilities, reassign: true, extendedData },
+      })
+      .afterClosed()
+      .subscribe((result: boolean) => {
+        if (result) {
+          this.dataSource.selection.clear();
+          this.dataSource.updateState();
+        }
+      });
+  }
+
+  private async setupDataSource(): Promise<void> {
+    let dataModel = await this.teamResponsibilitiesService.getDataModel();
+    dataModel = { ...dataModel, Filters: dataModel.Filters?.filter((filter) => filter.Name !== 'forinactive') };
+    this.dataSource.itemStatus = {
+      enabled: (entity: PortalRespTeamResponsibilities) => !entity.UID_SourceColumn.value,
+    };
+    const dataViewInitParameters: DataViewInitParameters<PortalRespTeamResponsibilities> = {
+      execute: async (
+        params: CollectionLoadParameters,
+        signal: AbortSignal,
+      ): Promise<ExtendedTypedEntityCollection<PortalRespTeamResponsibilities, ResponsibilitiesExtendedData>> => {
+        const data = await this.teamResponsibilitiesService.get(
+          { ...params, forinactive: this.customFilterValue ? '1' : undefined },
+          signal,
+        );
+        data.Data.map((item, index) => {
+          this.extendedData.set(item.GetEntity().GetKeys().join(','), data.extendedData?.Data?.[index]);
+        });
+        data.extendedData;
+        return data;
+      },
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayColumns,
+      dataModel,
+      highlightEntity: (identity: PortalRespTeamResponsibilities) => {
+        this.onOpenDetails(identity);
+      },
+      selectionChange: (selection: PortalRespTeamResponsibilities[]) => {
+        this.tableSelection = selection;
+      },
+      groupExecute: (column, params, signal) => this.teamResponsibilitiesService.getGroups(column, params, signal),
+    };
+    this.dataSource.init(dataViewInitParameters);
+  }
+
+  private getExtendedData(responsibility: PortalRespTeamResponsibilities): ResponsibilityData | undefined {
+    return this.extendedData.get(responsibility.GetEntity().GetKeys().join(','));
+  }
+
+  private setDisplayColumns(): void {
+    this.displayColumns = [
       this.entitySchema.Columns.DisplayName,
       {
-        ColumnName: 'badges',
+        ColumnName: 'type',
+        Type: ValType.String,
+      },
+      this.entitySchema.Columns.ExitDate,
+      {
+        ColumnName: 'status',
         Type: ValType.String,
       },
       this.entitySchema.Columns.UID_Person,
-      // TODO Work item: #426008
-      // {
-      //   ColumnName: 'actions',
-      //   Type: ValType.String,
-      // },
+      {
+        ColumnName: 'identitiesCount',
+        Type: ValType.String,
+      },
     ];
   }
 }

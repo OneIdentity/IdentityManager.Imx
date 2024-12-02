@@ -1,0 +1,63 @@
+/* Elemental UI */
+
+eui-sidesheet {
+  .eui-sidesheet {
+    .mat-toolbar {
+      justify-content: start;
+      .eui-sidesheet__heading-text {
+        flex-basis: auto;
+      }
+      imx-help-contextual {
+        .mat-icon-button {
+          color: $color-gray-0;
+        }
+      }
+      .eui-sidesheet-close {
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+/* Angular Material */
+
+.mat-toolbar {
+  background-color: inherit;
+}
+
+.mat-toolbar > button {
+  margin-left: 5px;
+}
+/* Imx */
+
+/* Light theme */
+.mat-toolbar {
+  color: $color-gray-100;
+}
+
+/* Dark theme */
+
+.eui-dark-theme {
+  .mat-toolbar {
+    color: $color-gray-10;
+  }
+
+  .eui-sidesheet {
+    .mat-toolbar {
+      background-color: $color-blue-80;
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .mat-toolbar {
+    color: $color-gray-0;
+  }
+
+  .eui-sidesheet {
+    .mat-toolbar {
+      background-color: $color-blue-90;
+    }
+  }
+}

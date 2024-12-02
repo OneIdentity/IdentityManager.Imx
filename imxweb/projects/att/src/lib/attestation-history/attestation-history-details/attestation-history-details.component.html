@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab label="{{ '#LDS#Heading Information' | translate }}" data-imx-identifier="attestation-history-detail-tab-properties">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
@@ -11,7 +11,10 @@
           </div>
         </mat-card>
         <ng-container *ngIf="reportType != 'PDF' && case != null">
-          <imx-attestation-snapshot [uidCase]="case.key" [date]="case.GetEntity().GetColumn('XDateInserted').GetDisplayValue()"></imx-attestation-snapshot>
+          <imx-attestation-snapshot
+            [uidCase]="case.key"
+            [date]="case.GetEntity().GetColumn('XDateInserted').GetDisplayValue()"
+          ></imx-attestation-snapshot>
         </ng-container>
       </div>
     </ng-template>
@@ -20,9 +23,29 @@
     <ng-template matTabContent>
       <div eui-sidesheet-content>
         <mat-card>
-          <imx-decision-history-item *ngFor="let workflowHistoryEntity of workflowHistoryData" [workflowHistoryEntity]="workflowHistoryEntity"> </imx-decision-history-item>
+          <imx-decision-history-item
+            *ngFor="let workflowHistoryEntity of workflowHistoryData"
+            [workflowHistoryEntity]="workflowHistoryEntity"
+          >
+          </imx-decision-history-item>
           <imx-approvers *ngIf="approvers" [approvers]="approvers"></imx-approvers>
         </mat-card>
+      </div>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}" *ngIf="this.relatedOptions.length > 0">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content class="imx-attestation-history-hyperview">
+        <mat-form-field appearance="outline" *ngIf="relatedOptions.length > 1">
+          <mat-label>{{ '#LDS#Related objects' | translate }}</mat-label>
+          <mat-select required (selectionChange)="setHyperviewObject()" [(value)]="selectedOption">
+            <mat-option *ngFor="let relatedOption of relatedOptions" [value]="relatedOption">
+              {{ relatedOption.Display }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <imx-object-hyperview *ngIf="!!selectedOption" [objectType]="selectedHyperviewType" [objectUid]="selectedHyperviewUID">
+        </imx-object-hyperview>
       </div>
     </ng-template>
   </mat-tab>
@@ -31,7 +54,7 @@
 <div eui-sidesheet-actions *ngIf="allowedActionCount > 0">
   <ng-container *ngIf="showApprovalActions; else historyActions">
     <button
-      class="imx-justify-right"
+      class="justify-start"
       *ngIf="case?.SupportsAssignmentAnalysis?.value"
       mat-stroked-button
       data-imx-identifier="attestation-history-details-button-assignment-analysis-approval"
@@ -40,16 +63,33 @@
       {{ '#LDS#View assignment analysis' | translate }}
     </button>
 
-    <button *ngIf="reportType === 'PDF'" data-imx-identifier="attestation-history-details-button-download-report-approval" mat-stroked-button [euiDownload]="reportDownload">
+    <button
+      *ngIf="reportType === 'PDF'"
+      data-imx-identifier="attestation-history-details-button-download-report-approval"
+      mat-stroked-button
+      [euiDownload]="reportDownload"
+    >
       {{ '#LDS#Download report' | translate }}
     </button>
 
-    <button *ngIf="canDecide" mat-flat-button color="warn" data-imx-identifier="attestation-history-detail-button-deny" (click)="attestationAction.deny([case])">
-      <mat-icon>not_interested</mat-icon>
+    <button
+      mat-flat-button
+      color="warn"
+      data-imx-identifier="attestation-history-detail-button-deny"
+      (click)="attestationAction.deny([case])"
+      *ngIf="canDecide"
+    >
+      <eui-icon icon="ignore"></eui-icon>
       <span translate>#LDS#Deny</span>
     </button>
 
-    <button *ngIf="canDecide" mat-flat-button color="primary" data-imx-identifier="attestation-history-detail-button-approve" (click)="attestationAction.approve([case])">
+    <button
+      mat-flat-button
+      color="primary"
+      data-imx-identifier="attestation-history-detail-button-approve"
+      (click)="attestationAction.approve([case])"
+      *ngIf="canDecide"
+    >
       <eui-icon icon="check"></eui-icon>
       <span translate>#LDS#Approve</span>
     </button>
@@ -58,7 +98,7 @@
 
 <ng-template #historyActions>
   <button
-    class="imx-justify-right"
+    class="justify-start"
     *ngIf="case?.SupportsAssignmentAnalysis?.value"
     mat-stroked-button
     data-imx-identifier="attestation-history-details-button-assignment-analysis-history"
@@ -69,13 +109,18 @@
   <button
     mat-stroked-button
     *ngIf="case.canWithdrawDelegation(userUid)"
-    (click)="attestationAction.revokeDelegation([case])"
+    (click)="attestationAction.revokeAdditional([case])"
     data-imx-identifier="attestation-history-detail-withdraw-delegation-history"
   >
     {{ '#LDS#Withdraw additional attestor' | translate }}
   </button>
 
-  <button *ngIf="reportType === 'PDF'" data-imx-identifier="attestation-history-details-button-download-report-history" mat-stroked-button [euiDownload]="reportDownload">
+  <button
+    *ngIf="reportType === 'PDF'"
+    data-imx-identifier="attestation-history-details-button-download-report-history"
+    mat-stroked-button
+    [euiDownload]="reportDownload"
+  >
     {{ '#LDS#Download report' | translate }}
   </button>
   <button

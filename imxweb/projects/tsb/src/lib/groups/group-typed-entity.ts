@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,20 @@
  *
  */
 
-import { IEntityColumn, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { IEntityColumn, WriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { CdrFactoryService } from 'qbm';
 
 export class GroupTypedEntity extends WriteExtTypedEntity<any> {
   public getColumns(showRiskIndex: boolean, propertyList: string[]): ReadonlyArray<IEntityColumn> {
-
     // TODO: for each property, determine from dynamic entity schema (282445)
 
-    if (propertyList.indexOf('DisplayName') === -1) {
+    if (!propertyList.includes('DisplayName')) {
       propertyList.unshift('DisplayName');
     }
 
-    if (showRiskIndex && propertyList.indexOf('RiskIndex') === -1) {
+    if (showRiskIndex && !propertyList.includes('RiskIndex')) {
       propertyList.push('RiskIndex');
     }
-
-    return propertyList.map(elem=> CdrFactoryService.tryGetColumn(this.GetEntity(),elem)).filter(elem=>elem != null);
+    return propertyList.map((elem) => CdrFactoryService.tryGetColumn(this.GetEntity(), elem)).filter(Boolean) as IEntityColumn[];
   }
 }

@@ -1,5 +1,5 @@
-@import '../../../../../shared/scss/common-table.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
   display: flex;
@@ -8,12 +8,8 @@
   flex: 1 1 auto;
 }
 
-.imx-button-bar {
-  @include imx-button-bar();
-}
-
 .imx-request-table-card {
- @include imx-flex-fill-control-hidden-overflow();
+  @include flex-column-container-fill();
 }
 
 imx-data-table {
@@ -24,6 +20,7 @@ imx-data-table {
   display: flex;
   :last-child {
     flex-grow: 1;
+    display:block;
   }
 }
 

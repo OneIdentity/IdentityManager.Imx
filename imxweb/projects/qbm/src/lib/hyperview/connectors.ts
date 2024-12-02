@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,13 +35,11 @@ interface Coord {
  * Class managing the connectors for a hyperview control.
  */
 export class Connectors {
-
   public readonly connectorList: Connector[];
 
   public readonly maxValue = { X: 0, Y: 0 };
 
   constructor(connectors: Connector[]) {
-
     // get connectors from xml
     this.connectorList = connectors;
 
@@ -52,7 +50,6 @@ export class Connectors {
    * Repaints all connectors.
    */
   private repaintAllConnectors(): void {
-
     // reset maxValue
     this.maxValue.X = 0;
     this.maxValue.Y = 0;
@@ -66,7 +63,6 @@ export class Connectors {
    * Draws a connector between two shapes.
    */
   private drawConnector(connector: Connector): void {
-
     // get centerpoints of both shapes
     const p1 = this.centerPoint(connector.element1);
     const p2 = this.centerPoint(connector.element2);
@@ -82,10 +78,10 @@ export class Connectors {
       m = deltaY / deltaX;
     }
     if (m < 0) {
-      middle = (p1.X + (deltaX * 0.3));
+      middle = p1.X + deltaX * 0.3;
       curveCoords += middle + ' ' + p1.Y + ' ' + middle + ' ' + p2.Y;
     } else {
-      middle = (p1.Y + (deltaY * 0.3));
+      middle = p1.Y + deltaY * 0.3;
       curveCoords += p1.X + ' ' + middle + ' ' + p2.X + ' ' + middle;
     }
     curveCoords += ' ' + p2.X + ' ' + p2.Y;
@@ -102,8 +98,8 @@ export class Connectors {
    */
   private centerPoint(element: HTMLElement): Coord {
     return {
-      X: Math.round(element.offsetLeft + (element.offsetWidth / 2)),
-      Y: Math.round(element.offsetTop + (element.offsetHeight / 2))
+      X: Math.round(element.offsetLeft + element.offsetWidth / 2),
+      Y: Math.round(element.offsetTop + element.offsetHeight / 2),
     };
   }
 }

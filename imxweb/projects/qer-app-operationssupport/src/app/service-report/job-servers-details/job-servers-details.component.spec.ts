@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,24 +28,25 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { JobServersDetailsComponent } from './job-servers-details.component';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 describe('JobServersDetailsComponent', () => {
   let component: JobServersDetailsComponent;
   let fixture: ComponentFixture<JobServersDetailsComponent>;
   const sidesheetData = {
-    Tags:[],
-    MachineRoles:[]
+    Tags: [],
+    MachineRoles: [],
   };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ JobServersDetailsComponent ],
-      providers:[
+      declarations: [JobServersDetailsComponent],
+      imports: [TranslateModule.forRoot()],
+      providers: [
         {
           provide: EUI_SIDESHEET_DATA,
-          useValue: sidesheetData
-        }
-      ]
-    })
-    .compileComponents();
+          useValue: sidesheetData,
+        },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {

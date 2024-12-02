@@ -1,28 +1,39 @@
-<eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false">
-  {{ '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.' | translate }}
+<eui-alert class="imx-margin-top-20" [condensed]="true" [colored]="true" type="info" [dismissable]="false">
+  {{
+    '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.'
+      | translate
+  }}
 </eui-alert>
 <mat-card class="imx-memberships">
-  <imx-data-source-toolbar
-    #dst
-    [settings]="dstSettings"
-    [busyService]="busyService"
-    [options]="['search']"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
-  ></imx-data-source-toolbar>
-
-  <div class="imx-membership-table">
-    <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="group-memberships-ext-table" (highlightedEntityChanged)="onShowDetails($event)" mode="manual">
-      <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-        <ng-template let-item>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+        <div class="fill-cell">
           <div data-imx-identifier="group-memberships-ext-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
-          <div *ngIf="item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()" subtitle>
+          @if (item.XIsInEffect?.value !== true) {
+            <eui-badge class="imx-margin-left-auto" color="primary">{{ '#LDS#Not effective' | translate }}</eui-badge>
+          }
+        </div>
+        @if (item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()) {
+          <div subtitle>
             {{ item.GetEntity().GetDisplayLong() }}
           </div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-column *ngFor="let displayColumn of displayColumns" [entityColumn]="displayColumn"> </imx-data-table-column>
-    </imx-data-table>
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-  </div>
+        }
+      </td>
+    </ng-container>
+
+    @for (column of displayColumns; track column.ColumnName) {
+      <ng-container [matColumnDef]="column.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>{{ column.Display }}</th>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          {{ item.GetEntity().GetColumn(column.ColumnName)?.GetDisplayValue() }}
+        </td>
+      </ng-container>
+    }
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>

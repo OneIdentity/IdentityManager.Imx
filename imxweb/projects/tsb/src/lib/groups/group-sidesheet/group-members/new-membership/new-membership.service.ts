@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { RequestableProductForPerson } from 'imx-api-qer';
-import { PortalTargetsystemUnsGroupServiceitem } from 'imx-api-tsb';
-import { IForeignKeyInfo, TypedEntity, ValueStruct } from 'imx-qbm-dbts';
-import { ShelfService, QerApiService, UserModelService } from 'qer';
+import { RequestableProductForPerson } from '@imx-modules/imx-api-qer';
+import { PortalTargetsystemUnsGroupServiceitem } from '@imx-modules/imx-api-tsb';
+import { IForeignKeyInfo, TypedEntity, ValueStruct } from '@imx-modules/imx-qbm-dbts';
+import { QerApiService, ShelfService, UserModelService } from 'qer';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +40,7 @@ export class NewMembershipService {
     private readonly itShop: ShelfService,
     private readonly qerClient: QerApiService,
     private readonly busyService: EuiLoadingService,
-    private readonly userService: UserModelService
+    private readonly userService: UserModelService,
   ) {}
 
   public async requestMembership(members: ValueStruct<string>[], product: PortalTargetsystemUnsGroupServiceitem): Promise<boolean> {
@@ -52,23 +51,25 @@ export class NewMembershipService {
       return false;
     }
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    this.busyService.show();
 
     try {
-      items = items.filter((elem) => elem.UidITShopOrg != null && elem.UidITShopOrg !== '');
+      items = items.filter((elem) => elem.UidITShopOrg && elem.UidITShopOrg.length > 0);
+
+      const promises: Promise<any>[] = [];
 
       for (const item of items) {
-        const entity = this.qerClient.typedClient.PortalCartitem.createEntity();
-        entity.UID_ITShopOrg.value = item.UidITShopOrg;
-        entity.UID_PersonOrdered.value = item.UidPerson;
-        await this.qerClient.typedClient.PortalCartitem.Post(entity);
+        if (item.UidITShopOrg && item.UidPerson) {
+          const entity = this.qerClient.typedClient.PortalCartitem.createEntity();
+          entity.UID_ITShopOrg.value = item.UidITShopOrg;
+          entity.UID_PersonOrdered.value = item.UidPerson;
+          promises.push(this.qerClient.typedClient.PortalCartitem.Post(entity));
+        }
       }
+      await Promise.all(promises);
       await this.userService.reloadPendingItems();
     } finally {
-      setTimeout(() => {
-        this.busyService.hide(busyIndicator);
-      });
+      this.busyService.hide();
     }
     return true;
   }
@@ -83,7 +84,7 @@ export class NewMembershipService {
 
   private getServiceItemsForPersons(
     serviceItem: PortalTargetsystemUnsGroupServiceitem,
-    recipients: ValueStruct<string>[]
+    recipients: ValueStruct<string>[],
   ): RequestableProductForPerson[] {
     return recipients
       .map((recipient) => ({
@@ -92,6 +93,6 @@ export class NewMembershipService {
         Display: serviceItem.GetEntity().GetDisplay(),
         DisplayRecipient: recipient.DisplayValue,
       }))
-      .reduce((a, b) => a.concat(b), []);
+      .reduce((a: RequestableProductForPerson[], b) => a.concat(b), []);
   }
 }

@@ -1,35 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-.eui-sidesheet-content {
-  padding: 0;
-
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.eui-sidesheet-actions {
-  .justify-start {
-    margin-right: auto;
-
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
-
-  button:not(:last-of-type):not(.justify-start) {
-    margin-right: 10px;
-  }
-}
-
-.imx-helper-alert {
-  width: 100%;
-  ::ng-deep .eui-alert {
-    margin-bottom: 20px;
-  }
-}
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .imx-security-badge {
   font-weight: 600;
@@ -43,69 +12,13 @@
   overflow: auto;
 }
 
-
 .imx-account-ext {
   padding: 30px 30px 0px 30px;
 }
 
-.imx-toggle-container{
-  margin-bottom:16px;
-  >* {margin-right:20px;}
-}
-
-.governance-sidesheet__tab-content-body {
-  &.imx-requests, &.imx-history {
-    .mat-card {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-  }
-}
-
 .governance-sidesheet__tab-content {
-  .mat-progress-spinner {
-    margin: auto;
-  }
-
   imx-hyperview {
     overflow: hidden;
-  }
-}
-
-.imx-nested-group{
-  &.eui-sidesheet-content{
-    padding: 20px;
-    .mat-card{
-      height: 100%;
-      padding: 0;
-      .mat-card{
-        box-shadow: none;
-      }
-      ::ng-deep .mat-tab-group{
-        border-radius: 4px;
-        imx-object-hyperview{
-          .imx-tab-content-body{
-            padding: 0;
-          }
-        }
-        .mat-ink-bar{
-          background-color: $color-blue-90;
-        }
-        .governance-sidesheet{
-          &__tab-content-body{
-            ng-component{
-              height: 100%;
-              .mat-card{
-                padding: 0;
-                box-shadow: none;
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
 
@@ -114,86 +27,5 @@
     margin: 10px 0 5px;
     display: block;
     width: 100%;
-  }
-}
-
-::ng-deep .mat-tab-group {
-  height: 100%;
-  flex-grow: 1;
-  overflow: auto;
-
-  .mat-tab-header {
-    padding: 0 32px;
-    background-color: $white;
-  }
-
-  ::ng-deep .mat-tab-body-wrapper {
-    height: 100%;
-  }
-
-  .imx-edit-fk-open-picker {
-    display: none;
-  }
-}
-
-.eui-sidesheet-actions {
-  > *:not(:first-child) {
-    margin-left: 10px;
-  }
-}
-
-.justify-start {
-  margin-right: auto;
-  justify-self: start;
-}
-
-//Theming
-
-.eui-dark-theme {
-  :host {
-    .governance-sidesheet {
-      background: $color-gray-80;
-      ::ng-deep .mat-tab-group .mat-tab-header {
-        background-color: $color-gray-80;
-      }
-      ::ng-deep .mat-tab-label {
-        background-color: $color-gray-80;
-      }
-
-    }
-    .imx-nested-group{
-      ::ng-deep .mat-tab-group{
-        .mat-tab-header{
-          background-color: $color-gray-70;
-          .mat-ink-bar{
-            background-color: $color-gray-0;
-          }
-        }
-      }
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-tab-group .mat-tab-header {
-      background-color: $color-gray-90;
-    }
-    .governance-sidesheet {
-      background: $color-gray-100;
-      ::ng-deep .mat-tab-label {
-        background-color: $color-gray-100;
-      }
-    }
-    .imx-nested-group{
-      ::ng-deep .mat-tab-group{
-        .mat-tab-header{
-          background-color: $color-gray-90;
-          .mat-ink-bar{
-            background-color: $color-gray-0;
-          }
-        }
-      }
-    }
   }
 }

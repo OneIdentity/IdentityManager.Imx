@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
-import { IForeignKeyInfo, IWriteValue } from 'imx-qbm-dbts';
+import { IForeignKeyInfo, IWriteValue } from '@imx-modules/imx-qbm-dbts';
 
 export interface ForeignKeyPickerData {
-    fkRelations: IForeignKeyInfo[];
-    selectedTableName?: string;
-    idList?: string[];
-    isMultiValue?: boolean;
-    isRequired?: boolean;
-    disabledIds?: string[];
+  fkRelations: IForeignKeyInfo[];
+  selectedTableName?: string;
+  idList?: string[];
+  isMultiValue?: boolean;
+  isRequired?: boolean;
+  disabledIds?: string[];
 }

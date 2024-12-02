@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,27 @@
  *
  */
 
-import { ObjectInfo, PortalPoliciesViolationslist } from 'imx-api-pol';
+import { ObjectInfo, PortalPoliciesViolationslist } from '@imx-modules/imx-api-pol';
 import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 
 export class PolicyViolation extends PortalPoliciesViolationslist {
-
   public properties: ColumnDependentReference[];
   /**
    * The color and the caption depending on the value of the state of a {@link PortalPoliciesViolationslist}.
    */
-  public get stateBadge(): { color: 'blue' | 'orange' | 'green', caption: string } {
+  public get stateBadge(): { color: 'blue' | 'orange' | 'green'; caption: string } {
     return {
       color: this.stateBadgeColor,
-      caption: this.stateCaption
+      caption: this.stateCaption,
     };
-  };
+  }
   public readonly data: ObjectInfo[];
   private stateBadgeColor: 'blue' | 'orange' | 'green';
   private stateCaption: string;
 
-
   constructor(
     private readonly baseObject: PortalPoliciesViolationslist,
-    extendedData:  ObjectInfo[]
+    extendedData: ObjectInfo[],
   ) {
     super(baseObject.GetEntity());
     this.initPropertyInfo();
@@ -59,25 +57,15 @@ export class PolicyViolation extends PortalPoliciesViolationslist {
   }
 
   private initPropertyInfo(): void {
-    const props: any[] =
-      [
-        this.UID_QERPolicy,
-        this.Description,
-        this.ObjectKey
-      ];
+    const props: any[] = [this.UID_QERPolicy, this.Description, this.ObjectKey];
 
     if (this.State.value.toLowerCase() !== 'pending') {
-      props.push(...[
-        this.UID_PersonDecisionMade,
-        this.UID_QERJustification,
-        this.DecisionReason,
-        this.DecisionDate
-      ]);
+      props.push(...[this.UID_PersonDecisionMade, this.UID_QERJustification, this.DecisionReason, this.DecisionDate]);
     }
 
     this.properties = props
-      .filter(property => property.value != null && property.value !== '')
-      .map(property => new BaseReadonlyCdr(property.Column));
+      .filter((property) => property.value != null && property.value !== '')
+      .map((property) => new BaseReadonlyCdr(property.Column));
   }
 
   private async initStateBadge(): Promise<void> {

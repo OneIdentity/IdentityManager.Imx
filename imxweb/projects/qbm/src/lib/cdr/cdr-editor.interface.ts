@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,16 +33,16 @@ import { ColumnDependentReference } from './column-dependent-reference.interface
  * Interface for the argument, that it emitted in the CDR editor.
  */
 export interface ValueHasChangedEventArg {
-    /**
-     * The new value of the editor.
-     */
-    value: any;
+  /**
+   * The new value of the editor.
+   */
+  value: any;
 
-    /**
-     * A flag to show whether the emitting of a follow up event should be forced
-     * (evaluated by {@link CdrEditorComponent|CdrEditorComponent}).
-     */
-    forceEmit?: boolean;
+  /**
+   * A flag to show whether the emitting of a follow up event should be forced
+   * (evaluated by  {@link CdrEditorComponent|CdrEditorComponent}).
+   */
+  forceEmit?: boolean;
 }
 
 /**
@@ -53,6 +53,11 @@ export interface CdrEditor {
    * The abstract control associated with the editor.
    */
   control: AbstractControl;
+
+  /**
+   * Determines, if the control should only be validated after the value has been changed
+   */
+  validateOnlyOnChange?: boolean;
 
   /**
    * An event, that is emitted, if the value of the cdr has changed.

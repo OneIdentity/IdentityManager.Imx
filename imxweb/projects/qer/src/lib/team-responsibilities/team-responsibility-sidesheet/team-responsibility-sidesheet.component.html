@@ -1,14 +1,97 @@
-<div eui-sidesheet-content class="imx-team-responsibilities-sidesheet">
-  <eui-alert type="info" condensed="true" [colored]="true" [dismissable]="true" *ngIf="data.extendedData?.OtherIdentities.length == 0">
-    <span> {{ '#LDS#There are no other identities who are also responsible for the object.' | translate }} </span>
-  </eui-alert>
-  <mat-card *ngIf="data.extendedData?.OtherIdentities.length > 0">
-    <mat-list role="list" >
-      <mat-list-item role="listitem" *ngFor="let identity of data.extendedData?.OtherIdentities">{{ identity.Display }}</mat-list-item>
-    </mat-list>
-  </mat-card>
-</div>
+@if (!!data.extendedData?.OtherIdentities?.length) {
+  <mat-tab-group mat-stretch-tabs="false" class="imx-responsibilities">
+    <mat-tab label="{{ '#LDS#Heading Details' | translate }}">
+      <ng-container *ngTemplateOutlet="mainContent"></ng-container>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span class="imx-margin-right-8">
+          {{ '#LDS#Heading Other Identities Responsible for the Object' | translate }}
+        </span>
+        @if (!!data.extendedData?.OtherIdentities?.length) {
+          <eui-badge>{{ data.extendedData?.OtherIdentities?.length }}</eui-badge>
+        }
+      </ng-template>
+      <div eui-sidesheet-content>
+        <eui-alert type="info" [condensed]="true" [colored]="true" [dismissable]="true" *ngIf="!data.extendedData?.OtherIdentities?.length">
+          <span> {{ '#LDS#There are no other identities who are also responsible for the object.' | translate }} </span>
+        </eui-alert>
+        @if (!!data.extendedData?.OtherIdentities?.length) {
+          <mat-card>
+            <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+            <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+              <ng-container [matColumnDef]="'Display'">
+                <th mat-header-cell *matHeaderCellDef>{{ '#LDS#Name' | translate }}</th>
+                <td mat-cell *matCellDef="let item" role="gridcell">
+                  @if (!actionNeeded(item)) {
+                    <span>{{ item.GetEntity().GetColumn('Display').GetDisplayValue() }}</span>
+                  } @else {
+                    <span class="imx-action-needed-column" [matTooltip]="'#LDS#Action needed' | translate">
+                      <span>{{ item.GetEntity().GetColumn('Display').GetDisplayValue() }}</span>
+                      <eui-icon icon="warning" size="s"></eui-icon>
+                    </span>
+                  }
+                </td>
+              </ng-container>
+            </imx-data-view-auto-table>
+          </mat-card>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+} @else {
+  <div class="imx-responsibilities">
+    <ng-container *ngTemplateOutlet="mainContent"></ng-container>
+  </div>
+}
+
+<ng-template #mainContent>
+  <div eui-sidesheet-content>
+    <div class="imx-card-title-m imx-padding-bottom-16">{{ data.responsibility.GetEntity().GetDisplayLong() }}</div>
+    <div class="imx-responsibilities-type imx-padding-bottom-16">
+      <span class="imx-responsibilities-type-title">{{ '#LDS#Type' | translate }}: </span>
+      <span class="imx-responsibilities-type-name">
+        {{ (!isDirectResponsibility() ? '#LDS#Role assignment' : '#LDS#Direct assignment') | translate }}</span
+      >
+    </div>
+    <mat-card>
+      <div class="imx-responsibilities-subtitle">{{ '#LDS#Responsible identity' | translate }}:</div>
+      <div class="imx-card-title-m imx-padding-bottom-16">{{ data.responsibility.UID_Person.Column.GetDisplayValue() }}</div>
+      @if (isActionNeeded()) {
+        <div class="imx-action-needed">
+          <span> <eui-icon icon="warning" size="s"></eui-icon>{{ '#LDS#Action needed' | translate }}</span>
+          <mat-divider [vertical]="true"></mat-divider>
+          <span>{{ '#LDS#Leaving date' | translate }}: {{ data.responsibility.ExitDate.Column.GetDisplayValue() }}</span>
+        </div>
+      }
+      <div>
+        @if (!isDirectResponsibility()) {
+          <button mat-stroked-button color="primary" (click)="onReassignResponsibilities()" class="imx-margin-right-16">
+            <eui-icon icon="forward"></eui-icon>
+            {{ '#LDS#Reassign responsibility' | translate }}
+          </button>
+          <button mat-stroked-button color="warn" (click)="onDeleteResponsibility()">
+            <eui-icon icon="delete"></eui-icon>
+            {{ '#LDS#Remove responsibility' | translate }}
+          </button>
+        } @else {
+          <button mat-stroked-button color="primary" (click)="onReassignResponsibilities()" class="imx-margin-right-16">
+            <eui-icon icon="forward"></eui-icon>
+            {{ '#LDS#Reassign responsibility' | translate }}
+          </button>
+        }
+      </div>
+    </mat-card>
+  </div>
+</ng-template>
+
 <div eui-sidesheet-actions>
+  @if (!isDirectResponsibility()) {
+    <button mat-stroked-button color="primary" (click)="onAssignResponsibilities()" class="justify-start">
+      <eui-icon icon="useradd"></eui-icon>
+      {{ '#LDS#Assign additional identities' | translate }}
+    </button>
+  }
   <button mat-flat-button color="primary" (click)="closeSidesheet()">
     {{ '#LDS#Close' | translate }}
   </button>

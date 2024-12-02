@@ -7,7 +7,6 @@
       [disabled]="selectedEntities.length === 0"
       mat-flat-button
       class="imx-data-table-selection-info mat-caption"
-      (click)="onOpenSelectionDialog()"
       data-imx-identifier="datatree-button-show-selected"
     >
       {{ '#LDS#Selected items' | translate }} ({{ selectedEntities.length }})
@@ -29,6 +28,9 @@
     >
       <ng-template let-entity>
         <ng-container *ngTemplateOutlet="templateRef; context: { $implicit: entity }"> </ng-container>
+      </ng-template>
+      <ng-template #customDisplayTemplate let-entity>
+        <ng-container *ngTemplateOutlet="customDisplay || defaultDisplay; context: { $implicit: entity }"> </ng-container>
       </ng-template>
     </imx-checkable-tree>
 
@@ -53,8 +55,12 @@
 </ng-container>
 
 <ng-template #noDataContainer>
-  <div [ngClass]="{ hidden: isLoading || !database.rootNodes }" class="imx-data-tree-no-results">
+  <div [ngClass]="{ hidden: isLoading || !database.rootNodes }" class="imx-no-results">
     <eui-icon [icon]="noDataIcon"></eui-icon>
     <p [translate]="noDataText"></p>
   </div>
+</ng-template>
+
+<ng-template #defaultDisplay let-data>
+<p>{{data.display}}</p>
 </ng-template>

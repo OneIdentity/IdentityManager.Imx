@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,19 @@
  */
 
 import { HierarchyNode } from 'd3-hierarchy';
-import { DisplayColumns, DisplayPattern, EntityColumnData, EntityData, EntitySchema, ExtendedTypedEntityCollection, IClientProperty, IReadValue, TypedEntity, TypedEntityBuilder, ValType } from 'imx-qbm-dbts';
+import {
+  DisplayColumns,
+  DisplayPattern,
+  EntityColumnData,
+  EntityData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  IReadValue,
+  TypedEntity,
+  TypedEntityBuilder,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { AdditionalEntityProperties } from './block-properties.interface';
 import { HeatmapDataExtended } from './heatmap-data-extended';
 export class HeatmapDataTyped extends TypedEntity {
@@ -40,7 +52,6 @@ export class HeatmapDataTyped extends TypedEntity {
   public readonly HistoryValues: IReadValue<number[]> = this.GetEntityValue('HistoryValues');
   public readonly HistoryColors: IReadValue<string[]> = this.GetEntityValue('HistoryColors');
 
-
   public static GetEntitySchema(): EntitySchema {
     const ret: { [key: string]: IClientProperty } = {};
 
@@ -48,46 +59,46 @@ export class HeatmapDataTyped extends TypedEntity {
       Type: ValType.String,
       ColumnName: 'Name',
       Display: '#LDS#Name',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.Ancestors = {
       Type: ValType.String,
       ColumnName: 'Ancestors',
       Display: '#LDS#Hierarchy',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.Value = {
       Type: ValType.Double,
       ColumnName: 'Value',
       Display: '#LDS#Statistic value',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.ValueZ = {
       Type: ValType.Double,
       ColumnName: 'ValueZ',
       Display: '#LDS#Members in this object',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.State = {
       Type: ValType.String,
       ColumnName: 'State',
       Display: '#LDS#Current status',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.CurrentHistory = {
       Type: ValType.Double,
       ColumnName: 'CurrentHistory',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.HistoryValues = {
       Type: ValType.Double,
       ColumnName: 'HistoryValues',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
     ret.HistoryColors = {
       Type: ValType.String,
       ColumnName: 'HistoryColors',
-      IsReadOnly: true
+      IsReadOnly: true,
     };
 
     // Values that should not appear within the details
@@ -101,7 +112,7 @@ export class HeatmapDataTyped extends TypedEntity {
     };
     ret.BackgroundColor = {
       Type: ValType.String,
-      ColumnName: 'BackgroundColor'
+      ColumnName: 'BackgroundColor',
     };
     ret.Color = {
       Type: ValType.String,
@@ -123,9 +134,9 @@ export class HeatmapDataTyped extends TypedEntity {
     return builder.buildReadWriteEntities(
       {
         TotalCount: entityData.length,
-        Entities: entityData
+        Entities: entityData,
       },
-      HeatmapDataTyped.GetEntitySchema()
+      HeatmapDataTyped.GetEntitySchema(),
     );
   }
 
@@ -148,5 +159,4 @@ export class HeatmapDataTyped extends TypedEntity {
 
     return { Columns: ret, Keys: [key] };
   }
-
 }

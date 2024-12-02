@@ -3,4 +3,6 @@
     <span *ngIf="!textToken.isParameter">{{ textToken.value }}</span>
     <strong *ngIf="textToken.isParameter">{{ textToken.value }}</strong>
   </ng-container>
+
+  <span *ngIf="additionalText !== ''">{{ '; ' + additionalText }}</span>
 </div>

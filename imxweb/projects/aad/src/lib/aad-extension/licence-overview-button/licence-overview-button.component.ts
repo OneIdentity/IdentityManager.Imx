@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,27 +32,27 @@ import { AadExtensionService } from '../aad-extension.service';
 
 @Component({
   templateUrl: './licence-overview-button.component.html',
-  styleUrls: ['./licence-overview-button.component.scss']
 })
 export class LicenceOverviewButtonComponent implements OnInit {
-
   public licenceOverview: EuiDownloadOptions;
-  @Input() public referrer: { type: string, uidGroup: string, defaultDownloadOptions: EuiDownloadOptions };
+  @Input() public referrer: { type: string; uidGroup: string; defaultDownloadOptions: EuiDownloadOptions };
 
   constructor(
     public aadService: AadExtensionService,
-    private permissions: AadPermissionsService
-  ) { }
+    private permissions: AadPermissionsService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-    const url = this.referrer.type === 'AADSubSku'
-      && await this.permissions.canReadInAzure() ?
-      this.aadService.getReportForSubSku(this.referrer.uidGroup) : '';
+    const url =
+      this.referrer.type === 'AADSubSku' && (await this.permissions.canReadInAzure())
+        ? this.aadService.getReportForSubSku(this.referrer.uidGroup)
+        : '';
 
-    this.licenceOverview = url != null && url !== '' ? {
-      ... this.referrer.defaultDownloadOptions,
-      url
-    } : undefined;
+    if (url != null && url !== '') {
+      this.licenceOverview = {
+        ...this.referrer.defaultDownloadOptions,
+        url,
+      };
+    }
   }
-
 }

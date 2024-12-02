@@ -7,27 +7,14 @@
   padding: 0;
 
   .imx-tab-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-
     .imx-tab-content-body {
-      flex: 1;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-
       .imx-hyperview-card {
         display: flex;
         flex-direction: column;
         flex: 1 1 auto;
         overflow: hidden;
+        justify-content: center;
         padding: 0;
-
-        .mat-progress-spinner {
-          margin: auto;
-        }
-
         imx-hyperview {
           overflow: hidden;
         }
@@ -35,7 +22,7 @@
     }
 
     .imx-tab-content-body.condensed {
-      padding: 0;
+      padding: 0 0 3px 0;
     }
   }
 }

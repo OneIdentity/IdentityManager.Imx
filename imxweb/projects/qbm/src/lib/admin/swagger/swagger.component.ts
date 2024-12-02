@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { AfterViewInit, Component, DebugElement, Input } from '@angular/core';
+import { AfterViewInit, Component, Input } from '@angular/core';
+import { Globals } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService } from '../../appConfig/appConfig.service';
-import { Globals } from 'imx-qbm-dbts';
 import { SideNavigationComponent } from '../../side-navigation-view/side-navigation-view-interfaces';
 
 declare const SwaggerUIBundle: any;

@@ -45,7 +45,6 @@
   hyphens: auto;
 }
 
-
 .imx-accordion .mat-expansion-panel-header-title,
 .imx-accordion .mat-expansion-panel-header-description {
   flex-basis: 0;
@@ -54,20 +53,4 @@
 .imx-accordion .mat-expansion-panel-header-description {
   justify-content: space-between;
   align-items: center;
-}
-
-.imx-no-data {
-  text-align: center;
-  margin: 20px 0;
-
-  .eui-icon {
-    font-size: 100px;
-    color: rgba($black-c, 0.55);
-  }
-
-  p {
-    margin: 0;
-    font-size: 18px;
-    color: $black-9;
-  }
 }

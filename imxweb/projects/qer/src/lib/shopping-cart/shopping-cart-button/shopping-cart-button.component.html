@@ -1,0 +1,9 @@
+<button
+  mat-icon-button
+  class="imx-masthead--icon-button"
+  (click)="navigateToShoppingCart()"
+  [matTooltip]="LdsTooltip | translate"
+  [attr.aria-label]="LdsTooltip | translate"
+>
+  <eui-icon icon="cart" [matBadge]="pendingItems?.CountProductsInShoppingCart" matBadgeColor="accent"></eui-icon>
+</button>

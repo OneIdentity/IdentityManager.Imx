@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,25 +30,25 @@ import { MockBuilder } from 'ng-mocks';
 import { ServiceitemListComponent } from './serviceitem-list.component';
 import { ServiceItemsService } from '../service-items.service';
 import { clearStylesFromDOM } from 'qbm';
-import { PortalShopServiceitems } from 'imx-api-qer';
-import {ServiceItemsModule} from '../service-items.module';
+import { PortalShopServiceitems } from '@imx-modules/imx-api-qer';
+import { ServiceItemsModule } from '../service-items.module';
 
 describe('ServiceitemListComponent', () => {
   let component: ServiceitemListComponent;
   let fixture: ComponentFixture<ServiceitemListComponent>;
 
   const serviceItems = {
-    extendedData: { PeerGroupSize: 1 }
+    extendedData: { PeerGroupSize: 1 },
   };
 
-  beforeEach(()=>{
+  beforeEach(() => {
     return MockBuilder(ServiceitemListComponent)
-    .mock(ServiceItemsModule)
-    .mock(ServiceItemsService,{
-                PortalShopServiceItemsSchema: PortalShopServiceitems.GetEntitySchema(),
-                get: jasmine.createSpy('get').and.returnValue(Promise.resolve(serviceItems)),
-                getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({}))
-              })
+      .mock(ServiceItemsModule)
+      .mock(ServiceItemsService, {
+        PortalShopServiceItemsSchema: PortalShopServiceitems.GetEntitySchema(),
+        get: jasmine.createSpy('get').and.returnValue(Promise.resolve(serviceItems)),
+        getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({})),
+      });
   });
 
   beforeEach(() => {

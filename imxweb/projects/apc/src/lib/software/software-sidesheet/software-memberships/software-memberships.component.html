@@ -1,77 +1,99 @@
-<div class="helper-alert-container">
-  <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="true">
+<div>
+  <eui-alert [condensed]="true" [colored]="true" type="info" [dismissable]="true">
     {{ membershipHint | translate }}
   </eui-alert>
-  <eui-alert class="helper-alert" *ngIf="showUnsubscribeWarning" type="warning" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onWarningDismissed()">{{
-    LdsNotUnsubscribableHint | translate
-  }}</eui-alert>
+  <eui-alert
+    *ngIf="showUnsubscribeWarning"
+    type="warning"
+    [condensed]="true"
+    [colored]="true"
+    [dismissable]="true"
+    (dismissed)="onWarningDismissed()"
+    >{{ LdsNotUnsubscribableHint | translate }}</eui-alert
+  >
 </div>
 
-<mat-card>
-  <div class="imx-table-content">
-    <!-- todo after DataTableMerge: Busy-Indicator setzen-->
-    <imx-data-source-toolbar
-      #dst
-      data-imx-identifier="software-memberships-data-source-toolbar"
-      [settings]="dstSettings"
-      [options]="['search']"
-      [itemStatus]="status"
-      [busyService]="busyService"
-      [searchBoxText]="'#LDS#Search' | translate"
-      (navigationStateChanged)="getData($event)"
-      (search)="onSearch($event)"
-    >
-    </imx-data-source-toolbar>
-
-    <imx-data-table
-      #membersTable
-      data-imx-identifier="software-membeships-data-table"
-      [dst]="dst"
-      [showSelectedItemsMenu]="false"
-      [selectable]="true"
-      (selectionChanged)="onSelectionChanged($event)"
-      detailViewVisible="false"
-      mode="manual"
-      (highlightedEntityChanged)="showDetails($event)"
-    >
-      <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-        <ng-template let-item>
+<div eui-sidesheet-content class="imx-table-content">
+  <imx-data-view-toolbar [dataSource]="dataSource"></imx-data-view-toolbar>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.GetEntity().GetDisplay() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'badges'">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div class="imx-badge-container">
           <div>
-            {{ item?.GetEntity()?.GetDisplay() }}
+            <eui-badge color="gray" *ngIf="item.XMarkedForDeletion.value">
+              {{ entitySchema.Columns.XMarkedForDeletion.Display }}
+            </eui-badge>
           </div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-generic-column columnName="badges">
-        <ng-template let-item>
-          <div class="imx-badge-container">
-            <div>
-              <eui-badge color="gray" *ngIf="item.XMarkedForDeletion.value">
-                {{ entitySchema.Columns.XMarkedForDeletion.Display }}
-              </eui-badge>
-            </div>
-            <div>
-              <eui-badge color="gray" *ngIf="!item.XIsInEffect.value">
-                {{ '#LDS#Membership is ineffective' | translate }}
-              </eui-badge>
-            </div>
+          <div>
+            <eui-badge color="gray" *ngIf="!item.XIsInEffect.value">
+              {{ '#LDS#Membership is ineffective' | translate }}
+            </eui-badge>
           </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_Person"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.XOrigin"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.XDateInserted"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.ValidUntil"> </imx-data-table-column>
-    </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="software-paginator" [dst]="dst"></imx-data-source-paginator>
-  </div>
-</mat-card>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_Person.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_Person?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_Person.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.XOrigin.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.XOrigin?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.XOrigin.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.XDateInserted.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.XDateInserted?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.XDateInserted.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.ValidUntil.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.ValidUntil?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.ValidUntil.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
+</div>
+
 <div eui-sidesheet-actions>
-  <imx-selected-elements [selectedElements]="selections"></imx-selected-elements>
-  <div class="imx-menu-spacer"></div>
-  <button mat-stroked-button [disabled]="!canUnsubscribeSelected" data-imx-identifier="software-memberships-cancel-selected" (click)="unsubscribeMembership()">
+  <imx-data-view-selection class="justify-start" [dataSource]="dataSource"></imx-data-view-selection>
+  <button
+    mat-stroked-button
+    [disabled]="!canUnsubscribeSelected"
+    data-imx-identifier="software-memberships-cancel-selected"
+    (click)="unsubscribeMembership()"
+  >
     {{ '#LDS#Unsubscribe' | translate }}
   </button>
-  <button mat-stroked-button color="warn" [disabled]="!canDeleteSelected" data-imx-identifier="software-memberships-delete-selected" (click)="deleteSelected()">
+  <button
+    mat-stroked-button
+    color="warn"
+    [disabled]="!canDeleteSelected"
+    data-imx-identifier="software-memberships-delete-selected"
+    (click)="deleteSelected()"
+  >
     <eui-icon icon="delete"></eui-icon>
     {{ '#LDS#Remove' | translate }}
   </button>

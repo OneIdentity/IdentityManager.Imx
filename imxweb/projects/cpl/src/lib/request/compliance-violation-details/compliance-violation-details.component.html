@@ -1,9 +1,11 @@
 <div class="imx-main-container">
-  <ng-container *ngIf="request == null || request?.UiOrderState.value === 'OrderProduct'">
+  <ng-container *ngIf="request == null || request?.UiOrderState?.value === 'OrderProduct'">
     <eui-alert *ngIf="request != null" type="info" [condensed]="true" [colored]="true" [dismissable]="false">
       {{
-        (rules.length > 1 ? '#LDS#Here you can get an overview of the rule violations this request may cause.' : '#LDS#Here you can see the rule violation this request may cause.')
-          | translate
+        (rules.length > 1
+          ? '#LDS#Here you can get an overview of the rule violations this request may cause.'
+          : '#LDS#Here you can see the rule violation this request may cause.'
+        ) | translate
       }}
     </eui-alert>
 
@@ -19,13 +21,27 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
           <ng-container *ngTemplateOutlet="ruleViolationTemplate; context: { $implicit: item }"></ng-container>
-          <mat-action-row *ngIf="item.violationDetail?.IsExceptionApprover && isApproval && mitigatingControlsPerViolation">
-            <button mat-button color="primary" (click)="addMitigationControls(item)" data-imx-identifier="compliance-violation-datails-edit-mitigating-controls">
+          <mat-action-row
+            *ngIf="
+              item.violationDetail?.IsExceptionApprover && isApproval && mitigatingControlsPerViolation && canEditMitigationControls(item)
+            "
+          >
+            <button
+              mat-button
+              color="primary"
+              (click)="addMitigationControls(item)"
+              data-imx-identifier="compliance-violation-datails-edit-mitigating-controls"
+            >
               {{ '#LDS#Assign mitigating controls' | translate }}
             </button>
           </mat-action-row>
-          <mat-action-row *ngIf="!isApproval && mitigatingControlsPerViolation">
-            <button mat-button color="primary" (click)="addMitigationControls(item)" data-imx-identifier="compliance-violation-datails-view-mitigating-controls">
+          <mat-action-row *ngIf="!isApproval && mitigatingControlsPerViolation && canEditMitigationControls(item)">
+            <button
+              mat-button
+              color="primary"
+              (click)="addMitigationControls(item)"
+              data-imx-identifier="compliance-violation-datails-view-mitigating-controls"
+            >
               {{ '#LDS#View mitigating controls' | translate }}
             </button>
           </mat-action-row>
@@ -34,13 +50,13 @@
     </div>
   </ng-container>
 
-  <div *ngIf="(rules == null || rules.length === 0) && request?.UiOrderState.value === 'OrderProduct'" class="imx-no-data">
+  <div *ngIf="(rules == null || rules.length === 0) && request?.UiOrderState?.value === 'OrderProduct'" class="imx-no-results">
     <eui-icon icon="table"></eui-icon>
     <p>{{ '#LDS#No data' | translate }}</p>
   </div>
 
   <eui-alert
-    *ngIf="request != null && request?.UiOrderState.value != 'OrderProduct' && !request?.complianceRuleViolation"
+    *ngIf="request != null && request?.UiOrderState?.value != 'OrderProduct' && !request?.complianceRuleViolation"
     type="info"
     [condensed]="true"
     [colored]="true"
@@ -50,12 +66,15 @@
   </eui-alert>
 
   <imx-workflow-violation-details
-    *ngIf="request != null && request?.UiOrderState.value != 'OrderProduct' && request?.complianceRuleViolation"
+    *ngIf="request != null && request?.UiOrderState?.value != 'OrderProduct' && request?.complianceRuleViolation"
     [pwoData]="request?.pwoData"
   ></imx-workflow-violation-details>
 </div>
 
 <ng-template #ruleViolationTemplate let-item>
+  <eui-alert type="warning" *ngIf="item.violationDetail?.ViolationType === 'Org'" [condensed]="true" [colored]="true">
+    {{ '#LDS#Assigning this entitlement will cause a rule violation.' | translate }}
+  </eui-alert>
   <imx-cdr-editor *ngIf="cdrRuleDisplay" [cdr]="cdrRuleDisplay"></imx-cdr-editor>
   <imx-cdr-editor *ngFor="let cdr of item?.cdrLists.common" [cdr]="cdr"> </imx-cdr-editor>
 

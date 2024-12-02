@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,25 +28,24 @@ import { Component, Inject } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
 
 @Component({
   selector: 'imx-mitigating-controls',
   templateUrl: './mitigating-controls.component.html',
-  styleUrls: ['./mitigating-controls.component.scss']
+  styleUrls: ['./mitigating-controls.component.scss'],
 })
 export class MitigatingControlsComponent {
-
   public mitigatingControlCdr: ColumnDependentReference;
   public formGroup = new UntypedFormGroup({});
   constructor(
-    @Inject(MAT_DIALOG_DATA) public readonly data: {
-      column: IEntityColumn
+    @Inject(MAT_DIALOG_DATA)
+    public readonly data: {
+      column: IEntityColumn;
     },
-    public dialogRef: MatDialogRef<MitigatingControlsComponent>
+    public dialogRef: MatDialogRef<MitigatingControlsComponent>,
   ) {
     this.mitigatingControlCdr = new BaseCdr(this.data.column);
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,7 +41,7 @@ import {
   MultiSelectFormcontrolModule,
   UserMessageModule,
   RouteGuardService,
-  BusyIndicatorModule
+  BusyIndicatorModule,
 } from 'qbm';
 import { ReportSelectorComponent } from './subscription-wizard/report-selector/report-selector.component';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
@@ -53,52 +53,44 @@ import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionWizardComponent } from './subscription-wizard/subscription-wizard.component';
 import { ReportViewConfigComponent } from './report-view-config/report-view-config.component';
 import { ListReportViewerModule } from '../list-report-viewer/list-report-viewer.module';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { ListReportViewerSidesheetComponent } from './list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
-
 
 const routes: Routes = [
   {
     path: 'reportsubscriptions',
     component: SubscriptionsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
-@NgModule({
-  declarations: [
-    ReportSelectorComponent,
-    ReportViewConfigComponent,
-    SubscriptionDetailsComponent,
-    SubscriptionPropertiesComponent,
-    SubscriptionOverviewComponent,
-    SubscriptionWizardComponent,
-    SubscriptionsComponent,
-    ListReportViewerSidesheetComponent,
-  ],
-  imports: [
-    CdrModule,
-    CommonModule,
-    ConfirmationModule,
-    DataSourceToolbarModule,
-    DataTableModule,
-    EuiCoreModule,
-    EuiMaterialModule,
-    FormsModule,
-    HttpClientModule,
-    LdsReplaceModule,
-    MultiSelectFormcontrolModule,
-    OverlayModule,
-    ReactiveFormsModule,
-    RouterModule.forChild(routes),
-    ScrollingModule,
-    TranslateModule,
-    UserMessageModule,
-    BusyIndicatorModule,
-    ListReportViewerModule,
-  ],
-  providers: [ReportSubscriptionService, SubscriptionsService],
-})
+@NgModule({ declarations: [
+        ReportSelectorComponent,
+        ReportViewConfigComponent,
+        SubscriptionDetailsComponent,
+        SubscriptionPropertiesComponent,
+        SubscriptionOverviewComponent,
+        SubscriptionWizardComponent,
+        SubscriptionsComponent,
+        ListReportViewerSidesheetComponent,
+    ], imports: [CdrModule,
+        CommonModule,
+        ConfirmationModule,
+        DataSourceToolbarModule,
+        DataTableModule,
+        EuiCoreModule,
+        EuiMaterialModule,
+        FormsModule,
+        LdsReplaceModule,
+        MultiSelectFormcontrolModule,
+        OverlayModule,
+        ReactiveFormsModule,
+        RouterModule.forChild(routes),
+        ScrollingModule,
+        TranslateModule,
+        UserMessageModule,
+        BusyIndicatorModule,
+        ListReportViewerModule], providers: [ReportSubscriptionService, SubscriptionsService, provideHttpClient(withInterceptorsFromDi())] })
 export class SubscriptionsModule {}

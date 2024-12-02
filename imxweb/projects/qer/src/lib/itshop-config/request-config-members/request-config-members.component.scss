@@ -7,38 +7,3 @@
     justify-content: space-between;
   }
 }
-
-// Theming section
-:host {
-  .membership-view-toggle {
-    .mat-button-toggle-group {
-      .mat-button-toggle-checked {
-        background-color: $color-orange-20;
-      }
-    }
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    .membership-view-toggle {
-      .mat-button-toggle-group {
-        .mat-button-toggle-checked {
-          background-color: $color-orange-80;
-        }
-      }
-    }
-  }
-}
-
-.eui-contrast-theme{
-  :host {
-    .membership-view-toggle {
-      .mat-button-toggle-group {
-        .mat-button-toggle-checked {
-          background-color: $color-orange-40;
-        }
-      }
-    }
-  }
-}

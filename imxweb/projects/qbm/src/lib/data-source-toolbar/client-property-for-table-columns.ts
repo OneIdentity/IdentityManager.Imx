@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,17 @@
  *
  */
 
-import { IClientProperty } from 'imx-qbm-dbts';
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
 
 /**
  * Extends the IClientProperty interface, by adding a property for marking columns,
  *  that have to be displayed on the far right side
  */
-export interface ClientPropertyForTableColumns extends IClientProperty{
-
+export interface ClientPropertyForTableColumns extends IClientProperty {
   /**
    * Marks, whether the property should be displayed on the far right side of a table or not
    */
   afterAdditionals?: boolean;
-
 
   /**
    * Gets/Sets an untranslated display, that can be displayed, if the property 'Display' is not set

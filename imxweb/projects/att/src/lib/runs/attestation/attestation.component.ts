@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,13 +27,18 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
+import { FilterData, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { AuthenticationService, HELPER_ALERT_KEY_PREFIX, StorageService } from 'qbm';
-import { AttestationHistoryCase } from '../../attestation-history/attestation-history-case';
-import { AttestationHistoryActionService } from '../../attestation-history/attestation-history-action.service';
-import { FilterData } from 'imx-qbm-dbts';
 import { HelperAlertContent } from 'qer';
+import { AttestationHistoryActionService } from '../../attestation-history/attestation-history-action.service';
+import { AttestationHistoryCase } from '../../attestation-history/attestation-history-case';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_attestation`;
+export interface AttestationParameters {
+  objecttable: string;
+  objectuid: string;
+  filter?: FilterData[];
+}
 
 @Component({
   selector: 'imx-attestation',
@@ -53,7 +58,7 @@ export class AttestationComponent implements OnDestroy {
     return !this.storageService.isHelperAlertDismissed(helperAlertKey);
   }
 
-  @Input() public parameters: { objecttable: string; objectuid: string; filter?: FilterData[] };
+  @Input() public parameters: AttestationParameters;
   @Input() public pendingAttestations: HelperAlertContent;
 
   public readonly itemStatus = {
@@ -71,17 +76,17 @@ export class AttestationComponent implements OnDestroy {
   constructor(
     public readonly attestationAction: AttestationHistoryActionService,
     private readonly storageService: StorageService,
-    authentication: AuthenticationService
+    authentication: AuthenticationService,
   ) {
-    this.subscriptions.push(authentication.onSessionResponse?.subscribe((sessionState) => (this.userUid = sessionState?.UserUid)));
+    this.subscriptions.push(authentication.onSessionResponse?.subscribe((sessionState) => (this.userUid = sessionState?.UserUid || '')));
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  public onSelectionChanged(items: AttestationHistoryCase[]): void {
-    this.selectedCases = items;
+  public onSelectionChanged(items: TypedEntity[]): void {
+    this.selectedCases = items as AttestationHistoryCase[];
   }
 
   public onHelperDismissed(): void {

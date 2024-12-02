@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,15 +36,13 @@ import { OwnerControlService } from './owner-control.service';
 describe('OwnerControlComponent', () => {
   let component: OwnerControlComponent;
 
-  beforeEach(() =>{
-    return MockBuilder(OwnerControlComponent, OwnerControlModule)
-    .mock(CdrEditorComponent)
-    .mock(OwnerControlService);
+  beforeEach(() => {
+    return MockBuilder(OwnerControlComponent, OwnerControlModule).mock(CdrEditorComponent).mock(OwnerControlService);
   });
 
-  beforeEach(()=>{
+  beforeEach(() => {
     component = MockRender(OwnerControlComponent).point.componentInstance;
-  })
+  });
 
   afterAll(() => {
     clearStylesFromDOM();

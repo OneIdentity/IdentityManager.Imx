@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,31 +31,32 @@ import { MatCardModule } from '@angular/material/card';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatTableModule } from '@angular/material/table';
+import { ProjectConfig } from '@imx-modules/imx-api-qer';
 import {
   CdrModule,
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
-  HelpContextualModule,
+  DataViewModule,
   ExtModule,
+  HelpContextualModule,
   MenuItem,
   MenuService,
-  SelectedElementsModule
+  SelectedElementsModule,
 } from 'qbm';
-import { RulesViolationsComponent } from './rules-violations.component';
-import { RulesViolationsDetailsComponent } from './rules-violations-details/rules-violations-details.component';
-import { RulesViolationsActionComponent } from './rules-violations-action/rules-violations-action.component';
 import { JustificationModule } from 'qer';
-import { RulesViolationsMultiActionComponent } from './rules-violations-action/rules-violations-multi-action/rules-violations-multi-action.component';
-import { RulesViolationsSingleActionComponent } from './rules-violations-action/rules-violations-single-action/rules-violations-single-action.component';
-import { ResolveComponent } from './resolve/resolve.component';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MitigatingControlContainerModule } from '../mitigating-control-container/mitigating-control-container.module';
 import { isExceptionAdmin } from '../rules/admin/permissions-helper';
 import { MitigatingControlsPersonComponent } from './mitigating-controls-person/mitigating-controls-person.component';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MitigatingControlContainerModule } from '../mitigating-control-container/mitigating-control-container.module';
-import { ProjectConfig } from 'imx-api-qer';
-
+import { ResolveComponent } from './resolve/resolve.component';
+import { RulesViolationsActionComponent } from './rules-violations-action/rules-violations-action.component';
+import { RulesViolationsMultiActionComponent } from './rules-violations-action/rules-violations-multi-action/rules-violations-multi-action.component';
+import { RulesViolationsSingleActionComponent } from './rules-violations-action/rules-violations-single-action/rules-violations-single-action.component';
+import { RulesViolationsDetailsComponent } from './rules-violations-details/rules-violations-details.component';
+import { RulesViolationsComponent } from './rules-violations.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,7 @@ import { ProjectConfig } from 'imx-api-qer';
     RulesViolationsActionComponent,
     RulesViolationsMultiActionComponent,
     RulesViolationsSingleActionComponent,
-    MitigatingControlsPersonComponent
+    MitigatingControlsPersonComponent,
   ],
   imports: [
     CdrModule,
@@ -85,52 +86,45 @@ import { ProjectConfig } from 'imx-api-qer';
     SelectedElementsModule,
     MitigatingControlContainerModule,
     HelpContextualModule,
+    MatTableModule,
+    DataViewModule,
   ],
-  exports:[MitigatingControlsPersonComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  exports: [MitigatingControlsPersonComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RulesViolationsModule {
-
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶︝ RulesViolationsnModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+      const items: MenuItem[] = [];
+      if (preProps.includes('ITSHOP') && isExceptionAdmin(groups)) {
+        items.push({
+          id: 'CPL_Compliance_RulesViolations',
+          navigationCommands: {
+            commands: ['compliance', 'rulesviolations', 'approve'],
+          },
+          title: '#LDS#Menu Entry Rule violations',
+          description: '#LDS#Shows the rule violations for which you can grant or deny exceptions.',
+          sorting: '25-20',
+        });
+      }
 
-        const items: MenuItem[] = [];
-
-        if (preProps.includes('ITSHOP') && isExceptionAdmin(groups)) {
-          items.push(
-            {
-              id: 'CPL_Compliance_RulesViolations',
-              navigationCommands: {
-                commands: ['compliance', 'rulesviolations', 'approve']
-              },
-              title: '#LDS#Menu Entry Rule violations',
-              description: '#LDS#Shows the rule violations for which you can grant or deny exceptions.',
-              sorting: '25-20',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Compliance',
-          title: '#LDS#Compliance',
-          sorting: '25',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return undefined;
+      }
+      return {
+        id: 'ROOT_Compliance',
+        title: '#LDS#Compliance',
+        sorting: '25',
+        items,
+      };
+    });
   }
-
-
 }

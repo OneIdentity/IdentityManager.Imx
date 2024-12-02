@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,6 +24,6 @@
  *
  */
 
-export function isRpsAdmin(groups: string[]): boolean {
-  return groups.find(item => item === 'vi_4_RPSADMIN_ADMIN') != null;
+export function isRpsAdmin(groups: (string | undefined)[]): boolean {
+  return groups.find((item) => item === 'vi_4_RPSADMIN_ADMIN') != null;
 }

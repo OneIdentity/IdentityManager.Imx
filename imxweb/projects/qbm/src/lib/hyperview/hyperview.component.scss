@@ -12,9 +12,9 @@
   height: calc(100% - 74px);
   overflow: hidden;
   position: relative;
-  transform-origin: center center;
   margin: 5px;
-  .imx-hyperview-container{
+  transform-origin: center center;
+  .imx-hyperview-container {
     position: absolute;
     transform-origin: top left;
     > ol {
@@ -90,12 +90,11 @@ path {
   stroke-linejoin: miter;
   stroke-miterlimit: 4;
   stroke-linecap: butt;
-  opacity: 1.0;
+  opacity: 1;
 }
 
 //theming
-:host{
-
+:host {
   .imx-hyperview > ol {
     background-color: $color-gray-80;
   }
@@ -125,11 +124,10 @@ path {
   }
 }
 
-
 .eui-dark-theme {
-  :host{
+  :host {
     .connector {
-      stroke: $color-gray-30
+      stroke: $color-gray-30;
     }
 
     .imx-hyperview > ol {
@@ -140,9 +138,6 @@ path {
     .hyperviewelement:hover {
       box-shadow: 0 0 5px 3px rgba($color: $color-gray-0, $alpha: 0.7);
     }
-    button{
-      background: $color-gray-70;
-    }
     .imx-hyperview-toolbar {
       background-color: $color-gray-70;
     }
@@ -150,9 +145,9 @@ path {
 }
 
 .eui-contrast-theme {
-  :host{
+  :host {
     .connector {
-      stroke: $color-gray-10
+      stroke: $color-gray-10;
     }
 
     .imx-hyperview > ol {

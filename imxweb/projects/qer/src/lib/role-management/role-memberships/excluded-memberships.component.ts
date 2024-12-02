@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,16 +26,16 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
+import { PortalRolesExclusions } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalRolesExclusions } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import {
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
   DataTableComponent,
   HELPER_ALERT_KEY_PREFIX,
   SnackBarService,
-  StorageService
+  StorageService,
 } from 'qbm';
 import { ACTION_DISMISS } from '../../itshop-config/requests.service';
 import { QerApiService } from '../../qer-api-client.service';
@@ -43,12 +43,13 @@ import { DataManagementService } from '../data-management.service';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_roleMembership`;
 const LdsMembersAdded = '#LDS#The members have been successfully assigned. It may take some time for the changes to take effect.';
-const LdsMembersByDynamicRole = '#LDS#Here you can see the members that are originally assigned by a dynamic role but have been excluded. Additionally, you can add these excluded members back by removing the exclusion.';
+const LdsMembersByDynamicRole =
+  '#LDS#Here you can see the members that are originally assigned by a dynamic role but have been excluded. Additionally, you can add these excluded members back by removing the exclusion.';
 
 @Component({
   selector: 'imx-excluded-memberships',
   templateUrl: './excluded-memberships.component.html',
-  styleUrls: ['./excluded-memberships.component.scss', './role-sidesheet-tabs.scss']
+  styleUrls: ['./excluded-memberships.component.scss', './role-sidesheet-tabs.scss'],
 })
 export class ExcludedMembershipsComponent implements OnInit {
   // Replaces the former input
@@ -77,17 +78,13 @@ export class ExcludedMembershipsComponent implements OnInit {
     private readonly translate: TranslateService,
     private readonly snackbar: SnackBarService,
     private readonly busyService: EuiLoadingService,
-    private readonly storageService: StorageService
-  ) { }
-
+    private readonly storageService: StorageService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-    this.uidDynamicGroup = this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
+    this.uidDynamicGroup = this.dataManagementService.entityInteractive?.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
     this.schema = this.qerApiClient.typedClient.PortalRolesExclusions.GetSchema();
-    this.displayedColumnsExcluded = [
-      this.schema.Columns.UID_Person,
-      this.schema.Columns.Description
-    ];
+    this.displayedColumnsExcluded = [this.schema.Columns.UID_Person, this.schema.Columns.Description];
     await this.navigateExcludedMembers();
   }
 
@@ -98,21 +95,18 @@ export class ExcludedMembershipsComponent implements OnInit {
     await this.navigateExcludedMembers();
   }
 
-  public onExclusionSelected(selected: PortalRolesExclusions[]): void {
-    this.selectedExclusions = selected;
+  public onExclusionSelected(selected: TypedEntity[]): void {
+    this.selectedExclusions = selected as PortalRolesExclusions[];
   }
-
-
 
   public onHelperDismissed(): void {
     this.storageService.storeHelperAlertDismissal(helperAlertKey);
   }
 
   public async onSearchExcluded(keywords: string): Promise<void> {
-    this.navigationStateExcludedMembers = { ...this.navigationStateExcludedMembers , ...{StartIndex:0, search:keywords}};
+    this.navigationStateExcludedMembers = { ...this.navigationStateExcludedMembers, ...{ StartIndex: 0, search: keywords } };
     await this.navigateExcludedMembers();
   }
-
 
   public async removeExclusions(): Promise<void> {
     const overlayRef = this.busyService.show();
@@ -133,8 +127,7 @@ export class ExcludedMembershipsComponent implements OnInit {
     const overlayRef = this.busyService.show();
     try {
       if (!data) {
-        data = await this.qerApiClient.typedClient.PortalRolesExclusions.Get(this.uidDynamicGroup,
-          this.navigationStateExcludedMembers);
+        data = await this.qerApiClient.typedClient.PortalRolesExclusions.Get(this.uidDynamicGroup, this.navigationStateExcludedMembers);
       }
       this.dstSettingsExcludedMembers = {
         displayedColumns: this.displayedColumnsExcluded,
@@ -149,12 +142,11 @@ export class ExcludedMembershipsComponent implements OnInit {
   }
 
   private removeRequestConfigMemberExclusions(exclusions: PortalRolesExclusions[]): Promise<any> {
-    const promises = [];
+    const promises: Promise<any>[] = [];
     exclusions.forEach((exclusion) => {
       const memberUid = exclusion.UID_Person?.value;
       promises.push(this.qerApiClient.client.portal_roles_exclusions_delete(this.uidDynamicGroup, memberUid));
     });
     return Promise.all(promises);
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,11 @@
  *
  */
 
-import { Component, Input, Output, EventEmitter, OnChanges, ViewChild, OnDestroy } from '@angular/core';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 
-import { CollectionLoadParameters, GroupInfoData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, GroupInfoData } from '@imx-modules/imx-qbm-dbts';
 
 export interface GroupPaginatorInformation {
   currentData: GroupInfoData;
@@ -49,7 +49,6 @@ export interface GroupPaginatorInformation {
 @Component({
   selector: 'imx-group-paginator',
   templateUrl: './group-paginator.component.html',
-  styleUrls: ['../../data-source-toolbar/data-source-paginator.component.scss'],
 })
 export class GroupPaginatorComponent implements OnChanges, OnDestroy {
   @Input() public groupPaginatorInformation: GroupPaginatorInformation;
@@ -120,8 +119,9 @@ export class GroupPaginatorComponent implements OnChanges, OnDestroy {
   private setPaginator(): void {
     this.paginator.length = this.groupPaginatorInformation?.currentData?.TotalCount ?? 0;
     if (this.navigationState) {
-      this.paginator.pageSize = this.navigationState.PageSize;
-      this.paginator.pageIndex = this.navigationState.StartIndex / this.navigationState.PageSize;
+      this.paginator.pageSize = this.navigationState.PageSize ?? 0;
+
+      this.paginator.pageIndex = this.paginator.pageSize ? (this.navigationState.StartIndex ?? 0) / this.paginator.pageSize : 0;
     }
   }
 }

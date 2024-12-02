@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,23 +31,20 @@ import { DashboardService, PendingItemsType, UserModelService } from 'qer';
 import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 
 @Component({
-  templateUrl: './dashboard-plugin.component.html'
+  templateUrl: './dashboard-plugin.component.html',
 })
 export class DashboardPluginComponent implements OnInit {
-
   public pendingItems: PendingItemsType;
-
   public isExceptionAdmin = false;
 
   constructor(
     public readonly router: Router,
     private readonly dashboardService: DashboardService,
     private readonly permissionService: CplPermissionsService,
-    private readonly userModelSvc: UserModelService
-  ) { }
+    private readonly userModelSvc: UserModelService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-
     const busy = this.dashboardService.beginBusy();
 
     try {

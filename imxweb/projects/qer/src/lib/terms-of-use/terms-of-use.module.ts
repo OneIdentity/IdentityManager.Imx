@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,11 +41,7 @@ import { TermsOfUseAcceptComponent } from './terms-of-use-accept.component';
 import { TermsOfUseListComponent } from './terms-of-use-list.component';
 import { TermsOfUseViewerComponent } from './terms-of-use-viewer/terms-of-use-viewer.component';
 @NgModule({
-  declarations: [
-    TermsOfUseAcceptComponent,
-    TermsOfUseListComponent,
-    TermsOfUseViewerComponent
-  ],
+  declarations: [TermsOfUseAcceptComponent, TermsOfUseListComponent, TermsOfUseViewerComponent],
   imports: [
     AuthenticationModule,
     CommonModule,
@@ -59,10 +55,8 @@ import { TermsOfUseViewerComponent } from './terms-of-use-viewer/terms-of-use-vi
     MatStepperModule,
     ReactiveFormsModule,
     TranslateModule,
-    BusyIndicatorModule
+    BusyIndicatorModule,
   ],
-  exports: [
-    TermsOfUseViewerComponent
-  ]
+  exports: [TermsOfUseViewerComponent],
 })
-export class TermsOfUseModule { }
+export class TermsOfUseModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,10 +29,9 @@ import { Component, Input, ContentChild, TemplateRef, ElementRef } from '@angula
 @Component({
   selector: 'imx-icon-tile',
   templateUrl: './icon-tile.component.html',
-  styleUrls: ['./icon-tile.component.scss']
+  styleUrls: ['./icon-tile.component.scss'],
 })
 export class IconTileComponent {
-
   @Input() public image: string;
   @Input() public caption: string;
   @Input() public subtitle: string;

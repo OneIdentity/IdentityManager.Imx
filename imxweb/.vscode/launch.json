@@ -25,21 +25,21 @@
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "QER App Portal (Chrome)",
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "QER App Portal (Chrome - SSL)",
       "request": "launch",
       "type": "pwa-chrome",
       "url": "https://localhost:4200/",
-      "webRoot": "${workspaceFolder}",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "QER App Portal (Chrome, API Server)",
@@ -91,7 +91,6 @@
         "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
         "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*"
       }
-    },
-
+    }
   ]
 }

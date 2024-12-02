@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AppConfigService } from 'qbm';
 import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
@@ -33,17 +33,17 @@ import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 @Injectable({
   providedIn: 'root',
 })
-export class ComplianceRulesGuardService implements CanActivate {
+export class ComplianceRulesGuardService {
   constructor(
     private readonly permissionService: CplPermissionsService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   public async canActivate(): Promise<boolean> {
     const userRuleStatistics = await this.permissionService.isRuleStatistics();
     if (!userRuleStatistics) {
-      this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+      this.router.navigate([this.appConfig.Config.routeConfig?.start], { queryParams: {} });
       return false;
     }
     return true;

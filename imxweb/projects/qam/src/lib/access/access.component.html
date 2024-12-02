@@ -1,0 +1,13 @@
+<div eui-sidesheet-content class="imx-sidesheet-content-flex-container">
+  <mat-card class="imx-card-sidesheet">
+    <imx-busy-indicator class="imx-busy" *ngIf="isLoading"></imx-busy-indicator>
+    <div [ngClass]="{ hidden: isLoading }" class="imx-card-content">
+      <div class="imx-margin-bottom-20">
+        {{ "#LDS#'{0}' has access to the following governed data resources." | translate | ldsReplace: referrer.display }}
+      </div>
+
+      <imx-trustee-view [data]="data"></imx-trustee-view>
+    </div>
+    <!--ToDO Monday: Add busy Indicator-->
+  </mat-card>
+</div>

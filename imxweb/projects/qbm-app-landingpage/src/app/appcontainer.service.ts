@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,15 @@
 
 import { Injectable } from '@angular/core';
 
-import { NodeAppInfo } from 'imx-api-qbm';
+import { NodeAppInfo } from '@imx-modules/imx-api-qbm';
 import { environment } from '../environments/environment';
 import { AppConfigService } from 'qbm';
 
 @Injectable()
 export class AppcontainerService {
-  constructor(private readonly appConfigService: AppConfigService) { }
+  constructor(private readonly appConfigService: AppConfigService) {}
 
-  /** Gets a flag indicating whether the user can log in to the 
+  /** Gets a flag indicating whether the user can log in to the
    * Server Administration app. */
   public hasServerAdministrationApp = false;
 
@@ -54,7 +54,7 @@ export class AppcontainerService {
       })
       .map((appInfo: NodeAppInfo) => ({
         link: this.appConfigService.BaseUrl + '/html/' + appInfo.Name,
-        app: appInfo
+        app: appInfo,
       }));
   }
 }

@@ -1,9 +1,8 @@
 @use '../statistics-cards/statistics-cards.component.scss';
 @import '../../stat-mixins.scss';
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
-
   .card-content {
     margin-top: auto;
     margin-bottom: auto;
@@ -15,15 +14,10 @@
     justify-content: center;
     width: 100%;
     height: 150px;
-
-    .chart-container {
-      width: 100%;
-      overflow: hidden;
-    }
   }
 
-
-  .favorites-icon, .org-icon {
+  .favorites-icon,
+  .org-icon {
     position: absolute;
     bottom: 5px;
     z-index: 10;
@@ -51,13 +45,14 @@
 
   .center-content {
     display: flex;
+    width: inherit;
     flex-direction: column;
     margin: auto;
   }
 
-
-  .card-no-data, .card-zero-data {
-  @include Empty-Card;
+  .card-no-data,
+  .card-zero-data {
+    @include Empty-Card;
   }
 }
 
@@ -69,21 +64,14 @@
     eui-icon {
       margin-right: 10px;
     }
-
-    mat-spinner {
-      margin: 0 auto;
-    }
   }
 }
 
 // Theming
 :host {
-  .card-no-data, .card-zero-data {
+  .card-no-data,
+  .card-zero-data {
     @include Stats-No-Data-Theme;
-  }
-
-  .colored-favorite-icon {
-    color: $color-orange-60;
   }
 
   .colored-org-icon {
@@ -95,12 +83,9 @@
 
 .eui-dark-theme {
   :host {
-    .card-no-data, .card-zero-data {
+    .card-no-data,
+    .card-zero-data {
       @include Stats-No-Data-Theme(dark);
-    }
-
-    .colored-favorite-icon {
-      color: $color-orange-40;
     }
 
     .colored-org-icon {
@@ -113,12 +98,9 @@
 
 .eui-contrast-theme {
   :host {
-    .card-no-data, .card-zero-data {
+    .card-no-data,
+    .card-zero-data {
       @include Stats-No-Data-Theme(dark);
-    }
-
-    .colored-favorite-icon {
-      color: $color-orange-40;
     }
 
     .colored-org-icon {

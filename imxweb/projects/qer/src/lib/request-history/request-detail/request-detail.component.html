@@ -1,76 +1,123 @@
 <div class="imx-request-detail">
-  <imx-requestinfo [isReadOnly]="data.isReadOnly" [isApproval]="false" [request]="data.personWantsOrg" [userId]="data.userUid"></imx-requestinfo>
+  <imx-requestinfo
+    [isReadOnly]="data.isReadOnly"
+    [isApproval]="false"
+    [request]="data.personWantsOrg"
+    [userId]="data.userUid"
+  ></imx-requestinfo>
 
-  <mat-card eui-sidesheet-actions *ngIf="!data.isReadOnly && allowedActionCount > 0">
+  <div eui-sidesheet-actions *ngIf="!data.isReadOnly && allowedActionCount > 0">
     <!-- TODO later
     <button mat-stroked-button *ngIf="data.personWantsOrg.ResendRequestAllowed.value"
       data-imx-identifier="request-detail-submit-again" (click)="submitAgain()">
-      {{'#LDS#Submit again' | translate}}
+      {{'#LDS#Request product again' | translate}}
     </button>
   -->
 
-    <button mat-stroked-button *ngIf="data.personWantsOrg.canProlongate"
-      data-imx-identifier="request-detail-renew-request" (click)="actionService.prolongate([data.personWantsOrg])">
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canProlongate"
+      data-imx-identifier="request-detail-renew-request"
+      (click)="actionService.prolongate([data.personWantsOrg])"
+    >
       {{ '#LDS#Renew product' | translate }}
     </button>
 
-    <button mat-stroked-button *ngIf="data.personWantsOrg.UnsubscribeRequestAllowed.value"
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.UnsubscribeRequestAllowed.value"
       data-imx-identifier="request-detail-unsubscribe-request"
-      (click)="actionService.unsubscribe([data.personWantsOrg])">
+      (click)="actionService.unsubscribe([data.personWantsOrg])"
+    >
       {{ '#LDS#Unsubscribe product' | translate }}
     </button>
 
-    <button mat-stroked-button *ngIf="data.personWantsOrg.CancelRequestAllowed.value"
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.CancelRequestAllowed.value"
       data-imx-identifier="request-detail-Withdraw-request"
-      (click)="actionService.withdrawRequest([data.personWantsOrg])">
-      {{'#LDS#Cancel request' | translate}}
+      (click)="actionService.withdrawRequest([data.personWantsOrg])"
+    >
+      {{ '#LDS#Cancel request' | translate }}
     </button>
 
-    <button mat-stroked-button
-      *ngIf="data.personWantsOrg.canWithdrawDelegation && data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder"
-      data-imx-identifier="request-detail-withdraw-delegation" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Delegation',
-    '#LDS#The delegations of approval for {0} requests have been successfully withdrawn.',
-    '#LDS#Withdraw delegations of approval for the following requests.')">
-      {{'#LDS#Withdraw delegation' | translate}}
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canWithdrawDelegation && data.itShopConfig?.VI_ITShop_OrderHistory_CancelOrder"
+      data-imx-identifier="request-detail-withdraw-delegation"
+      (click)="
+        actionService.revokeDelegation(
+          [data.personWantsOrg],
+          '#LDS#Heading Withdraw Delegation',
+          '#LDS#The delegations of approval for {0} requests have been successfully withdrawn.',
+          '#LDS#Withdraw delegations of approval for the following requests.'
+        )
+      "
+    >
+      {{ '#LDS#Withdraw delegation' | translate }}
     </button>
 
-    <button mat-stroked-button
-      *ngIf="data.personWantsOrg.canWithdrawAdditionalApprover && data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder"
-      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeAdditionalApprover([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver',
-    '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
-    '#LDS#Withdraw additional approvers for the following requests.')">
-      {{'#LDS#Withdraw additional approver' | translate}}
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canWithdrawAdditionalApprover && data.itShopConfig?.VI_ITShop_OrderHistory_CancelOrder"
+      data-imx-identifier="request-detail-withdraw-additional-approver"
+      (click)="
+        actionService.revokeAdditionalApprover(
+          [data.personWantsOrg],
+          '#LDS#Heading Withdraw Additional Approver',
+          '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
+          '#LDS#Withdraw additional approvers for the following requests.'
+        )
+      "
+    >
+      {{ '#LDS#Withdraw additional approver' | translate }}
     </button>
 
-    <button mat-stroked-button *ngIf="data.personWantsOrg.canRecallLastQuestion"
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canRecallLastQuestion"
       data-imx-identifier="request-detail-recall-last-question"
-      (click)="actionService.recallLastQuestion([data.personWantsOrg])">
-      {{'#LDS#Withdraw question' | translate}}
+      (click)="actionService.recallLastQuestion([data.personWantsOrg])"
+    >
+      {{ '#LDS#Withdraw question' | translate }}
     </button>
 
-    <button mat-stroked-button *ngIf="data.personWantsOrg.canRevokeHoldStatus"
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canRevokeHoldStatus"
       data-imx-identifier="request-detail-revoke-hold-status"
-      (click)="actionService.revokeHoldStatus([data.personWantsOrg])">
-      {{'#LDS#Revoke hold status' | translate}}
+      (click)="actionService.revokeHoldStatus([data.personWantsOrg])"
+    >
+      {{ '#LDS#Revoke hold status' | translate }}
     </button>
 
-    <button mat-stroked-button data-imx-identifier="request-detail-recall-decision"
-      (click)="actionService.recallDecision([data.personWantsOrg])" *ngIf="data.personWantsOrg.canRecallDecision">
-      {{'#LDS#Undo approval decision' | translate}}
+    <button
+      mat-stroked-button
+      data-imx-identifier="request-detail-recall-decision"
+      (click)="actionService.recallDecision([data.personWantsOrg])"
+      *ngIf="data.personWantsOrg.canRecallDecision"
+    >
+      {{ '#LDS#Undo approval decision' | translate }}
     </button>
 
-    <button mat-stroked-button *ngIf="data.personWantsOrg.canEscalateDecision" data-imx-identifier="request-detail-escalate-approval"
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canEscalateDecision"
+      data-imx-identifier="request-detail-escalate-approval"
       title="{{ '#LDS#Escalates the approval for this request' | translate }}"
-      (click)="actionService.escalateDecisions([data.personWantsOrg])">
-    {{'#LDS#Escalate approval' | translate}}
+      (click)="actionService.escalateDecisions([data.personWantsOrg])"
+    >
+      {{ '#LDS#Escalate approval' | translate }}
     </button>
 
-     <button mat-stroked-button *ngIf="data.personWantsOrg.canCopyItems" data-imx-identifier="request-detail-copy-request"
-      title="{{ '#LDS#Submit again' | translate }}"
-      (click)="actionService.copyItems([data.personWantsOrg])">
-    {{'#LDS#Submit again' | translate}}
+    <button
+      mat-stroked-button
+      *ngIf="data.personWantsOrg.canCopyItems"
+      data-imx-identifier="request-detail-copy-request"
+      title="{{ '#LDS#Adds this product to your shopping cart so you can request it again' | translate }}"
+      (click)="actionService.copyItems([data.personWantsOrg])"
+    >
+      {{ '#LDS#Request product again' | translate }}
     </button>
-
-
-  </mat-card>
+  </div>
 </div>

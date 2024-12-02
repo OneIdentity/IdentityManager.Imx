@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,20 @@
  *
  */
 
-import { ConfigSettingData } from 'imx-api-qbm';
+import { ConfigSettingData } from '@imx-modules/imx-api-qbm';
 
 export class ConfigSection {
-  constructor(public readonly Title: string,
+  constructor(
+    public readonly Title: string,
     public readonly Description: string,
     public readonly Keys: KeyData[],
     /** Returns the configuration nodes that support adding a new setting. */
-    public readonly SettingsSupportingAdd: KeyData[]) {
-  }
+    public readonly SettingsSupportingAdd: KeyData[],
+  ) {}
 }
 
 export interface KeyData extends ConfigSettingData {
   Path: string;
-  DisplayPath: string[];
-  searchTerms: string[];
+  DisplayPath: (string | undefined)[];
+  searchTerms: (string | undefined)[];
 }

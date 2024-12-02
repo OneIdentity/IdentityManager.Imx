@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,15 @@
  *
  */
 
-import { FilterData, DataModel } from 'imx-qbm-dbts';
+import { FilterData, DataModel } from '@imx-modules/imx-qbm-dbts';
 import { IRoleDataModel } from 'qer';
 import { RmsApiService } from './rms-api-client.service';
 
 export class EsetDataModel implements IRoleDataModel {
-
-  constructor(
-    private readonly api: RmsApiService
-  ) { }
+  constructor(private readonly api: RmsApiService) {}
   public async getModel(filter: FilterData[], isAdmin: boolean): Promise<DataModel> {
-    return isAdmin ?
-      this.api.client.portal_admin_role_eset_datamodel_get({ filter: filter })
+    return isAdmin
+      ? this.api.client.portal_admin_role_eset_datamodel_get({ filter: filter })
       : this.api.client.portal_resp_eset_datamodel_get({ filter: filter });
   }
 }

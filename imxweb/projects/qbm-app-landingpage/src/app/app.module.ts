@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,39 +24,41 @@
  *
  */
 
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER, ErrorHandler } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { AppcontainerService } from './appcontainer.service';
+import { RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha-2';
+import { CustomThemeModule } from 'projects/qbm/src/lib/custom-theme/custom-theme.module';
 import {
+  AdminModule,
   AppConfigService,
   AuthenticationModule,
-  imx_SessionService,
+  ExtModule,
+  GlobalErrorHandler,
   ImxMissingTranslationHandler,
   ImxTranslateLoader,
   MastHeadModule,
-  UserMessageModule,
-  AdminModule,
-  ExtModule,
-  GlobalErrorHandler,
   QbmModule,
+  UserMessageModule,
+  imx_SessionService,
 } from 'qbm';
-import { AppService } from './app.service';
-import { StartComponent } from './start/start.component';
-import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
-import { CustomThemeModule } from 'projects/qbm/src/lib/custom-theme/custom-theme.module';
+import { environment } from '../environments/environment';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { AppService } from './app.service';
+import { AppcontainerService } from './appcontainer.service';
+import { StartComponent } from './start/start.component';
 
 @NgModule({
   declarations: [AppComponent, StartComponent],
+  bootstrap: [AppComponent],
   imports: [
     AdminModule,
     AppRoutingModule,
@@ -66,7 +68,6 @@ import { CustomThemeModule } from 'projects/qbm/src/lib/custom-theme/custom-them
     CustomThemeModule,
     EuiCoreModule,
     EuiMaterialModule,
-    HttpClientModule,
     MastHeadModule,
     UserMessageModule,
     TranslateModule.forRoot({
@@ -82,7 +83,7 @@ import { CustomThemeModule } from 'projects/qbm/src/lib/custom-theme/custom-them
     ExtModule,
     MatCardModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
-    QbmModule
+    QbmModule,
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -100,7 +101,14 @@ import { CustomThemeModule } from 'projects/qbm/src/lib/custom-theme/custom-them
     AppcontainerService,
     AppConfigService,
     imx_SessionService,
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: (config: AppService) => {
+        return config.recaptchaSiteKeyV3;
+      },
+      deps: [AppService],
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

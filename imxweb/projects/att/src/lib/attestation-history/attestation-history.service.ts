@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,6 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
+import { AttCaseDataRead, PortalAttestationCase, V2ApiClientMethodFactory } from '@imx-modules/imx-api-att';
 import {
   DataModel,
   EntityCollectionData,
@@ -36,22 +37,24 @@ import {
   MethodDefinition,
   MethodDescriptor,
   TypedEntityCollectionData,
-} from 'imx-qbm-dbts';
-import { AttCaseDataRead, PortalAttestationCase, V2ApiClientMethodFactory } from 'imx-api-att';
-import { ParameterDataService, ParameterDataLoadParameters } from 'qer';
-import { ApiService } from '../api.service';
-import { AttestationHistoryCase } from './attestation-history-case';
-import { AttestationCaseLoadParameters } from './attestation-case-load-parameters.interface';
+} from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarExportMethod } from 'qbm';
+import { ParameterDataLoadParameters, ParameterDataService } from 'qer';
+import { ApiService } from '../api.service';
+import { AttestationCaseLoadParameters } from './attestation-case-load-parameters.interface';
+import { AttestationHistoryCase } from './attestation-history-case';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AttestationHistoryService {
-  constructor(private readonly attClient: ApiService, private readonly parameterDataService: ParameterDataService) {}
+  constructor(
+    private readonly attClient: ApiService,
+    private readonly parameterDataService: ParameterDataService,
+  ) {}
 
   public async get(
-    parameters: AttestationCaseLoadParameters
+    parameters?: AttestationCaseLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<PortalAttestationCase, AttCaseDataRead>> {
     return this.attClient.typedClient.PortalAttestationCase.Get(parameters);
   }
@@ -66,7 +69,7 @@ export class AttestationHistoryService {
           item.GetEntity(),
           { ...collection.extendedData, ...{ index } },
           (parameters) => this.getParameterCandidates(parameters),
-          (treefilterparameter) => this.getFilterTree(treefilterparameter)
+          (treefilterparameter) => this.getFilterTree(treefilterparameter),
         );
 
         return new AttestationHistoryCase(item, parameterDataContainer, { ...collection.extendedData, ...{ index } });
@@ -80,13 +83,13 @@ export class AttestationHistoryService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_attestation_case_get({...loadParameters, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_attestation_case_get({ ...loadParameters, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_attestation_case_get({...loadParameters, withProperties})
+          method = factory.portal_attestation_case_get({ ...loadParameters, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
   public async getDataModel(objecttable?: string, objectuid?: string, groupFilter?: FilterData[]): Promise<DataModel> {
@@ -99,31 +102,32 @@ export class AttestationHistoryService {
 
   public getGroupInfo(parameters: AttestationCaseLoadParameters = {}): Promise<GroupInfoData> {
     // remove groupFilter from parameters
-    const {withProperties, groupFilter, search, OrderBy, ...paramsWithoutGroupFilter } = parameters;
+    const { withProperties, groupFilter, search, OrderBy, ...paramsWithoutGroupFilter } = parameters;
     return this.attClient.client.portal_attestation_case_group_get({
       ...paramsWithoutGroupFilter,
-      ...{ withcount: true, filter: parameters.groupFilter },
+      withcount: true,
+      filter: [...(parameters.groupFilter || []), ...(parameters.filter || [])],
     });
   }
 
   private async getParameterCandidates(parameters: ParameterDataLoadParameters): Promise<EntityCollectionData> {
     return this.attClient.client.portal_attestation_case_parameter_candidates_post(
       parameters.columnName,
-      parameters.fkTableName,
-      parameters.diffData,
-      parameters
+      parameters.fkTableName || '',
+      parameters.diffData || {},
+      parameters,
     );
   }
 
   private async getFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData> {
     return this.attClient.client.portal_attestation_case_parameter_candidates_filtertree_post(
       parameters.columnName,
-      parameters.fkTableName,
-      parameters.diffData,
+      parameters.fkTableName || '',
+      parameters.diffData || {},
       {
         ...parameters,
         parentkey: parameters.ParentKey,
-      }
+      },
     );
   }
 }

@@ -1,0 +1,8 @@
+<div *ngIf="display; else noTitle" class="imx-single-permission">
+  <div>{{ display }}</div>
+  <eui-icon size="l" [ngClass]="isChecked ? 'imx-icon-new' : 'imx-icon-disabled'" [icon]="isChecked ? 'boxcheck' : 'boxx'"></eui-icon>
+</div>
+
+<ng-template #noTitle>
+  <eui-icon size="l" [ngClass]="isChecked ? 'imx-icon-new' : 'imx-icon-disabled'" [icon]="isChecked ? 'boxcheck' : 'boxx'"></eui-icon>
+</ng-template>

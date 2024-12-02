@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
-import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
+import { BehaviorSubject, Observable, Subscription, merge } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 
@@ -44,7 +44,7 @@ export class DynamicDataApiControls<T> {
 export class DynamicDataSource<T> {
   public dataChange = new BehaviorSubject<T[]>([]);
   public initializingData: boolean;
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public selectedNode: T;
 
   private totalCount: number;
@@ -74,14 +74,19 @@ export class DynamicDataSource<T> {
   }
 
   public get isSearch(): boolean {
-    return this.dstSettings?.navigationState.search?.length > 0;
+    return !!this.dstSettings?.navigationState?.search?.length;
   }
+
+  constructor(
+    private _treeControl: FlatTreeControl<T>,
+    private _apiControls: DynamicDataApiControls<T>,
+  ) {}
 
   public async setup(expandRoot?: boolean): Promise<void> {
     this.initializingData = true;
     try {
       const response = await this._apiControls.setup();
-      this.totalCount = response?.totalCount;
+      this.totalCount = response?.totalCount ?? 0;
       this.rootNode = response.rootNode;
       this.dstSettings = response?.dstSettings;
       this.init();
@@ -101,15 +106,25 @@ export class DynamicDataSource<T> {
   }
 
   public async loadMore(): Promise<void> {
-    let nodes: T[];
+    let nodes: T[] = [];
     if (this.isSearch) {
-      this.dstSettings.navigationState.StartIndex = this.data.length;
-      nodes = (await this._apiControls.search(this.dstSettings.navigationState)).searchNodes;
-      nodes = this._apiControls.changeSelection(nodes, this.selectedNode);
+      if (this.dstSettings) {
+        this.dstSettings.navigationState.StartIndex = this.data.length;
+      }
+      if (this._apiControls.search) {
+        nodes = (await this._apiControls.search(this.dstSettings?.navigationState ?? {})).searchNodes;
+      }
+      if (this._apiControls.changeSelection) {
+        nodes = this._apiControls.changeSelection(nodes, this.selectedNode);
+      }
       this.data.push(...nodes);
     } else {
-      nodes = await this._apiControls.loadMore(this.rootNode);
-      nodes = this._apiControls.changeSelection(nodes, this.selectedNode);
+      if (this._apiControls.loadMore) {
+        nodes = await this._apiControls.loadMore(this.rootNode);
+      }
+      if (this._apiControls.changeSelection) {
+        nodes = this._apiControls.changeSelection(nodes, this.selectedNode);
+      }
       const index = this.findEndOfChildren(this.rootNode);
 
       this.data.splice(index + 1, 0, ...nodes);
@@ -122,9 +137,11 @@ export class DynamicDataSource<T> {
     if (!this._apiControls.search || !this._apiControls.changeSelection) {
       throw Error('No remote search functionality has been defined.');
     }
-    this.initializingData = true;
-    this.dstSettings.navigationState.StartIndex = 0;
 
+    this.initializingData = true;
+    if (this.dstSettings) {
+      this.dstSettings.navigationState.StartIndex = 0;
+    }
     // If we don't have cached data, and we are searching, cache
     if (!this.cachedData && this.isSearch) {
       this.cachedData = {
@@ -143,16 +160,18 @@ export class DynamicDataSource<T> {
       this.cachedData = null;
     } else {
       // Proceed with normal search
-      const response = await this._apiControls.search(this.dstSettings.navigationState);
+      const response = await this._apiControls.search(this.dstSettings?.navigationState ?? {});
       if (!response) {
         // Here the search was aborted, so we return nothing
         return;
       }
-      this.totalCount = response?.totalCount;
-      const nodes = this._apiControls.changeSelection(response.searchNodes, this.selectedNode);
+      this.totalCount = response?.totalCount ?? 0;
+      const nodes = this._apiControls.changeSelection
+        ? this._apiControls.changeSelection(response?.searchNodes ?? [], this.selectedNode)
+        : [];
       this.currentCount = nodes.length;
       if (nodes.length > 0) {
-        this.rootNode = response.rootNode || this.rootNode;
+        this.rootNode = response?.rootNode || this.rootNode;
         this.nextData([this.rootNode, ...nodes]);
         this._treeControl.expand(this.rootNode);
       } else {
@@ -160,6 +179,7 @@ export class DynamicDataSource<T> {
       }
     }
   }
+
   /**
    * Emits data and turns off the loading spinner
    * @param data that will be emitted as the next data state
@@ -169,8 +189,6 @@ export class DynamicDataSource<T> {
     this.initializingData = false;
   }
 
-  constructor(private _treeControl: FlatTreeControl<T>, private _apiControls: DynamicDataApiControls<T>) {}
-
   public connect(collectionViewer: CollectionViewer): Observable<T[]> {
     this.subscriptions$.push(
       this._treeControl.expansionModel.changed
@@ -179,13 +197,13 @@ export class DynamicDataSource<T> {
           if (treeDataHasChanged) {
             this.dataChange.next(this.data);
           }
-        })
+        }),
     );
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(
       map(() => {
         return this.data;
-      })
+      }),
     );
   }
 
@@ -203,7 +221,7 @@ export class DynamicDataSource<T> {
           change.removed
             .slice()
             .reverse()
-            .map((node) => this.toggleNode(node, false))
+            .map((node) => this.toggleNode(node, false)),
         )
       ).some((val) => val);
     }
@@ -261,10 +279,10 @@ export class DynamicDataSource<T> {
   }
 
   public setSelection(node: T): void {
-    const nodes = this._apiControls.changeSelection(this.data, node);
+    const nodes = this._apiControls.changeSelection ? this._apiControls.changeSelection(this.data, node) : [];
     this.dataChange.next(nodes);
     if (this.cachedData) {
-      this.cachedData.data = this._apiControls.changeSelection(this.cachedData.data, node);
+      this.cachedData.data = this._apiControls.changeSelection ? this._apiControls.changeSelection(this.cachedData.data, node) : [];
     }
     this.selectedNode = node;
   }

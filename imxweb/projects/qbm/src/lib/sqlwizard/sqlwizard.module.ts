@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,33 +24,33 @@
  *
  */
 
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SqlWizardComponent } from './sqlwizard.component';
-import { SimpleExpressionComponent } from './simple-expression.component';
-import { CommonModule } from '@angular/common';
-import { ColumnSelectionComponent } from './column-selection.component';
-import { TableSelectionComponent } from './table-selection.component';
-import { SingleExpressionComponent } from './single-expression.component';
-import { WhereClauseExpressionComponent } from './where-clause-expression.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { SqlWizardService } from './sqlwizard.service';
 import { MatListModule } from '@angular/material/list';
-import { DatePickerComponent } from './date-picker.component';
 import { MatRadioModule } from '@angular/material/radio';
-import { SingleValueComponent } from './single-value.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { CdrModule } from '../cdr/cdr.module';
 import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
+import { ColumnSelectionComponent } from './column-selection.component';
+import { DatePickerComponent } from './date-picker.component';
+import { SimpleExpressionComponent } from './simple-expression.component';
+import { SingleExpressionComponent } from './single-expression.component';
+import { SingleValueComponent } from './single-value.component';
+import { SqlWizardComponent } from './sqlwizard.component';
+import { SqlWizardService } from './sqlwizard.service';
+import { TableSelectionComponent } from './table-selection.component';
+import { WhereClauseExpressionComponent } from './where-clause-expression.component';
 
 @NgModule({
   imports: [

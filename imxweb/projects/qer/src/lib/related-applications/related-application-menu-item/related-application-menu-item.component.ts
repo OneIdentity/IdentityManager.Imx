@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,23 +31,22 @@ import { RelatedApplicationsService } from '../related-applications.service';
 @Component({
   selector: 'imx-related-application-menu-item',
   templateUrl: './related-application-menu-item.component.html',
-  styleUrls: ['./related-application-menu-item.component.scss']
+  styleUrls: ['./related-application-menu-item.component.scss'],
 })
-export class RelatedApplicationMenuItemComponent implements OnInit{
+export class RelatedApplicationMenuItemComponent implements OnInit {
   showButton = false;
 
   constructor(
     private readonly router: Router,
-    private readonly relatedApplicationsService: RelatedApplicationsService
-  ) { }
+    private readonly relatedApplicationsService: RelatedApplicationsService,
+  ) {}
 
-    async ngOnInit(): Promise<void>{
-      const applcications = await this.relatedApplicationsService.getRelatedApplications()
-      this.showButton = applcications?.length > 0;
-    }
-
-  public onNavigateToApplications():void{
-    this.router.navigate(['applications/relatedapplications']);
+  async ngOnInit(): Promise<void> {
+    const applcications = await this.relatedApplicationsService.getRelatedApplications();
+    this.showButton = applcications?.length > 0;
   }
 
+  public onNavigateToApplications(): void {
+    this.router.navigate(['applications/relatedapplications']);
+  }
 }

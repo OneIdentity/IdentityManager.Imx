@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { EntitySchema, TypedEntity } from "imx-qbm-dbts";
+import { EntitySchema, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 export interface IRequestableEntitlementType {
-
   getTableName(): string;
 
   getFkColumnName(): string;
-  
+
   addEntitlementSelections(shelfId: string, values: string[]): Promise<any>;
 
   createAssignmentEntity(shelfId: string): TypedEntity;

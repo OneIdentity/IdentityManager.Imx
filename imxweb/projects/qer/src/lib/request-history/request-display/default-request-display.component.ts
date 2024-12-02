@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,16 @@
 
 import { Component, Input } from '@angular/core';
 
-import { PortalItshopRequests } from 'imx-api-qer';
+import { PortalItshopRequests } from '@imx-modules/imx-api-qer';
 import { ParameterizedText } from 'qbm';
 
 import { RequestDisplayInterface } from './request-display.interface';
 
 @Component({
   templateUrl: './default-request-display.component.html',
-  styleUrls: ['./default-request-display.component.scss']
+  styleUrls: ['./default-request-display.component.scss'],
 })
 export class DefaultRequestDisplayComponent implements RequestDisplayInterface {
-
   @Input() public readonly isReadOnly: boolean;
 
   private _pwo: PortalItshopRequests;
@@ -57,25 +56,24 @@ export class DefaultRequestDisplayComponent implements RequestDisplayInterface {
     this.additional = value;
   }
 
-  public parameterizedText: ParameterizedText;
+  public parameterizedText: ParameterizedText | undefined;
 
   private setPText() {
     if (this._pwo && this._pwo.Assignment?.value) {
       this.parameterizedText = {
         value: this._pwo.Assignment.value,
         marker: { start: '"%', end: '%"' },
-        getParameterValue: columnName => {
+        getParameterValue: (columnName) => {
           try {
             return this._pwo.GetEntity().GetColumn(columnName).GetDisplayValue();
           } catch {
             // parameter values may be embedded directly
             return columnName;
           }
-        }
+        },
       };
-    }
-    else {
-      this.parameterizedText = null;
+    } else {
+      this.parameterizedText = undefined;
     }
   }
 }

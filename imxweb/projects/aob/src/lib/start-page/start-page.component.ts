@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { EuiLoadingService } from '@elemental-ui/core';
@@ -39,13 +38,13 @@ import { AobPermissionsService } from '../permissions/aob-permissions.service';
 @Component({
   selector: 'imx-start',
   templateUrl: './start-page.component.html',
-  styleUrls: ['./start-page.component.scss']
+  styleUrls: ['./start-page.component.scss'],
 })
 export class StartPageComponent implements OnInit, OnDestroy {
   public numberOfApplications = 0;
   public isAdmin: boolean;
   public name: string;
-  public imageUrl: SafeUrl;
+  public imageUrl: SafeUrl | undefined;
 
   private authSubscription: Subscription;
 
@@ -58,11 +57,10 @@ export class StartPageComponent implements OnInit, OnDestroy {
     private readonly aobPermissionsService: AobPermissionsService,
     authentication: AuthenticationService,
   ) {
-    this.authSubscription = authentication.onSessionResponse?.subscribe(async sessionState => {
-      this.name = sessionState.Username;
-      this.imageUrl = await this.imageProvider.getPersonImageUrl(sessionState.UserUid);
-    }
-    );
+    this.authSubscription = authentication.onSessionResponse?.subscribe(async (sessionState) => {
+      this.name = sessionState.Username || '';
+      this.imageUrl = await this.imageProvider.getPersonImageUrl(this.name);
+    });
   }
 
   public ngOnDestroy(): void {
@@ -70,8 +68,9 @@ export class StartPageComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       this.logger.debug(this, 'get number of applications...');
       const apps = await this.applicationsProvider.get();
@@ -82,9 +81,8 @@ export class StartPageComponent implements OnInit, OnDestroy {
       }
 
       this.isAdmin = await this.aobPermissionsService.isAobApplicationAdmin();
-
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 }

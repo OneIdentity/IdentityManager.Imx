@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
-import { IClientProperty, IEntity } from 'imx-qbm-dbts';
+import { IClientProperty, IEntity } from '@imx-modules/imx-qbm-dbts';
 
 export function buildAdditionalElementsString(entity: IEntity, additionals: IClientProperty[], separator: string = '; '): string {
   return additionals == null
     ? ''
     : additionals
-        .filter((elem) => entity.GetColumn(elem?.ColumnName)?.GetDisplayValue() !== '')
-        .map((elem) => `${elem?.Display || elem?.ColumnName}: ${entity.GetColumn(elem?.ColumnName)?.GetDisplayValue()}`)
+        .filter((elem) => entity.GetColumn(elem?.ColumnName ?? '')?.GetDisplayValue() !== '')
+        .map((elem) => `${elem?.Display || elem?.ColumnName}: ${entity.GetColumn(elem?.ColumnName ?? '')?.GetDisplayValue()}`)
         .join(separator);
 }

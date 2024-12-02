@@ -1,72 +1,76 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
 }
 
 .search-type {
-    display: flex;
+  display: flex;
 
-    >label {
-        align-self: center
-    }
-
-    .search-type-radio-group {
-        display: flex;
-        margin: 15px 0;
-        align-items: flex-start;
-    }
-
-    .search-type-radio-button {
-        margin: 5px;
-    }
+  > label {
+    align-self: center;
+  }
 }
 
 .search-type-option-controls {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  .eui-form-field {
+    width: auto;
+  }
+  .eui-select {
+    min-width: 250px;
+  }
+}
 
-    .mat-form-field {
-        margin: 5px;
-    }
+eui-date-picker {
+  .mat-mdc-form-field {
+    width: 300px;
+  }
+}
 
-    button {
-        align-self: center;
-        margin: 10px;
-    }
+.hidden {
+  display: none;
 }
 
 .search-result-table-container {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  .search-result-table {
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow: auto;
-    margin-bottom: -20px;
-
-    tr:hover {
-        background: $color-gray-5;
-    }
+  }
+  tr:hover {
+    background: $color-gray-5;
+  }
 }
 
 .eui-dark-theme {
-    :host {
-        .search-result-table-container {
-            tr:hover {
-                background: $color-gray-60;
-            }
-        }
+  :host {
+    .search-result-table-container {
+      tr:hover {
+        background: $color-gray-60;
+      }
     }
+  }
 }
 
 .eui-contrast-theme {
   :host {
-      .search-result-table-container {
-          tr:hover {
-              background: $color-gray-80;
-          }
+    .search-result-table-container {
+      tr:hover {
+        background: $color-gray-80;
       }
+    }
   }
 }

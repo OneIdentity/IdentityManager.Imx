@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,45 +27,48 @@
 import { Component, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { IWriteValue } from 'imx-qbm-dbts';
-import { PortalItshopApproveRequests } from 'imx-api-qer';
+import { PortalItshopApproveRequests } from '@imx-modules/imx-api-qer';
+import { IWriteValue } from '@imx-modules/imx-qbm-dbts';
 
-import { ImxTranslationProviderService } from 'qbm';
+import { TranslateService } from '@ngx-translate/core';
+import { LdsReplacePipe } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 
 @Component({
-    templateUrl: './query-person.component.html',
-    selector: 'imx-itshop-queryperson'
+  templateUrl: './query-person.component.html',
+  selector: 'imx-itshop-queryperson',
 })
 export class QueryPersonComponent {
+  public Notice: IWriteValue<string>;
+  // TODO minlen=1, caption:#LDS#Your question
 
-    public Notice: IWriteValue<string>;
-    // TODO minlen=1, caption:#LDS#Your question
+  public UID_Person: IWriteValue<string>;
+  // TDO configure as FK to person
 
-    public UID_Person: IWriteValue<string>;
-    // TDO configure as FK to person
+  @Input() public PersonWantsOrg: PortalItshopApproveRequests;
 
-    @Input() public PersonWantsOrg: PortalItshopApproveRequests;
+  constructor(
+    private readonly ldsReplace: LdsReplacePipe,
+    private readonly translate: TranslateService,
+    private readonly snackBar: MatSnackBar,
+    private readonly apiService: QerApiService,
+  ) {}
 
-    constructor(
-        private translator: ImxTranslationProviderService,
-        private snackBar: MatSnackBar,
-        private apiService: QerApiService) { }
+  public async Button3(): Promise<void> {
+    // ActionOnControl({ 'ActionType': 'PerformValidation' });
 
-    public async Button3(): Promise<void> {
-        // ActionOnControl({ 'ActionType': 'PerformValidation' });
+    await this.apiService.client.portal_itshop_query_post(this.PersonWantsOrg.GetEntity().GetKeys()[0], {
+      Text: this.Notice.value,
+      UidPerson: this.UID_Person.value,
+    });
 
-        await this.apiService.client.portal_itshop_query_post(this.PersonWantsOrg.GetEntity().GetKeys()[0], {
-            Text: this.Notice.value,
-            UidPerson: this.UID_Person.value
-        });
+    // TODO reload all data
 
-        // TODO reload all data
-
-        this.snackBar.open(await this.translator.Translate({
-            key: '#LDS#Your question was submitted to {0}.',
-            parameters: [this.UID_Person.Column.GetDisplayValue()]
-        }).toPromise());
-    }
-
+    this.snackBar.open(
+      this.ldsReplace.transform(
+        await this.translate.get('#LDS#Your question was submitted to {0}.').toPromise(),
+        this.UID_Person.Column.GetDisplayValue(),
+      ),
+    );
+  }
 }

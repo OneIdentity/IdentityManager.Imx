@@ -1,0 +1,60 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "qbm",
+  "sourceRoot": "projects/qbm/src",
+  "projectType": "library",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/qbm/tsconfig.lib.json",
+        "project": "projects/qbm/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/qbm/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/qbm/tsconfig.lib.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/qbm/tsconfig.lib.json"
+        },
+        "remote-qs": {
+          "tsConfig": "projects/qbm/tsconfig.lib.json"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/qbm"]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        },
+        "main": "projects/qbm/src/test.ts",
+        "tsConfig": "projects/qbm/tsconfig.spec.json",
+        "karmaConfig": "projects/qbm/karma.conf.js"
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:eslint",
+      "options": {
+        "tsConfig": ["projects/qbm/tsconfig.lib.json", "projects/qbm/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

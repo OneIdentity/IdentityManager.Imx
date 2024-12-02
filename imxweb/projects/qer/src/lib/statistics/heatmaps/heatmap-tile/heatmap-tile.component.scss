@@ -1,5 +1,5 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-@import "../../stat-mixins.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../stat-mixins.scss';
 
 :host {
   display: flex;
@@ -37,9 +37,7 @@
       font-weight: 600;
     }
   }
-
 }
-
 
 // Theming
 :host {
@@ -50,15 +48,15 @@
   }
 
   .grid-error {
-  background-color: var(--stat-error);
+    background-color: var(--stat-error);
   }
 
   .grid-warn {
-  background-color: var(--stat-warn);
+    background-color: var(--stat-warn);
   }
 
   .grid-ok {
-  background-color: var(--stat-ok);
+    background-color: var(--stat-ok);
   }
 }
 
@@ -72,15 +70,15 @@
 
     .grid-error {
       background-color: var(--stat-error);
-      }
+    }
 
-      .grid-warn {
+    .grid-warn {
       background-color: var(--stat-warn);
-      }
+    }
 
-      .grid-ok {
+    .grid-ok {
       background-color: var(--stat-ok);
-      }
+    }
   }
 }
 
@@ -94,14 +92,14 @@
 
     .grid-error {
       background-color: var(--stat-error);
-      }
+    }
 
-      .grid-warn {
+    .grid-warn {
       background-color: var(--stat-warn);
-      }
+    }
 
-      .grid-ok {
+    .grid-ok {
       background-color: var(--stat-ok);
-      }
+    }
   }
 }

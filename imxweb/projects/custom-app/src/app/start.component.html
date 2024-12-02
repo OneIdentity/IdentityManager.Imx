@@ -1,8 +1,7 @@
 <mat-card>
-
   <div mat-card-title>Hello world!</div>
 
-  <button mat-raised-button color="primary" (click)="loadPersonData()">Fetch some person data...</button>
+  <button mat-flat-button color="primary" (click)="loadPersonData()">Fetch some person data...</button>
 
   <mat-spinner *ngIf="busy"></mat-spinner>
 
@@ -14,5 +13,4 @@
       </li>
     </ul>
   </div>
-
 </mat-card>

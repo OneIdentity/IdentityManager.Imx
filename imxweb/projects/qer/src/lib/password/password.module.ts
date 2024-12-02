@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,30 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { RouterModule } from '@angular/router';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatListModule } from '@angular/material/list';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { RouterModule } from '@angular/router';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { LdsReplaceModule, TileModule, ConfirmationModule } from 'qbm';
-import { PasswordQueryComponent } from './password-query.component';
-import { PasswordResetComponent } from './password-reset.component';
+import { AboutService, ConfirmationModule, LdsReplaceModule, MetadataService, TileModule } from 'qbm';
+import { TilesModule } from '../tiles/tiles.module';
+import { PwdAboutService } from './about/pwd-about.service';
 import { CheckPasswordsComponent } from './check-passwords.component';
 import { PasswordDashboardComponent } from './dashboard.component';
+import { PwdMetadataService } from './metadata/pwd-metadata.service';
+import { PasswordQueryComponent } from './password-query.component';
+import { PasswordResetComponent } from './password-reset.component';
 import { PasswordService } from './password.service';
-import { TilesModule } from '../tiles/tiles.module';
 
 @NgModule({
   imports: [
@@ -67,19 +69,20 @@ import { TilesModule } from '../tiles/tiles.module';
     RouterModule,
     TilesModule,
     TileModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [
-    PasswordService
+    PasswordService,
+    {
+      provide: AboutService,
+      useClass: PwdAboutService,
+    },
+    {
+      provide: MetadataService,
+      useClass: PwdMetadataService,
+    },
   ],
-  exports: [
-    PasswordResetComponent
-  ],
-  declarations: [
-    CheckPasswordsComponent,
-    PasswordDashboardComponent,
-    PasswordResetComponent,
-    PasswordQueryComponent
-  ]
+  exports: [PasswordResetComponent],
+  declarations: [CheckPasswordsComponent, PasswordDashboardComponent, PasswordResetComponent, PasswordQueryComponent],
 })
-export class PasswordModule { }
+export class PasswordModule {}

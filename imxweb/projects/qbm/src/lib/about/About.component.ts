@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,23 +25,21 @@
  */
 
 import { Component, HostBinding, OnInit } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { AboutService } from './About.service';
-import { ExtService } from '../ext/ext.service';
-import { Globals, CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, Globals, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { ExtService } from '../ext/ext.service';
 import { SettingsService } from '../settings/settings-service';
 import { SystemInfoService } from '../system-info/system-info.service';
+import { AboutService } from './About.service';
 
 @Component({
   templateUrl: './About.component.html',
   styleUrls: ['./About.component.scss'],
-  selector: 'imx-about'
+  selector: 'imx-about',
 })
 export class AboutComponent implements OnInit {
-
   @HostBinding('class')
   public defaultHostClasses = 'imx-flex imx-flex-child';
 
@@ -58,14 +56,14 @@ export class AboutComponent implements OnInit {
     private readonly systemInfoService: SystemInfoService,
     private extService: ExtService,
     private readonly settings: SettingsService,
-    private readonly busyService: EuiLoadingService
+    private readonly busyService: EuiLoadingService,
   ) {
     this.entitySchema = aboutInfoService.EntitySchema;
     this.displayedColumns = [
       this.entitySchema.Columns['ComponentName'],
       this.entitySchema.Columns['CopyRight'],
       this.entitySchema.Columns['EmailOrURl'],
-      this.entitySchema.Columns['LicenceName']
+      this.entitySchema.Columns['LicenceName'],
     ];
     this.product['Name'] = Globals.QIM_ProductNameFull;
     this.product['Version'] = Globals.Version;
@@ -81,8 +79,7 @@ export class AboutComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     const imxConfig = await this.systemInfoService.getImxConfig();
     const name = imxConfig.ProductName;
-    if (name)
-      this.product['Name'] = name;
+    if (name) this.product['Name'] = name;
 
     await this.update({ PageSize: this.settings.DefaultPageSize, StartIndex: 0, OrderBy: 'ComponentName' });
   }
@@ -96,18 +93,21 @@ export class AboutComponent implements OnInit {
       this.parameters = parameters;
     }
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       const data = await this.aboutInfoService.get(this.parameters);
-      this.dstSettings = {
-        dataSource: data,
-        entitySchema: this.entitySchema,
-        navigationState: this.parameters,
-        displayedColumns: this.displayedColumns
-      };
+      if (data) {
+        this.dstSettings = {
+          dataSource: data,
+          entitySchema: this.entitySchema,
+          navigationState: this.parameters,
+          displayedColumns: this.displayedColumns,
+        };
+      }
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 }

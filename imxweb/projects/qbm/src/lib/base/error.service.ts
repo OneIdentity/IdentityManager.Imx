@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,18 @@
  *
  */
 
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ErrorService {
   private _target: string;
 
   /** Returns the current target for generated error messages. */
-  public get target() { return this._target; }
+  public get target() {
+    return this._target;
+  }
 
   /** Sets a new target and returns a callback function that resets
    * the target to its previous value.
@@ -44,8 +46,7 @@ export class ErrorService {
     var disposed = false;
     return () => {
       // only call once
-      if (disposed)
-        return;
+      if (disposed) return;
       disposed = true;
       this._target = previousTarget;
     };

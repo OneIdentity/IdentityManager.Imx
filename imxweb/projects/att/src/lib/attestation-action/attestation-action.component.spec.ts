@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -52,8 +52,8 @@ describe('AttestationActionComponent', () => {
 
   beforeEach(() => {
     return MockBuilder(AttestationActionComponent, AttestationDecisionModule)
-      .mock(EUI_SIDESHEET_DATA, mockSideSheetData,{export:true})
-      .mock(EuiSidesheetRef,{},{export:true})
+      .mock(EUI_SIDESHEET_DATA, mockSideSheetData, { export: true })
+      .mock(EuiSidesheetRef, {}, { export: true })
       .mock(DecisionStepSevice, {});
   });
 

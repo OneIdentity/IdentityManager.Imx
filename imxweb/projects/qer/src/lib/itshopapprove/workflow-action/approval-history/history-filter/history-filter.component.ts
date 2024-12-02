@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { HistoryFilterMode } from 'imx-api-qer';
+import { HistoryFilterMode } from '@imx-modules/imx-api-qer';
 import { DataSourceToolbarComponent, DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from 'qbm';
 
 @Component({
@@ -35,22 +35,23 @@ import { DataSourceToolbarComponent, DataSourceToolbarFilter, DataSourceToolbarS
   styleUrls: ['./history-filter.component.scss'],
 })
 export class HistoryFilterComponent implements OnChanges {
-  @Input() public dst?: DataSourceToolbarComponent;
+  @Input() public dst: DataSourceToolbarComponent;
   @Input() public filter: DataSourceToolbarFilter[];
   @Input() public filtermode: HistoryFilterMode;
   @Output() public selectedFiltersChanged = new EventEmitter<HistoryFilterMode>();
 
   public options: { display: string; value: HistoryFilterMode; checked: boolean; initialValue: string }[] = [];
-  public modeFilter: DataSourceToolbarFilter;
+  public modeFilter: DataSourceToolbarFilter | undefined;
 
   public ngOnChanges(): void {
     this.modeFilter = this.filter?.find((elem) => elem.Name === 'filtermode');
-    this.options = this.modeFilter?.Options.map((elem) => ({
-      display: elem.Display,
-      value: this.convertToFilter(elem.Value),
-      initialValue: elem.Value,
-      checked: this.isChecked(elem.Value),
-    }));
+    this.options =
+      this.modeFilter?.Options?.map((elem) => ({
+        display: elem.Display ?? '',
+        value: this.convertToFilter(elem.Value ?? ''),
+        initialValue: elem.Value ?? '',
+        checked: this.isChecked(elem.Value ?? ''),
+      })) || [];
     this.updateFilter(false);
   }
 
@@ -59,7 +60,7 @@ export class HistoryFilterComponent implements OnChanges {
       if (!sf) {
         this.options.forEach((elem) => (elem.checked = false));
       } else {
-        const filter = this.options.find((elem) => elem.initialValue === sf.selectedOption.Value);
+        const filter = this.options.find((elem) => elem.initialValue === sf?.selectedOption?.Value ?? '');
         if (filter) {
           filter.checked = false;
         }
@@ -68,10 +69,9 @@ export class HistoryFilterComponent implements OnChanges {
     });
   }
 
-  public updateFilter( emit: boolean = true): void {
+  public updateFilter(emit: boolean = true): void {
     const checked = this.options?.filter((elem) => elem.checked);
-    if (!checked)
-     {
+    if (!checked) {
       return;
     }
 
@@ -90,7 +90,7 @@ export class HistoryFilterComponent implements OnChanges {
       let applyedfilter = HistoryFilterMode.None;
 
       filtermode.forEach((element) => {
-        // tslint:disable-next-line: no-bitwise
+        // eslint-disable-next-line no-bitwise
         applyedfilter |= element.value;
       });
       this.selectedFiltersChanged.emit(applyedfilter);
@@ -106,7 +106,7 @@ export class HistoryFilterComponent implements OnChanges {
 
   private isChecked(id: string): boolean {
     const value = this.convertToFilter(id);
-    // tslint:disable-next-line: no-bitwise
+    // eslint-disable-next-line no-bitwise
     return (this.filtermode & value) === value;
   }
 

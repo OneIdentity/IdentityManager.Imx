@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { Directive, Input } from '@angular/core';
 
 @Directive({
-  selector: '[imxDataProvider]'
+  selector: '[imxDataProvider]',
 })
 export class DynamicTabDataProviderDirective {
-   @Input('imxDataProvider')public data: any;
+  @Input('imxDataProvider') public data: any;
 }

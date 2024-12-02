@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @import '../../stat-mixins.scss';
 
 :host {
@@ -7,7 +7,8 @@
   display: flex;
   flex-direction: column;
 
-  .above-card, .above-card--search {
+  .above-card,
+  .above-card--search {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
@@ -16,7 +17,10 @@
   .ancestor-path {
     display: flex;
     align-items: center;
-
+    &-item {
+      display: flex;
+      align-items: center;
+    }
     eui-icon {
       margin-right: 5px;
     }
@@ -36,7 +40,8 @@
     @include Stat-Grid;
   }
 
-  .stat-card, .area-card {
+  .stat-card,
+  .area-card {
     @include Stat-Card;
   }
 
@@ -63,10 +68,9 @@
 
     button {
       margin-top: 10px;
-      @include EUI-Elevation-1;
 
-      &:hover {
-        @include Ease-Transition;
+      &:focus {
+        @include ease-transition;
       }
 
       eui-icon {
@@ -90,7 +94,8 @@
     border: 1px solid $color-blue-80;
     color: $color-gray-0;
 
-    &:hover {
+    &:hover,
+    &:focus {
       background-color: $color-orange-60;
       border: 1px solid $color-orange-80;
     }
@@ -98,25 +103,28 @@
 
   .stat-card {
     @include Stat-Card-Theme;
-    :hover {
-      .favorites-icon, .org-icon {
+    :focus {
+      .favorites-icon,
+      .org-icon {
         color: $color-orange-60;
       }
     }
   }
 
-  .selectable-ancestor, .above-card--search h3 {
-    color: $color-blue-60
+  .selectable-ancestor,
+  .above-card--search h3 {
+    color: $color-blue-60;
   }
 
-  .unselectable-ancestor h3, .ancestor-path eui-icon {
+  .unselectable-ancestor h3,
+  .ancestor-path eui-icon {
     color: $color-gray-40;
   }
 
   .imx-no-data-top {
     @include Stats-No-Data-Theme;
   }
-  .imx-no-data button:hover {
+  .imx-no-data button:focus {
     background-color: $color-orange-60;
   }
 }
@@ -133,7 +141,7 @@
       border: 1px solid $color-blue-20;
       color: $color-gray-80;
 
-      &:hover {
+      &:focus {
         background-color: $color-orange-40;
         border: 1px solid $color-orange-20;
       }
@@ -141,18 +149,21 @@
 
     .stat-card {
       @include Stat-Card-Theme(dark);
-      :hover {
-        .favorites-icon, .org-icon {
+      :focus {
+        .favorites-icon,
+        .org-icon {
           color: $color-orange-40;
         }
       }
     }
 
-    .selectable-ancestor, .above-card--search h3 {
-      color: $color-blue-40
+    .selectable-ancestor,
+    .above-card--search h3 {
+      color: $color-blue-40;
     }
 
-    .unselectable-ancestor h3, .ancestor-path eui-icon {
+    .unselectable-ancestor h3,
+    .ancestor-path eui-icon {
       color: $color-gray-20;
     }
 
@@ -161,7 +172,7 @@
       margin-bottom: 10px;
     }
 
-    .imx-no-data button:hover {
+    .imx-no-data button:focus {
       background-color: $color-orange-40;
     }
   }
@@ -179,7 +190,7 @@
       border: 1px solid $color-blue-20;
       color: $color-gray-80;
 
-      &:hover {
+      &:focus {
         background-color: $color-orange-40;
         border: 1px solid $color-orange-20;
       }
@@ -187,18 +198,21 @@
 
     .stat-card {
       @include Stat-Card-Theme(contrast);
-      :hover {
-        .favorites-icon, .org-icon {
+      :focus {
+        .favorites-icon,
+        .org-icon {
           color: $color-orange-40;
         }
       }
     }
 
-    .selectable-ancestor, .above-card--search h3 {
-      color: $color-blue-40
+    .selectable-ancestor,
+    .above-card--search h3 {
+      color: $color-blue-40;
     }
 
-    .unselectable-ancestor h3, .ancestor-path eui-icon {
+    .unselectable-ancestor h3,
+    .ancestor-path eui-icon {
       color: $color-gray-20;
     }
 
@@ -207,21 +221,8 @@
       margin-bottom: 10px;
     }
 
-    .imx-no-data button:hover {
+    .imx-no-data button:focus {
       background-color: $color-orange-40;
-    }
-  }
-}
-
-// If desktop mouse, we will hide icons until hover
-@media (pointer: fine) {
-  .favorites-icon, .org-icon {
-    visibility: hidden;
-  }
-
-  .stat-card:hover {
-    .favorites-icon, .org-icon {
-      visibility: visible;
     }
   }
 }

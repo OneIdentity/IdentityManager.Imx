@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { DynamicMethodService, ExtService, TabItem } from 'qbm';
 import { RequestableEntitlementType, RequestableEntitlementTypeService } from 'qer';
 import { ReportButtonComponent } from './report-button/report-button.component';
+import { ReportButtonMailComponent } from './report-button/report-button-mail.component';
 import { RpsApiService } from './rps-api-client.service';
-import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { StatisticReportButtonComponent } from './statistic-report-button/statistic-report-button.component';
+import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -40,7 +41,7 @@ export class InitService {
     private readonly entlTypeService: RequestableEntitlementTypeService,
     private readonly apiService: RpsApiService,
     private readonly dynamicMethodService: DynamicMethodService,
-    private readonly extService: ExtService
+    private readonly extService: ExtService,
   ) {}
 
   public onInit(routes: Route[]): void {
@@ -59,7 +60,7 @@ export class InitService {
       instance: ReportButtonComponent,
       inputData: {
         uidReport: 'CPL-77d3c04ac2084a968433ef7daf7e56ff',
-          caption: '#LDS#Download report on rule violations by identities you are directly responsible for',
+          caption: '#LDS#View rule violations by identities you are directly responsible for',
           preprop: ['COMPLIANCE'],
           features: ['Portal_UI_PersonManager']
       }
@@ -98,6 +99,11 @@ export class InitService {
           features: ['Portal_UI_PersonAdmin','Portal_UI_PersonManager']
       }
     });
+
+    this.extService.register('presetReportButton', {
+      instance: ReportButtonMailComponent,
+    });
+
 
     this.entlTypeService.Register(async () => [
       new RequestableEntitlementType('RPSReport', this.apiService.apiClient, 'UID_RPSReport', this.dynamicMethodService),

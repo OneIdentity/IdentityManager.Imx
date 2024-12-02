@@ -1,4 +1,4 @@
-<mat-tab-group #tabs>
+<mat-tab-group mat-stretch-tabs="false" #tabs>
   <mat-tab data-imx-identifier="roles-overview-tab-main" [label]="'#LDS#Heading Main Data' | translate">
     <ng-template matTabContent>
       <imx-role-main-data #mainData></imx-role-main-data>
@@ -14,7 +14,7 @@
       <imx-role-entitlements></imx-role-entitlements>
     </ng-template>
   </mat-tab>
-  <mat-tab data-imx-identifier="roles-overview-tab-entitlements" [label]="'#LDS#Heading Hyperview' | translate">
+  <mat-tab data-imx-identifier="roles-overview-tab-hyperview" [label]="'#LDS#Heading Hyperview' | translate">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
         <imx-object-hyperview [objectType]="objectType" [objectUid]="objectUid"></imx-object-hyperview>
@@ -25,7 +25,7 @@
     <ng-template matTabContent>
       <div class="imx-tab-content">
         <div eui-sidesheet-content>
-          <mat-card>
+          <mat-card class="imx-card-sidesheet">
             <imx-object-history [objectType]="objectType" [showTitle]="false" [objectUid]="objectUid"></imx-object-history>
           </mat-card>
         </div>
@@ -45,7 +45,7 @@
     <mat-tab [imxDataProvider]="parameters" [label]="tab.inputData.label | translate">
       <ng-template matTabContent>
         <div eui-sidesheet-content>
-          <mat-card>
+          <mat-card class="imx-card-sidesheet">
             <ng-container *ngComponentOutlet="tab.instance"></ng-container>
           </mat-card>
         </div>

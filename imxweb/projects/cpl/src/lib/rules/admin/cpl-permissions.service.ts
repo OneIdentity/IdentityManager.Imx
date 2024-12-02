@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,16 +30,16 @@ import { UserModelService } from 'qer';
 import { isExceptionAdmin, isRuleStatistics } from './permissions-helper';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CplPermissionsService {
-  constructor(private readonly userService: UserModelService) { }
+  constructor(private readonly userService: UserModelService) {}
 
   public async isExceptionAdmin(): Promise<boolean> {
-    return isExceptionAdmin((await this.userService.getGroups()).map(group => group.Name));
+    return isExceptionAdmin((await this.userService.getGroups()).map((group) => group.Name || '') || []);
   }
 
   public async isRuleStatistics(): Promise<boolean> {
-    return isRuleStatistics((await this.userService.getFeatures()).Features);
+    return isRuleStatistics((await this.userService.getFeatures()).Features || []);
   }
 }

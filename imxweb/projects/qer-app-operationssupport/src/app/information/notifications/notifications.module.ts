@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,9 +46,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     QbmModule,
     LdsReplaceModule,
     EuiCoreModule,
-    TranslateModule
+    TranslateModule,
   ],
   providers: [NotificationsService],
-  exports: [NotificationsComponent]
+  exports: [NotificationsComponent],
 })
-export class NotificationsModule { }
+export class NotificationsModule {}

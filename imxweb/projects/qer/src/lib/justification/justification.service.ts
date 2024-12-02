@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalJustifications } from 'imx-api-qer';
+import { PortalJustifications } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   CompareOperator,
@@ -36,9 +36,8 @@ import {
   IClientProperty,
   MetaTableRelationData,
   ValType,
-} from 'imx-qbm-dbts';
-import { ImxTranslationProviderService } from 'qbm';
-import { BaseCdr, EntityService } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, EntityService, ImxTranslationProviderService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { JustificationType } from './justification-type.enum';
 
@@ -51,10 +50,10 @@ export class JustificationService {
   constructor(
     private readonly apiService: QerApiService,
     private readonly entityService: EntityService,
-    private readonly translate: ImxTranslationProviderService
+    private readonly translate: ImxTranslationProviderService,
   ) {}
 
-  public async get(uid: string): Promise<PortalJustifications> {
+  public async get(uid: string): Promise<PortalJustifications | undefined> {
     const collection = await this.apiService.typedClient.PortalJustifications.Get({
       filter: [
         {
@@ -68,13 +67,13 @@ export class JustificationService {
     return collection && collection.Data && collection.Data.length > 0 ? collection.Data[0] : undefined;
   }
 
-  public async createCdr(justificationType: JustificationType): Promise<BaseCdr> {
+  public async createCdr(justificationType: JustificationType): Promise<BaseCdr | undefined> {
     if ((await this.getByType(justificationType))?.TotalCount === 0) {
       return undefined;
     }
 
     const property = this.createProperty();
-    const fkProviderItem = this.createFkProviderItem(property.FkRelation, justificationType);
+    const fkProviderItem = this.createFkProviderItem(property.FkRelation || {}, justificationType);
     const column = this.entityService.createLocalEntityColumn(property, [fkProviderItem]);
     const cdr = new BaseCdr(column, '#LDS#Reason for your decision');
     return cdr;
@@ -100,8 +99,8 @@ export class JustificationService {
 
   private createFkProviderItem(fkRelation: MetaTableRelationData, justificationType: JustificationType): FkProviderItem {
     return {
-      columnName: fkRelation.ChildColumnName,
-      fkTableName: fkRelation.ParentTableName,
+      columnName: fkRelation.ChildColumnName || '',
+      fkTableName: fkRelation.ParentTableName || '',
       parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
       load: async (_, parameters = {}) => this.getByType(justificationType, parameters),
       getDataModel: async () => ({}),
@@ -112,11 +111,11 @@ export class JustificationService {
   private async getByType(justificationType: JustificationType, parameters: CollectionLoadParameters = {}): Promise<EntityCollectionData> {
     const collection = await this.apiService.client.portal_justifications_get(parameters);
 
-    // tslint:disable-next-line:no-bitwise
-    const entities = collection.Entities.filter((entityData) => (entityData.Columns.JustificationType.Value & justificationType) > 0);
+    // eslint-disable-next-line no-bitwise
+    const entities = collection.Entities?.filter((entityData) => (entityData.Columns?.JustificationType.Value & justificationType) > 0);
 
     return {
-      TotalCount: entities.length,
+      TotalCount: entities?.length || 0,
       IsLimitReached: collection.IsLimitReached,
       Entities: entities,
       TableName: collection.TableName,

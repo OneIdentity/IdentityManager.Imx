@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { Injectable, ErrorHandler } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiClientService {
-  constructor(private readonly errorHandler: ErrorHandler) { }
+  constructor(private readonly errorHandler: ErrorHandler) {}
 
-  public async request<T>(apiCall: () => Promise<T>): Promise<T> {
-    let collection: T;
+  public async request<T>(apiCall: () => Promise<T>): Promise<T | undefined> {
+    let collection: T | undefined = undefined;
     try {
       collection = await apiCall();
     } catch (error) {

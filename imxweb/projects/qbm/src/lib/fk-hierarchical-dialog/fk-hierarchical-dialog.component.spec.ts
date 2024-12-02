@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,8 +35,8 @@ import { FkHierarchicalDialogComponent } from './fk-hierarchical-dialog.componen
 import { FkHierarchicalDialogModule } from './fk-hierarchical-dialog.module';
 
 const fkInfo = [
-  { TableName: 'testtable1', ColumnName: 'testcolumn1', Get: (_) => undefined ,GetDataModel: () =>undefined},
-  { TableName: 'testtable2', ColumnName: 'testcolumn2', Get: (_) => undefined, GetDataModel: () =>undefined },
+  { TableName: 'testtable1', ColumnName: 'testcolumn1', Get: (_) => undefined, GetDataModel: () => undefined },
+  { TableName: 'testtable2', ColumnName: 'testcolumn2', Get: (_) => undefined, GetDataModel: () => undefined },
 ];
 
 [
@@ -56,7 +56,8 @@ const fkInfo = [
     beforeEach(() => {
       return MockBuilder([FkHierarchicalDialogComponent, TranslateModule.forRoot()])
         .mock(FkHierarchicalDialogModule)
-        .mock(EuiSidesheetRef).mock(MetadataService,metadataServiceStub)
+        .mock(EuiSidesheetRef)
+        .mock(MetadataService, metadataServiceStub)
         .mock(ConfirmationService)
         .mock(EuiLoadingService)
         .mock(EUI_SIDESHEET_DATA, {
@@ -77,5 +78,5 @@ const fkInfo = [
     it('should create', () => {
       expect(component).toBeTruthy();
     });
-  })
+  }),
 );

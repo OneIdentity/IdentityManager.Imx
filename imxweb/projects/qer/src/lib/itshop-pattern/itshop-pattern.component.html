@@ -1,56 +1,63 @@
 <div class="imx-pattern-page">
-  <div class="heading-wrapper">
-    <h1 class="mat-headline">
+  <div class="imx-header-toolbar">
+    <h2 class="mat-headline-5">
       <span>{{ '#LDS#Heading Product Bundles' | translate }}</span>
       <imx-help-contextual [contextId]="helpContextId"></imx-help-contextual>
-    </h1>
+    </h2>
+    <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
   </div>
-  <mat-card>
-    <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
-      <imx-data-source-toolbar
-        #dst
-        [options]="['search', 'settings']"
-        [settings]="dstSettings"
-        (search)="getData({ search: $event })"
-        (navigationStateChanged)="getData($event)"
-        data-imx-identifier="itshop-pattern-dst"
-        [itemStatus]="status"
-      >
-      </imx-data-source-toolbar>
-      <imx-data-table
-        #dataTable
-        [dst]="dst"
-        class="imx-patterns-table"
-        [detailViewVisible]="false"
-        mode="manual"
-        [selectable]="true"
-        [showSelectedItemsMenu]="false"
-        (selectionChanged)="onSelectionChanged($event)"
-        (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
-        data-imx-identifier="itshop-pattern-datatable"
-      >
-        <imx-data-table-column data-imx-identifier="itshop-pattern-table-column-display" [entityColumn]="dstWrapper.propertyDisplay">
-          <ng-template let-item>
-            <div data-imx-identifier="itshop-pattern-table-display">{{ item.Ident_ShoppingCartPattern.Column.GetDisplayValue() }}</div>
-            <div subtitle data-imx-identifier="itshop-pattern-table-description">
-              {{ item.Description.Column.GetDisplayValue() }}
-            </div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column data-imx-identifier="itshop-pattern-table-column-UidPerson" [entityColumn]="dstSettings.entitySchema?.Columns.UID_Person"> </imx-data-table-column>
-        <imx-data-table-column data-imx-identifier="itshop-pattern-table-column-isPublicPattern" [entityColumn]="dstSettings.entitySchema?.Columns.IsPublicPattern">
-        </imx-data-table-column>
-      </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="itshop-pattern-paginator" [dst]="dst"> </imx-data-source-paginator>
-    </div>
+  <mat-card class="imx-card-fill">
+    <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+      <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div data-imx-identifier="itshop-pattern-table-display">{{ item.Ident_ShoppingCartPattern.Column.GetDisplayValue() }}</div>
+          <div subtitle data-imx-identifier="itshop-pattern-table-description">
+            {{ item.Description.Column.GetDisplayValue() }}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchema?.Columns?.UID_Person?.ColumnName">
+        <ng-container>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchema?.Columns?.UID_Person?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.UID_Person.Column.GetDisplayValue() }}
+          </span>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchema?.Columns?.IsPublicPattern?.ColumnName">
+        <ng-container>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchema?.Columns?.IsPublicPattern?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.IsPublicPattern.Column.GetDisplayValue() }}
+          </span>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
   </mat-card>
 
-  <div class="imx-button-bar">
-    <imx-selected-elements [selectedElements]="selectedPatterns"></imx-selected-elements>
-    <div class="imx-menu-spacer"></div>
-    <button mat-stroked-button color="warn" data-imx-identifier="itshop-pattern-button-delete" [disabled]="!selectedItemsCanBeDeleted()" (click)="delete()">
+  <div class="imx-button-bar-transparent">
+    <imx-data-view-selection [dataSource]="dataSource" class="justify-start"></imx-data-view-selection>
+    <button
+      mat-stroked-button
+      color="warn"
+      data-imx-identifier="itshop-pattern-button-delete"
+      [disabled]="!selectedItemsCanBeDeleted()"
+      (click)="delete()"
+    >
       <eui-icon icon="delete"></eui-icon>
-      {{ '#LDS#Delete' | translate }}
+      <span>{{ '#LDS#Delete' | translate }}</span>
     </button>
     <button
       mat-stroked-button
@@ -70,9 +77,9 @@
     >
       {{ '#LDS#Share' | translate }}
     </button>
-    <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-button-create" (click)="createNewPattern()">
-    <eui-icon icon="add"></eui-icon>
-      {{ '#LDS#Create product bundle' | translate }}
+    <button mat-flat-button color="primary" data-imx-identifier="itshop-pattern-button-create" (click)="createNewPattern()">
+      <eui-icon icon="add"></eui-icon>
+      <span>{{ '#LDS#Create product bundle' | translate }}</span>
     </button>
   </div>
 </div>

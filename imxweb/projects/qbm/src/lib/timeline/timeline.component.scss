@@ -15,9 +15,12 @@
     display: flex;
     gap: 8px;
     min-height: 40px;
-    color: $color-blue-60;
+    color: $color-gray-80;
     font-weight: 700;
     pointer-events: none;
+    .mat-mdc-card-content{
+      padding:0 !important;
+    }
 
     &:hover {
       .imx-timeline-date {
@@ -41,6 +44,9 @@
       }
     }
 
+    .imx-timeline-date{
+      line-height: 16px;
+    }
     .imx-timeline-separator {
       flex: 0;
       display: flex;
@@ -48,7 +54,7 @@
       flex-direction: column;
 
       &-marker {
-        border: 2px solid $color-blue-60;
+        border: 2px solid $color-gray-80;
         border-radius: 50%;
         width: 1rem;
         height: 1rem;
@@ -65,18 +71,21 @@
     .imx-timeline-events {
       font-weight: 600;
       padding-bottom: 20px;
-
       mat-card {
         padding: 0;
         pointer-events: none;
 
         &:hover {
-          box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.20);
+          box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.2);
         }
 
         .imx-timeline-event {
-          padding: 1rem;
+          padding: 0px 16px;
           pointer-events: auto;
+          font-size:14px;
+          display: flex;
+          align-items: center;
+          line-height: 38px;
 
           &:hover {
             background-color: $color-orange-10;
@@ -92,34 +101,41 @@
             }
           }
 
-          &:nth-child(n+2) {
-            background-image: linear-gradient(to right, $color-gray-10 33%, rgba(255,255,255,0) 0%);
+          &:nth-child(n + 2) {
+            background-image: linear-gradient(to right, $color-gray-10 33%, rgba(255, 255, 255, 0) 0%);
             background-position: top;
             background-size: 13px 1px;
             background-repeat: repeat-x;
           }
 
           &-time {
-            padding-right: 1rem;
+            padding-right: 8px;
+            font-weight: 700;
           }
 
           &-display {
             font-weight: 400;
           }
+          .imx-timeline-icon{
+            font-size: 20px !important;
+            padding-right: 8px;
+            &-edit{
+              color: $color-blue-60;
+            }
+            &-add{
+              color: $color-green-60;
+            }
+            &-remove{
+              color: $color-red-60;
+            }
+          }
         }
       }
     }
   }
-
   .imx-no-results {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    .eui-icon {
-      color: $color-gray-10;
+    div {
+      font-size: 18px;
     }
   }
 }
@@ -132,7 +148,7 @@
       background-color: $color-blue-80;
 
       .imx-timeline-events-group {
-        color: $color-blue-40;
+        color: $color-gray-2;
 
         &:hover {
           .imx-timeline-date {
@@ -167,8 +183,8 @@
               background-color: $color-gray-80;
             }
 
-            &:nth-child(n+2) {
-              background-image: linear-gradient(to right, $color-gray-60 33%, rgba(255,255,255,0) 0%);
+            &:nth-child(n + 2) {
+              background-image: linear-gradient(to right, $color-gray-60 33%, rgba(255, 255, 255, 0) 0%);
               background-position: top;
               background-size: 13px 1px;
               background-repeat: repeat-x;
@@ -176,13 +192,6 @@
           }
         }
       }
-
-      .imx-no-results {
-        .eui-icon {
-          color: $color-gray-20;
-        }
-      }
     }
   }
 }
-

@@ -1,18 +1,28 @@
-<mat-card>
-  <p classs="mat-h3">{{'#LDS#Here you can specify on which events you want to be notified by email.' | translate}}</p>
+<mat-card class="imx-card-fill">
+  <div class="imx-card-header">
+    <p>{{ '#LDS#Here you can specify on which events you want to be notified by email.' | translate }}</p>
+    <eui-search [placeholder]="'#LDS#Search' | translate" [searchControl]="searchControl" size="small"> </eui-search>
+  </div>
 
-  <div class="imx-list">
-    <mat-selection-list #list [(ngModel)]="selectedOptions" (selectionChange)="onSelectionChanged()">
-        <mat-list>
-            <mat-list-option *ngFor="let m of mailInfo" [value]="m.UidMail">
-                <div>{{m.Display}}</div>
-                <div class="imx-list-item-subtitle">{{ m.Description }}</div>
-            </mat-list-option>
-        </mat-list>
+  <div class="imx-list-container imx-list-container-reverse">
+    <mat-selection-list #list [(ngModel)]="filteredSelectedOptions" (selectionChange)="onSelectionChanged()">
+      <mat-checkbox
+        [checked]="allSelected"
+        [indeterminate]="partiallySelected"
+        (change)="onSelectAllChange($event.checked)"
+        [attr.aria-label]="allSelected ? ('#LDS#Deselect all' | translate) : ('#LDS#Select all' | translate)"
+      >
+        {{ '#LDS#Selection' | translate }}
+      </mat-checkbox>
+      <mat-list>
+        <mat-list-option *ngFor="let m of filteredMailInfo" [value]="m.UidMail">
+          <div>{{ m.Display }}</div>
+          <span class="imx-list-subtitle">{{ m.Description }}</span>
+        </mat-list-option>
+      </mat-list>
     </mat-selection-list>
   </div>
- 
 </mat-card>
- <div class="imx-button-bar">
-    <button mat-raised-button color="primary" (click)="saveChanges()" [disabled]="!selectionChanged">{{'#LDS#Save' | translate}}</button>
- </div>
+<div class="imx-button-bar-transparent">
+  <button mat-flat-button color="primary" (click)="saveChanges()" [disabled]="!selectionChanged">{{ '#LDS#Save' | translate }}</button>
+</div>

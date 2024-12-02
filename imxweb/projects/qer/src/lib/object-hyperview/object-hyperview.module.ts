@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EuiCoreModule } from '@elemental-ui/core';
 
 import { HyperViewModule } from 'qbm';
 
-import { ObjectHyperviewComponent } from './object-hyperview.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ObjectHyperviewComponent } from './object-hyperview.component';
 
 @NgModule({
   declarations: [ObjectHyperviewComponent],

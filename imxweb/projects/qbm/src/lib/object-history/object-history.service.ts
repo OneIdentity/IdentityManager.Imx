@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { HistoryComparisonData } from 'imx-api-qbm';
-import { IStateOverviewItem, ObjectHistoryEvent } from 'imx-qbm-dbts';
-import { ObjectHistoryApiService } from './object-history-api.service';
+import { HistoryComparisonData } from '@imx-modules/imx-api-qbm';
+import { IStateOverviewItem, ObjectHistoryEvent } from '@imx-modules/imx-qbm-dbts';
 import { MetadataService } from '../base/metadata.service';
+import { ObjectHistoryApiService } from './object-history-api.service';
 
 export interface ObjectHistoryParameters {
-  table: string;
-  uid: string;
+  table?: string | null;
+  uid?: string | null;
 }
 
 @Injectable({
@@ -48,9 +48,12 @@ export class ObjectHistoryService {
 
   public async get(parameters: ObjectHistoryParameters, fetchRemote: boolean = true): Promise<ObjectHistoryEvent[]> {
     if (fetchRemote || this.dataCached == null) {
-      this.dataCached = (await this.apiService.getHistoryData(parameters.table, parameters.uid))
-        .map((x) => x.Events)
-        .reduce((a, b) => a.concat(b));
+      this.dataCached =
+        parameters.table && parameters.uid
+          ? (await this.apiService.getHistoryData(parameters.table, parameters.uid))
+              ?.map((x) => x.Events)
+              ?.reduce((a, b) => (a ?? []).concat(b ?? [])) ?? []
+          : [];
     }
 
     return this.dataCached;
@@ -59,7 +62,7 @@ export class ObjectHistoryService {
   public async getStateOverviewItems(table: string, uid: string): Promise<IStateOverviewItem[] | undefined> {
     let stateOverviewItems = (await this.apiService.getHistoryData(table, uid))
       .map((x) => x.StateOverviewItems)
-      .reduce((a, b) => a.concat(b));
+      .reduce((a, b) => (a ?? []).concat(b ?? []));
     return stateOverviewItems;
   }
 
@@ -67,8 +70,8 @@ export class ObjectHistoryService {
     let historyComparisonData = await this.apiService.getHistoryComparisonData(table, uid, options);
     // Update tableName with translated display name
     for await (const item of historyComparisonData) {
-      await this.metadataService.updateNonExisting([item.TableName]);
-      item.TableName = this.metadataService.tables[item.TableName].Display;
+      await this.metadataService.updateNonExisting([item.TableName ?? '']);
+      item.TableName = this.metadataService.tables[item.TableName ?? '']?.Display;
     }
     return historyComparisonData;
   }

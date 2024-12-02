@@ -1,35 +1,17 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-
-  ::ng-deep .mat-tab-group {
-    height: 100%;
-    flex-grow: 1;
-    overflow: auto;
-
-    .mat-tab-header {
-      padding: 0 32px;
-      background-color: $white;
-    }
-
-    ::ng-deep .mat-tab-body-wrapper {
-      height: 100%;
-    }
-  }
 }
 
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
-   .governance-sidesheet{
+    .governance-sidesheet {
       background-color: $color-gray-80;
-      ::ng-deep .mat-tab-group  .mat-tab-header {
-        background-color: $color-gray-80;
-      }
     }
   }
 }
@@ -37,11 +19,8 @@
 .eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
-   .governance-sidesheet{
+    .governance-sidesheet {
       background-color: $color-gray-100;
-      ::ng-deep .mat-tab-group  .mat-tab-header {
-        background-color: $color-gray-100;
-      }
     }
   }
 }

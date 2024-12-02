@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Inject} from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
 @Component({
@@ -32,17 +32,15 @@ import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
   styleUrls: ['./edit-mitigating-controls.component.scss'],
 })
 export class EditMitigatingControlsComponent {
-
   constructor(
     public sidesheetRef: EuiSidesheetRef,
     @Inject(EUI_SIDESHEET_DATA)
     public data: {
       uidPerson: string;
       uidNonCompliance: string;
-      uidPersonWantsOrg:string;
+      uidPersonWantsOrg: string;
       readOnly: boolean;
-      isMControlPerViolation:boolean;
+      isMControlPerViolation: boolean;
     },
   ) {}
-
 }

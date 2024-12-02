@@ -1,6 +1,6 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 :host {
   display: flex;
@@ -18,40 +18,6 @@ imx-data-table {
   color: $black-b;
 }
 
-::ng-deep .data-explorer-card-header {
-  background-color: $white;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  z-index: 100;
-  border: 1px solid rgba($color-blue-60, 0.6);
-  margin-bottom: 20px;
-
-  .data-explorer-card-header-bg {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    background-color: $color-blue-20;
-    padding: 10px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    height: 45px;
-
-    .eui-icon {
-      color: rgba($color-blue-60, 0.6);
-      margin-right: 10px;
-    }
-    .mat-icon-button{
-      .eui-icon{
-        margin-right: 0;
-      }
-    }
-
-    & > span {
-      font-size: 20px;
-    }
-  }
-}
-
 .imx-page-card {
   display: flex;
   flex-direction: column;
@@ -65,12 +31,6 @@ imx-data-table {
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  .imx-create-button {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-  }
 }
 
 .imx-table {
@@ -84,52 +44,22 @@ imx-data-table {
   overflow: hidden;
 }
 
-.data-explorer-bottom-button-row {
-  @include imx-button-bar();
-}
-
-.imx-button-column {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-
-  .mat-stroked-button {
-    @include imx-icon-for-image-button;
-    margin-right: 10px;
-  }
-}
-
 .hidden {
   display: none;
 }
 
 .eui-dark-theme {
   :host {
-    .imx-data-tree-container,
-    .data-explorer-card-header-bg {
+    .imx-data-tree-container {
       background: $color-gray-70;
-
-    }
-    .data-explorer-card-header .data-explorer-card-header-bg {
-      background: $color-blue-80;
-      ::ng-deep .eui-icon {
-        color: $color-gray-0;
-      }
     }
   }
 }
 
 .eui-contrast-theme {
   :host {
-    .imx-data-tree-container,
-    .data-explorer-card-header-bg {
+    .imx-data-tree-container {
       background: $color-gray-90;
-    }
-    .data-explorer-card-header .data-explorer-card-header-bg {
-      background: $color-blue-80;
-      :ng-deep .eui-icon {
-        color: $color-gray-0;
-      }
     }
   }
 }

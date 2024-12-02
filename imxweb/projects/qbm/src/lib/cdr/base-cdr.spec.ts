@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,18 @@
  */
 
 import { BaseCdr } from './base-cdr';
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 
 describe('BaseCdr', () => {
-    [ true, false ].forEach(canEdit =>
+  [true, false].forEach((canEdit) =>
     it('can create', () => {
-        const cdr = new BaseCdr({
-            GetMetadata: () => ({
-                CanEdit: () => canEdit
-            })
-        } as IEntityColumn);
-        expect(cdr.column).toBeDefined();
-        expect(cdr.isReadOnly()).toEqual(!canEdit);
-    }));
+      const cdr = new BaseCdr({
+        GetMetadata: () => ({
+          CanEdit: () => canEdit,
+        }),
+      } as IEntityColumn);
+      expect(cdr.column).toBeDefined();
+      expect(cdr.isReadOnly()).toEqual(!canEdit);
+    }),
+  );
 });

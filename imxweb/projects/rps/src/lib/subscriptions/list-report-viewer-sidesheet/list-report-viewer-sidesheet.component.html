@@ -1,8 +1,8 @@
 <div eui-sidesheet-content class="imx-flex-content">
-<imx-list-report-viewer [dataService]="data.dataService" [reportParameter]="reportParameter"></imx-list-report-viewer>
+  <imx-list-report-viewer [dataService]="data.dataService" [reportParameter]="reportParameter"></imx-list-report-viewer>
 </div>
 <div eui-sidesheet-actions *ngIf="data.subscription">
-  <button color="primary" mat-raised-button (click)="downloadReport()" data-imx-identifier="view-config-download-report-button">
+  <button color="primary" mat-flat-button (click)="downloadReport()" data-imx-identifier="view-config-download-report-button">
     {{ '#LDS#Download report' | translate }}
   </button>
 </div>

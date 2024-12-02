@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,19 +32,17 @@ import { SoftwareComponent } from './software/software.component';
 import { InitService } from './init.service';
 import { SoftwareModule } from './software/software.module';
 
-const routes: Routes = [{
-  path: 'resp/Application',
-  component: SoftwareComponent,
-  canActivate: [RouteGuardService],
-  resolve: [RouteGuardService],
-},
+const routes: Routes = [
+  {
+    path: 'resp/Application',
+    component: SoftwareComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-    SoftwareModule
-  ]
+  imports: [RouterModule.forChild(routes), SoftwareModule],
 })
 export class ApcConfigModule {
   constructor(private readonly initializer: InitService) {

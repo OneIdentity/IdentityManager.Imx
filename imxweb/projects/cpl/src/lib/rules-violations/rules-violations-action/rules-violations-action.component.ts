@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,10 +42,9 @@ import { RulesViolationsAction } from './rules-violations-action.interface';
 @Component({
   selector: 'imx-rules-violations-action',
   templateUrl: './rules-violations-action.component.html',
-  styleUrls: ['./rules-violations-action.component.scss']
+  styleUrls: ['./rules-violations-action.component.scss'],
 })
 export class RulesViolationsActionComponent {
-
   /**
    * The form group to which the created form controls will be added.
    */
@@ -58,6 +57,6 @@ export class RulesViolationsActionComponent {
    */
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly data: RulesViolationsAction,
-    public readonly sideSheetRef: EuiSidesheetRef
-  ) { }
+    public readonly sideSheetRef: EuiSidesheetRef,
+  ) {}
 }

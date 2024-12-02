@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
+import { ColumnDependentReference } from 'qbm';
 import { Subscription } from 'rxjs';
 import { CDRGroups, RequestStepData } from '../approval-workflow.interface';
 import { FormDataService } from '../form-data.service';
-import { IEntity } from 'imx-qbm-dbts';
-import { ColumnDependentReference } from 'qbm';
 
 @Component({
   selector: 'imx-approval-step-form',
@@ -52,14 +52,14 @@ export class ApprovalStepFormComponent implements OnInit, OnDestroy {
     @Inject(EUI_SIDESHEET_DATA) public requestData: RequestStepData,
     public formService: FormDataService,
     public sidesheetRef: EuiSidesheetRef,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
   ) {
     this.formGroup = new FormGroup({ formArray: formBuilder.array([]) });
 
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
         await this.formService.cancelChangesGrouped(this.formGroup, this.sidesheetRef, this.requestData);
-      })
+      }),
     );
   }
   get formArray(): FormArray {
@@ -80,9 +80,12 @@ export class ApprovalStepFormComponent implements OnInit, OnDestroy {
   public checkCDRs(): void {
     this.cdrGroups.General.forEach((cdr, i) => {
       if (cdr.isReadOnly() !== this.isCdrReadOnly[i]) {
-        this.isCdrReadOnly[i] = cdr.isReadOnly();
+        this.isCdrReadOnly[i] = cdr?.isReadOnly() || true;
         const columnName = cdr.column.ColumnName;
-        this.cdrGroups.General[i] = this.formService.createCdr(this.requestData, columnName);
+        const newCdr = this.formService.createCdr(this.requestData, columnName);
+        if (newCdr != null) {
+          this.cdrGroups.General[i] = newCdr;
+        }
       }
       if (cdr.column.ColumnName === 'MinutesAutomaticDecision') {
         // We will treat this field specially, signal it has been touched to trigger a status check

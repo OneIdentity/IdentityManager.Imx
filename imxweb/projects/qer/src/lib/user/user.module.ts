@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,11 +31,7 @@ import { UserModelService } from './user-model.service';
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule
-  ],
-  providers: [
-    UserModelService
-  ]
+  imports: [CommonModule],
+  providers: [UserModelService],
 })
-export class UserModule { }
+export class UserModule {}

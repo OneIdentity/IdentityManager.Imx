@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,26 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalTargetsystemUnsDirectmembers, PortalTargetsystemUnsGroupServiceitem, PortalTargetsystemUnsNestedmembers } from 'imx-api-tsb';
-import { CollectionLoadParameters, EntitySchema, TypedEntity, TypedEntityCollectionData, ValType } from 'imx-qbm-dbts';
 import {
+  PortalTargetsystemUnsDirectmembers,
+  PortalTargetsystemUnsGroupServiceitem,
+  PortalTargetsystemUnsNestedmembers,
+} from '@imx-modules/imx-api-tsb';
+import { CollectionLoadParameters, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import {
+  calculateSidesheetWidth,
   ConfirmationService,
-  DataSourceToolbarSettings,
-  DataTableComponent,
+  DataViewInitParameters,
+  DataViewSource,
+  DataViewSourceFactoryService,
   FkAdvancedPickerComponent,
-  ClientPropertyForTableColumns,
-  SettingsService,
+  isMobile,
   SnackBarService,
 } from 'qbm';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, SourceDetectiveType } from 'qer';
@@ -51,25 +55,13 @@ import { NewMembershipService } from './new-membership/new-membership.service';
   selector: 'imx-group-members',
   templateUrl: './group-members.component.html',
   styleUrls: ['./group-members.component.scss'],
+  providers: [DataViewSource],
 })
 export class GroupMembersComponent implements OnInit {
   @Input() public groupDirectMembershipData: TypedEntityCollectionData<PortalTargetsystemUnsDirectmembers>;
   @Input() public groupNestedMembershipData: TypedEntityCollectionData<PortalTargetsystemUnsNestedmembers>;
   @Input() public unsGroupDbObjectKey: DbObjectKeyBase;
 
-  @ViewChild('membersTable') public membersTable: DataTableComponent<any>;
-
-  /**
-   * Settings needed by the DataSourceToolbarComponent
-   */
-  public dstSettings: DataSourceToolbarSettings;
-  public dstNestedGroupSettings: DataSourceToolbarSettings;
-
-  /**
-   * Page size, start index, search and filtering options etc.
-   */
-  public navigationState: CollectionLoadParameters;
-  public nestedNavigationState: CollectionLoadParameters;
   public viewDirectMemberships = new UntypedFormControl(true);
 
   public showUnsubscribeWarning = false;
@@ -86,12 +78,18 @@ export class GroupMembersComponent implements OnInit {
     },
   };
 
-  private displayedColumns: ClientPropertyForTableColumns[] = [];
-  private nestedDisplayColumns: ClientPropertyForTableColumns[] = [];
-  private selectedItems: TypedEntity[] = [];
+  protected abortController: AbortController;
+
+  public get selectedItemsCount() {
+    return this.dataSourceDirect.selection.selected.length;
+  }
+
   private selectedMembershipView: 'direct' | 'nested' = 'direct';
-  private busyIndicator: OverlayRef;
   private groupId: string;
+
+  public automaticColumnDirect: IClientProperty[];
+  public dataSourceDirect: DataViewSource<PortalTargetsystemUnsDirectmembers>;
+  public dataSourceNested: DataViewSource<PortalTargetsystemUnsNestedmembers>;
 
   constructor(
     private readonly busyService: EuiLoadingService,
@@ -101,12 +99,20 @@ export class GroupMembersComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
     private readonly membershipService: NewMembershipService,
     private readonly translate: TranslateService,
-    private readonly settingsService: SettingsService
+    dataSourceFactory: DataViewSourceFactoryService,
   ) {
+    this.abortController = new AbortController();
     this.entitySchemaGroupDirectMemberships = groupsService.UnsGroupDirectMembersSchema;
     this.entitySchemaGroupNestedMemberships = groupsService.UnsGroupNestedMembersSchema;
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
-    this.nestedNavigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
+    this.dataSourceDirect = dataSourceFactory.getDataSource<PortalTargetsystemUnsDirectmembers>();
+    this.dataSourceNested = dataSourceFactory.getDataSource<PortalTargetsystemUnsNestedmembers>();
+    this.automaticColumnDirect = [
+      this.entitySchemaGroupDirectMemberships.Columns.UID_UNSAccount,
+      this.entitySchemaGroupDirectMemberships.Columns?.XOrigin,
+      this.entitySchemaGroupDirectMemberships.Columns.XDateInserted,
+      this.entitySchemaGroupDirectMemberships.Columns.OrderState,
+      this.entitySchemaGroupDirectMemberships.Columns.ValidUntil,
+    ];
   }
 
   public get membershipView(): 'direct' | 'nested' {
@@ -114,80 +120,45 @@ export class GroupMembersComponent implements OnInit {
   }
 
   get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
+    return isMobile();
   }
 
   public async ngOnInit(): Promise<void> {
-    this.displayedColumns = [
-      this.entitySchemaGroupDirectMemberships.Columns.UID_Person,
-      this.entitySchemaGroupDirectMemberships.Columns.UID_UNSAccount,
-      this.entitySchemaGroupDirectMemberships.Columns.XOrigin,
-      this.entitySchemaGroupDirectMemberships.Columns.XDateInserted,
-      this.entitySchemaGroupDirectMemberships.Columns.OrderState,
-      this.entitySchemaGroupDirectMemberships.Columns.ValidUntil,
-      this.entitySchemaGroupDirectMemberships.Columns.XMarkedForDeletion,
-    ];
-    this.nestedDisplayColumns = [
-      this.entitySchemaGroupNestedMemberships.Columns.UID_Person,
-      this.entitySchemaGroupNestedMemberships.Columns.UID_UNSGroupChild,
-      this.entitySchemaGroupNestedMemberships.Columns.XMarkedForDeletion,
-    ];
-
     this.groupId = this.unsGroupDbObjectKey.Keys[0];
 
     await this.navigateDirect();
   }
 
-  get selectedItemsCount(): number {
-    return this.selectedItems.length;
-  }
-
-  public onSelectionChanged(items: TypedEntity[]): void {
-    this.selectedItems = items;
-  }
-
   public canUnsubscribeSelected(): boolean {
     return (
-      this.selectedItems != null &&
-      this.selectedItemsCount > 0 &&
-      this.selectedItems.every(
+      this.dataSourceDirect.selection.selected != null &&
+      this.dataSourceDirect.selection.selected.length > 0 &&
+      this.dataSourceDirect.selection.selected.every(
         (elem) =>
           elem.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue() !== '' &&
-          elem.GetEntity().GetColumn('IsRequestCancellable').GetValue()
+          elem.GetEntity().GetColumn('IsRequestCancellable').GetValue(),
       )
     );
   }
 
   public canDeleteSelected(): boolean {
+    this.dataSourceDirect.selection != null;
     return (
-      this.selectedItems != null &&
-      this.selectedItemsCount > 0 &&
-      this.selectedItems.every((elem) => elem.GetEntity().GetColumn('XOrigin').GetValue() === 1)
+      this.dataSourceDirect.selection.selected != null &&
+      this.dataSourceDirect.selection.selected.length > 0 &&
+      this.dataSourceDirect.selection.selected.every((elem) => elem.GetEntity().GetColumn('XOrigin').GetValue() === 1)
     );
   }
 
   public async onToggleChanged(change: MatButtonToggleChange): Promise<void> {
     this.selectedMembershipView = change.value;
-    this.selectedItems = [];
+    this.abortController.abort();
+
     if (this.selectedMembershipView === 'direct') {
-      return this.onDirectNavigationStateChanged({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
+      await this.navigateDirect();
     } else {
-      return this.onNestedNavigationStateChanged({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
+      await this.navigateNested();
     }
-  }
-
-  public async onDirectNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.navigationState = newState;
-    }
-    await this.navigateDirect();
-  }
-
-  public async onNestedNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.nestedNavigationState = newState;
-    }
-    await this.navigateNested();
   }
 
   public async deleteMembers(): Promise<void> {
@@ -201,11 +172,12 @@ export class GroupMembersComponent implements OnInit {
     ) {
       this.handleOpenLoader();
       try {
+        console.log(this.dataSourceDirect.selection.selected);
         await this.groupsService.deleteGroupMembers(
           this.unsGroupDbObjectKey,
-          this.selectedItems.map((i) => i.GetEntity().GetColumn('UID_UNSAccount').GetValue())
+          this.dataSourceDirect.selection.selected.map((i) => i.GetEntity().GetColumn('UID_UNSAccount').GetValue()),
         );
-        this.membersTable.clearSelection();
+        this.dataSourceDirect.selection.clear();
         this.snackBarService.open({ key: '#LDS#The memberships have been successfully removed.' }, '#LDS#Close');
         await this.navigateDirect();
       } finally {
@@ -216,10 +188,10 @@ export class GroupMembersComponent implements OnInit {
 
   public async requestMembership(serviceItem: PortalTargetsystemUnsGroupServiceitem): Promise<void> {
     const sidesheetRef = this.sidesheet.open(FkAdvancedPickerComponent, {
-      title: await this.translate.get('#LDS#Heading Request Memberships').toPromise(),
+      title: await this.translate.instant('#LDS#Heading Request Memberships'),
       subTitle: serviceItem.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
       icon: 'usergroup',
       testId: 'systementitlements-reqeust-memberships',
       data: {
@@ -244,10 +216,12 @@ export class GroupMembersComponent implements OnInit {
 
   public async unsubscribeMembership(): Promise<void> {
     // if there is at least 1 item, that is not unsubscribable, show a warning instead
-    const notSubscribable = this.selectedItems.some((entity) => entity.GetEntity().GetColumn('IsRequestCancellable').GetValue() === false);
+    const notSubscribable = this.dataSourceDirect.selection.selected.some(
+      (entity) => entity.GetEntity().GetColumn('IsRequestCancellable').GetValue() === false,
+    );
     if (notSubscribable) {
       this.showUnsubscribeWarning = true;
-      this.membersTable.clearSelection();
+      this.dataSourceDirect.selection.clear();
       return;
     }
     if (
@@ -259,32 +233,30 @@ export class GroupMembersComponent implements OnInit {
     ) {
       this.handleOpenLoader();
       try {
-        await Promise.all(this.selectedItems.map((entity) => this.membershipService.unsubscribeMembership(entity)));
+        await Promise.all(this.dataSourceDirect.selection.selected.map((entity) => this.membershipService.unsubscribeMembership(entity)));
         this.snackBarService.open({
           key: '#LDS#The memberships have been successfully unsubscribed. It may take some time for the changes to take effect. The displayed data may differ from the actual state.',
         });
       } finally {
         this.handleCloseLoader();
-        this.membersTable.clearSelection();
+        this.dataSourceDirect.selection.clear();
         await this.navigateDirect();
       }
     }
   }
 
-  public async onShowDetails(item: PortalTargetsystemUnsDirectmembers): Promise<void> {
-    const uidPerson = item.UID_Person.value;
-
+  public async onShowDetails(item: TypedEntity): Promise<void> {
     const data: SourceDetectiveSidesheetData = {
-      UID_Person: uidPerson,
+      UID_Person: item.GetEntity().GetColumn('UID_Person').GetValue(),
       Type: SourceDetectiveType.MembershipOfSystemEntitlement,
       UID: this.unsGroupDbObjectKey.Keys[0],
       TableName: this.unsGroupDbObjectKey.TableName,
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
+      title: await this.translate.instant('#LDS#Heading View Assignment Analysis'),
       subTitle: item.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '800px',
+      width: calculateSidesheetWidth(800, 0.5),
       disableClose: false,
       testId: 'systementitlements-membership-assingment-analysis',
       data,
@@ -292,49 +264,57 @@ export class GroupMembersComponent implements OnInit {
   }
 
   private async navigateDirect(): Promise<void> {
-    this.handleOpenLoader();
-    try {
-      this.groupDirectMembershipData = await this.groupsService.getGroupDirectMembers(this.groupId, this.navigationState);
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: this.groupDirectMembershipData,
-        entitySchema: this.entitySchemaGroupDirectMemberships,
-        navigationState: this.navigationState,
-      };
-    } finally {
-      this.handleCloseLoader();
-    }
+    this.dataSourceDirect.itemStatus = this.itemStatus;
+    const columnsToDisplay = [
+      this.entitySchemaGroupDirectMemberships.Columns.UID_Person,
+      ...this.automaticColumnDirect,
+      this.entitySchemaGroupDirectMemberships.Columns.XMarkedForDeletion,
+    ];
+    const dataViewInitParameters: DataViewInitParameters<PortalTargetsystemUnsDirectmembers> = {
+      execute: (
+        params: CollectionLoadParameters,
+        signal: AbortSignal,
+      ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsDirectmembers>> => {
+        return this.groupsService.getGroupDirectMembers(this.groupId, params, signal);
+      },
+      schema: this.entitySchemaGroupDirectMemberships,
+      columnsToDisplay,
+      highlightEntity: (identity: PortalTargetsystemUnsDirectmembers) => {
+        this.onShowDetails(identity);
+      },
+    };
+    await this.dataSourceDirect.init(dataViewInitParameters);
   }
 
   private async navigateNested(): Promise<void> {
     this.showUnsubscribeWarning = false;
-    this.handleOpenLoader();
-    try {
-      this.groupNestedMembershipData = await this.groupsService.getGroupNestedMembers(this.groupId, this.nestedNavigationState);
-      this.dstNestedGroupSettings = {
-        displayedColumns: this.nestedDisplayColumns,
-        dataSource: this.groupNestedMembershipData,
-        entitySchema: this.entitySchemaGroupNestedMemberships,
-        navigationState: this.nestedNavigationState,
-      };
-    } finally {
-      this.handleCloseLoader();
-    }
+    const columnsToDisplay = [
+      this.entitySchemaGroupNestedMemberships.Columns.UID_Person,
+      this.entitySchemaGroupNestedMemberships.Columns.UID_UNSGroupChild,
+      this.entitySchemaGroupNestedMemberships.Columns.XMarkedForDeletion,
+    ];
+    const dataViewInitParameters: DataViewInitParameters<PortalTargetsystemUnsNestedmembers> = {
+      execute: (
+        params: CollectionLoadParameters,
+        signal: AbortSignal,
+      ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsNestedmembers>> => {
+        return this.groupsService.getGroupNestedMembers(this.groupId, params, signal);
+      },
+      schema: this.entitySchemaGroupNestedMemberships,
+      columnsToDisplay,
+      highlightEntity: (identity: PortalTargetsystemUnsNestedmembers) => {
+        this.onShowDetails(identity);
+      },
+    };
+    await this.dataSourceNested.init(dataViewInitParameters);
   }
 
   private handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      this.busyIndicator = this.busyService.show();
-    }
+    this.busyService.show();
   }
 
   private handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 
   public LdsNotUnsubscribableHint =

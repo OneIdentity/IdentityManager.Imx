@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,15 +36,15 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ProductDependencyCheckComponent } from './product-dependency-check/product-dependency-check.component';
 
 @NgModule({
-  declarations: [BaseViewerComponent, ExclusionCheckComponent, DetailViewerComponent, DuplicateCheckComponent, ProductDependencyCheckComponent],
-  imports: [
-    CommonModule,
-    TranslateModule,
-    LdsReplaceModule
+  declarations: [
+    BaseViewerComponent,
+    ExclusionCheckComponent,
+    DetailViewerComponent,
+    DuplicateCheckComponent,
+    ProductDependencyCheckComponent,
   ],
-  providers: [
-    ShoppingCartValidationDetailService
-  ],
-  exports: [ExclusionCheckComponent, DetailViewerComponent, DuplicateCheckComponent, BaseViewerComponent]
+  imports: [CommonModule, TranslateModule, LdsReplaceModule],
+  providers: [ShoppingCartValidationDetailService],
+  exports: [ExclusionCheckComponent, DetailViewerComponent, DuplicateCheckComponent, BaseViewerComponent],
 })
-export class ShoppingCartValidationDetailModule { }
+export class ShoppingCartValidationDetailModule {}

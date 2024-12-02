@@ -1,54 +1,77 @@
-<mat-spinner *ngIf="busy"></mat-spinner>
-
 <ng-container *ngIf="dstSettings">
-  <h1 class="mat-headline">{{ '#LDS#Heading Outstanding Objects' | translate }}</h1>
-  <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+  <h2 class="mat-headline-5">{{ '#LDS#Heading Outstanding Objects' | translate }}</h2>
+  <eui-alert *ngIf="showHelper" type="info" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
     {{ LdsOutstandingText | translate }}
   </eui-alert>
 
-  <div class="filters">
-    <mat-form-field class="namespace-selector">
+  <mat-spinner *ngIf="busy"></mat-spinner>
+  <div class="filters" [ngClass]="{ 'imx-hidden': busy }">
+    <mat-form-field class="namespace-selector" appearance="outline">
       <mat-label>{{ '#LDS#Target system type' | translate }}</mat-label>
-      <mat-select required (selectionChange)="optionSelected($event.value)" [(value)]="selectedNamespace" data-imx-identifier="outstanding-namespace-select">
-        <mat-option *ngFor="let pr of namespaces" [value]="pr" [attr.data-imx-identifier]="'outstanding-namespace-option-' + pr.GetEntity().GetDisplay()">
+      <mat-select
+        required
+        (selectionChange)="optionSelected($event.value)"
+        [(value)]="selectedNamespace"
+        data-imx-identifier="outstanding-namespace-select"
+      >
+        <mat-option
+          *ngFor="let pr of namespaces"
+          [value]="pr"
+          [attr.data-imx-identifier]="'outstanding-namespace-option-' + pr.GetEntity().GetDisplay()"
+        >
           {{ pr.GetEntity().GetDisplay() }}
         </mat-option>
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="table-selector">
-      <mat-spinner *ngIf="loadingTableData" matPrefix></mat-spinner>
+    <mat-form-field class="table-selector" appearance="outline">
+      <mat-spinner diameter="16" *ngIf="loadingTableData" matPrefix></mat-spinner>
       <mat-label>{{ '#LDS#Object type' | translate }}</mat-label>
-      <mat-select [disabled]="tabledata.length == 0" (selectionChange)="tableSelected($event.value)" [(value)]="selectedTable" data-imx-identifier="outstanding-table-select">
-        <mat-option *ngFor="let pr of tabledata" [value]="pr" [attr.data-imx-identifier]="'outstanding-table-option-' + pr.GetEntity().GetDisplay()">
+      <mat-select
+        [disabled]="tabledata.length == 0"
+        (selectionChange)="tableSelected($event.value)"
+        [(value)]="selectedTable"
+        data-imx-identifier="outstanding-table-select"
+      >
+        <mat-option
+          *ngFor="let pr of tabledata"
+          [value]="pr"
+          [attr.data-imx-identifier]="'outstanding-table-option-' + pr.GetEntity().GetDisplay()"
+        >
           {{ pr.GetEntity().GetDisplay() }} ({{ pr.CountOutstanding.value }})
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-checkbox (change)="onShowAllData()" [(ngModel)]="showAllData" [disabled]="!selectedNamespace || loadingTableData" >
-      {{ !!selectedNamespaceTitle && !loadingTableData ?
-        ('#LDS#Show all outstanding objects of {0} ({1})' | translate | ldsReplace: selectedNamespaceTitle : tableDataCount):
-        ('#LDS#Show all outstanding objects of the target system type' | translate)
+    <mat-checkbox (change)="onShowAllData()" [(ngModel)]="showAllData" [disabled]="!selectedNamespace || loadingTableData">
+      {{
+        !!selectedNamespaceTitle && !loadingTableData
+          ? ('#LDS#Show all outstanding objects of {0} ({1})' | translate | ldsReplace: selectedNamespaceTitle : tableDataCount)
+          : ('#LDS#Show all outstanding objects of the target system type' | translate)
       }}
     </mat-checkbox>
   </div>
 
-  <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)" [options]="['filter']" [hidden]="busyLoadingTable"> </imx-data-source-toolbar>
+  <imx-data-source-toolbar
+    #dst
+    [settings]="dstSettings"
+    (navigationStateChanged)="getData($event)"
+    [options]="['filter']"
+    [busyService]="busyService"
+  >
+  </imx-data-source-toolbar>
 
-  <mat-card class="scroll-container">
-    <mat-spinner *ngIf="busyLoadingTable"></mat-spinner>
+  <mat-card class="scroll-container imx-table-container">
     <imx-data-table
       #dataTable
       [dst]="dst"
       [detailViewVisible]="false"
       [selectable]="true"
       [showSelectedItemsMenu]="false"
-      [ngClass]="{ loadingtable: busyLoadingTable }"
       (selectionChanged)="selectionChanged($event)"
       mode="manual"
       [noDataText]="getNoDataText()"
       data-imx-identifier="outstanding-objects-table"
-      *ngIf="!busyLoadingTable"
+      *ngIf="!busy"
     >
       <imx-data-table-generic-column columnName="Display" columnLabel="{{ '#LDS#Display name' | translate }}">
         <ng-template let-data>
@@ -66,15 +89,13 @@
           </div>
         </ng-template>
       </imx-data-table-generic-column>
-      <imx-data-table-column [entityColumn]="schema?.Columns.LastLogEntry"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="schema?.Columns.LastMethodRun"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="schema?.Columns?.LastLogEntry"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="schema?.Columns?.LastMethodRun"> </imx-data-table-column>
     </imx-data-table>
   </mat-card>
-  <div class="imx-button-bar">
-    <imx-selected-elements [selectedElements]="selected"></imx-selected-elements>
-    <div class="imx-menu-spacer"></div>
+  <div class="imx-button-bar-transparent">
+    <imx-selected-elements class="justify-start" [selectedElements]="selected"></imx-selected-elements>
     <mat-checkbox
-      class="bulkmodecheckbox"
       matTooltip="{{
         '#LDS#If you activate bulk processing, the selected objects are processed in parallel. This speeds up the performed action. If an error occurs during processing, the action is stopped and all changes are discarded. To locate errors, deactivate bulk processing. Thus, the objects are processed sequentially. All changes made until the error occurred are saved.'
           | translate
@@ -85,7 +106,7 @@
     >
 
     <button
-      mat-raised-button
+      mat-flat-button
       color="warn"
       [disabled]="selected.length === 0 || !canDeleteAllSelected()"
       data-imx-identifier="outstanding-delete-button"
@@ -95,7 +116,7 @@
       {{ '#LDS#Delete' | translate }}
     </button>
     <button
-      mat-raised-button
+      mat-stroked-button
       [disabled]="selected.length === 0"
       data-imx-identifier="outstanding-reset-button"
       matTooltip="{{ '#LDS#Removes the Outstanding label for the selected objects' | translate }}"
@@ -104,7 +125,7 @@
       {{ '#LDS#Reset' | translate }}
     </button>
     <button
-      mat-raised-button
+      mat-flat-button
       [disabled]="selected.length === 0 || !canPublishAllSelected()"
       color="primary"
       data-imx-identifier="outstanding-publish-button"

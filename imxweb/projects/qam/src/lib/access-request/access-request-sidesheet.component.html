@@ -1,0 +1,53 @@
+<div eui-sidesheet-content>
+  <eui-alert *ngIf="showHelperAlert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+    {{
+      (showTree
+        ? '#LDS#Please choose a resource. You can select resource paths or manually enter them.'
+        : '#LDS#Please enter the resource paths manually.'
+      ) | translate
+    }}
+  </eui-alert>
+  <mat-card>
+    <form [formGroup]="formGroup">
+      <div [hidden]="!showTree">
+        <mat-slide-toggle #toggle formControlName="enterFolderManually">
+          <span [translate]="'#LDS#Enter resource paths manually'"> </span>
+        </mat-slide-toggle>
+      </div>
+      <div class="imx-manual-folder-container" [hidden]="!toggle.checked">
+        <ng-container *ngFor="let folder of folderList">
+          <imx-cdr-editor [cdr]="folder" (controlCreated)="formGroup.controls.folderArray.push($event)"></imx-cdr-editor>
+        </ng-container>
+        <button mat-stroked-button (click)="createNewCdr()">
+          {{ '#LDS#Add folder' | translate }}
+        </button>
+      </div>
+      <div [hidden]="!showTree || toggle.checked">
+        <imx-data-tree-wrapper
+          #dataTreeWrapper
+          data-imx-identifier="access-request-data-tree"
+          [database]="treeDatabase"
+          [entitySchema]="data.entitySchema"
+          [withSelectedNodeHighlight]="false"
+          [withMultiSelect]="true"
+          [selectedEntities]="selectedNodes"
+          [filters]="filterOptions"
+          [isNodeSelectable]="false"
+          [hideSelection]="true"
+        >
+        </imx-data-tree-wrapper>
+      </div>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button
+    data-imx-identifier="access-request-button-apply"
+    [disabled]="!foldersAreValid()"
+    mat-flat-button
+    color="primary"
+    (click)="submitValues()"
+  >
+    {{ '#LDS#Apply' | translate }}
+  </button>
+</div>

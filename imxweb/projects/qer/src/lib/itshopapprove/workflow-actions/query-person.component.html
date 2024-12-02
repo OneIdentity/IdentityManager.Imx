@@ -1,14 +1,13 @@
-<h1 mat-dialog-title>{{'#LDS#Heading Send Inquiry' | translate}}</h1>
+<h2 mat-dialog-title>{{ '#LDS#Heading Send Inquiry' | translate }}</h2>
 <mat-dialog-content>
-   <p>
-      {{'#LDS#Select the identity to which you want to send an inquiry.' | translate}}
-   </p>
-   <!-- TODO display person selector -->
+  <p>
+    {{ '#LDS#Select the identity to which you want to send an inquiry.' | translate }}
+  </p>
+  <!-- TODO display person selector -->
 
-   <!-- TODO show multiline CDR editor for Notice -->
+  <!-- TODO show multiline CDR editor for Notice -->
 </mat-dialog-content>
 <mat-dialog-actions>
-   <button data-imx-identifier="Button3" mat-dialog-close mat-button
-      (click)="Button3()">{{'#LDS#Save' | translate}}</button>
-   <button mat-button mat-dialog-close>{{'#LDS#Cancel' | translate}}</button>
+  <button data-imx-identifier="Button3" mat-dialog-close mat-button (click)="Button3()">{{ '#LDS#Save' | translate }}</button>
+  <button mat-button mat-dialog-close>{{ '#LDS#Cancel' | translate }}</button>
 </mat-dialog-actions>

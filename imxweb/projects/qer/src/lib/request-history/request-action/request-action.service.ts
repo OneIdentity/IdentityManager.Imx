@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,27 +24,34 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { ErrorHandler, Injectable } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { PortalItshopRequests } from 'imx-api-qer';
-import { ValType } from 'imx-qbm-dbts';
+import { PortalItshopRequests } from '@imx-modules/imx-api-qer';
+import { TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 
-import { BaseCdr, ClassloggerService, EntityService, LdsReplacePipe, SnackBarService, UserMessageService } from 'qbm';
-import { RequestActionComponent } from './request-action.component';
-import { RequestHistoryService } from '../request-history.service';
-import { JustificationService } from '../../justification/justification.service';
+import {
+  BaseCdr,
+  calculateSidesheetWidth,
+  ClassloggerService,
+  EntityService,
+  LdsReplacePipe,
+  SnackBarService,
+  UserMessageService,
+} from 'qbm';
 import { JustificationType } from '../../justification/justification-type.enum';
+import { JustificationService } from '../../justification/justification.service';
 import { UserModelService } from '../../user/user-model.service';
+import { RequestHistoryService } from '../request-history.service';
+import { RequestActionComponent } from './request-action.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequestActionService {
-  public readonly applied = new Subject();
+  public readonly applied = new Subject<void>();
 
   constructor(
     private readonly sideSheet: EuiSidesheetService,
@@ -57,18 +64,19 @@ export class RequestActionService {
     private readonly justificationService: JustificationService,
     private readonly errorHandler: ErrorHandler,
     private readonly messageService: UserMessageService,
+    private readonly ldsReplace: LdsReplacePipe,
     private readonly userService: UserModelService,
-    private readonly ldsReplace: LdsReplacePipe
   ) {}
 
-  public async prolongate(requests: PortalItshopRequests[]): Promise<void> {
+  public async prolongate(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     const prolongationProperty = this.requestHistoryService.PortalItshopRequestsSchema.Columns.ValidUntilProlongation;
     prolongationProperty.IsReadOnly = false;
     const prolongation = new BaseCdr(
       this.entityService.createLocalEntityColumn(prolongationProperty, undefined, { ValueConstraint: { MinValue: new Date() } }),
-      '#LDS#Renewal date'
+      '#LDS#Renew until',
     );
 
     return this.editAction({
@@ -96,7 +104,8 @@ export class RequestActionService {
     });
   }
 
-  public async escalateDecisions(requests: PortalItshopRequests[]): Promise<void> {
+  public async escalateDecisions(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason('#LDS#Reason for escalation', true);
 
     return this.editAction({
@@ -119,24 +128,24 @@ export class RequestActionService {
     });
   }
 
-  public async unsubscribe(requests: PortalItshopRequests[]): Promise<void> {
+  public async unsubscribe(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason('#LDS#Additional comments about your decision');
 
-    let justification: BaseCdr;
+    let justification: BaseCdr | undefined;
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    this.showBusyIndicator();
 
     try {
       justification = await this.justificationService.createCdr(JustificationType.unsubscribe);
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
 
     const unsubscribeProperty = this.requestHistoryService.PortalItshopRequestsSchema.Columns.ValidUntilUnsubscribe;
     unsubscribeProperty.IsReadOnly = false;
     const unsubscription = new BaseCdr(
-      this.entityService.createLocalEntityColumn(unsubscribeProperty, undefined, { ValueConstraint: { MinValue: new Date() } })
+      this.entityService.createLocalEntityColumn(unsubscribeProperty, undefined, { ValueConstraint: { MinValue: new Date() } }),
     );
 
     return this.editAction({
@@ -165,7 +174,8 @@ export class RequestActionService {
     });
   }
 
-  public async withdrawRequest(requests: PortalItshopRequests[]): Promise<void> {
+  public async withdrawRequest(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     return this.editAction({
@@ -188,7 +198,8 @@ export class RequestActionService {
     });
   }
 
-  public async recallLastQuestion(requests: PortalItshopRequests[]): Promise<void> {
+  public async recallLastQuestion(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     return this.editAction({
@@ -211,7 +222,8 @@ export class RequestActionService {
     });
   }
 
-  public async revokeHoldStatus(requests: PortalItshopRequests[]): Promise<void> {
+  public async revokeHoldStatus(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     return this.editAction({
@@ -234,7 +246,8 @@ export class RequestActionService {
     });
   }
 
-  public async revokeDelegation(requests: PortalItshopRequests[], title: string, message: string, description: string): Promise<void> {
+  public async revokeDelegation(entities: TypedEntity[], title: string, message: string, description: string): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     return this.editAction({
@@ -257,12 +270,8 @@ export class RequestActionService {
     });
   }
 
-  public async revokeAdditionalApprover(
-    requests: PortalItshopRequests[],
-    title: string,
-    message: string,
-    description: string
-  ): Promise<void> {
+  public async revokeAdditionalApprover(entities: TypedEntity[], title: string, message: string, description: string): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     return this.editAction({
@@ -285,7 +294,8 @@ export class RequestActionService {
     });
   }
 
-  public async recallDecision(requests: PortalItshopRequests[]): Promise<void> {
+  public async recallDecision(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
     const reason = this.createCdrReason();
 
     return this.editAction({
@@ -308,9 +318,9 @@ export class RequestActionService {
     });
   }
 
-  public async copyItems(requests: PortalItshopRequests[]): Promise<void> {
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+  public async copyItems(entities: TypedEntity[]): Promise<void> {
+    const requests = entities as PortalItshopRequests[];
+    this.showBusyIndicator();
     const errorRequests: PortalItshopRequests[] = [];
     try {
       for (const request of requests) {
@@ -321,7 +331,7 @@ export class RequestActionService {
         }
       }
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
       this.snackBar.open({
         key: '#LDS#{0} products have been successfully added to the shopping cart.',
         parameters: [requests.length - errorRequests.length],
@@ -329,7 +339,11 @@ export class RequestActionService {
       if (errorRequests.length > 0) {
         const errorText = errorRequests.map((request) => request.DisplayOrg.Column.GetDisplayValue()).join(', ');
         this.messageService.subject.next({
-          text: this.ldsReplace.transform(this.translate.instant('#LDS#The following {0} products could not be added to the shopping cart: {1}'), errorRequests.length, errorText),
+          text: this.ldsReplace.transform(
+            this.translate.instant('#LDS#The following {0} products could not be added to the shopping cart: {1}'),
+            errorRequests.length,
+            errorText,
+          ),
           type: 'error',
         });
       }
@@ -344,7 +358,7 @@ export class RequestActionService {
         title: await this.translate.get(config.title).toPromise(),
         subTitle: config.data.requests.length === 1 ? config.data.requests[0].GetEntity().GetDisplay() : ' ',
         padding: '0',
-        width: '600px',
+        width: calculateSidesheetWidth(600, 0.4),
         testId: config.testId,
         data: config.data,
       })
@@ -352,18 +366,17 @@ export class RequestActionService {
       .toPromise();
 
     if (result) {
-      let busyIndicator: OverlayRef;
-      setTimeout(() => (busyIndicator = this.busyService.show()));
+      this.showBusyIndicator();
 
-      let success: boolean;
+      let success: boolean = false;
       try {
         await config.apply();
         success = true;
       } catch (error) {
         this.errorHandler.handleError(error);
-      } finally {     
+      } finally {
         await this.userService.reloadPendingItems();
-        setTimeout(() => this.busyService.hide(busyIndicator));
+        this.busyService.hide();
       }
 
       if (success) {
@@ -388,5 +401,11 @@ export class RequestActionService {
     });
 
     return new BaseCdr(column, display);
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

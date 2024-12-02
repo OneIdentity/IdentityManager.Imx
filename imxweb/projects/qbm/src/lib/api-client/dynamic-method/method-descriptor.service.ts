@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,19 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, EntityWriteData, InteractiveEntityData, InteractiveEntityWriteData, MethodDescriptor, TimeZoneInfo } from 'imx-qbm-dbts';
+import {
+  EntityCollectionData,
+  EntityWriteData,
+  InteractiveEntityData,
+  InteractiveEntityWriteData,
+  MethodDescriptor,
+  TimeZoneInfo,
+} from '@imx-modules/imx-qbm-dbts';
 import { DynamicCollectionLoadParameters } from './dynamic-collection-load-parameters.interface';
 import { InteractiveParameter } from './interactive-parameter.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MethodDescriptorService {
   public get(path: string, parameters: DynamicCollectionLoadParameters = {}): MethodDescriptor<EntityCollectionData> {
@@ -41,33 +48,33 @@ export class MethodDescriptorService {
         {
           name: 'OrderBy',
           value: parameters.OrderBy,
-          in: 'query'
+          in: 'query',
         },
         {
           name: 'StartIndex',
           value: parameters.StartIndex,
-          in: 'query'
+          in: 'query',
         },
         {
           name: 'PageSize',
           value: parameters.PageSize,
-          in: 'query'
+          in: 'query',
         },
         {
           name: 'filter',
           value: parameters.filter,
-          in: 'query'
+          in: 'query',
         },
         {
           name: 'withProperties',
           value: parameters.withProperties,
-          in: 'query'
+          in: 'query',
         },
         {
           name: 'search',
           value: parameters.search,
-          in: 'query'
-        }
+          in: 'query',
+        },
       ],
       method: 'GET',
       headers: {
@@ -75,7 +82,7 @@ export class MethodDescriptorService {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
@@ -87,7 +94,7 @@ export class MethodDescriptorService {
           name: parameter.name,
           value: parameter.value,
           required: true,
-          in: 'path'
+          in: 'path',
         },
       ],
       method: 'GET',
@@ -96,7 +103,7 @@ export class MethodDescriptorService {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
@@ -107,24 +114,24 @@ export class MethodDescriptorService {
 
   public putInteractive(path: string, inputParameterName: InteractiveEntityWriteData): MethodDescriptor<InteractiveEntityData> {
     return {
-        path,
-        parameters: [
-            {
-                name: 'inputParameterName',
-                value: inputParameterName,
-                required: true,
-                in: 'body'
-            },
-        ],
-        method: 'PUT',
-        headers: {
-            'imx-timezone': TimeZoneInfo.get(),
+      path,
+      parameters: [
+        {
+          name: 'inputParameterName',
+          value: inputParameterName,
+          required: true,
+          in: 'body',
         },
-        credentials: 'include',
-        observe: 'response',
-        responseType: 'json'
+      ],
+      method: 'PUT',
+      headers: {
+        'imx-timezone': TimeZoneInfo.get(),
+      },
+      credentials: 'include',
+      observe: 'response',
+      responseType: 'json',
     };
-}
+  }
 
   /** Builds a method descriptor for a POST method. */
   public post(path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
@@ -132,15 +139,15 @@ export class MethodDescriptorService {
   }
 
   public delete(path: string, pathParameters: { [name: string]: any }): MethodDescriptor<any> {
-    const parameters = [];
+    const parameters: any[] = [];
 
-    Object.keys(pathParameters).forEach(name =>
+    Object.keys(pathParameters).forEach((name) =>
       parameters.push({
         name,
         value: pathParameters[name],
         in: 'path',
-        required: true
-      })
+        required: true,
+      }),
     );
 
     return {
@@ -152,7 +159,7 @@ export class MethodDescriptorService {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
@@ -163,7 +170,7 @@ export class MethodDescriptorService {
         {
           name: 'inputParameterName',
           value: inputParameterName,
-          in: 'body'
+          in: 'body',
         },
       ],
       method,
@@ -172,7 +179,7 @@ export class MethodDescriptorService {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 }

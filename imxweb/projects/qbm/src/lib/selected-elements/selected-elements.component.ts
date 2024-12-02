@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,11 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { SelectedElementsDialog } from './selected-elements-dialog/selected-elements-dialog.component';
 
 @Component({
@@ -40,16 +40,46 @@ export class SelectedElementsComponent {
   @Input() public selectedElements: TypedEntity[] = [];
   @Input() public tables: string[];
   @Input() public isLoading: boolean;
-  @Input() public caption = this.translate.instant('#LDS#Show selected');
-  @Input() public dialogHeader = this.translate.instant('#LDS#Heading Selected Items');
+  @Input() public caption: string;
+  @Input() public dialogHeader: string;  
+  @Input() public showDeselectAll: boolean = false;
+  @Input() public deselectAllCaption: string;
+  
+  @Output() public openCustomSelectionDialog = new EventEmitter<void>();
+  @Output() public onDeselectAllClicked = new EventEmitter<void>();
 
-  constructor(public readonly dialog: MatDialog, public readonly translate: TranslateService) {}
+  constructor(
+    public readonly dialog: MatDialog,
+    public readonly translate: TranslateService,
+  ) {
+    if (!this.caption) {
+      this.caption = this.translate.instant('#LDS#Show selected');
+    }    
+    if (!this.deselectAllCaption) {
+      this.deselectAllCaption = this.translate.instant('#LDS#Deselect all');
+    }
+    if (!this.dialogHeader) {
+      this.dialogHeader = this.translate.instant('#LDS#Heading Selected Items');
+    }
+  }
 
   public onOpenSelectionDialog(): void {
-    this.dialog.open(SelectedElementsDialog, {
-      width: 'max(60%,600px)',
-      height: 'max(60%,600px)',
-      data: { entities: this.selectedElements, tables: this.tables ?? [], header: this.dialogHeader },
-    });
+    if (this.openCustomSelectionDialog.observed) {
+      this.openCustomSelectionDialog.emit();
+    } else {
+      this.dialog.open(SelectedElementsDialog, {
+        width: 'max(60%,600px)',
+        height: 'max(60%,600px)',
+        data: { entities: this.selectedElements, tables: this.tables ?? [], header: this.dialogHeader },
+      });
+    }
+  }
+
+  public deselectAll() {
+    if (this.onDeselectAllClicked.observed) {
+      this.onDeselectAllClicked.emit();
+    } else {
+      this.selectedElements = [];
+    }
   }
 }

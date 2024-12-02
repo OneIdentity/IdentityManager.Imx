@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,10 @@
  *
  */
 
-import { SeriesInformation } from './series-information';
 import { YTickConfiguration, yAxisConfiguration } from 'billboard.js';
+import { SeriesInformation } from './series-information';
 
 export class YAxisInformation {
-
   /**
    * Gets the series, that are displayed on the chart
    */
@@ -60,7 +59,7 @@ export class YAxisInformation {
     return {
       max: this.max,
       min: this.min,
-      tick: this.tickConfiguration
+      tick: this.tickConfiguration,
     };
   }
 
@@ -69,7 +68,7 @@ export class YAxisInformation {
    */
   public getNames(): { [key: string]: string } {
     const names: { [id: string]: string } = {};
-    this.series.forEach(element => {
+    this.series.forEach((element) => {
       names[element.name.replace(' ', '')] = element.name;
     });
 
@@ -81,8 +80,11 @@ export class YAxisInformation {
    */
   public getColors(): { [key: string]: string } {
     const colors: { [id: string]: string } = {};
-    this.series.forEach(element => {
-      colors[element.name.replace(' ', '')] = element.color;
+    this.series.forEach((element) => {
+      const index = element.name.replace(' ', '');
+      if (index && element.color) {
+        colors[index] = element.color;
+      }
     });
 
     return colors;

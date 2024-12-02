@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { EuiSelectComponent, EuiSelectOption } from '@elemental-ui/core';
 
-import { PortalPersonReports } from 'imx-api-qer';
-import { IEntity } from 'imx-qbm-dbts';
+import { PortalPersonReports } from '@imx-modules/imx-api-qer';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 
 import { DataSourceToolbarComponent, DataSourceToolbarSelectedFilter } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
@@ -36,10 +36,9 @@ import { QerApiService } from '../../qer-api-client.service';
 @Component({
   selector: 'imx-request-history-filter',
   templateUrl: './request-history-filter.component.html',
-  styleUrls: ['./request-history-filter.component.scss']
+  styleUrls: ['./request-history-filter.component.scss'],
 })
 export class RequestHistoryFilterComponent implements OnInit {
-
   @Input() public dst: DataSourceToolbarComponent;
   @Input() public hideFilter: boolean = false;
   @Output() public selectedFiltersChanged = new EventEmitter<string>();
@@ -57,9 +56,7 @@ export class RequestHistoryFilterComponent implements OnInit {
     return option.display.toString().toUpperCase().indexOf(searchInputValue.toUpperCase()) !== -1;
   };
 
-  constructor(
-    private readonly qerClient: QerApiService,
-  ) { }
+  constructor(private readonly qerClient: QerApiService) {}
 
   public async ngOnInit(): Promise<void> {
     if (!this.hideFilter) {
@@ -68,7 +65,9 @@ export class RequestHistoryFilterComponent implements OnInit {
     }
   }
 
-  public personSelected(selected: EuiSelectOption): void {
+  public personSelected(selectedValues: EuiSelectOption | EuiSelectOption[]): void {
+    // because it's not a multiple select, select only the first one
+    const selected = selectedValues?.[0];
     this.selectedUid = selected.value;
 
     if (!this.selectedUid) {
@@ -76,27 +75,26 @@ export class RequestHistoryFilterComponent implements OnInit {
       return;
     }
 
-
     if (this.dst) {
       // First clear any previosuly selected dst selectedFilter, but we do not emit this
       this.clearDstSelectedFilter(this.dstFilterRef, false);
-      if (selected.value && selected.value.length > 0) {
+      if (selected.value && !!selected.value.length) {
         this.dstFilterRef = {
           selectedOption: { Value: selected.value, Display: selected.display },
           filter: { Name: 'UID_Person' },
-          isCustom: true
+          isCustom: true,
         };
         this.dst.selectedFilters.push(this.dstFilterRef);
       }
     }
-     if (!this.skipSelectionEmitMode) {
+    if (!this.skipSelectionEmitMode) {
       // Trigger a new api call to reflect filter removal
       this.selectedFiltersChanged.emit(this.selectedUid);
     }
   }
 
-  public clearPersonFilterSelection(clearSelectControl?: boolean, emit = true): void {
-    if (clearSelectControl) {
+  public clearPersonFilterSelection(filter: DataSourceToolbarSelectedFilter, emit = true): void {
+    if (!filter) {
       this.tsSelect?.searchInput.clearSearch();
       this.tsSelect?.clearSelectionsInside();
     }
@@ -104,14 +102,16 @@ export class RequestHistoryFilterComponent implements OnInit {
   }
 
   private async getDirectReports(): Promise<void> {
-    this.personData = (await this.qerClient.typedClient.PortalPersonReports.Get({
-      OnlyDirect: true, // direct reports only
-      PageSize: 10000,
-    })).Data;
+    this.personData = (
+      await this.qerClient.typedClient.PortalPersonReports.Get({
+        OnlyDirect: true, // direct reports only
+        PageSize: 10000,
+      })
+    ).Data;
   }
 
   private setupSelectOptions(persons: PortalPersonReports[]): void {
-    this.directReportsOptions = persons.map(d => this.convertTsToEuiSelectOption(d));
+    this.directReportsOptions = persons.map((d) => this.convertTsToEuiSelectOption(d));
   }
 
   private convertTsToEuiSelectOption(person: PortalPersonReports): EuiSelectOption {
@@ -129,16 +129,11 @@ export class RequestHistoryFilterComponent implements OnInit {
       selectedFilterRef.isCustom = undefined;
 
       // We also have to remove the filter from the nav state as its custom, this isnt handled inside the dst for this case
-      if (this.dst?.settings?.navigationState[selectedFilterRef.filter.Name]) {
-        delete this.dst?.settings?.navigationState[selectedFilterRef.filter.Name];
+      if (this.dst?.settings?.navigationState[selectedFilterRef.filter?.Name ?? '']) {
+        delete this.dst?.settings?.navigationState[selectedFilterRef.filter?.Name ?? ''];
       }
       // Then make call to remove selected filter
-      this.dst.removeSelectedFilter(
-        selectedFilterRef.filter,
-        emit,
-        selectedFilterRef.selectedOption.Value,
-        selectedFilterRef
-      );
+      this.dst.removeSelectedFilter(selectedFilterRef.filter, emit, selectedFilterRef.selectedOption?.Value, selectedFilterRef);
     }
   }
 }

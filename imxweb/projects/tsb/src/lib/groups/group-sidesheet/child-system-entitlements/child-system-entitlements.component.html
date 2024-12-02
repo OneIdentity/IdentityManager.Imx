@@ -1,8 +1,12 @@
-<imx-data-source-toolbar #groupsDst (navigationStateChanged)="getData($event)" [settings]="groupsDstSettings"
-  [options]="['hiddenFilters']" [hiddenFilters]="['namespace']">
+<imx-data-source-toolbar
+  #groupsDst
+  (navigationStateChanged)="getData($event)"
+  [settings]="groupsDstSettings"
+  [options]="['hiddenFilters']"
+  [hiddenFilters]="['namespace']"
+>
 </imx-data-source-toolbar>
 
-<imx-data-table [dst]="groupsDst" detailViewVisible="false"
-  noDataText="#LDS#There are currently no system entitlements.">
+<imx-data-table [dst]="groupsDst" [detailViewVisible]="false" noDataText="#LDS#There are currently no system entitlements.">
 </imx-data-table>
 <imx-data-source-paginator [dst]="groupsDst"></imx-data-source-paginator>

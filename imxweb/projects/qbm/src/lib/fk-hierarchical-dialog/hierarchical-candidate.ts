@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DisplayColumns, EntitySchema,  ValType } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, ValType } from '@imx-modules/imx-qbm-dbts';
 import { CandidateEntity } from '../fk-advanced-picker/candidate-entity';
 
 export class HierarchicalCandidate extends CandidateEntity {
@@ -32,12 +32,12 @@ export class HierarchicalCandidate extends CandidateEntity {
     const columns = {
       XObjectKey: {
         Type: ValType.String,
-        ColumnName: 'XObjectKey'
+        ColumnName: 'XObjectKey',
       },
       HasChildren: {
         Type: ValType.Bool,
-        ColumnName: 'HasChildren'
-      }
+        ColumnName: 'HasChildren',
+      },
     };
 
     columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;

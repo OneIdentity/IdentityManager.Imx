@@ -1,5 +1,5 @@
 <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
-<mat-tab-group [ngClass]="{ hidden: isLoading }">
+<mat-tab-group mat-stretch-tabs="false" [ngClass]="{ hidden: isLoading }">
   <mat-tab [label]="'#LDS#Heading Information' | translate">
     <div class="imx-request-information">
       <ng-content select="[info]"></ng-content>
@@ -8,12 +8,12 @@
       <imx-cdr-editor *ngFor="let cdr of propertyInfo" [cdr]="cdr"></imx-cdr-editor>
       <imx-cdr-editor *ngFor="let cdr of parameters" [cdr]="cdr"></imx-cdr-editor>
     </mat-card>
-    <mat-accordion class="imx-additional-info mat-elevation-z0" *ngIf="serviceItem" >
+    <mat-accordion class="imx-additional-info mat-elevation-z0" *ngIf="serviceItem">
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
-          <span translate>#LDS#Information on the associated service item</span>
-        </mat-panel-title>
+            <span translate>#LDS#Information on the associated service item</span>
+          </mat-panel-title>
         </mat-expansion-panel-header>
         <ng-container>
           <imx-service-item-detail [projectConfig]="projectConfig" [serviceItem]="serviceItem"></imx-service-item-detail>
@@ -22,7 +22,7 @@
     </mat-accordion>
   </mat-tab>
   <mat-tab [label]="'#LDS#Heading Workflow' | translate">
-    <div class="imx-request-history">
+    <div eui-sidesheet-content>
       <mat-card>
         <imx-decision-history [approverContainer]="approverContainer" [workflow]="workflow"></imx-decision-history>
       </mat-card>
@@ -30,14 +30,17 @@
   </mat-tab>
 
   <mat-tab *ngIf="isRoleAssignment" [label]="'#LDS#Heading Entitlements' | translate">
-    <div class="imx-request-entitlements">
+    <div eui-sidesheet-content>
       <imx-product-entitlements [uidAccProduct]="request.UID_AccProduct.value"></imx-product-entitlements>
     </div>
   </mat-tab>
 
-  <mat-tab [label]="'#LDS#Heading Rule Violations' | translate" *ngIf="extensions && extensions.length > 0 && !request.isArchived">
+  <mat-tab [label]="'#LDS#Heading Rule Violations' | translate" *ngIf="extensions && !!extensions.length && !request.isArchived">
     <ng-template matTabContent
-      ><imx-ext [id]="ruleViolationDetailId" [properties]="{ pwoId: request.GetEntity().GetKeys()[0], request: request, isApproval: isApproval }"></imx-ext
+      ><imx-ext
+        [id]="ruleViolationDetailId"
+        [properties]="{ pwoId: request.GetEntity().GetKeys()[0], request: request, isApproval: isApproval }"
+      ></imx-ext
     ></ng-template>
   </mat-tab>
 
@@ -45,5 +48,4 @@
   <ObjectSwitchContainer [ActionType]="ObjectView" [EnableNavigation]="true"
       [SourceObject]="PersonWantsOrg"></ObjectSwitchContainer>
 -->
-
 </mat-tab-group>

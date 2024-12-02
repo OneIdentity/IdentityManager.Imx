@@ -1,22 +1,32 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab>
     <ng-template mat-tab-label>
       <span>{{ '#LDS#Heading Details' | translate }}</span>
     </ng-template>
     <div eui-sidesheet-content [ngClass]="!data.isNew ? 'eui-sidesheet-content--no-padding-top' : ''">
-      <imx-help-contextual [contextId]="detailsContextIds" *ngIf="!data.isNew" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
+      <imx-help-contextual
+        [contextId]="detailsContextIds"
+        *ngIf="!data.isNew"
+        [title]="'#LDS#Information about this tab:'"
+      ></imx-help-contextual>
       <mat-card>
         <form [formGroup]="detailsFormGroup">
           <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
         </form>
       </mat-card>
     </div>
-    <mat-card eui-sidesheet-actions class="request-config-sidesheet__action-buttons">
+    <mat-card eui-sidesheet-actions class="eui-sidesheet-actions--flex">
       <span class="justify-start" [matTooltip]="deleteHelperTooltip | translate">
-        <button *ngIf="!data.isNew" [disabled]="shelfHasEntitlements || entitlementRecentlyDeleted" mat-stroked-button color="warn" (click)="delete()">
+        <button
+          *ngIf="!data.isNew"
+          [disabled]="shelfHasEntitlements || entitlementRecentlyDeleted"
+          mat-stroked-button
+          color="warn"
+          (click)="delete()"
+        >
           <eui-icon icon="delete"></eui-icon>
           <span translate>#LDS#Delete shelf</span>
-          <eui-icon *ngIf="shelfHasEntitlements || entitlementRecentlyDeleted" class="help-icon" icon="help"></eui-icon>
+          <eui-icon *ngIf="shelfHasEntitlements || entitlementRecentlyDeleted" class="imx-icon-info" icon="help" size="16px"></eui-icon>
         </button>
       </span>
       <button mat-flat-button color="primary" (click)="saveShelf()" [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid">
@@ -31,7 +41,7 @@
       <span>{{ '#LDS#Heading Products' | translate }}</span>
     </ng-template>
     <imx-request-shelf-entitlements
-      [shopDisplay]="data?.requestConfig?.GetEntity().GetDisplay()"
+      [shopDisplay]="data?.requestConfig?.GetEntity()?.GetDisplay() ?? ''"
       [shelfId]="selectedShelfId"
       (entitlementCountUpdated)="onEntitlementCountUpdated($event)"
     ></imx-request-shelf-entitlements>
@@ -39,7 +49,11 @@
   <mat-tab *ngIf="!data?.isNew" label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
-        <imx-object-hyperview [objectType]="data?.requestConfig?.GetEntity()?.TypeName" [objectUid]="data?.requestConfig?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+        <imx-object-hyperview
+          [objectType]="data?.requestConfig?.GetEntity()?.TypeName"
+          [objectUid]="data?.requestConfig?.GetEntity()?.GetKeys()?.[0] || ''"
+        >
+        </imx-object-hyperview>
       </div>
     </ng-template>
   </mat-tab>

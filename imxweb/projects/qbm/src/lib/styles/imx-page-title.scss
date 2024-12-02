@@ -1,17 +1,29 @@
-@import 'variables.scss';
+@import 'base/variables';
 
-.pageContent h1.mat-headline {
-  margin: 0 0 40px;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  span{
-    white-space: nowrap;
+.pageContent{
+  h2.mat-headline-5 {
+    margin: 0 0 16px;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    span {
+      white-space: nowrap;
+    }
+
+    @media #{$IMX_Mediaquery_Smartphone} {
+      margin: 0 0 10px;
+    }
+    @media #{$IMX_Mediaquery_SmallDesktops} {
+      margin: 0 0 20px;
+    }
   }
-  @media #{$IMX_Mediaquery_Smartphone} {
-    margin: 0 0 10px;
-  }
-  @media #{$IMX_Mediaquery_SmallDesktops} {
-    margin: 0 0 20px;
+  .imx-header-toolbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    &-container{
+      display:flex;
+      flex-direction: column;
+    }
   }
 }

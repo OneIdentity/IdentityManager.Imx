@@ -1,18 +1,20 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-@import "../../../shared/assets/variables.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/variables';
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
+  @include flex-column-container-fill();
+}
+.imx-flex{
+  .mat-headline-5{
+    margin: 0;
+  }
 }
 
 .sub-headline {
   font-style: italic;
   font-weight: lighter;
-  margin-top: -2em;
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 
   @media #{$IMX_Mediaquery_Smartphone} {
     margin-top: -0.5em;
@@ -22,19 +24,8 @@
   }
 }
 
-:host ::ng-deep .mat-tab-body {
-  margin: 30px 0px;
-
-  .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
 .imx-job-queue-div {
   border-bottom: 1px solid $black-3;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
 }
 
 .imx-object-overview-tab-text {
@@ -49,31 +40,6 @@
 .imx-object-overview-tab-text {
   font-size: medium;
 }
-
-:host ::ng-deep .mat-tab-body-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex: 1;
-}
-
-:host ::ng-deep .mat-tab-body {
-  margin: 30px 0px 0px 0px;
-}
-
-:host ::ng-deep .mat-tab-body.mat-tab-body-active {
-  overflow-x: auto;
-}
-
-.imx-table-container {
-  margin-right: 30px;
-  max-height: 500px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.imx-refresh-button {
-  margin-right: 5px;
-  height: 50px;
+.imx-content-header, eui-alert{
+  margin-top: 24px;
 }

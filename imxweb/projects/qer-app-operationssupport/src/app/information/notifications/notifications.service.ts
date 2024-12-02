@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,11 @@
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { FilterType, CompareOperator } from 'imx-qbm-dbts';
-import { SubscriptionService } from '../../base/subscription.service';
-import { NotificationIssueItem, NotificationIssueType } from './notification-issue-item';
-import { IssueAction } from '../service-issues/service-issues.models';
-import { imx_SessionService, TextContainer, LdsReplacePipe } from 'qbm';
 import { TranslateService } from '@ngx-translate/core';
+import { LdsReplacePipe, TextContainer, imx_SessionService } from 'qbm';
+import { SubscriptionService } from '../../base/subscription.service';
+import { IssueAction } from '../service-issues/service-issues.models';
+import { NotificationIssueItem, NotificationIssueType } from './notification-issue-item';
 
 @Injectable()
 export class NotificationsService extends SubscriptionService<NotificationIssueItem[]> {
@@ -40,7 +39,7 @@ export class NotificationsService extends SubscriptionService<NotificationIssueI
     private session: imx_SessionService,
     private translate: TranslateService,
     private ldsreplace: LdsReplacePipe,
-    private router: Router
+    private router: Router,
   ) {
     super();
     this.itemsInternal = [];
@@ -71,7 +70,7 @@ export class NotificationsService extends SubscriptionService<NotificationIssueI
         {
           caption: '#LDS#View',
           action: () => this.router.navigate(['/Jobs'], { queryParams: { failed: true } }),
-        }
+        },
       );
     } else {
       this.remove(type);
@@ -90,7 +89,7 @@ export class NotificationsService extends SubscriptionService<NotificationIssueI
         {
           caption: '#LDS#View',
           action: () => this.router.navigate(['/journal']),
-        }
+        },
       );
     } else {
       this.remove(type);
@@ -102,9 +101,9 @@ export class NotificationsService extends SubscriptionService<NotificationIssueI
     title: string,
     text: TextContainer,
     icon: string,
-    action?: IssueAction
+    action?: IssueAction,
   ): Promise<void> {
-    let issueItem: NotificationIssueItem = this.itemsInternal.find((item) => item.type === notificationType);
+    let issueItem = this.itemsInternal.find((item) => item.type === notificationType);
 
     if (issueItem == null) {
       issueItem = new NotificationIssueItem();
@@ -115,14 +114,18 @@ export class NotificationsService extends SubscriptionService<NotificationIssueI
     }
 
     issueItem.title = await this.translate.get(title).toPromise();
-    issueItem.action.caption = await this.translate.get(action.caption).toPromise();
+    if (issueItem.action && action) {
+      issueItem.action.caption = await this.translate.get(action.caption).toPromise();
+    }
     const tranlatedKey = await this.translate.get(text.key).toPromise();
     // workaround, weil er aus text.parameters[0], text.parameters[1] aus irgendeinem Grund "text.parameters[0], text.parameters[1]" macht
-    issueItem.text = this.ldsreplace.transform(
-      tranlatedKey,
-      text.parameters?.length > 0 ? text.parameters[0] : '',
-      text.parameters?.length > 1 ? text.parameters[1] : ''
-    );
+    if (text.parameters) {
+      issueItem.text = this.ldsreplace.transform(
+        tranlatedKey,
+        text.parameters.length > 0 ? text.parameters[0] : '',
+        text.parameters.length > 1 ? text.parameters[1] : '',
+      );
+    }
   }
 
   private remove(type: NotificationIssueType): void {

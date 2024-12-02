@@ -1,8 +1,4 @@
-# Adding a menu to the Portal
-
-In the previous example, we added a tile component to the dashboard to block a user's account.
-
-In this example, we want to add a new item to the portal main menu to achieve the same functionality.
+# Adding a menu to the Web Portal
 
 The main menu (projects\qbm\src\lib\menu) is a central component, just like the dashboard.
 
@@ -10,15 +6,25 @@ The main menu (projects\qbm\src\lib\menu) is a central component, just like the 
 
 New menus and menu items are dynamically added to the main menu via a plugin system.
 
-Before we implement the menu, we have to add a route that navigates to the (currently empty) component where you can select the identity you want to block.
+## Adding a "Block Identity" menu to the menu bar
 
-We will name the new component SelectIdentityComponent.
+This example is based on the following fictitious scenario:\
+There is a security breach and an administrator wants to block the account of the affected identity using a menu in the menu bar.
 
-![Select Identity Component](../../assets/images/menu/2-example-folder.png)
+### Creating a "Select Identity" component
 
-First we add a new entry to the routing table.
+At first, the `Select Identity` component has to be created in which the identity that should be blocked can be selected.
 
-> Code
+The component consists of the following files:
+- `select-identity.component.html`
+- `select-identity.component.scss`
+- `select-identity.component.ts`
+
+### Routing to the "Select Identity" component
+
+Before the menu is implemented, a route must be added that leads to the `Select Identity` component.
+
+A new entry to the routing table must be added.
 
 ``` ts
 const routes: Routes = [
@@ -30,9 +36,7 @@ const routes: Routes = [
 ];
 ```
 
-Now we can add the new menu with the associated route. Again, as in the previous example, this can be done in the init service (init-service.ts). In the code snippet below, only the part where the menu is added is shown, the rest is hidden.
-
-> Code
+The new menu with the associated route can now be added. This can be done in the `init` service (init-service.ts). In the code snippet below, only the part where the menu is added is shown.
 
 ``` ts
 :
@@ -74,14 +78,12 @@ export class InitService {
 }
 ```
 
-You can add menus and menu items via the menu service (projects\qbm\src\lib\menu). The structure of the menu and the menu items is defined by the menu-item.interface.ts file. The most important properties are "id" and "title". If you add a menu item, the "route" property  specifies the route of the component to be displayed.
+Menus and menu items can be added via the `menu` service (projects\qbm\src\lib\menu). The structure of the menu and the menu items is defined by the `menu-item.interface.ts` file. The most important properties are `id` and `title`. If a menu item is added, the `route` property specifies the route of the component to be displayed.
 
-Here is an extract of the file.
-
-> Code
+Extract of the file:
 
 ``` ts
-import { ProjectConfig } from 'imx-api-qbm';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
 /** Represents a single menu item. */
@@ -90,7 +92,7 @@ export interface MenuItem {
   readonly id?: string;
 
   /** Display name. */
-  readonly title: string;
+  readonly title?: string;
 
   /** Returns a descriptive text, intended for tooltips. */
   readonly description?: string;

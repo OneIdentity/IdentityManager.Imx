@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import {
+  AboutService,
   AppConfigService,
   BusyIndicatorModule,
   CdrModule,
@@ -38,16 +39,25 @@ import {
   DataTableModule,
   DataTilesModule,
   DataTreeModule,
+  DataViewModule,
   FkAdvancedPickerModule,
   LdsReplaceModule,
+  MetadataService,
   QbmModule,
+  RouteGuardService,
+  SqlWizardApiService,
   TileModule,
 } from 'qbm';
 
-
+import { RouterModule, Routes } from '@angular/router';
+import { ReCaptchaV3Service, RecaptchaModule } from 'ng-recaptcha-2';
+import { PortalAboutService } from './about/portal-about.service';
+import { FilterSqlWizardService } from './filter-sqlwizard/filter-sqlwizard.service';
+import { PortalMetadataService } from './metadata/portal-metadata.service';
 import { PatternItemService } from './pattern-item-list/pattern-item.service';
 import { PatternItemsModule } from './pattern-item-list/pattern-items.module';
 import { QerService } from './qer.service';
+import { QueueStatusComponent } from './queue/queue-status/queue-status.component';
 import { ServiceItemsModule } from './service-items/service-items.module';
 import { ServiceItemsService } from './service-items/service-items.service';
 import { SettingsComponent } from './settings/settings.component';
@@ -67,14 +77,20 @@ export function initConfig(config: QerService): () => Promise<any> {
     });
 }
 
+const routes: Routes = [
+  {
+    path: 'dashboard',
+    component: StartComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+];
+
 // @dynamic
 @NgModule({
-  declarations: [
-    BusinessOwnerChartSummaryComponent, 
-    StartComponent, 
-    SettingsComponent,
-  ],
+  declarations: [StartComponent, BusinessOwnerChartSummaryComponent, SettingsComponent],
   imports: [
+    RouterModule.forChild(routes),
     CommonModule,
     QbmModule,
     CdrModule,
@@ -96,6 +112,9 @@ export function initConfig(config: QerService): () => Promise<any> {
     DataTreeModule,
     ShoppingCartValidationDetailModule,
     FkAdvancedPickerModule,
+    RecaptchaModule,
+    DataViewModule,
+    QueueStatusComponent,
   ],
   providers: [
     {
@@ -104,8 +123,21 @@ export function initConfig(config: QerService): () => Promise<any> {
       deps: [QerService],
       multi: true,
     },
+    {
+      provide: AboutService,
+      useClass: PortalAboutService,
+    },
+    {
+      provide: MetadataService,
+      useClass: PortalMetadataService,
+    },
+    {
+      provide: SqlWizardApiService,
+      useClass: FilterSqlWizardService,
+    },
     ServiceItemsService,
     PatternItemService,
+    ReCaptchaV3Service,
   ],
 })
 export class QerModule {
@@ -113,7 +145,7 @@ export class QerModule {
     logger: ClassloggerService,
     private readonly config: AppConfigService,
     @Inject('environment') private readonly environment,
-    @Inject('appConfigJson') private readonly appConfigJson
+    @Inject('appConfigJson') private readonly appConfigJson,
   ) {
     logger.info(this, '▶️ QerModule loaded');
   }

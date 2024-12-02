@@ -1,29 +1,52 @@
-<div class="imx-content">
+<div eui-sidesheet-content>
   <div class="imx-heading-wrapper">
-    <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <eui-alert
+      *ngIf="showHelperAlert"
+      type="info"
+      [condensed]="true"
+      [colored]="true"
+      [dismissable]="true"
+      (dismissed)="onHelperDismissed()"
+    >
       <mat-spinner *ngIf="pendingAttestations?.loading" diameter="30"></mat-spinner>
-      <div *ngIf="!pendingAttestations?.loading && pendingAttestations?.infoItems" class="imx-helper-alert-infotext">
+      <div *ngIf="!pendingAttestations?.loading && pendingAttestations?.infoItems" class="imx-alert-flex-column">
         <span *ngFor="let infoItem of pendingAttestations.infoItems">
-          {{ infoItem.description | translate | ldsReplace : infoItem.value }}
+          {{ infoItem.description | translate | ldsReplace: infoItem.value }}
         </span>
       </div>
     </eui-alert>
   </div>
   <mat-card class="imx-attestation-history-container">
-    <imx-attestation-history [parameters]="parameters" [withAssignmentAnalysis]="withAssignmentAnalysis" (selectionChanged)="onSelectionChanged($event)" [itemStatus]="itemStatus"> </imx-attestation-history>
+    <imx-attestation-history
+      [parameters]="parameters"
+      [withAssignmentAnalysis]="withAssignmentAnalysis"
+      (selectionChanged)="onSelectionChanged($event)"
+      [itemStatus]="itemStatus"
+    >
+    </imx-attestation-history>
   </mat-card>
 </div>
 
-<imx-selected-elements [selectedElements]="selectedCases"></imx-selected-elements>
-
 <div eui-sidesheet-actions>
-  <div class="imx-menu-spacer"></div>
-  <button data-imx-identifier="attestation-deny-selected-button" mat-flat-button color="warn" (click)="attestationAction.deny(selectedCases)" [disabled]="!canDecide">
-    <mat-icon>not_interested</mat-icon>
+  <imx-selected-elements class="justify-start" [selectedElements]="selectedCases"></imx-selected-elements>
+  <button
+    data-imx-identifier="attestation-deny-selected-button"
+    mat-flat-button
+    color="warn"
+    (click)="attestationAction.deny(selectedCases)"
+    [disabled]="!canDecide"
+  >
+    <eui-icon icon="ignore" size="24px"></eui-icon>
     <span translate>#LDS#Deny</span>
   </button>
-  <button data-imx-identifier="attestation-approve-selected-button" mat-flat-button color="primary" (click)="attestationAction.approve(selectedCases)" [disabled]="!canDecide">
-    <eui-icon icon="check"></eui-icon>
+  <button
+    data-imx-identifier="attestation-approve-selected-button"
+    mat-flat-button
+    color="primary"
+    (click)="attestationAction.approve(selectedCases)"
+    [disabled]="!canDecide"
+  >
+    <eui-icon icon="check" size="24px"></eui-icon>
     <span translate>#LDS#Approve</span>
   </button>
 </div>

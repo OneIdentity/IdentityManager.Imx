@@ -1,0 +1,44 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+/* Elemental UI */
+
+.eui-badge {
+  vertical-align: middle;
+}
+
+.eui-badge .eui-badge-content {
+  font-size: 12px;
+  line-height: 12px;
+}
+/* Angular Material */
+
+/* Imx */
+.imx-badge {
+  &-gray {
+    background-color: $color-gray-60;
+  }
+}
+
+.mat-mdc-table {
+  .mat-mdc-cell {
+    .eui-badge {
+      .eui-badge-content {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */
+
+/* Dark theme + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx-badge {
+    &-gray {
+      background-color: $color-gray-40;
+    }
+  }
+}

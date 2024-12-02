@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DataModelFilter, DataModelFilterOption } from 'imx-qbm-dbts';
+import { DataModelFilter, DataModelFilterOption } from '@imx-modules/imx-qbm-dbts';
 
 export interface DataSourceToolbarFilter extends DataModelFilter {
   /**
@@ -51,11 +51,11 @@ export interface DataSourceToolbarSelectedFilter {
   /**
    * The option that was selected
    */
-  selectedOption: DataModelFilterOptionExtended;
+  selectedOption?: DataModelFilterOptionExtended;
   /**
    * The filter the value was selected for
    */
-  filter: DataSourceToolbarFilter;
+  filter?: DataSourceToolbarFilter;
 
   /**
    * Indicates if the selected filter is not part of the standard datamodel filters

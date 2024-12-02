@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { PortalEntitlement } from 'imx-api-aob';
+import { PortalEntitlement } from '@imx-modules/imx-api-aob';
 
 export class EntitlementFilter {
   public notPublished(entitlement: PortalEntitlement): boolean {

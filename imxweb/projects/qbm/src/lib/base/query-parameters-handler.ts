@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,22 @@
  *
  */
 
-import { ActivatedRouteSnapshot, ParamMap, DefaultUrlSerializer } from '@angular/router';
+import { ActivatedRouteSnapshot, DefaultUrlSerializer, ParamMap } from '@angular/router';
 
 export class QueryParametersHandler {
-  public get path(): string { return this.lastPath || this.route?.routeConfig?.path; }
+  public get path(): string {
+    return this.lastPath || (this.route?.routeConfig?.path ?? '');
+  }
 
   private readonly urlSerializer = new DefaultUrlSerializer();
   private readonly queryParametersCollection: ParamMap[] = [];
   private readonly lastPath: string;
 
-  constructor(search?: string, private readonly route?: ActivatedRouteSnapshot, lastUrl?: string) {
+  constructor(
+    search?: string,
+    private readonly route?: ActivatedRouteSnapshot,
+    lastUrl?: string,
+  ) {
     if (lastUrl) {
       const lastLocation = lastUrl.split('?');
 
@@ -50,12 +56,12 @@ export class QueryParametersHandler {
     }
   }
 
-  public GetQueryParameters(filter: (name: string) => boolean = null): { [key: string]: any } {
+  public GetQueryParameters(filter: (name: string) => boolean = null as any): { [key: string]: any } | undefined {
     const outparams: { [id: string]: any } = {};
-    this.queryParametersCollection.forEach(params => {
+    this.queryParametersCollection.forEach((params) => {
       if (params.keys) {
         params.keys
-          .filter(name => filter == null || filter(name))
+          .filter((name) => filter == null || filter(name))
           .forEach((name: string) => {
             outparams[name] = params.get(name);
           });

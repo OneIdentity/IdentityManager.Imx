@@ -16,7 +16,7 @@ The [`app.service.ts`](./src/app/app.service.ts) service is responsible for init
 
 The [`appconfig.json`](./src/appconfig.json) file sets two default routes:
 
-``` json
+```json
   "routeConfig": {
     "login": "",
     "start": "start"

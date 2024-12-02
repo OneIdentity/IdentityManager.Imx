@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,27 +24,32 @@
  *
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { AuthenticationService } from 'qbm';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { AuthenticationService, DataViewSource } from 'qbm';
 import { AttestationHistoryActionService } from './attestation-history-action.service';
 import { AttestationHistoryCase } from './attestation-history-case';
+import { AttestationHistoryComponent } from './attestation-history.component';
 
 @Component({
   selector: 'imx-attestation-history-wrapper',
   templateUrl: './attestation-history-wrapper.component.html',
-  styleUrls: ['./attestation-history-wrapper.component.scss']
+  styleUrls: ['./attestation-history-wrapper.component.scss'],
 })
-export class AttestationHistoryWrapperComponent implements OnDestroy {
+export class AttestationHistoryWrapperComponent implements OnDestroy, AfterViewInit {
+  @ViewChild('attestationHistoryComponent', { static: false }) public attestationHistoryComponent: AttestationHistoryComponent;
+  public dataSource: DataViewSource<AttestationHistoryCase>;
   public get canPerformActions(): boolean {
-    return this.selectedCases.length > 0 && (
-      this.canRecallDecision
-      || this.canWithdrawDelegation
-    );
+    return this.selectedCases.length > 0 && (this.canRecallDecision || this.canWithdrawDelegation);
   }
-  public get canWithdrawDelegation(): boolean { return this.selectedCases.every(item => item.canWithdrawDelegation(this.userUid)); }
-  public get canRecallDecision(): boolean { return this.selectedCases.every(item => item.canRecallDecision); }
+  public get canWithdrawDelegation(): boolean {
+    return this.selectedCases.every((item) => item.canWithdrawDelegation(this.userUid));
+  }
+  public get canRecallDecision(): boolean {
+    return this.selectedCases.every((item) => item.canRecallDecision);
+  }
 
   public selectedCases: AttestationHistoryCase[] = [];
 
@@ -52,15 +57,24 @@ export class AttestationHistoryWrapperComponent implements OnDestroy {
 
   private readonly subscriptions: Subscription[] = [];
 
-  constructor(public readonly attestationAction: AttestationHistoryActionService, authentication: AuthenticationService) {
-    this.subscriptions.push(authentication.onSessionResponse?.subscribe(sessionState => this.userUid = sessionState?.UserUid));
+  constructor(
+    public readonly attestationAction: AttestationHistoryActionService,
+    authentication: AuthenticationService,
+    public changeDetectionRef: ChangeDetectorRef,
+  ) {
+    this.subscriptions.push(authentication.onSessionResponse?.subscribe((sessionState) => (this.userUid = sessionState?.UserUid || '')));
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  public onSelectionChanged(items: AttestationHistoryCase[]): void {
-    this.selectedCases = items;
+  ngAfterViewInit(): void {
+    this.dataSource = this.attestationHistoryComponent?.dataSource;
+    this.changeDetectionRef.detectChanges();
+  }
+
+  public onSelectionChanged(items: TypedEntity[]): void {
+    this.selectedCases = items as AttestationHistoryCase[];
   }
 }

@@ -1,0 +1,65 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "aad",
+  "sourceRoot": "projects/aad/src",
+  "implicitDependencies": ["qer"],
+  "projectType": "library",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/aad/tsconfig.lib.json",
+        "project": "projects/aad/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/aad/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/aad/tsconfig.lib.json"
+        },
+        "dynamic": {
+          "project": "projects/aad/ng-package.dynamic.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/aad/tsconfig.lib.json"
+        },
+        "remote-cornydqs": {
+          "tsConfig": "projects/aad/tsconfig.lib.json"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/aad"]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/aad/src/test.ts",
+        "tsConfig": "projects/aad/tsconfig.spec.json",
+        "karmaConfig": "projects/aad/karma.conf.js",
+        "codeCoverageExclude": ["projects/o3t/src/**/test/*"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/aad/tsconfig.lib.json", "projects/aad/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

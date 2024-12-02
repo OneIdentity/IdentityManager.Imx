@@ -8,53 +8,34 @@
     display: flex;
     flex-direction: column;
   }
+  mat-card {
+    @include eui-elevation-1;
+  }
 
   .block-details {
     margin-bottom: 20px;
-    @include EUI-Elevation-1;
 
-    & > .cdr-list  {
+    & > .cdr-list {
       display: flex;
       align-items: flex-start;
 
       imx-cdr-editor:not(:first-child) {
-        padding-left: 16px
+        padding-left: 16px;
       }
 
       imx-cdr-editor:not(:last-child) {
-        padding-right: 16px
+        padding-right: 16px;
       }
     }
   }
 
-  .history-chart-container {
-    display: flex;
-    flex-grow: 1;
-    @include EUI-Elevation-1;
-  }
-
-  .history-chart {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .chart-wrapper {
-    height: 100%;
-  }
-
-  .imx-no-history {
+  .imx-no-results {
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    eui-icon {
-      font-size: 100px;
-    }
 
     p {
       margin: 0;
@@ -65,19 +46,11 @@
 
 // Theming
 :host {
-  .block-details, .history-chart-container {
-    border: 1px solid $color-gray-10;
-  }
-
   imx-cdr-editor:not(:last-child) {
     border-right: 1px solid $color-gray-10;
   }
 
-  .imx-no-history {
-    eui-icon {
-      color: $color-gray-20;
-    }
-
+  .imx-no-results {
     p {
       color: $color-gray-40;
     }
@@ -86,19 +59,11 @@
 
 .eui-dark-theme {
   :host {
-    .block-details, .history-chart-container {
-      border: 1px solid $color-gray-50;
-    }
-
     imx-cdr-editor:not(:last-child) {
       border-right: 1px solid $color-gray-60;
     }
 
-    .imx-no-history {
-      eui-icon {
-        color: $color-gray-30;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-50;
       }
@@ -108,19 +73,11 @@
 
 .eui-contrast-theme {
   :host {
-    .block-details, .history-chart-container {
-      border: 1px solid $color-gray-70;
-    }
-
     imx-cdr-editor:not(:last-child) {
       border-right: 1px solid $color-gray-80;
     }
 
-    .imx-no-history {
-      eui-icon {
-        color: $color-gray-10;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-70;
       }

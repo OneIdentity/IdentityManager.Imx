@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,10 +32,10 @@ export abstract class ImxDataSource<T> extends DataSource<T> {
   public data: T[];
   public expandableData: ImxExpandableItem<T>[];
 
-  public hasChildrenProvider: ((data: T) => boolean);
+  public hasChildrenProvider: (data: T) => boolean;
 
-  public itemsProvider: (() => Promise<T[]>);
-  public childItemsProvider: ((item: T) => Promise<T[]>);
+  public itemsProvider: () => Promise<T[]>;
+  public childItemsProvider: (item: T) => Promise<T[]>;
 
   private rootItem: ImxExpandableItem<T>;
 
@@ -53,8 +53,8 @@ export abstract class ImxDataSource<T> extends DataSource<T> {
       throw new Error('The accessor "itemsProvider" is undefined ');
     }
     const items = this.itemsProvider();
-    items.then(elements => {
-      const rows = this.getRows(elements, null,  1 );
+    items.then((elements) => {
+      const rows = this.getRows(elements, null, 1);
       this.data = elements;
       this.expandableData = rows;
       this.itemCount = elements.length;
@@ -71,15 +71,15 @@ export abstract class ImxDataSource<T> extends DataSource<T> {
     }
 
     const items = this.childItemsProvider(parent.data);
-    items.then(elements => {
+    items.then((elements) => {
       const newRows = this.getRows(elements, parent, parent.level + 1);
       const newRowSet: ImxExpandableItem<T>[] = [];
-      this.shownItems.forEach(element => {
+      this.shownItems.forEach((element) => {
         if (element !== parent) {
           newRowSet.push(element);
         } else {
           newRowSet.push(element);
-          newRows.forEach(ele => {
+          newRows.forEach((ele) => {
             newRowSet.push(ele);
             if (expand) {
               ele.isExpanded = true;
@@ -96,7 +96,7 @@ export abstract class ImxDataSource<T> extends DataSource<T> {
   public RemoveChildItems(parent: ImxExpandableItem<T>) {
     const newRowSet: ImxExpandableItem<T>[] = [];
 
-    this.shownItems.forEach(element => {
+    this.shownItems.forEach((element) => {
       if (!this.ElementHasParent(element, parent)) {
         newRowSet.push(element);
       }
@@ -107,21 +107,27 @@ export abstract class ImxDataSource<T> extends DataSource<T> {
   }
 
   public ExpandRoot(): any {
-    const root = this.shownItems.find(el => el.isRoot);
+    const root = this.shownItems.find((el) => el.isRoot);
+    if (root == null) {
+      return;
+    }
     root.isExpanded = true;
     this.shownItems.push(new ImxExpandableItem<T>(root.data, root, 1));
     this._dataSubject.next(this.shownItems);
   }
 
   public CollapseRoot(): any {
-    const root = this.shownItems.find(el => el.isRoot);
+    const root = this.shownItems.find((el) => el.isRoot);
+    if (root == null) {
+      return;
+    }
     root.isExpanded = false;
     this.shownItems = [root];
     this._dataSubject.next(this.shownItems);
   }
 
   public ExpandAll(): void {
-    this.shownItems.forEach(el => {
+    this.shownItems.forEach((el) => {
       if (!el.isExpanded) {
         el.isExpanded = true;
         this.LoadChildItems(el, true);
@@ -130,48 +136,57 @@ export abstract class ImxDataSource<T> extends DataSource<T> {
   }
 
   public ElementHasParent(element: ImxExpandableItem<T>, parent: ImxExpandableItem<T>): boolean {
-    if (element.parent === parent) { return true; }
+    if (element.parent === parent) {
+      return true;
+    }
 
     const newElemen = element.parent;
     return newElemen && newElemen != null ? this.ElementHasParent(newElemen, parent) : false;
   }
 
-  public getRows(items: T[], parent: ImxExpandableItem<T>, level: number): ImxExpandableItem<T>[] {
+  public getRows(items: T[], parent: ImxExpandableItem<T> | null, level: number): ImxExpandableItem<T>[] {
     const ret: ImxExpandableItem<T>[] = [];
-    items.forEach(element => {
+    items.forEach((element) => {
       ret.push(new ImxExpandableItem(element, parent, level));
     });
     return ret;
   }
 
   public disconnect(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public connect(): Observable<any> {
-    this.subscriptions.push(this._dataSubject.subscribe(
-      (res: any) => {
+    this.subscriptions.push(
+      this._dataSubject.subscribe((res: any) => {
         this.data = res;
-      }
-    ));
+      }),
+    );
     return this._dataSubject;
   }
 
   public SetRoot(specialElement: T) {
-    if (!specialElement) { return; }
+    if (!specialElement) {
+      return;
+    }
     this.shownItems = [];
     this.rootItem = new ImxExpandableItem<T>(specialElement, null, 0);
     this.rootItem.isRoot = true;
     this.shownItems.push(this.rootItem);
-    const root = this.expandableData.find(el => el.data === specialElement);
-    this.shownItems.push(root);
+    const root = this.expandableData.find((el) => el.data === specialElement);
+    if (root != null) {
+      this.shownItems.push(root);
+    }
     this._dataSubject.next(this.shownItems);
   }
 }
 
 export class ImxExpandableItem<T> {
-
   public isExpanded = false;
   public isRoot = false;
-  constructor(public data: T, public parent: ImxExpandableItem<T>, public level: number) { }
+  constructor(
+    public data: T,
+    public parent: ImxExpandableItem<T> | null,
+    public level: number,
+  ) {}
 }

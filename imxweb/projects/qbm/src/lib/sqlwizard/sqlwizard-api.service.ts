@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,9 @@
  *
  */
 
-import { CollectionLoadParameters, EntityCollectionData, FilterProperty } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, FilterProperty } from '@imx-modules/imx-qbm-dbts';
 
 export abstract class SqlWizardApiService {
-
   public abstract getFilterProperties(table: string): Promise<FilterProperty[]>;
 
   public abstract getCandidates(parentTable: string, options?: CollectionLoadParameters): Promise<EntityCollectionData>;

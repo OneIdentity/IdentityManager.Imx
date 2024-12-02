@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -100,7 +100,7 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
               validators.push(Validators.required);
             }
             this.control.setValidators(validators);
-          })
+          }),
         );
       }
 
@@ -113,7 +113,7 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
             this.control.setValue(this.columnContainer.value, { emitEvent: false });
           }
           this.valueHasChanged.emit({ value: this.control.value });
-        })
+        }),
       );
 
       this.control.setValidators(validators);

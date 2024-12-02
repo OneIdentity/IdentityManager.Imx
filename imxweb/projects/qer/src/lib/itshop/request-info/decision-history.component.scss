@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   display: flex;
@@ -7,7 +7,7 @@
 }
 
 .chief-approval-badge {
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
 }
 
 .imx-reason {
@@ -25,7 +25,7 @@
   letter-spacing: 0.1em;
 }
 
-.mat-card-title {
+.mat-mdc-card-title {
   margin-bottom: 15px;
   :first-child {
     font-weight: bold;
@@ -47,7 +47,7 @@ li.imx-event::before {
   background-color: $white;
   height: 24px;
   width: 28px;
-  content: "";
+  content: '';
   float: left;
   margin-top: -2px;
 }
@@ -61,7 +61,7 @@ li.imx-event.imx-positive::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $aspen-green;
-  content: "\e049";
+  content: '\e049';
 }
 
 li.imx-event.imx-negative {
@@ -73,7 +73,7 @@ li.imx-event.imx-negative::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $phoenix-red;
-  content: "\e05c";
+  content: '\e05c';
 }
 
 li.imx-event.imx-question {
@@ -85,7 +85,7 @@ li.imx-event.imx-question::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $iris-blue;
-  content: "\e009";
+  content: '\e009';
 }
 
 li.imx-event.imx-info {
@@ -97,7 +97,7 @@ li.imx-event.imx-info::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $iris-blue;
-  content: "\e010";
+  content: '\e010';
 }
 
 li.imx-event.imx-pending {
@@ -109,19 +109,18 @@ li.imx-event.imx-pending::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $black-b;
-  content: "\e009";
+  content: '\e009';
 }
 
-.mat-card-header {
-  margin-left: -16px;
+.mat-mdc-card-header {
   margin-bottom: 10px;
 
-  .mat-card-title {
+  .mat-mdc-card-title {
     font-size: 1.05em;
     margin-bottom: 0;
   }
 
-  .mat-card-subtitle.imx-approveHistory-pwodecisionstep {
+  .mat-mdc-card-subtitle.imx-approveHistory-pwodecisionstep {
     margin: 5px 0;
   }
 }
@@ -149,10 +148,10 @@ div[step] {
 }
 div[step-caption]{
   margin-bottom: 10px;
-  span[caption]{
+  span[caption] {
     font-weight: 600;
     font-size: 16px;
- }
+  }
 }
 
 div[approver] {
@@ -161,7 +160,12 @@ div[approver] {
 
 .eui-dark-theme {
   :host {
-    li.imx-event.imx-info::before , li.imx-event.imx-pending::before, li.imx-event.imx-question::before, li.imx-event.imx-positive::before , li.imx-event.imx-negative::before, li.imx-event.imx-info::before{
+    li.imx-event.imx-info::before,
+    li.imx-event.imx-pending::before,
+    li.imx-event.imx-question::before,
+    li.imx-event.imx-positive::before,
+    li.imx-event.imx-negative::before,
+    li.imx-event.imx-info::before {
       background-color: $color-gray-70;
     }
   }
@@ -169,7 +173,12 @@ div[approver] {
 
 .eui-contrast-theme {
   :host {
-    li.imx-event.imx-info::before , li.imx-event.imx-pending::before, li.imx-event.imx-question::before, li.imx-event.imx-positive::before , li.imx-event.imx-negative::before, li.imx-event.imx-info::before{
+    li.imx-event.imx-info::before,
+    li.imx-event.imx-pending::before,
+    li.imx-event.imx-question::before,
+    li.imx-event.imx-positive::before,
+    li.imx-event.imx-negative::before,
+    li.imx-event.imx-info::before {
       background-color: $color-gray-90;
     }
   }

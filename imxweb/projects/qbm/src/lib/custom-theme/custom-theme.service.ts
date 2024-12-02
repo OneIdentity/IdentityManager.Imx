@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,14 @@
 
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { CustomThemeInfo } from 'imx-api-qbm';
 import { AppConfigService } from '../appConfig/appConfig.service';
 
 @Injectable({ providedIn: 'root' })
 export class CustomThemeService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private readonly config: AppConfigService
-  ) { }
+    private readonly config: AppConfigService,
+  ) {}
 
   public initialize(): void {
     this.config.initializedSubject.subscribe(async () => {
@@ -50,6 +49,9 @@ export class CustomThemeService {
     const head = this.document.getElementsByTagName('head')[0];
 
     for (var theme of customThemes) {
+      if (!theme.Urls) {
+        continue;
+      }
       for (var url of theme.Urls) {
         const style = this.document.createElement('link');
         style.rel = 'stylesheet';
@@ -58,16 +60,16 @@ export class CustomThemeService {
       }
     }
 
-    this._customThemes = customThemes.map(m => {
+    this._customThemes = customThemes.map((m) => {
       // map .NET types to the expected type for the theme switcher
       return {
-        name: m.DisplayName,
-        class: m.Class
+        name: m.DisplayName ?? '',
+        class: m.Class ?? '',
       };
     });
   }
 
-  private _customThemes: { name: string, class: string }[] = [];
+  private _customThemes: { name: string; class: string }[] = [];
 
   public get customThemes() {
     return this._customThemes;

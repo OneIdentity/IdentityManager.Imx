@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,14 @@
 
 import { ChartOptions } from 'billboard.js';
 
-import { ChartDto } from 'imx-api-aob';
+import { ChartDto } from '@imx-modules/imx-api-aob';
 
 export interface KpiData {
-    index: number;
-    chartData: ChartDto;
-    chartDetails?: ChartOptions;
-    currentDataValue?: number;
-    pieChart?: ChartOptions;
-    calculated: boolean;
-    names: string[];
+  index: number;
+  chartData: ChartDto;
+  chartDetails?: ChartOptions;
+  currentDataValue?: number;
+  pieChart?: ChartOptions;
+  calculated: boolean;
+  names: string[];
 }

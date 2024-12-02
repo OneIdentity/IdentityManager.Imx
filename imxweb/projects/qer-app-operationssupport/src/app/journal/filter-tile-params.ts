@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { FilterData } from 'imx-qbm-dbts';
+import { FilterData } from '@imx-modules/imx-qbm-dbts';
 
 export class FilterTileParams {
   public caption: string;

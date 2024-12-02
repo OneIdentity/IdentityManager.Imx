@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,44 +24,54 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { PwoExtendedData, RecommendationEnum, ViewConfigData } from 'imx-api-qer';
-import { ValType, ExtendedTypedEntityCollection, TypedEntity, EntitySchema, DataModel, IClientProperty } from 'imx-qbm-dbts';
+import { PwoExtendedData, RecommendationEnum, ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
-  DataSourceToolbarSettings,
-  ClassloggerService,
+  CollectionLoadParameters,
+  DataModel,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import {
   AuthenticationService,
-  DataTableComponent,
-  SettingsService,
-  IExtension,
-  ExtService,
-  buildAdditionalElementsString,
-  DataSourceToolbarViewConfig,
-  ClientPropertyForTableColumns,
   BusyService,
+  calculateSidesheetWidth,
+  ClassloggerService,
+  ClientPropertyForTableColumns,
+  DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
+  ExtService,
+  IExtension,
+  ISessionState,
+  SettingsService,
 } from 'qbm';
-import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
-import { Approval } from './approval';
-import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
-import { ApprovalsService } from './approvals.service';
-import { WorkflowActionService } from './workflow-action/workflow-action.service';
-import { ApprovalsLoadParameters } from './approvals-load-parameters';
-import { ApprovalsDecision } from './approvals-decision.enum';
-import { UserModelService } from '../user/user-model.service';
-import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
+import { UserModelService } from '../user/user-model.service';
+import { Approval } from './approval';
+import { ApprovalsDecision } from './approvals-decision.enum';
+import { ApprovalsLoadParameters } from './approvals-load-parameters';
+import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
+import { ApprovalsService } from './approvals.service';
+import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
+import { WorkflowActionService } from './workflow-action/workflow-action.service';
 
-import { ViewConfigService } from '../view-config/view-config.service';
 import { isCancelPwO } from '../admin/qer-permissions-helper';
+import { ViewConfigService } from '../view-config/view-config.service';
 @Component({
   templateUrl: './approvals-table.component.html',
   selector: 'imx-approvals-table',
   styleUrls: ['./approvals-table.component.scss'],
+  providers: [DataViewSource],
 })
 export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public recApprove = RecommendationEnum.Approve;
@@ -69,39 +79,42 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
   private isChiefApprover = false;
 
-  public get tableReady() { return this.countTableLoading == 0; }
-  private countTableLoading = 0;
-
   @Input() public params: Params = {};
+  @Input() hideToolbar = true;
   public isUserEscalationApprover = false;
 
+  public abortController: AbortController = new AbortController();
+
   public get canWithdrawAdditionalApprover(): boolean {
-    return this.selectedItems.every((item) => item.canWithdrawAdditionalApprover(this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canWithdrawAdditionalApprover(this.currentUserId));
   }
   public get canAddApprover(): boolean {
-    return this.selectedItems.every((item) => item.canAddApprover(this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canAddApprover(this.currentUserId));
   }
   public get canDelegateDecision(): boolean {
-    return this.selectedItems.every((item) => item.canDelegateDecision(this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canDelegateDecision(this.currentUserId));
   }
   public get canDenyApproval(): boolean {
-    return this.selectedItems.every((item) => item.canDenyApproval(this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canDenyApproval(this.currentUserId));
   }
   public get canEscalateDecision(): boolean {
-    return this.selectedItems.every((item) => item.canEscalateDecision);
+    return this.selectedItems.every((item: Approval) => item.canEscalateDecision);
   }
   public get canRerouteDecision(): boolean {
-    return this.selectedItems.every((item) => item.canRerouteDecision(this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canRerouteDecision(this.currentUserId));
   }
 
-  public get canResetReservation(): boolean{
-    return this.selectedItems.every((item)=> item.canResetReservation(this.isChiefApprover));
+  public get canResetReservation(): boolean {
+    return this.selectedItems.every((item: Approval) => item.canResetReservation(this.isChiefApprover));
   }
 
-  public get canRecallInquiry(): boolean{
-    return this.selectedItems.every((item)=>  item.canRecallInquiry);
+  public get canSendInquiry(): boolean {
+    return this.selectedItems.every((item: Approval) => item.CanAskForHelp.value);
   }
 
+  public get canRecallInquiry(): boolean {
+    return this.selectedItems.every((item: Approval) => item.canRecallInquiry);
+  }
 
   public get canPerformActions(): boolean {
     return (
@@ -112,21 +125,18 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         this.canDenyApproval ||
         this.canRerouteDecision ||
         this.canEscalateDecision ||
-        this.canRecallInquiry || this.canResetReservation)
+        this.canSendInquiry ||
+        this.canRecallInquiry ||
+        this.canResetReservation)
     );
   }
 
   public currentUserId: string;
-  public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchema: EntitySchema;
   public canBeDelegated = false;
   public selectedItems: Approval[] = [];
-  public approvalsCollection: ExtendedTypedEntityCollection<Approval, PwoExtendedData>;
-  public hasData = false;
 
   public busyService = new BusyService();
-
-  @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
 
   private navigationState: ApprovalsLoadParameters;
   private approvalsDecision: ApprovalsDecision = ApprovalsDecision.none;
@@ -151,7 +161,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     private readonly userModelService: UserModelService,
     authentication: AuthenticationService,
     private readonly ext: ExtService,
-    private readonly permissions : QerPermissionsService,
+    private readonly permissions: QerPermissionsService,
+    public dataSource: DataViewSource<Approval, PwoExtendedData | undefined>,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
@@ -164,27 +175,27 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         ColumnName: 'decision',
         Type: ValType.String,
         afterAdditionals: true,
-        untranslatedDisplay: '#LDS#Approval decision'
+        untranslatedDisplay: '#LDS#Approval decision',
       },
       {
         ColumnName: 'recommendations',
         Type: ValType.String,
-        untranslatedDisplay: '#LDS#Recommendation'
+        untranslatedDisplay: '#LDS#Recommendation',
       },
     ];
     this.subscriptions.push(
       this.actionService.applied.subscribe(async () => {
-        this.getData();
-        this.table.clearSelection();
-      })
+        this.dataSource.selection.clear();
+        this.dataSource.updateState();
+      }),
     );
     this.subscriptions.push(
-      authentication.onSessionResponse.subscribe((state) => {
-        this.currentUserId = state.UserUid;
+      authentication.onSessionResponse.subscribe((state: ISessionState) => {
+        this.currentUserId = state.UserUid || '';
         if (state.IsLoggedIn) {
           this.viewEscalation = false;
         }
-      })
+      }),
     );
     this.userModelService.getFeatures().then((featureInfo) => {
       this.isUserEscalationApprover = isCancelPwO(featureInfo.Features || []);
@@ -193,8 +204,11 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     this.extensions = this.ext.Registry[this.UID_ComplianceRuleId];
 
     if (this.extensions && this.extensions.length > 0) {
-      this.extensions[0].subject.subscribe((dstSettings: DataSourceToolbarSettings) => {
-        this.dstSettings = dstSettings;
+      this.extensions[0].subject?.subscribe((dstSettings: DataSourceToolbarSettings) => {
+        this.dataSource.collectionData.update((collectionData) => ({
+          ...collectionData,
+          Data: dstSettings.dataSource?.Data as Approval[],
+        }));
       });
     }
   }
@@ -204,9 +218,20 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      this.dataModel = await this.approvalsService.getApprovalDataModel();
+      this.dataModel = await this.approvalsService.getApprovalDataModel(this.abortController.signal);
       this.isChiefApprover = await this.permissions.isCancelPwO();
-      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
+      if (this.abortController.signal.aborted) {
+        return;
+      }
+      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(
+        this.dataModel,
+        this.viewConfigPath,
+        this.abortController.signal,
+      );
+
+      if (this.abortController.signal.aborted) {
+        return;
+      }
 
       await this.getData();
       this.handleDecision();
@@ -217,6 +242,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.approvalsService.abortCall();
+    this.dataSource?.abortCall();
+    this.abortController.abort();
     // Set service value back to false since the toggle value is stored there
     this.approvalsService.isChiefApproval = false;
     this.subscriptions.forEach((s) => s.unsubscribe());
@@ -225,13 +252,13 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public get viewEscalation(): boolean {
@@ -241,40 +268,56 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     this.approvalsService.isChiefApproval = val;
   }
 
-  public switchEscalation(): Promise<void> {
-    // Set start index to 0 and clear selection before changing
-    const navigationState = {
-      ...this.navigationState,
-      ...{
-        StartIndex: 0,
+  public switchEscalation(): void {
+    this.dataSource.selection.clear();
+    this.dataSource.state.update((state) => ({ ...state, StartIndex: 0 }));
+    this.dataSource.updateState();
+  }
+
+  public getAdditionalText(entity: Approval): string {
+    return (
+      this.dataSource
+        .additionalListColumns()
+        ?.map((elem: IClientProperty) => {
+          return `${elem?.Display || elem?.ColumnName}: ${elem?.ColumnName == null ? '-' : entity.GetEntity().GetColumn(elem.ColumnName).GetDisplayValue() || '-'}`;
+        })
+        .filter((elem) => !!elem)
+        .join('; ') || ''
+    );
+  }
+
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<Approval> = {
+      execute: (
+        params: CollectionLoadParameters,
+        signal: AbortSignal,
+      ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> => {
+        return Promise.resolve(
+          this.approvalsService.get(params, { signal }).then((collectionData) => {
+            if (this.extensions) {
+              const dstSettings: DataSourceToolbarSettings = {
+                dataSource: collectionData,
+                navigationState: this.dataSource.state,
+                entitySchema: this.entitySchema,
+                extendedData: collectionData?.extendedData?.Data,
+              };
+              this.extensions[0].inputData = dstSettings;
+            }
+            return collectionData;
+          }),
+        );
       },
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      exportFunction: this.approvalsService.exportApprovalRequests(this.dataSource.state()),
+      viewConfig: this.viewConfig,
+      highlightEntity: (approval: Approval) => {
+        this.editPwo(approval);
+      },
+      selectionChange: (approval: Approval[]) => this.onSelectionChanged(approval),
     };
-    this.table.clearSelection();
-    return this.getData(navigationState);
-  }
-
-  public getAdditionalText(entity: Approval, additional: IClientProperty[]): string {
-    return buildAdditionalElementsString(entity.GetEntity(), additional);
-  }
-
-  public async getData(parameters?: ApprovalsLoadParameters): Promise<void> {
-    if (parameters) {
-      this.navigationState = parameters;
-    }
-
-    const isBusy = this.busyService.beginBusy();
-
-    try {
-      this.approvalsCollection = await this.approvalsService.get(this.navigationState, {signal: this.approvalsService.abortController.signal});
-      this.hasData = this.approvalsCollection?.totalCount > 0 || (this.navigationState.search ?? '') !== '';
-      this.updateTable();
-
-      if (this.extensions && this.extensions[0]) {
-        this.extensions[0].inputData = this.dstSettings;
-      }
-    } finally {
-      isBusy.endBusy();
-    }
+    this.dataSource.init(dataViewInitParameters);
   }
 
   /**
@@ -289,7 +332,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
         subTitle: pwo.GetEntity().GetDisplay(),
         padding: '0',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'approvals-sidesheet',
         data: {
           pwo,
@@ -301,7 +344,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       .toPromise();
 
     if (doUpdate) {
-      await this.getData();
+      await this.dataSource.updateState();
     }
   }
 
@@ -318,9 +361,9 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         subTitle: pwo.GetEntity().GetDisplay(),
         panelClass: 'imx-sidesheet',
         padding: '0',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'approval-recommendation-sidesheet',
-        data: pwo.pwoData.Recommendation,
+        data: { recommendations: pwo.pwoData.Recommendation },
       })
       .afterClosed()
       .toPromise();
@@ -332,41 +375,9 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onSearch(keywords: string): Promise<void> {
-    const navigationState = {
-      ...this.navigationState,
-      ...{
-        StartIndex: 0,
-        search: keywords,
-      },
-    };
-
-    return this.getData(navigationState);
-  }
-
   public onSelectionChanged(items: Approval[]): void {
     this.logger.trace(this, 'selection changed', items);
     this.selectedItems = items;
-  }
-
-  private updateTable(): void {
-    if (this.approvalsCollection) {
-      const exportMethod = this.approvalsService.exportApprovalRequests(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
-      this.dstSettings = {
-        dataSource: this.approvalsCollection,
-        extendedData: this.approvalsCollection.extendedData.Data,
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayedColumns,
-        dataModel: this.dataModel,
-        viewConfig: this.viewConfig,
-        filters: this.dataModel.Filters,
-        exportMethod
-      };
-    } else {
-      this.dstSettings = undefined;
-    }
   }
 
   private parseParams(): void {
@@ -392,23 +403,19 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   }
 
   private handleDecision(): void {
-    if (
-      this.approvalsDecision === ApprovalsDecision.none ||
-      this.approvalsCollection.Data == null ||
-      this.approvalsCollection.Data.length === 0
-    ) {
+    if (this.approvalsDecision === ApprovalsDecision.none || !!this.dataSource.collectionData()?.Data?.length) {
       return;
     }
 
     switch (this.approvalsDecision) {
       case ApprovalsDecision.approve:
-        this.actionService.approve(this.approvalsCollection.Data);
+        this.actionService.approve(this.dataSource.collectionData()?.Data || []);
         break;
       case ApprovalsDecision.deny:
-        this.actionService.deny(this.approvalsCollection.Data);
+        this.actionService.deny(this.dataSource.collectionData()?.Data || []);
         break;
       case ApprovalsDecision.denydecision:
-        this.actionService.denyDecisions(this.approvalsCollection.Data);
+        this.actionService.denyDecisions(this.dataSource.collectionData()?.Data || []);
         break;
     }
   }

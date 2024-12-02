@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { MenuItem, MenuService } from 'qbm';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
-
   constructor(
     private readonly router: Router,
-    private readonly menuService: MenuService
+    private readonly menuService: MenuService,
   ) {
     this.setupMenu();
   }
@@ -44,42 +43,38 @@ export class InitService {
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (
+        groups.includes('UCI_4_CLOUD_OPERATOR') ||
+        // || groups.includes('UCI_4_CLOUD_AUDITOR')
+        groups.includes('UCI_4_CLOUD_ADMINISTRATOR')
+      ) {
+        items.push({
+          id: 'UCI_PendingOperations',
+          route: 'provisioning',
+          title: '#LDS#Menu Entry Pending provisioning processes',
+          sorting: '30-40',
+        });
+      }
 
-        if (groups.includes('UCI_4_CLOUD_OPERATOR')
-          // || groups.includes('UCI_4_CLOUD_AUDITOR')
-          || groups.includes('UCI_4_CLOUD_ADMINISTRATOR')
-        ) {
-          items.push(
-            {
-              id: 'UCI_PendingOperations',
-              route: 'provisioning',
-              title: '#LDS#Menu Entry Pending provisioning processes',
-              sorting: '30-40',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'OpsWeb_ROOT_Synchronization',
-          title: '#LDS#Synchronization',
-          sorting: '30',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return undefined;
+      }
+      return {
+        id: 'OpsWeb_ROOT_Synchronization',
+        title: '#LDS#Synchronization',
+        sorting: '30',
+        items,
+      };
+    });
   }
 }

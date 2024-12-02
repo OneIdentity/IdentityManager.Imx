@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,31 +24,32 @@
  *
  */
 
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
 import {
-  TypedEntityBuilder,
   CollectionLoadParameters,
-  DisplayColumns,
-  ValType,
-  TypedEntity,
-  IForeignKeyInfo,
-  FilterType,
   CompareOperator,
-  DbObjectKey,
-  DataModelFilter,
-  FilterData,
   DataModel,
-} from 'imx-qbm-dbts';
-import { ClassloggerService } from '../classlogger/classlogger.service';
-import { MetadataService } from '../base/metadata.service';
-import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
-import { CandidateEntity } from './candidate-entity';
-import { DataTableComponent } from '../data-table/data-table.component';
-import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
-import { SettingsService } from '../settings/settings-service';
-import { ClientPropertyForTableColumns } from '../data-source-toolbar/client-property-for-table-columns';
+  DataModelFilter,
+  DbObjectKey,
+  DisplayColumns,
+  EntitySchema,
+  FilterData,
+  FilterType,
+  IForeignKeyInfo,
+  TypedEntity,
+  TypedEntityBuilder,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { BusyService } from '../base/busy.service';
+import { MetadataService } from '../base/metadata.service';
+import { ClassloggerService } from '../classlogger/classlogger.service';
+import { ClientPropertyForTableColumns } from '../data-source-toolbar/client-property-for-table-columns';
+import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { DataTableComponent } from '../data-table/data-table.component';
+import { SettingsService } from '../settings/settings-service';
+import { CandidateEntity } from './candidate-entity';
+import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
 
 @Component({
   selector: 'imx-fk-selector',
@@ -59,7 +60,7 @@ export class FkSelectorComponent implements OnInit {
   public settings: DataSourceToolbarSettings;
   public selectedTable: IForeignKeyInfo;
   public selectedCandidates: TypedEntity[] = [];
-  public preselectedEntities: TypedEntity[];
+  public preselectedEntities: TypedEntity[] | null;
 
   public readonly DisplayColumns = DisplayColumns; // Enables use of this static class in Angular Templates.
 
@@ -72,7 +73,7 @@ export class FkSelectorComponent implements OnInit {
   public busyService = new BusyService();
 
   private readonly builder = new TypedEntityBuilder(CandidateEntity);
-  private readonly entitySchema = CandidateEntity.GetEntitySchema();
+  public entitySchema: EntitySchema;
   private filters: DataModelFilter[];
   private dataModel: DataModel;
 
@@ -88,8 +89,9 @@ export class FkSelectorComponent implements OnInit {
     if (this.data.fkRelations && this.data.fkRelations.length > 0) {
       this.logger.trace(this, 'Pre-select the first candidate table');
       this.selectedTable = this.data.fkRelations.find((fkr) => fkr.TableName === this.data.selectedTableName) || this.data.fkRelations[0];
+      this.entitySchema = CandidateEntity.GetEntitySchema(this.selectedTable.ColumnName, this.selectedTable.TableName);
       this.dataModel = await this.selectedTable.GetDataModel();
-      this.filters = this.dataModel.Filters;
+      this.filters = this.dataModel.Filters ?? [];
     }
 
     if (this.data.fkRelations && this.data.fkRelations.length > 0) {
@@ -225,7 +227,7 @@ export class FkSelectorComponent implements OnInit {
         this.logger.debug(this, 'Getting preselected entities');
 
         for (const key of this.data.idList) {
-          let table: IForeignKeyInfo;
+          let table: IForeignKeyInfo | undefined;
           if (this.data.fkRelations.length > 1) {
             const tableName = DbObjectKey.FromXml(key).TableName;
             table = this.data.fkRelations.find((fkr) => fkr.TableName === tableName);

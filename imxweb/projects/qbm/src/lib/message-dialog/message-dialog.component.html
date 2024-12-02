@@ -1,15 +1,54 @@
-<h2 mat-dialog-title [attr.data-imx-identifier]="data?.identifier + '-title'">{{data.Title}}</h2>
+<div mat-dialog-title>
+  <eui-icon *ngIf="data.icon === 'error'" icon="error" class="imx-error-icon-in-error-dialog" aria-label="Error icon"></eui-icon>
+  <eui-icon *ngIf="data.icon === 'clock'" icon="clock" class="imx-error-icon-in-error-dialog" aria-label="Expired session icon"></eui-icon>
+  <h2
+    [attr.data-imx-identifier]="data?.identifier + '-title'"
+    [ngClass]="{ 'h2-in-error-dialog': data.icon === 'error', 'h2-in-session-expired-dialog': data.icon === 'clock' }"
+  >
+    {{ data.Title }}
+  </h2>
+</div>
 <mat-dialog-content>
-    <div class="cmp-messagebox" [attr.data-imx-identifier]="data?.identifier + '-message'">{{ data.Message }}</div>
+  <div *ngFor="let message of messages" class="cmp-messagebox" [attr.data-imx-identifier]="data?.identifier + '-message'">
+    {{ message }}
+  </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-    <button mat-button *ngIf="data.ShowYesNo" type="button" [attr.data-imx-identifier]="data?.identifier + '-button-yes'"
-        (click)="click(MessageDialogResult.YesResult)">{{'#LDS#Yes' | translate}}</button>
-    <button mat-button *ngIf="data.ShowYesNo" type="button" [attr.data-imx-identifier]="data?.identifier + '-button-no'"
-        (click)="click(MessageDialogResult.NoResult)">{{'#LDS#No' | translate}}</button>
-    <button mat-button *ngIf="data.ShowOk" type="submit" [attr.data-imx-identifier]="data?.identifier + '-button-ok'"
-        (click)="click(MessageDialogResult.OkResult)">{{'#LDS#OK' | translate}}</button>
-    <button mat-button *ngIf="data.ShowCancel" type="button" [attr.data-imx-identifier]="data?.identifier + '-button-cancel'"
-        (click)="click(MessageDialogResult.CancelResult)">{{'#LDS#Cancel' | translate}}</button>
+<mat-dialog-actions>
+  <button
+    mat-button
+    *ngIf="data.ShowYesNo"
+    type="button"
+    [attr.data-imx-identifier]="data?.identifier + '-button-yes'"
+    (click)="click(MessageDialogResult.YesResult)"
+  >
+    {{ '#LDS#Yes' | translate }}
+  </button>
+  <button
+    mat-button
+    *ngIf="data.ShowYesNo"
+    type="button"
+    [attr.data-imx-identifier]="data?.identifier + '-button-no'"
+    (click)="click(MessageDialogResult.NoResult)"
+  >
+    {{ '#LDS#No' | translate }}
+  </button>
+  <button
+    mat-button
+    *ngIf="data.ShowOk"
+    type="submit"
+    [attr.data-imx-identifier]="data?.identifier + '-button-ok'"
+    (click)="click(MessageDialogResult.OkResult)"
+  >
+    {{ '#LDS#OK' | translate }}
+  </button>
+  <button
+    mat-button
+    *ngIf="data.ShowCancel"
+    type="button"
+    [attr.data-imx-identifier]="data?.identifier + '-button-cancel'"
+    (click)="click(MessageDialogResult.CancelResult)"
+  >
+    {{ '#LDS#Cancel' | translate }}
+  </button>
 </mat-dialog-actions>

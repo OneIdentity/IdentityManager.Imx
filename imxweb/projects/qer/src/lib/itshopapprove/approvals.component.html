@@ -1,26 +1,38 @@
 <imx-busy-indicator *ngIf="!viewReady"></imx-busy-indicator>
 
-<div class="heading-wrapper" *ngIf="viewReady">
-  <h1 class="mat-headline">
+<div class="imx-header-toolbar" *ngIf="viewReady">
+  <h2 class="mat-headline-5">
     <span translate>#LDS#Heading Pending Requests</span>
     <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-  </h1>
+  </h2>
+  <ng-container *ngIf="!hasInquiries && !!dataSource">
+    <imx-data-view-toolbar
+      [dataSource]="dataSource"
+      (updateConfig)="approvalsTableComponent.updateConfig($event)"
+      (deleteConfigById)="approvalsTableComponent.deleteConfigById($event)"
+    ></imx-data-view-toolbar>
+  </ng-container>
 </div>
 
 <div class="imx-approvals-content" *ngIf="viewReady">
-  <mat-tab-group *ngIf="hasInquiries" [(selectedIndex)]="tabIndex">
+  <mat-tab-group mat-stretch-tabs="false" class="imx-card-heading" *ngIf="hasInquiries" [(selectedIndex)]="tabIndex">
     <mat-tab [label]="'#LDS#Heading Requests' | translate">
       <ng-template matTabContent>
-        <imx-approvals-table [params]="params"></imx-approvals-table>
+        <ng-content *ngTemplateOutlet="tabContent"></ng-content>
       </ng-template>
     </mat-tab>
     <mat-tab [label]="'#LDS#Heading Inquiries' | translate">
       <ng-template matTabContent>
-        <imx-inquiries ></imx-inquiries>
+        <imx-inquiries></imx-inquiries>
       </ng-template>
     </mat-tab>
   </mat-tab-group>
 
-  <imx-approvals-table *ngIf="!hasInquiries" [params]="params"></imx-approvals-table>
-
+  <ng-container *ngIf="!hasInquiries">
+    <ng-content *ngTemplateOutlet="tabContent"></ng-content>
+  </ng-container>
 </div>
+
+<ng-template #tabContent>
+  <imx-approvals-table [params]="params" [hideToolbar]="!hasInquiries" #approvalsTableComponent></imx-approvals-table>
+</ng-template>

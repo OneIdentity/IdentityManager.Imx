@@ -6,20 +6,26 @@
           <span translate>#LDS#Group by</span>:
           <span class="spaced-left">{{ dst?.settings?.groupData?.currentGrouping?.display }}</span>
         </th>
-        <td mat-cell *matCellDef="let grouping" (click)="onGroupExpanded(grouping)" tabindex="0" (keydown.enter)="onGroupExpanded(grouping)">
+        <td
+          mat-cell
+          *matCellDef="let grouping"
+          (click)="onGroupExpanded(grouping)"
+          tabindex="0"
+          (keydown.enter)="onGroupExpanded(grouping)"
+        >
           <span *ngIf="grouping && grouping.Display">{{ grouping?.Display[0].Display || '' }}</span>
           <eui-icon icon="collapsedown" *ngIf="grouping?.Count > 0 && !groupData[grouping?.Display[0].Display]?.isExpanded"></eui-icon>
           <eui-icon icon="collapseup" *ngIf="groupData[grouping?.Display[0]?.Display]?.isExpanded"></eui-icon>
           <div
-            [@groupExpand]="groupData[grouping?.Display[0].Display]?.isExpanded ? 'expanded' : 'collapsed'"
+            [@groupExpand]="groupData[grouping?.Display[0].Display]?.isExpanded ?? false ? 'expanded' : 'collapsed'"
             (click)="$event.stopPropagation()"
-            [ngClass]="{ 'group-row-expanded': groupData[grouping?.Display[0]?.Display]?.isExpanded }"
+            [ngClass]="{ 'group-row-expanded': groupData[grouping?.Display[0]?.Display]?.isExpanded ?? false }"
           >
             <ng-container *ngIf="groupData[grouping?.Display[0]?.Display]?.isExpanded">
               <imx-data-source-toolbar
                 #nestedDst
-                [additionalPropertiesForNavigation]="dst?.columnOptions?.getPropertiesForNavigation()"
-                [settings]="groupData[grouping?.Display[0]?.Display]?.settings"
+                [additionalPropertiesForNavigation]="dst.columnOptions?.getPropertiesForNavigation()"
+                [settings]="groupData[grouping?.Display[0]?.Display].settings"
                 [itemStatus]="dst.itemStatus"
                 (navigationStateChanged)="onNavigationStateChanged(grouping?.Display[0]?.Display, $event)"
               ></imx-data-source-toolbar>
@@ -33,12 +39,12 @@
                 (selectionChanged)="selectionInGroupChanged($event, grouping?.Display[0]?.Display)"
                 [parentManualColumns]="manualColumns"
                 [parentManualGenericColumns]="manualGenericColumns"
-                [parentAdditionals]="dst?.additionalColumns"
+                [parentAdditionals]="dst.additionalColumns"
                 [noDataText]="noDataText"
                 [noDataIcon]="noDataIcon"
                 [noMatchingDataText]="noMatchingDataText"
                 [noMatchingDataIcon]="noMatchingDataIcon"
-                [groupedTableHasFiltersApplied]="dst?.filtersCurrentlyApplied"
+                [groupedTableHasFiltersApplied]="dst.filtersCurrentlyApplied"
               >
               </imx-data-table>
               <imx-data-source-paginator [dst]="nestedDst" *ngIf="showGroupPaginator"></imx-data-source-paginator>
@@ -66,9 +72,9 @@
   matSort
   data-imx-identifier="datatable-table"
   [ngClass]="{
-    'imx-data-table__hidden': isGroupingApplied || !dst?.dataSourceHasData || isLoading,
+    'imx-data-table__hidden': isGroupingApplied || !dst.dataSourceHasData || isLoading,
     'imx-data-table-highlightedActive': ishighlightedEntityChangedUsed,
-    hidden: isLoading
+    hidden: isLoading,
   }"
   role="grid"
 >
@@ -103,13 +109,15 @@
 
   <ng-container *ngIf="mode === 'auto'">
     <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of displayedColumns; let i = index">
-      <th class="imx-table-column" mat-header-cell *matHeaderCellDef>{{ column.Display }}</th>
+      <th class="imx-table-column" mat-header-cell *matHeaderCellDef>
+        {{ translateProvider.GetColumnDisplay(column.ColumnName ?? '', entitySchema) }}
+      </th>
       <td class="imx-table-column" mat-cell *matCellDef="let entity">
         <imx-data-table-display-cell
           *ngIf="i === 0"
           [entity]="entity"
           [property]="column"
-          [propertiesforSubtitle]="dst?.additionalListElements"
+          [propertiesforSubtitle]="dst.additionalListElements"
           role="gridcell"
         ></imx-data-table-display-cell>
         <imx-data-table-cell *ngIf="i > 0" [entity]="entity" [property]="column" role="gridcell"></imx-data-table-cell>
@@ -120,7 +128,9 @@
   <ng-container *ngIf="mode === 'manual'">
     <ng-content></ng-content>
     <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of additional">
-      <th class="imx-table-column" mat-header-cell *matHeaderCellDef>{{ column.Display }}</th>
+      <th class="imx-table-column" mat-header-cell *matHeaderCellDef>
+        {{ translateProvider.GetColumnDisplay(column.ColumnName ?? '', entitySchema) }}
+      </th>
       <td class="imx-table-column" mat-cell *matCellDef="let entity">
         <imx-data-table-cell [entity]="entity" [property]="column" role="gridcell"></imx-data-table-cell>
       </td>
@@ -134,11 +144,20 @@
     *matRowDef="let row; columns: getNamesOfDisplayedColumns()"
     (click)="debouncedHighlightRow(row, $event); $event.stopPropagation()"
     (keydown.enter)="debouncedHighlightRow(row, $event); $event.stopPropagation()"
-    [ngClass]="{ 'imx-data-table-row-highlighted': highlightedEntity === row, 'imx-data-table-row-conditional': isHighlight(row) && !(highlightedEntity === row) }"
+    [ngClass]="{
+      'imx-data-table-row-highlighted': highlightedEntity === row,
+      'imx-data-table-row-conditional': isHighlight(row) && !(highlightedEntity === row),
+    }"
   ></tr>
 </table>
 <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
-<div class="imx-data-table-no-results" *ngIf="dst != null && !dst?.dataSourceHasData && !isGroupingApplied && !isLoading">
-  <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
-  <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataText : noDataText"></p>
+<div class="imx-no-results" *ngIf="dst != null && !dst?.dataSourceHasData && !isGroupingApplied && !isLoading">
+  <eui-icon
+    [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataIcon : noDataIcon"
+  ></eui-icon>
+  <p
+    [translate]="
+      dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataText : noDataText
+    "
+  ></p>
 </div>

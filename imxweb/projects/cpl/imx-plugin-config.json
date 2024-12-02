@@ -1,8 +1,9 @@
 {
-    "qer-app-portal": [
-        {
-            "Container": "cpl",
-            "Name": "CplConfigModule"
-        }
-    ]
+  "qer-app-portal": [
+    {
+      "Container": "cpl",
+      "Condition": "COMPLIANCE",
+      "Name": "CplConfigModule"
+    }
+  ]
 }

@@ -1,14 +1,14 @@
-<h1 class="mat-headline">{{ '#LDS#Welcome' | translate }}</h1>
+<h2 class="mat-headline-5">{{ '#LDS#Welcome' | translate }}</h2>
 
 <imx-busy-indicator *ngIf="!viewReady"></imx-busy-indicator>
 
 <ng-container>
-  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true}">
+  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true }">
     <imx-badge-tile
       data-imx-identifier="start-tile-shopping-cart"
       [caption]="'#LDS#Heading Products in Shopping Cart' | translate"
       *ngIf="userConfig?.IsITShopEnabled && GetCountProductsinShoppingCart() > 0"
-      [value]="GetCountProductsinShoppingCart()"
+      [value]="GetCountProductsinShoppingCart().toString()"
       [identifier]="'shopping-cart'"
       (actionClick)="GoToShoppingCart()"
     >
@@ -19,7 +19,7 @@
       [caption]="'#LDS#Heading Pending Requests' | translate"
       [tooltip]="'#LDS#Shows the pending requests you can approve or deny.' | translate"
       *ngIf="userConfig?.IsITShopEnabled && GetCountPendingRequests() > 0"
-      [value]="GetCountPendingRequests()"
+      [value]="GetCountPendingRequests().toString()"
       [identifier]="'it-shop-approvals'"
       (actionClick)="GoToItshopApprovals()"
     >
@@ -30,9 +30,9 @@
       [caption]="'#LDS#Heading My Pending Requests' | translate"
       [tooltip]="'#LDS#Shows your pending requests others can approve or deny.' | translate"
       *ngIf="userConfig?.IsITShopEnabled && GetCountInRequestHistory() > 0"
-      [value]="GetCountInRequestHistory()"
+      [value]="GetCountInRequestHistory().toString()"
       [identifier]="'request-history'"
-      (actionClick)="router.navigate(['requesthistory'], { queryParams: { ShowMyPending: 1 } })"
+      (actionClick)="router.navigate(['requesthistory'], { queryParams: { showMyPendings: true } })"
     >
     </imx-badge-tile>
 
@@ -40,7 +40,7 @@
       data-imx-identifier="start-tile-it-shop-approval-inquiries"
       [caption]="'#LDS#Heading Request Inquiries' | translate"
       *ngIf="userConfig?.IsITShopEnabled && GetCountRequestInquiries() > 0"
-      [value]="GetCountRequestInquiries()"
+      [value]="GetCountRequestInquiries().toString()"
       [identifier]="'it-shop-approval-inquiries'"
       (actionClick)="GoToItShopApprovalInquiries()"
     >
@@ -50,7 +50,7 @@
       data-imx-identifier="start-tile-my-processes"
       [caption]="'#LDS#Heading My Processes' | translate"
       *ngIf="GetCountNewProcesses() > 0"
-      [value]="GetCountNewProcesses()"
+      [value]="GetCountNewProcesses().toString()"
       [identifier]="'my-processes'"
       (actionClick)="GoToMyProcesses()"
     ></imx-badge-tile>
@@ -58,15 +58,15 @@
     <imx-badge-tile
       data-imx-identifier="start-tile-request-ending-soon"
       [caption]="'#LDS#Heading Products Expiring Soon' | translate"
-      *ngIf="userConfig?.IsITShopEnabled && userConfig?.CountRequestsEndingSoon > 0"
-      [value]="userConfig?.CountRequestsEndingSoon"
+      *ngIf="userConfig?.IsITShopEnabled && (userConfig?.CountRequestsEndingSoon || 0) > 0"
+      [value]="userConfig?.CountRequestsEndingSoon?.toString()"
       [identifier]="'requests ending soon'"
       (actionClick)="router.navigate(['requesthistory'], { queryParams: { ShowEndingSoon: 1 } })"
     ></imx-badge-tile>
 
     <imx-ext class="imx-flexible-tile-row" id="Dashboard-SmallTiles" [referrer]="this"></imx-ext>
   </div>
-  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true}">
+  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true }">
     <imx-icon-tile
       *ngIf="viewReady && ShowPasswordTile()"
       data-imx-identifier="start-tile-no-password-query-and-answer-set"
@@ -80,14 +80,24 @@
       [identifier]="'no-password-query-and-answer-set'"
     >
       <ng-template #ActionTemplate>
-        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-password-questions'" (click)="GoToMyPassword()">
+        <button
+          mat-button
+          class="imx-button-uppercase"
+          color="primary"
+          [attr.data-imx-identifier]="'imx-start-button-password-questions'"
+          (click)="GoToMyPassword()"
+        >
           <span>{{ '#LDS#Specify password questions' | translate }}</span>
-          <eui-icon size="m" icon="forward"></eui-icon>
+          <eui-icon class="imx-margin-left-15" icon="forward"></eui-icon>
         </button>
       </ng-template>
     </imx-icon-tile>
 
-    <imx-notification-tile data-imx-identifier="start-noficationtile-enable-notifications" *ngIf="projectConfig?.VI_Common_EnableNotifications"> </imx-notification-tile>
+    <imx-notification-tile
+      data-imx-identifier="start-noficationtile-enable-notifications"
+      *ngIf="projectConfig?.VI_Common_EnableNotifications"
+    >
+    </imx-notification-tile>
 
     <imx-icon-tile
       data-imx-identifier="start-tile-password-manager"
@@ -98,9 +108,15 @@
       [image]="'key'"
     >
       <ng-template #ActionTemplate>
-        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-password-manager'" (click)="GoToQpm()">
+        <button
+          mat-button
+          class="imx-button-uppercase"
+          color="primary"
+          [attr.data-imx-identifier]="'imx-start-button-password-manager'"
+          (click)="GoToQpm()"
+        >
           <span>{{ '#LDS#Open Password Manager' | translate }}</span>
-          <eui-icon size="m" icon="forward"></eui-icon>
+          <eui-icon class="imx-margin-left-15" icon="forward"></eui-icon>
         </button>
       </ng-template>
     </imx-icon-tile>
@@ -114,9 +130,15 @@
       [image]="'key'"
     >
       <ng-template #ActionTemplate>
-        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-manage-password'" (click)="GoToPasswordMgmtWeb()">
+        <button
+          mat-button
+          class="imx-button-uppercase"
+          color="primary"
+          [attr.data-imx-identifier]="'imx-start-button-manage-password'"
+          (click)="GoToPasswordMgmtWeb()"
+        >
           <span>{{ '#LDS#Manage passwords' | translate }}</span>
-          <eui-icon size="m" icon="forward"></eui-icon>
+          <eui-icon class="imx-margin-left-15" icon="forward"></eui-icon>
         </button>
       </ng-template>
     </imx-icon-tile>
@@ -130,9 +152,15 @@
       *ngIf="viewReady && ShowNewRequestLink()"
     >
       <ng-template #ActionTemplate>
-        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-new-request'" (click)="GoToProductSelection()">
+        <button
+          mat-button
+          class="imx-button-uppercase"
+          color="primary"
+          [attr.data-imx-identifier]="'imx-start-button-new-request'"
+          (click)="GoToProductSelection()"
+        >
           <span>{{ '#LDS#Request products' | translate }}</span>
-          <eui-icon size="m" icon="forward"></eui-icon>
+          <eui-icon class="imx-margin-left-15" icon="forward"></eui-icon>
         </button>
       </ng-template>
     </imx-icon-tile>

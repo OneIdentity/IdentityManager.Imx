@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { AttCaseDataRead, AttestationCaseData, AttestationCaseUiData, PortalAttestationApprove } from 'imx-api-att';
-import { IEntity, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
-import { ParameterDataContainer, WorkflowDataWrapper } from 'qer';
+import { AttCaseDataRead, AttestationCaseData, AttestationCaseUiData, PortalAttestationApprove } from '@imx-modules/imx-api-att';
+import { IEntity, IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
+import { ParameterDataContainer, WorkflowDataWrapper } from 'qer';
 import { AttestationCaseAction } from '../attestation-action/attestation-case-action.interface';
 
 export class AttestationCase extends PortalAttestationApprove implements AttestationCaseAction {
@@ -41,18 +41,18 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
     return this.parameterDataContainer.columns;
   }
   public get canAskAQuestion(): boolean {
-    return this.data.CanAskForHelp;
+    return !!this.data?.CanAskForHelp;
   }
 
   public readonly propertyInfo: ColumnDependentReference[];
   public readonly key: string;
-  public readonly data: AttestationCaseData;
+  public readonly data: AttestationCaseData | undefined;
   public readonly typedEntity: TypedEntity; // from interface AttestationAction
   public readonly propertiesForAction: IEntityColumn[]; // from interface AttestationAction
-  public readonly uiData: AttestationCaseUiData;
+  public readonly uiData: AttestationCaseUiData | undefined;
 
-  public get hasPolicyViolation() {
-    return this.data?.PolicyViolations?.length > 0;
+  public get hasPolicyViolation(): boolean {
+    return !!this.data?.PolicyViolations?.length;
   }
   private directDecisionTarget = 0;
 
@@ -62,7 +62,7 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
     private readonly baseObject: PortalAttestationApprove,
     private readonly isChiefApproval: boolean,
     private readonly parameterDataContainer: ParameterDataContainer,
-    extendedCollectionData: { index: number } & AttCaseDataRead
+    extendedCollectionData: { index: number } & AttCaseDataRead,
   ) {
     super(baseObject.GetEntity());
 
@@ -92,11 +92,13 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
       .filter((property) => property.value != null && property.value !== '')
       .map((property) => new BaseCdr(property.Column, extendedCollectionData[property.Column.ColumnName]));
 
-    this.data = extendedCollectionData.Data ? extendedCollectionData.Data[extendedCollectionData.index] : undefined;
+    this.data = extendedCollectionData.Data
+      ? { ...extendedCollectionData.Data[extendedCollectionData.index], WorkflowSteps: extendedCollectionData.WorkflowSteps }
+      : undefined;
     this.uiData = extendedCollectionData.UiData ? extendedCollectionData.UiData[extendedCollectionData.index] : undefined;
 
     if (this.data) {
-      this.workflowWrapper = new WorkflowDataWrapper(this.data);
+      this.workflowWrapper = new WorkflowDataWrapper({ ...this.data, WorkflowSteps: extendedCollectionData.WorkflowSteps });
     }
   }
 
@@ -106,12 +108,12 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
 
   public async commit(reload = true): Promise<void> {
     this.baseObject.extendedData = this.parameterDataContainer.getEntityWriteDataColumns();
-    if (this.baseObject.extendedData.DialogParameter[0].length > 0 || this.baseObject.GetEntity().GetDiffData().Data.length > 0) {
+    if (this.baseObject.extendedData.DialogParameter[0].length > 0 || !!this.baseObject.GetEntity().GetDiffData().Data?.length) {
       try {
         await this.baseObject.GetEntity().Commit(reload);
       } catch (error) {
         await this.baseObject.GetEntity().DiscardChanges();
-        this.baseObject.extendedData = undefined;
+        this.baseObject.extendedData = {};
         throw error;
       }
     }

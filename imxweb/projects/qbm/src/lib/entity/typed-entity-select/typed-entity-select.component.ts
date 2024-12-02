@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,8 @@ import { UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth } from '../../base/sidesheet-helper';
 import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
 import { TypedEntitySelectionData } from './typed-entity-selection-data.interface';
 import { TypedEntitySelectorComponent } from './typed-entity-selector/typed-entity-selector.component';
@@ -37,7 +38,7 @@ import { TypedEntitySelectorComponent } from './typed-entity-selector/typed-enti
 @Component({
   selector: 'imx-typed-entity-select',
   templateUrl: './typed-entity-select.component.html',
-  styleUrls: ['./typed-entity-select.component.scss']
+  styleUrls: ['./typed-entity-select.component.scss'],
 })
 export class TypedEntitySelectComponent implements OnInit {
   @Input() public data: TypedEntitySelectionData;
@@ -54,8 +55,8 @@ export class TypedEntitySelectComponent implements OnInit {
   constructor(
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    private readonly sidesheet: EuiSidesheetService
-  ) { }
+    private readonly sidesheet: EuiSidesheetService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     if (this.data) {
@@ -69,28 +70,29 @@ export class TypedEntitySelectComponent implements OnInit {
   }
 
   public async editAssignment(): Promise<void> {
-    if (this.selected == null) {  // beim erste Mal aus der Datenbank holen
+    if (this.selected == null) {
+      // beim erste Mal aus der Datenbank holen
       this.loading = true;
       this.selected = await this.data.getSelected();
       this.loading = false;
     }
 
-    const selection = await this.sidesheet.open(
-      TypedEntitySelectorComponent,
-      {
+    const selection = await this.sidesheet
+      .open(TypedEntitySelectorComponent, {
         title: await this.translate.get(this.data.title || this.data.valueWrapper.display).toPromise(),
         padding: '0',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         testId: `typed-entity-selector-${this.data.valueWrapper.name}`,
         data: {
           getTyped: this.data.dynamicFkRelation ? undefined : this.data.getTyped,
           isMultiValue: true,
           preselectedEntities: this.selected,
           fkTables: this.data.dynamicFkRelation?.tables,
-          preselectedTableName: this.data.dynamicFkRelation?.getSelectedTableName(this.selected)
-        }
-      }
-    ).afterClosed().toPromise();
+          preselectedTableName: this.data.dynamicFkRelation?.getSelectedTableName(this.selected),
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (selection) {
       if (!this.data.valueWrapper.canEdit) {
@@ -109,17 +111,15 @@ export class TypedEntitySelectComponent implements OnInit {
 
   private async update(emitEvent: boolean): Promise<void> {
     if (this.selected?.length > 0) {
-      const entities = this.selected.map(item => item.GetEntity());
+      const entities = this.selected.map((item) => item.GetEntity());
       this.control.setValue(
-        entities.length === 1 ? entities[0].GetDisplay() :
-          this.ldsReplace.transform(await this.translate.get('#LDS#{0} items selected').toPromise(), entities.length),
-        { emitEvent }
+        entities.length === 1
+          ? entities[0].GetDisplay()
+          : this.ldsReplace.transform(await this.translate.get('#LDS#{0} items selected').toPromise(), entities.length),
+        { emitEvent },
       );
     } else {
-      this.control.setValue(
-        undefined,
-        { emitEvent }
-      );
+      this.control.setValue(undefined, { emitEvent });
     }
   }
 }

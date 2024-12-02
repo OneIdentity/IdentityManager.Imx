@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { ShapeData } from 'imx-api-qbm';
+import { ShapeData } from '@imx-modules/imx-api-qbm';
 import { ModelCssService } from '../model-css/model-css.service';
 import { TableImageService } from '../table-image/table-image.service';
 import { ShapeClickArgs } from './hyperview-types';
@@ -41,11 +41,16 @@ import { ShapeClickArgs } from './hyperview-types';
 })
 export class ShapeComponent implements OnInit {
   @Input() public shape: ShapeData;
-  @Input() public navigate = false;
   @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
+  @Input() public navigate = false;
+  @Output() public changeContentSize = new EventEmitter<void>();
   public imageClass: string;
+  public isExpanded = false;
 
-  constructor(private readonly imageService: TableImageService, private readonly modelCssService: ModelCssService) {}
+  constructor(
+    private readonly imageService: TableImageService,
+    private readonly modelCssService: ModelCssService,
+  ) {}
 
   public ngOnInit(): void {
     this.modelCssService.loadModelCss();
@@ -53,14 +58,27 @@ export class ShapeComponent implements OnInit {
     this.imageClass = this.shape.ImageUid ? this.imageService.getCss(this.shape.ImageUid, true) : this.imageService.getDefaultCss(true);
   }
 
+  public setExpandable(): void {
+    this.isExpanded = !this.isExpanded;
+    this.changeContentSize.emit();
+  }
+
   public click(): void {
-    if (this.navigate && !this.isShapeLayoutMiddle) {
-      this.selected?.emit({ objectKey: this.shape.ObjectKey, caption: this.shape.Caption });
+    if (this.navigate && !this.isShapeLayoutMiddle && this.shape.ObjectKey) {
+      this.selected?.emit({ objectKey: this.shape.ObjectKey ?? '', caption: this.shape.Caption ?? '' });
     }
   }
 
   public get ObjectCount(): number {
     return this.shape && this.shape.Elements ? this.shape.Elements.length : -1;
+  }
+
+  public get canExpand() {
+    return this.ObjectCount > 10; // windows implementation also uses > 10 as threshold
+  }
+  public get showContent() {
+    if (!this.canExpand) return true;
+    return this.isExpanded;
   }
 
   public get isShapeLayoutMiddle(): boolean {

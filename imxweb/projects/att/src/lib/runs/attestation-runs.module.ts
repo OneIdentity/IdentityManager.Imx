@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,30 +24,39 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterModule } from '@angular/router';
-import { EuiMaterialModule, EuiCoreModule } from '@elemental-ui/core';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, EntityColumnEditorComponent, SelectedElementsModule, HelpContextualModule, TempBillboardModule } from 'qbm';
+import {
+  CdrModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  DateModule,
+  HelpContextualModule,
+  LdsReplaceModule,
+  SelectedElementsModule,
+} from 'qbm';
 
-import { RunsComponent } from './runs.component';
-import { RunSidesheetComponent } from './run-sidesheet.component';
+import { AttestationHistoryModule } from '../attestation-history/attestation-history.module';
+import { AttestationWrapperComponent } from './attestation/attestation-wrapper/attestation-wrapper.component';
+import { AttestationComponent } from './attestation/attestation.component';
+import { CaseChartComponent } from './case-chart/case-chart.component';
 import { PendingApproversComponent } from './pending-approvers.component';
-import { SendReminderMailComponent } from './send-reminder-mail.component';
 import { ProgressComponent } from './progress/progress.component';
 import { RunExtendComponent } from './run-extend/run-extend.component';
-import { AttestationComponent } from './attestation/attestation.component';
-import { AttestationHistoryModule } from '../attestation-history/attestation-history.module';
+import { RunSidesheetComponent } from './run-sidesheet.component';
 import { RunsGridComponent } from './runs-grid/runs-grid.component';
-import { CaseChartComponent } from './case-chart/case-chart.component';
-import { AttestationWrapperComponent } from './attestation/attestation-wrapper/attestation-wrapper.component';
+import { RunsComponent } from './runs.component';
+import { SendReminderMailComponent } from './send-reminder-mail.component';
 
 @NgModule({
   declarations: [
@@ -81,7 +90,8 @@ import { AttestationWrapperComponent } from './attestation/attestation-wrapper/a
     AttestationHistoryModule,
     SelectedElementsModule,
     HelpContextualModule,
-    TempBillboardModule,
+    DataViewModule,
+    DateModule,
   ],
   exports: [RunsComponent, RunsGridComponent, AttestationWrapperComponent],
 })

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,7 @@ import { GenericStatisticNode, StatisticsDataService } from '../statistics-data.
 @Component({
   selector: 'imx-statistics-tree',
   templateUrl: './statistics-tree.component.html',
-  styleUrls: ['./statistics-tree.component.scss']
+  styleUrls: ['./statistics-tree.component.scss'],
 })
 export class StatisticsTreeComponent implements OnInit, OnDestroy {
   // Controls sidenav interaction
@@ -50,47 +50,58 @@ export class StatisticsTreeComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: StatisticsDataService,
-    private confirmService: ConfirmationService
-  ) { }
+    private confirmService: ConfirmationService,
+  ) {}
 
   public ngOnInit(): void {
     // Subscribe to get the tree
-    this.subscriptions$.push(this.dataService.tree$.subscribe(tree => {
-      this.dataSource.data = tree;
-      // Start with grouped stats open
-      const groupedStats = this.dataService.getNodeByLeafName(this.dataService.groupedName);
-      this.treeControl.expand(groupedStats);
-    }));
+    this.subscriptions$.push(
+      this.dataService.tree$.subscribe((tree) => {
+        this.dataSource.data = tree;
+        // Start with grouped stats open
+        const groupedStats = this.dataService.getNodeByLeafId(this.dataService.groupedAreaId);
+        this.treeControl.expand(groupedStats);
+      }),
+    );
 
     // Subscribe to watch for if we are a search
-    this.subscriptions$.push(this.dataService.isSearch$.subscribe(isSearch => {
-      this.isSearch = isSearch;
-    }));
+    this.subscriptions$.push(
+      this.dataService.isSearch$.subscribe((isSearch) => {
+        this.isSearch = isSearch;
+      }),
+    );
 
     // Subscribe to watch for sidenav changes, refresh plots to prevent alignment bugs
-    this.subscriptions$.push(this.dataService.sideNavExpanded$.subscribe(sideNavExpanded => {
-      this.sideNavExpanded = sideNavExpanded;
-      // The animation takes .4s so trigger the chart refresh after then
-      setTimeout(() => this.dataService.flushCharts(), 400);
-    }));
+    this.subscriptions$.push(
+      this.dataService.sideNavExpanded$.subscribe((sideNavExpanded) => {
+        this.sideNavExpanded = sideNavExpanded;
+        // The animation takes .4s so trigger the chart refresh after then
+        setTimeout(() => this.dataService.flushCharts(), 400);
+      }),
+    );
 
     // Subscribe to watch the selected node
-    this.subscriptions$.push(this.dataService.selectedNodeAncestors$.subscribe(selectedNodeAncestors => {
-      // Reset other nodes
-      this.dataSource.data.forEach(topNode => {
-        topNode.isSelected = false;
-        this.treeControl.getDescendants(topNode).forEach(node => node.isSelected = false);
-      });
-      // Select current node
-      selectedNodeAncestors[selectedNodeAncestors.length - 1].isSelected = true;
-    }));
+    this.subscriptions$.push(
+      this.dataService.selectedNodeAncestors$.subscribe((selectedNodeAncestors) => {
+        // Reset other nodes
+        this.dataSource.data.forEach((topNode) => {
+          topNode.isSelected = false;
+          this.treeControl.getDescendants(topNode).forEach((node) => (node.isSelected = false));
+        });
+        // Select current node
+        selectedNodeAncestors[selectedNodeAncestors.length - 1].isSelected = true;
+      }),
+    );
   }
 
   public async observeExpanded(expanded: boolean): Promise<void> {
-    if (!this.isSearch || await this.confirmService.confirm({
-      Title: 'Closing the search results',
-      Message: 'Do you want to navigate away and close your search results?',
-      })) {
+    if (
+      !this.isSearch ||
+      (await this.confirmService.confirm({
+        Title: 'Closing the search results',
+        Message: 'Do you want to navigate away and close your search results?',
+      }))
+    ) {
       // If there is a search already we need to pop a modal before continuing, negate the state since we are managing this ourselves
       this.dataService.clearSearch$.next();
       this.dataService.observeSideNavExpanded(!expanded);
@@ -101,14 +112,13 @@ export class StatisticsTreeComponent implements OnInit, OnDestroy {
     const nodeAncestors = [node];
     let nodeParent = node.parent;
     while (nodeParent) {
-        nodeAncestors.push(nodeParent);
-        nodeParent = nodeParent.parent;
+      nodeAncestors.push(nodeParent);
+      nodeParent = nodeParent.parent;
     }
     this.dataService.observeSelection(nodeAncestors.reverse());
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions$.forEach(sub => sub.unsubscribe());
+    this.subscriptions$.forEach((sub) => sub.unsubscribe());
   }
-
 }

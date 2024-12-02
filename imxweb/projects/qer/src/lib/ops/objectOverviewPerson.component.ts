@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,16 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { imx_SessionService, OpsupportDbObjectService } from 'qbm';
+import { OpsupportDbObjectService } from 'qbm';
+
 import { ObjectOverviewContainer } from './objectOverviewContainer';
 import { PasscodeService } from './passcode.service';
+import { OpsPermissionsService } from './permissions/ops-permissions.service';
 
 @Component({
   templateUrl: './objectOverviewPerson.component.html',
-  styleUrls: ['./objectOverviewPerson.component.scss']
+  styleUrls: ['./objectOverviewPerson.component.scss'],
 })
 export class ObjectOverviewPersonComponent implements OnInit {
   [x: string]: any;
@@ -46,14 +47,14 @@ export class ObjectOverviewPersonComponent implements OnInit {
   public isPasswordResetAllowed: boolean;
 
   constructor(
-    private readonly session: imx_SessionService,
     private readonly passcodeService: PasscodeService,
     private readonly busyService: EuiLoadingService,
-    private readonly dbObjectService: OpsupportDbObjectService
-  ) { }
+    private readonly dbObjectService: OpsupportDbObjectService,
+    private readonly opsPermissionsService: OpsPermissionsService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    this.isPasswordResetAllowed = (await this.session.Client.opsupport_usergroups_get()).some(role => role.Name === 'QER_4_PasswordHelpdesk');   
+    this.isPasswordResetAllowed = await this.opsPermissionsService.isPasswordHelpdesk();
   }
 
   get uidPerson(): string {
@@ -62,27 +63,27 @@ export class ObjectOverviewPersonComponent implements OnInit {
 
   // Generates a passcode and shows it on the screen
   public async generateAndShowPasscode(): Promise<void> {
-    let overlayRef: OverlayRef;
     let passCode;
     let managerDisplay;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       passCode = await this.passcodeService.getPasscodeWithOpsLogin(this.referrer.objectKey.Keys[0]);
       if (passCode && passCode.UID_PersonManager) {
         const entity = await this.dbObjectService.Get({
           tableName: 'Person',
-          uid: passCode.UID_PersonManager
+          uid: passCode.UID_PersonManager,
         });
 
         managerDisplay = entity?.Display;
       }
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
     if (!passCode) {
       return;
     }
     return this.passcodeService.showPasscode(passCode, this.referrer.display, managerDisplay, 2);
-
   }
 }

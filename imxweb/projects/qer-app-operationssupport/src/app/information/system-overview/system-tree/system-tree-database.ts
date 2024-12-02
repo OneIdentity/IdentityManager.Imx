@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,15 @@
  *
  */
 
-
 import { Injectable } from '@angular/core';
 
-import { OpsupportSystemoverview } from 'imx-api-qbm';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { OpsupportSystemoverview } from '@imx-modules/imx-api-qbm';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { RegistryService } from 'qbm';
 import { SystemTreeNode } from './system-tree-node';
 
 @Injectable()
 export class SystemTreeDatabase {
-
   get CustomerName(): string {
     return this.customerName;
   }
@@ -43,13 +41,13 @@ export class SystemTreeDatabase {
     return this.customerEmail;
   }
 
-  get ExceededTresholdsCounter(): number {
-    return this.tresholdsCounter;
+  get ExceededThresholdsCounter(): number {
+    return this.thresholdCount;
   }
   private dataMap: Map<string, OpsupportSystemoverview[]>;
   private categoryRegistry: RegistryService<OpsupportSystemoverview>;
   private exceededTresholdsRegistry: { [id: string]: number };
-  private tresholdsCounter: number;
+  private thresholdCount: number;
   private customerName = '';
   private customerEmail = '';
 
@@ -82,8 +80,8 @@ export class SystemTreeDatabase {
     const arr = Array.from(this.dataMap.entries());
     arr.forEach((item: [string, OpsupportSystemoverview[]]) => {
       item[1].forEach((d: OpsupportSystemoverview) => {
-        const line = d.Category.value + ',' + d.Element.value + ',' + d.Value.value + ','
-          + d.QualityOfValue.value + ',' + d.RecommendedValue.value;
+        const line =
+          d.Category.value + ',' + d.Element.value + ',' + d.Value.value + ',' + d.QualityOfValue.value + ',' + d.RecommendedValue.value;
         exp += line + '\r\n';
       });
     });
@@ -108,9 +106,9 @@ export class SystemTreeDatabase {
 
   private createNodes(): SystemTreeNode[] {
     const categories = Object.keys(this.categoryRegistry.Registry).sort();
-    return categories.map(c => {
+    return categories.map((c) => {
       this.dataMap.set(c, this.categoryRegistry.Registry[c]);
-      return new SystemTreeNode(null, c, 0, true, this.exceededTresholdsRegistry[c]);
+      return new SystemTreeNode(undefined, c, 0, true, this.exceededTresholdsRegistry[c]);
     });
   }
 
@@ -119,13 +117,13 @@ export class SystemTreeDatabase {
       this.exceededTresholdsRegistry[category] = 0;
     }
     this.exceededTresholdsRegistry[category] += inc;
-    this.tresholdsCounter += inc;
+    this.thresholdCount += inc;
   }
 
   private initalize(): void {
     this.dataMap = new Map<string, OpsupportSystemoverview[]>();
     this.categoryRegistry = new RegistryService<OpsupportSystemoverview>();
     this.exceededTresholdsRegistry = {};
-    this.tresholdsCounter = 0;
+    this.thresholdCount = 0;
   }
 }

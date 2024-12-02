@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,23 +27,24 @@
 import { Component, Inject } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   selector: 'imx-service-items-selector',
   templateUrl: './service-items-selector.component.html',
-  styleUrls: ['./service-items-selector.component.scss']
+  styleUrls: ['./service-items-selector.component.scss'],
 })
 export class ServiceItemsSelectorComponent {
   public selectedItems: TypedEntity[];
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: {
+    @Inject(EUI_SIDESHEET_DATA)
+    public readonly data: {
       getTyped: (parameters: CollectionLoadParameters) => Promise<TypedEntityCollectionData<TypedEntity>>;
       isMultiValue: boolean;
       preselectedEntities: TypedEntity[];
     },
-    private readonly sideSheetRef: EuiSidesheetRef
+    private readonly sideSheetRef: EuiSidesheetRef,
   ) {
     this.selectedItems = this.data.preselectedEntities;
   }

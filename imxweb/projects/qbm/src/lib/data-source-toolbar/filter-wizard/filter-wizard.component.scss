@@ -1,6 +1,9 @@
 :host {
   .imx-sidesheet-content {
     overflow: hidden;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
 
     .imx-content-container {
       display: flex;
@@ -8,6 +11,8 @@
       row-gap: 10px;
       overflow: hidden;
       height: 100%;
+      padding:20px;
+      margin: 20px;
     }
   }
 
@@ -24,19 +29,21 @@
     align-items: center;
   }
 
-  .mat-tab-group {
-    height: 100%;
-  }
-
-  ::ng-deep .mat-tab-body-wrapper {
-    padding: 0 10px;
-    height: 100%;
+  .imx-no-items-container {
+    flex: 1 1 auto;
   }
 }
+
 
 imx-sqlwizard {
   overflow: hidden;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+}
+
+imx-busy-indicator {
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
 }

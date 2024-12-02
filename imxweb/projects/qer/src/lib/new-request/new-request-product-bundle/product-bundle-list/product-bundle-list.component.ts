@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,8 @@
  */
 
 import { animate, animateChild, group, query, state, style, transition, trigger } from '@angular/animations';
-import { AfterContentInit, AfterViewInit, Component, EventEmitter, OnChanges, OnDestroy, SimpleChanges, ViewChild } from '@angular/core';
-import { isEqual } from 'lodash';
-import { PortalItshopPatternItem, PortalItshopPatternRequestable, PortalShopServiceitems } from 'imx-api-qer';
+import { AfterContentInit, AfterViewInit, Component, OnChanges, OnDestroy, SimpleChanges, ViewChild } from '@angular/core';
+import { PortalItshopPatternItem, PortalItshopPatternRequestable } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   DisplayColumns,
@@ -36,19 +35,15 @@ import {
   IClientProperty,
   IWriteValue,
   MultiValue,
+  TypedEntity,
   ValType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { PatternItemListFilterType } from '../../../pattern-item-list/pattern-item-list-filter-type.enum';
 import { PatternItemService } from '../../../pattern-item-list/pattern-item.service';
 import { NewRequestOrchestrationService } from '../../new-request-orchestration.service';
-import { NewRequestTabModel } from '../../new-request-tab/new-request-tab-model';
-import {
-  GetSelectedProductType,
-  SelectedProductItem,
-  SelectedProductSource,
-} from '../../new-request-selected-products/selected-product-item.interface';
+import { SelectedProductItem, SelectedProductSource } from '../../new-request-selected-products/selected-product-item.interface';
 import { NewRequestSelectionService } from '../../new-request-selection.service';
 
 @Component({
@@ -62,7 +57,7 @@ import { NewRequestSelectionService } from '../../new-request-selection.service'
         style({
           width: '0px',
           visibility: 'hidden',
-        })
+        }),
       ),
       state(
         'opened',
@@ -70,14 +65,14 @@ import { NewRequestSelectionService } from '../../new-request-selection.service'
           width: '320px',
           visibility: 'visible',
         }),
-        { params: { width: '*' } }
+        { params: { width: '*' } },
       ),
       state(
         'hidden',
         style({
           width: 0,
           visibility: 'hidden',
-        })
+        }),
       ),
       transition('* <=> *', [group([query('@fadeIcon', animateChild(), { optional: true }), animate('400ms ease')])]),
     ]),
@@ -88,7 +83,7 @@ import { NewRequestSelectionService } from '../../new-request-selection.service'
           opacity: '0',
           width: '0px',
           visibility: 'hidden',
-        })
+        }),
       ),
       state(
         'closed',
@@ -96,14 +91,14 @@ import { NewRequestSelectionService } from '../../new-request-selection.service'
           opacity: '1',
           width: '40px',
           visibility: 'visible',
-        })
+        }),
       ),
       state(
         'hidden',
         style({
           width: 0,
           visibility: 'hidden',
-        })
+        }),
       ),
       transition('* <=> *', animate('400ms ease')),
     ]),
@@ -126,7 +121,7 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
   public get searchState(): string {
     return this.viewReady ? (this.searchEnabled ? 'opened' : 'closed') : 'hidden';
   }
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public filterType: PatternItemListFilterType = PatternItemListFilterType.All;
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
@@ -141,9 +136,9 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
     private readonly orchestration: NewRequestOrchestrationService,
     private readonly patternItemService: PatternItemService,
     public readonly selectionService: NewRequestSelectionService,
-    settingsService: SettingsService
+    settingsService: SettingsService,
   ) {
-    this.orchestration.productBundle = null;
+    this.orchestration.productBundle = undefined;
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = patternItemService.PortalShopPatternRequestableSchema;
     this.displayedColumns = [
@@ -214,11 +209,12 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
     return this.getData();
   }
 
-  public onHighlightedEntityChanged(selectedBundle: PortalItshopPatternRequestable): void {
-    this.orchestration.productBundle = selectedBundle;
+  public onHighlightedEntityChanged(selectedBundle: TypedEntity): void {
+    this.orchestration.productBundle = selectedBundle as PortalItshopPatternRequestable;
   }
 
-  public async onSelectionChanged(bundles: PortalItshopPatternRequestable[]): Promise<void> {
+  public async onSelectionChanged(bundlesType: TypedEntity[]): Promise<void> {
+    const bundles = bundlesType as PortalItshopPatternRequestable[];
     if (bundles?.length === 0) {
       this.selectionService.addProducts([], SelectedProductSource.ProductBundles);
     } else {
@@ -240,6 +236,9 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
   }
 
   public async getData(newState?: CollectionLoadParameters): Promise<void> {
+    if (!this.orchestration.isLoggedIn) {
+      return;
+    }
     if (newState) {
       this.navigationState = newState;
     }
@@ -253,7 +252,7 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
           ...this.navigationState,
           UID_Person: this.recipients ? MultiValue.FromString(this.recipients.value).GetValues().join(',') : undefined,
         },
-        { signal: this.orchestration.abortController.signal }
+        { signal: this.orchestration.abortController.signal },
       );
       if (data) {
         this.dstSettings = {
@@ -272,7 +271,7 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
 
   public applyFilter(
     data: ExtendedTypedEntityCollection<PortalItshopPatternRequestable, unknown>,
-    filterType: PatternItemListFilterType
+    filterType: PatternItemListFilterType,
   ): ExtendedTypedEntityCollection<PortalItshopPatternRequestable, unknown> {
     switch (filterType) {
       case PatternItemListFilterType.All:

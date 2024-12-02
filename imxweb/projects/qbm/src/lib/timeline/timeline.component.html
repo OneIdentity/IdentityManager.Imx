@@ -1,4 +1,4 @@
-<div class="imx-timeline-content" [ngStyle]="!eventsGroupedByDate.length && { height: '100%' }">
+<div class="imx-timeline-content" [ngStyle]="!eventsGroupedByDate.length ? { height: '100%' } : undefined">
   <ng-container *ngIf="eventsGroupedByDate.length; else nonExisting">
     <div class="imx-timeline-events-group" *ngFor="let events of eventsGroupedByDate">
       <div class="imx-timeline-date">
@@ -11,10 +11,28 @@
         <div class="imx-timeline-separator-connector"></div>
       </div>
       <div class="imx-timeline-events">
-        <mat-card>
+        <mat-card class="imx-card-shadow">
           <mat-card-content>
             <div class="imx-timeline-event" *ngFor="let event of events.events">
               <span class="imx-timeline-event-time">{{ event.Time }}</span>
+              <eui-icon
+                *ngIf="getEventChangeType(event) === eventChangeTypes.Add"
+                icon="add"
+                class="imx-timeline-icon imx-timeline-icon-add"
+                [matTooltip]="'#LDS#Add/create events' | translate"
+              ></eui-icon>
+              <eui-icon
+                *ngIf="getEventChangeType(event) === eventChangeTypes.Edit"
+                icon="edit"
+                class="imx-timeline-icon imx-timeline-icon-edit"
+                [matTooltip]="'#LDS#Change events' | translate"
+              ></eui-icon>
+              <eui-icon
+                *ngIf="getEventChangeType(event) === eventChangeTypes.Remove"
+                icon="removetask"
+                class="imx-timeline-icon imx-timeline-icon-remove"
+                [matTooltip]="'#LDS#Remove/delete events' | translate"
+              ></eui-icon>
               <span>
                 {{ event.ChangeType }} ({{ event.User }})
                 <span *ngIf="event.Property || event.Display"> - </span>
@@ -34,9 +52,9 @@
 
 <ng-template #nonExisting>
   <div class="imx-no-results">
-    <eui-icon size="100px" icon="table"></eui-icon>
-    <h2>
-      {{ '#LDS#No data' | translate }}
-    </h2>
+    <eui-icon icon="table"></eui-icon>
+    <div>
+      {{ (data.length === 0 ? '#LDS#No data' : '#LDS#There were no changes during the selected period.') | translate }}
+    </div>
   </div>
 </ng-template>

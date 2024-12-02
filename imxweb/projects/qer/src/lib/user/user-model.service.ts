@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,11 +27,11 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { PortalPersonReports, UserConfig, UserFeatureInfo, UserGroupInfo } from 'imx-api-qer';
-import { PendingItemsType } from './pending-items-type.interface';
-import { QerApiService } from '../qer-api-client.service';
+import { PortalPersonReports, UserConfig, UserFeatureInfo, UserGroupInfo } from '@imx-modules/imx-api-qer';
+import { CachedPromise } from '@imx-modules/imx-qbm-dbts';
 import { CacheService, SettingsService } from 'qbm';
-import { CachedPromise } from 'imx-qbm-dbts';
+import { QerApiService } from '../qer-api-client.service';
+import { PendingItemsType } from './pending-items-type.interface';
 
 @Injectable()
 export class UserModelService {
@@ -42,15 +42,21 @@ export class UserModelService {
   private pendingItemsCache: CachedPromise<PendingItemsType>;
   private cachedGroups: CachedPromise<UserGroupInfo[]>;
   private cachedFeatures: CachedPromise<UserFeatureInfo>;
+  private cachedUserConfig: CachedPromise<UserConfig>;
 
-  constructor(private readonly qerClient: QerApiService, private readonly settingsService: SettingsService, cacheService: CacheService) {
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly settingsService: SettingsService,
+    cacheService: CacheService,
+  ) {
     this.pendingItemsCache = cacheService.buildCache(() => this.qerClient.client.portal_pendingitems_get());
     this.cachedGroups = cacheService.buildCache(() => this.qerClient.client.portal_usergroups_get());
     this.cachedFeatures = cacheService.buildCache(() => this.qerClient.client.portal_features_get());
+    this.cachedUserConfig = cacheService.buildCache(() => this.qerClient.client.portal_person_config_get());
   }
 
   public getUserConfig(): Promise<UserConfig> {
-    return this.qerClient.client.portal_person_config_get();
+    return this.cachedUserConfig.get();
   }
 
   public getPendingItems(): Promise<PendingItemsType> {
@@ -72,7 +78,7 @@ export class UserModelService {
 
   public async getDirectReports(uidperson?: string): Promise<PortalPersonReports[]> {
     const features = (await this.cachedFeatures.get()).Features;
-    if (features.find((feature) => feature === 'Portal_UI_PersonManager')) {
+    if (features?.find((feature) => feature === 'Portal_UI_PersonManager')) {
       return (
         await this.qerClient.typedClient.PortalPersonReports.Get({
           OnlyDirect: true,

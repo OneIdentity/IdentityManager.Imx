@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 // Host
 :host {
@@ -13,7 +13,7 @@ img {
 }
 
 // material classes
-.mat-card {
+.mat-mdc-card {
   width: 365px;
   height: 179px;
   margin: 50px 20px 0px;
@@ -22,34 +22,30 @@ img {
   flex: 0 0 auto;
 }
 
-
-
-.mat-card-title {
+.mat-mdc-card-title {
   padding: 20px 33px 0px;
-  font-size: 24px;
   font-weight: 600;
   margin-bottom: 0;
 }
 
-
-.mat-card > .mat-card-actions:last-child {
+.mat-mdc-card > .mat-mdc-card-actions:last-child {
   padding-bottom: 25px;
 }
 
-.mat-card-content {
+.mat-mdc-card-content {
   font-size: 16px;
   padding: 5px 33px 10px;
   margin-bottom: 0;
   flex-grow: 1;
 }
 
-.mat-card-actions {
+.mat-mdc-card-actions {
   display: flex;
   flex-direction: row;
   padding: 0 25px;
 }
 
-.mat-button {
+.mat-mdc-button {
   font-size: 16px;
 }
 
@@ -78,11 +74,4 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-}
-
-.imx-user-icon {
-  font-size: 100px;
-  text-align: center;
-  display: inline;
-  color: $iris-blue;
 }

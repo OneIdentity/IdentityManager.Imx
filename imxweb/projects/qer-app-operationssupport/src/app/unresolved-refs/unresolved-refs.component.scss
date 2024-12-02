@@ -5,23 +5,7 @@
   flex-grow: 1;
 }
 
-.imx-table-container {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  
-  > :nth-child(2) {
-    flex: 1 1 auto;
-  }
-}
-
 .imx-unresolved-refs-data {
   max-height: 100px;
   overflow: auto;
-}
-
-.imx-refresh-button {
-  margin-right: 5px;
-  height: 50px;
 }

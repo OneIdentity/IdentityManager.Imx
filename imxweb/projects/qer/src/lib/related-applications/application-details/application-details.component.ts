@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,27 +32,28 @@ import { ApplicationDialogComponent } from '../application-dialog/application-di
 @Component({
   selector: 'imx-application-details',
   templateUrl: './application-details.component.html',
-  styleUrls: ['./application-details.component.scss']
+  styleUrls: ['./application-details.component.scss'],
 })
 export class ApplicationDetailsComponent implements OnInit {
   public urlSafe: SafeResourceUrl;
-  constructor(public sanitizer: DomSanitizer,
-    private dialog: MatDialog) { }
+  constructor(
+    public sanitizer: DomSanitizer,
+    private dialog: MatDialog,
+  ) {}
 
   public ngOnInit(): void {
     if (history.state.data) {
-       if (history.state.data.DisplayType == 'NR') {
-         this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(history.state.data.Url);
-       } else {
+      if (history.state.data.DisplayType == 'NR') {
+        this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(history.state.data.Url);
+      } else {
         const dialogConfig = {
           width: 'min(700px,50%)',
           data: {
-            url: history.state.data.Url
-          }
+            url: history.state.data.Url,
+          },
         };
         this.dialog.open(ApplicationDialogComponent, dialogConfig);
       }
     }
   }
-
 }

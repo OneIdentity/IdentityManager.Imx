@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
-import { ViewContainerRef, ComponentRef, Type } from '@angular/core';
+import { ComponentRef, Type, ViewContainerRef } from '@angular/core';
 
 import { CdrEditorProvider } from './cdr-editor-provider.interface';
-import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { CdrEditor } from './cdr-editor.interface';
-import { EditFkComponent } from './edit-fk/edit-fk.component';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { EditFkMultiComponent } from './edit-fk/edit-fk-multi.component';
+import { EditFkComponent } from './edit-fk/edit-fk.component';
 
 /**
  * A special provider for foreign key columns.
@@ -47,7 +47,7 @@ export class FkCdrEditorProvider implements CdrEditorProvider {
    * @param cdref  A column dependent reference that contains the data for the editor.
    * @returns An instance of {@link CdrEditor}, that can be used or editing data, or null, if no foreign key information is given.
    */
-  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> {
+  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> | null {
     if (this.hasFkRelations(cdref)) {
       return cdref.column.GetMetadata().IsMultiValue()
         ? this.createBound(EditFkMultiComponent, parent, cdref)
@@ -64,7 +64,7 @@ export class FkCdrEditorProvider implements CdrEditorProvider {
   private createBound<T extends CdrEditor>(
     type: Type<T>,
     parent: ViewContainerRef,
-    cdref: ColumnDependentReference
+    cdref: ColumnDependentReference,
   ): ComponentRef<CdrEditor> {
     const result = parent.createComponent(type);
     result.instance.bind(cdref);
@@ -74,7 +74,7 @@ export class FkCdrEditorProvider implements CdrEditorProvider {
   /**
    * Determines, if there are fk relations present or not.
    * @param cdref The column dependent reference, that needs to be checked
-   * @returns 
+   * @returns
    */
   private hasFkRelations(cdref: ColumnDependentReference): boolean {
     const fkRelations = cdref.column.GetMetadata().GetFkRelations();

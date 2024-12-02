@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HeatmapSummaryDto } from 'imx-api-qer';
+import { HeatmapSummaryDto } from '@imx-modules/imx-api-qer';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 
 import { HeatmapTileComponent } from './heatmap-tile.component';
@@ -37,17 +37,16 @@ describe('HeatmapTileComponent', () => {
   const summaryStat: HeatmapSummaryDto = {
     CountGreen: 0,
     CountRed: 0,
-    CountYellow: 0
-  }
+    CountYellow: 0,
+  };
 
   beforeEach(() => {
-    return MockBuilder(HeatmapTileComponent)
-      .beforeCompileComponents(testBed => {
-        testBed.configureTestingModule({
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
-        })
-      })
+    return MockBuilder(HeatmapTileComponent).beforeCompileComponents((testBed) => {
+      testBed.configureTestingModule({
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      });
     });
+  });
 
   beforeEach(() => {
     fixture = MockRender(HeatmapTileComponent, {
@@ -55,7 +54,7 @@ describe('HeatmapTileComponent', () => {
     });
     component = fixture.point.componentInstance;
     fixture.detectChanges();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

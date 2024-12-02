@@ -5,66 +5,8 @@
   overflow: auto;
   height: 100%;
 
-  .mat-tab-group {
-    width: 100%;
-
-    ::ng-deep .mat-tab-header {
-      margin: 0 20px;
-    }
-  }
-
   .imx-dirty-indicator {
     margin-right: 10px;
     color: $color-orange-60;
-  }
-}
-
-.imx-tab-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  .imx-mat-tab-content-body {
-    height: 100%;
-  }
-
-  .imx-tab-content-body {
-    display: flex;
-    height: 100%;
-    padding: 0;
-    .mat-card {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-    }
-  }
-}
-
-
-.eui-dark-theme {
-  :host {
-    .imx-tab-content {
-      .imx-tab-content-body {
-        .mat-tab-group {
-          ::ng-deep .mat-tab-header {
-            background-color: transparent;
-          }
-
-          ::ng-deep .mat-tab-label {
-            background-color: $color-gray-80;
-          }
-        }
-
-      }
-    }
-  }
-}
-
-.eui-contrast-theme{
-  :host{
-    .mat-tab-group ::ng-deep .mat-tab-label {
-      background-color: $color-gray-90;
-      color: $color-gray-0;
-    }
   }
 }

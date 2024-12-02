@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,21 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from '@imx-modules/imx-qbm-dbts';
 
-import { ConfirmationService, DataSourceItemStatus, DataSourceToolbarSettings, DataTableComponent, SnackBarService } from 'qbm';
-import { SourceDetectiveSidesheetData } from '../../sourcedetective/sourcedetective-sidesheet.component';
-import { SourceDetectiveSidesheetComponent } from '../../sourcedetective/sourcedetective-sidesheet.component';
+import {
+  ConfirmationService,
+  DataSourceItemStatus,
+  DataSourceToolbarSettings,
+  DataTableComponent,
+  SnackBarService,
+  calculateSidesheetWidth,
+} from 'qbm';
+import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData } from '../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveType } from '../../sourcedetective/sourcedetective-type.enum';
 import { DataManagementService } from '../data-management.service';
 import { MembershipsChooseIdentitiesComponent } from '../memberships-choose-identities/memberships-choose-identities.component';
@@ -46,9 +51,9 @@ import { RemoveMembershipComponent } from './remove-membership.component';
   styleUrls: ['./secondary-memberships.component.scss', '../sidesheet.scss', './role-sidesheet-tabs.scss'],
 })
 export class SecondaryMembershipsComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public navigationState: CollectionLoadParameters = {};
-  public entitySchema: EntitySchema;
+  public entitySchema: EntitySchema | undefined;
   public DisplayColumns = DisplayColumns;
   public displayColumns: IClientProperty[];
   public selectableStatus: DataSourceItemStatus = {
@@ -71,7 +76,7 @@ export class SecondaryMembershipsComponent implements OnInit {
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
     private readonly confirmation: ConfirmationService,
-    private readonly snackbar: SnackBarService
+    private readonly snackbar: SnackBarService,
   ) {
     this.canEdit = roleService.canEdit;
     this.secondaryAlert = this.canEdit
@@ -85,17 +90,20 @@ export class SecondaryMembershipsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.entitySchema = this.roleService.getMembershipEntitySchema('get');
-    this.displayColumns = [
-      this.entitySchema.Columns.UID_Person,
-      this.entitySchema.Columns.XDateInserted,
-      this.entitySchema.Columns.OrderState,
-      this.entitySchema.Columns.XOrigin,
-      this.entitySchema.Columns.ValidUntil,
-    ];
+    this.entitySchema = this.roleService.getMembershipEntitySchema();
+    if (this.entitySchema != null) {
+      this.displayColumns = [
+        this.entitySchema.Columns.UID_Person,
+        this.entitySchema.Columns.XDateInserted,
+        this.entitySchema.Columns.OrderState,
+        this.entitySchema.Columns.XOrigin,
+        this.entitySchema.Columns.ValidUntil,
+      ];
+    }
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     await this.navigate();
   }
@@ -131,20 +139,23 @@ export class SecondaryMembershipsComponent implements OnInit {
     const countDirect = this.getCount(deletableMemberships, XOrigin.Direct);
 
     if (nonDeletableMemberships.length > 0 || countDynamic > 0 || countRequested > 0) {
-      const result = await this.sidesheet.open(RemoveMembershipComponent, {
-        title: await this.translate.get('#LDS#Heading Remove Memberships').toPromise(),
-        width: '650px',
-        padding: '0px',
-        disableClose: false,
-        testId: 'role-membership-remove',
-        data: {
-          nonDeletableMemberships,
-          selectedEntities: deletableMemberships,
-          countDirect,
-          countDynamic,
-          countRequested,
-        },
-      }).afterClosed().toPromise();
+      const result = await this.sidesheet
+        .open(RemoveMembershipComponent, {
+          title: await this.translate.get('#LDS#Heading Remove Memberships').toPromise(),
+          width: calculateSidesheetWidth(700, 0.5),
+          padding: '0px',
+          disableClose: false,
+          testId: 'role-membership-remove',
+          data: {
+            nonDeletableMemberships,
+            selectedEntities: deletableMemberships,
+            countDirect,
+            countDynamic,
+            countRequested,
+          },
+        })
+        .afterClosed()
+        .toPromise();
 
       if (result) {
         this.dataTable.clearSelection();
@@ -154,15 +165,17 @@ export class SecondaryMembershipsComponent implements OnInit {
       if (
         await this.confirmation.confirmDelete(
           '#LDS#Heading Remove Memberships',
-          '#LDS#Are you sure you want to remove the selected memberships?'
+          '#LDS#Are you sure you want to remove the selected memberships?',
         )
       ) {
         const directs = deletableMemberships.filter((elem) => this.hasBit(elem, XOrigin.Direct));
         this.busyService.show();
         try {
-          const id = this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
-          for (const membership of directs) {
-            await this.roleService.removeMembership(membership, id);
+          const id = this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(',');
+          if (id != null) {
+            for (const membership of directs) {
+              await this.roleService.removeMembership(membership, id);
+            }
           }
         } finally {
           this.busyService.hide();
@@ -177,9 +190,9 @@ export class SecondaryMembershipsComponent implements OnInit {
   public async onSelectIdentities(): Promise<void> {
     this.sidesheet.open(MembershipsChooseIdentitiesComponent, {
       title: await this.translate.get('#LDS#Heading Request Memberships').toPromise(),
-      subTitle: this.dataManagementService.entityInteractive.GetEntity().GetDisplay(),
+      subTitle: this.dataManagementService.entityInteractive?.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '800px',
+      width: calculateSidesheetWidth(800, 0.5),
       disableClose: false,
       testId: 'role-select-identities',
     });
@@ -206,13 +219,13 @@ export class SecondaryMembershipsComponent implements OnInit {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
       UID: uidRole,
-      TableName: this.roleService.ownershipInfo.TableName,
+      TableName: this.roleService.ownershipInfo.TableName ?? '',
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
-      subTitle: this.dataManagementService.entityInteractive.GetEntity().GetDisplay(),
+      subTitle: this.dataManagementService.entityInteractive?.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '800px',
+      width: calculateSidesheetWidth(800, 0.5),
       disableClose: false,
       testId: 'role-membership-assingment-analysis',
       data,
@@ -220,25 +233,30 @@ export class SecondaryMembershipsComponent implements OnInit {
   }
 
   public isNotEffective(item: TypedEntity): boolean {
-    if (!this.entitySchema.Columns.XIsInEffect) {
+    if (!this.entitySchema?.Columns.XIsInEffect) {
       return false;
     }
     return !item.GetEntity().GetColumn('XIsInEffect').GetValue();
   }
 
   private async navigate(): Promise<void> {
-    this.busyService.show();
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
-      this.dstSettings = {
-        dataSource: await this.roleService.getMemberships({
-          id: this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
-          navigationState: this.navigationState,
-        }),
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-      };
+      this.dstSettings =
+        this.entitySchema == null
+          ? undefined
+          : {
+              dataSource: await this.roleService.getMemberships({
+                id: this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(','),
+                navigationState: this.navigationState,
+              }),
+              entitySchema: this.entitySchema,
+              navigationState: this.navigationState,
+              displayedColumns: this.displayColumns,
+            };
     } finally {
       this.busyService.hide();
     }

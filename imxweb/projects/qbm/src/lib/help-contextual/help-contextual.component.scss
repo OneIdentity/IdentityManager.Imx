@@ -1,36 +1,17 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-:host{
+:host {
   display: flex;
   align-items: center;
 }
-span{
+span {
   color: $color-gray-60;
   font-size: 14px;
 }
-::ng-deep{
-  eui-sidesheet{
-    .eui-sidesheet{
-      .mat-toolbar{
-        justify-content: start;
-        .eui-sidesheet__heading-text{
-          flex-basis: auto;
-        }
-        imx-help-contextual{
-          .mat-icon-button{
-            color: $color-gray-0;
-          }
-        }
-        .eui-sidesheet-close{
-          margin-left: auto;
-        }
-      }
-    }
-  }
-}
+
 .eui-dark-theme {
   :host {
-    span{
+    span {
       color: $color-gray-10;
     }
   }

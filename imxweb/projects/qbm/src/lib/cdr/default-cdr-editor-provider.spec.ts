@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,27 +24,23 @@
  *
  */
 
-import { ViewContainerRef, ComponentRef } from '@angular/core';
-import * as TypeMoq from 'typemoq';
-
-import { DefaultCdrEditorProvider } from './default-cdr-editor-provider';
-import { ColumnDependentReference } from './column-dependent-reference.interface';
-import { IValueMetadata, ValType, LimitedValueData, IEntityColumn } from 'imx-qbm-dbts';
-import { EditBooleanComponent } from './edit-boolean/edit-boolean.component';
+import { ComponentRef, ViewContainerRef } from '@angular/core';
+import { IValueMetadata, LimitedValueData, ValType } from '@imx-modules/imx-qbm-dbts';
+import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 import { CdrEditor } from './cdr-editor.interface';
-import { EditNumberComponent } from './edit-number/edit-number.component';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
+import { DefaultCdrEditorProvider } from './default-cdr-editor-provider';
+import { EditBooleanComponent } from './edit-boolean/edit-boolean.component';
 import { EditLimitedValueComponent } from './edit-limited-value/edit-limited-value.component';
 import { EditMultiLimitedValueComponent } from './edit-multi-limited-value/edit-multi-limited-value.component';
 import { EditMultiValueComponent } from './edit-multi-value/edit-multi-value.component';
 import { EditMultilineComponent } from './edit-multiline/edit-multiline.component';
+import { EditNumberComponent } from './edit-number/edit-number.component';
 import { EditRiskIndexComponent } from './edit-risk-index/edit-risk-index.component';
 import { ViewPropertyDefaultComponent } from './view-property-default/view-property-default.component';
-import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('DefaultCdrEditorProvider', () => {
-  beforeEach(() => {
-    
-  });
+  beforeEach(() => {});
 
   afterAll(() => {
     clearStylesFromDOM();
@@ -147,62 +143,53 @@ describe('DefaultCdrEditorProvider', () => {
   it('should create ViewPropertyDefaultComponent for readonly RiskIndex cdr', () => {
     testCreateEditor(ViewPropertyDefaultComponent, ValType.Double, false, false, false, [], '', true);
   });
-
 });
 
-function testCreateEditor<T extends CdrEditor>(TCtor: new (...args: any[]) => T, type: ValType,
-                                               multiLine: boolean = false, multiValue: boolean = false, range: boolean = false,
-                                               limitedValues: string[] = [], schemaKey: string = '', isReadOnly: boolean = false) {
-      // Arrange
-      const cdrMock = createCdr(multiLine, multiValue, range, type, limitedValues, schemaKey, isReadOnly);
-      const editorMock = TypeMoq.Mock.ofType<T>();
-      const parentMock = TypeMoq.Mock.ofType<ViewContainerRef>();
-      const childMock = createComponentMock<T>(editorMock.object);
+function testCreateEditor<T extends CdrEditor>(
+  TCtor: new (...args: any[]) => T,
+  type: ValType,
+  multiLine: boolean = false,
+  multiValue: boolean = false,
+  range: boolean = false,
+  limitedValues: string[] = [],
+  schemaKey: string = '',
+  isReadOnly: boolean = false,
+) {
+  const cdrMock = createCdr(multiLine, multiValue, range, type, limitedValues, schemaKey, isReadOnly);
+  const childMock = createComponentMock<T>({} as T);
+  const parentMock = { createComponent: () => childMock } as unknown as ViewContainerRef;
+  const provider = new DefaultCdrEditorProvider();
 
-      parentMock.setup( p => p.createComponent(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => childMock.object);
-
-      // Act
-      const provider = new DefaultCdrEditorProvider();
-      const editor = provider.createEditor(parentMock.object, cdrMock.object);
-
-      // Assert
-      expect(editor === childMock.object).toBeTruthy();
-      editorMock.verify(e => e.bind(cdrMock.object), TypeMoq.Times.once());
-      editorMock.verify(e => e.bind(TypeMoq.It.isAny()), TypeMoq.Times.once());
+  const editor = provider.createEditor(parentMock, cdrMock);
+  expect(editor === childMock).toBeTruthy();
 }
 
-export function createComponentMock<T extends CdrEditor>(instance: T): TypeMoq.IMock<ComponentRef<T>> {
-  const mock = TypeMoq.Mock.ofType<ComponentRef<T>>();
-  mock.setup(m => m.instance).returns(() => instance);
-  return mock;
+function createCdr(
+  multiLine: boolean,
+  multiValue: boolean,
+  range: boolean,
+  type: ValType,
+  limitedValues?: string[],
+  schemaKey?: string,
+  isReadOnly?: boolean,
+): ColumnDependentReference {
+  const limited: LimitedValueData[] = limitedValues.map((elem) => ({ Value: elem }));
+
+  const metaData: IValueMetadata = {
+    IsMultiLine: () => multiLine,
+    IsMultiValue: () => multiValue,
+    IsRange: () => range,
+    GetType: () => type,
+    GetLimitedValues: () => limited as ReadonlyArray<LimitedValueData>,
+    GetSchemaKey: () => schemaKey,
+    CanEdit: () => !isReadOnly,
+    GetBitMaskCaptions: () => [] as ReadonlyArray<string>,
+  } as IValueMetadata;
+
+  return { column: { GetMetadata: () => metaData }, isReadOnly: () => isReadOnly } as unknown as ColumnDependentReference;
 }
 
-function createCdr(multiLine: boolean, multiValue: boolean, range: boolean,
-  type: ValType, limitedValues?: string[], schemaKey?: string, isReadOnly?: boolean)
-: TypeMoq.IMock<ColumnDependentReference> {
-
-  const metaMock = TypeMoq.Mock.ofType<IValueMetadata>();
-  metaMock.setup(m => m.IsMultiLine()).returns(() => multiLine);
-  metaMock.setup(m => m.IsMultiValue()).returns(() => multiValue);
-  metaMock.setup(m => m.IsRange()).returns(() => range);
-  metaMock.setup(m => m.GetType()).returns(() => type);
-
-  const lvArray: LimitedValueData[] = [];
-  if (limitedValues != null) {
-    for (const lv of limitedValues) {
-      const lvMock = TypeMoq.Mock.ofType<LimitedValueData>();
-      lvMock.setup(m => m.Value).returns(() => lv);
-      lvArray.push(lvMock.object);
-    }
-  }
-
-  metaMock.setup(m => m.GetLimitedValues()).returns(() => lvArray);
-  metaMock.setup(m => m.GetSchemaKey()).returns(() => schemaKey)
-  metaMock.setup(m => m.CanEdit()).returns(() => !isReadOnly)
-
-  const cdrMock = TypeMoq.Mock.ofType<ColumnDependentReference>();
-  cdrMock.setup(m => m.column).returns(() => ({ GetMetadata: () => metaMock.object } as IEntityColumn));
-  cdrMock.setup(m => m.isReadOnly()).returns(() => isReadOnly);
-
-  return cdrMock;
+export function createComponentMock<T extends CdrEditor>(instance: T): ComponentRef<T> {
+  instance.bind = () => {};
+  return { instance } as ComponentRef<T>;
 }

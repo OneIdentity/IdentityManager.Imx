@@ -1,21 +1,11 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.imx-content-card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  @include flex-column-container($height: 100%);
 }
 
 .imx-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  @include flex-column-container($height: 100%);
   flex: 1 1 auto;
   overflow-y: auto;
   margin-bottom: -16px;
@@ -24,19 +14,9 @@
 .imx-card {
   margin: 0;
   margin-bottom: -16px;
-
-  .governance-sidesheet-action-buttons {
-    .justify-start {
-      eui-icon {
-        font-size: 14px;
-        margin-right: 4px;
-      }
-    }
-  }
 }
 
 @media screen and (max-width: 480px) {
-
   .imx-button-bar {
     flex-direction: column;
     display: block;

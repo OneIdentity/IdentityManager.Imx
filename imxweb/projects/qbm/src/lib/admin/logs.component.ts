@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,25 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, ViewChild, OnInit, Input } from '@angular/core';
-import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { ApiLogEntry, LogFileInfo, V2ApiClientMethodFactory } from 'imx-api-qbm';
-import { AppConfigService } from '../appConfig/appConfig.service';
-import { LogDetailsSidesheetComponent } from './log-details-sidesheet.component';
-import { ClassloggerService } from '../classlogger/classlogger.service';
-import { LocalizedDatePipe } from '../date/localized-date.pipe';
-import { MatTabChangeEvent } from '@angular/material/tabs';
-import { CollectionLoadParameters, FilterData, MethodDefinition, TypedEntity, ValType } from 'imx-qbm-dbts';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
-import { ElementalUiConfigService } from '../configuration/elemental-ui-config.service';
-import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
+import { ApiLogEntry, LogFileInfo, V2ApiClientMethodFactory } from '@imx-modules/imx-api-qbm';
+import { FilterData, MethodDefinition, ValType } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import moment from 'moment-timezone';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { calculateSidesheetWidth } from '../base/sidesheet-helper';
+import { ClassloggerService } from '../classlogger/classlogger.service';
+import { ElementalUiConfigService } from '../configuration/elemental-ui-config.service';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
+import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
+import { LocalizedDatePipe } from '../date/localized-date.pipe';
 import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
+import { LogDetailsSidesheetComponent } from './log-details-sidesheet.component';
 
 @Component({
   selector: 'imx-logs',
@@ -87,16 +87,16 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
     private datePipe: LocalizedDatePipe,
     private logger: ClassloggerService,
     private elementalUiConfigService: ElementalUiConfigService,
-    private translator: TranslateService
+    private translator: TranslateService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
-    const overlayRef = this.busyService.show();
+    this.showBusyIndicator();
 
     try {
       const timeFilter: DataSourceToolbarFilter = {
         Name: 'TimeFilter',
-        Description: this.translator.instant('#LDS#Time'),
+        Description: this.translator.instant('#LDS#Time period'),
         Options: [
           {
             Display: this.translator.instant('#LDS#Last hour'),
@@ -165,23 +165,23 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
       this.stream.onmessage = (evt) => {
         this.logger.trace('Logs data', evt.data);
         this.liveLogs.push(JSON.parse(evt.data));
-        this.onLiveLogSearch(this.dstSettingsLive.navigationState.search);
+        this.onLiveLogSearch(this.dstSettingsLive?.navigationState?.search ?? '', true);
       };
 
       this.stream.onerror = (err) => {
         this.logger.error('An error occured in data stream:', err);
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
   private async getSessionData(): Promise<ApiLogEntry[]> {
-    const overlayRef = this.busyService.show();
+    this.showBusyIndicator();
     try {
       return await this.appConfigService.client.admin_systeminfo_log_session_get();
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
@@ -191,32 +191,33 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
     this.currentTab = event.index;
 
     if (this.currentTab === 2) {
-      const overlayRef = this.busyService.show();
+      this.showBusyIndicator();
       try {
         this.logFiles = await this.appConfigService.client.admin_systeminfo_logs_get();
 
         this.logFiles.forEach((log) => {
-          var dir = log.Path.split('\\');
-          const url =
-            this.appConfigService.BaseUrl +
-            new MethodDefinition(new V2ApiClientMethodFactory().admin_systeminfo_log_get(dir[0], dir[1])).path;
-          this.logDownloads.push({
-            ...this.elementalUiConfigService.Config.downloadOptions,
-            fileMimeType: '',
-            url,
-            fileName: log.File,
-          });
+          var dir = log.Path?.split('\\');
+          if (dir && dir.length > 1) {
+            const url =
+              this.appConfigService.BaseUrl +
+              new MethodDefinition(new V2ApiClientMethodFactory().admin_systeminfo_log_get(dir[0], dir[1])).path;
+            this.logDownloads.push({
+              ...this.elementalUiConfigService.Config.downloadOptions,
+              fileMimeType: '',
+              url,
+              fileName: log.File,
+            });
+          }
         });
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
       }
     }
   }
 
   public onSessionLogSearch(keywords: string): void {
-    const sessionKeywords: ({ IsRegex?: boolean } & FilterData)[] = this.dstSettingsSession.navigationState.filter?.filter(
-      (filter) => filter.Type === 1
-    );
+    const sessionKeywords: ({ IsRegex?: boolean } & FilterData)[] =
+      this.dstSettingsSession.navigationState.filter?.filter((filter) => filter.Type === 1) ?? [];
     this.sessionLogsFiltered = this.sessionLogs;
 
     //Handles keyword filters
@@ -224,16 +225,16 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
       this.sessionLogsFiltered = this.sessionLogsFiltered.filter((log) =>
         sessionKeywords.every((keyword) =>
           keyword.IsRegex
-            ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase())
-            : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase())
-        )
+            ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase() ?? '')
+            : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase()),
+        ),
       );
     }
 
     //Handles time filters
     if (this.dstSettingsSession.navigationState.TimeFilter) {
       this.sessionLogsFiltered = this.sessionLogsFiltered.filter((log) =>
-        moment(log.TimeStamp).isAfter(this.dstSettingsSession.navigationState.TimeFilter)
+        moment(log.TimeStamp).isAfter(this.dstSettingsSession.navigationState.TimeFilter),
       );
     }
 
@@ -254,10 +255,9 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
     this.setSessionPage();
   }
 
-  public onLiveLogSearch(keywords: string): void {
-    const liveKeywords: ({ IsRegex?: boolean } & FilterData)[] = this.dstSettingsLive.navigationState.filter?.filter(
-      (filter) => filter.Type === 1
-    );
+  public onLiveLogSearch(keywords: string, stream = false): void {
+    const liveKeywords: ({ IsRegex?: boolean } & FilterData)[] =
+      this.dstSettingsLive.navigationState.filter?.filter((filter) => filter.Type === 1) ?? [];
     this.liveLogsFiltered = this.liveLogs;
 
     //Handles keyword filters
@@ -265,16 +265,16 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
       this.liveLogsFiltered = this.liveLogsFiltered.filter((log) =>
         liveKeywords.every((keyword) =>
           keyword.IsRegex
-            ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase())
-            : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase())
-        )
+            ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase() ?? '')
+            : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase()),
+        ),
       );
     }
 
     //Handles time filters
     if (this.dstSettingsLive.navigationState.TimeFilter) {
       this.liveLogsFiltered = this.liveLogsFiltered.filter((log) =>
-        moment(log.TimeStamp).isAfter(this.dstSettingsLive.navigationState.TimeFilter)
+        moment(log.TimeStamp).isAfter(this.dstSettingsLive.navigationState.TimeFilter),
       );
     }
 
@@ -291,7 +291,9 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
     }
 
     this.liveTotalCount = this.liveLogsFiltered.length;
-    this.livePaginator.pageIndex = 0;
+    if (!stream) {
+      this.livePaginator.pageIndex = 0;
+    }
     this.setLivePage();
   }
 
@@ -303,19 +305,21 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
 
   public onRegexSessionLogSearch(keywords: string): void {
     this.sessionLogsFiltered = keywords
-      ? this.sessionLogsFiltered.filter((log) => this.regexTest(keywords, log.Message))
+      ? this.sessionLogsFiltered.filter((log) => this.regexTest(keywords, log.Message ?? ''))
       : this.sessionLogsFiltered;
   }
 
   public onRegexLiveLogSearch(keywords: string): void {
-    this.liveLogsFiltered = keywords ? this.liveLogsFiltered.filter((log) => this.regexTest(keywords, log.Message)) : this.liveLogsFiltered;
+    this.liveLogsFiltered = keywords
+      ? this.liveLogsFiltered.filter((log) => this.regexTest(keywords, log.Message ?? ''))
+      : this.liveLogsFiltered;
   }
 
   public onRegexToggle(event: MatSlideToggleChange): void {
     this.searchBoxText = event.checked ? '#LDS#Search using regular expressions' : '#LDS#Search';
 
-    if (this.currentTab === 0) this.onSessionLogSearch(this.dstSession.settings.navigationState.search);
-    if (this.currentTab === 1) this.onLiveLogSearch(this.dstLive.settings.navigationState.search);
+    if (this.currentTab === 0) this.onSessionLogSearch(this.dstSession.settings.navigationState.search ?? '');
+    if (this.currentTab === 1) this.onLiveLogSearch(this.dstLive.settings.navigationState.search ?? '');
   }
 
   public validateRegex(keywords: string): boolean {
@@ -373,38 +377,43 @@ export class LogsComponent implements OnInit, SideNavigationComponent {
   }
 
   public getIconColor(changeType: string): string {
-    let color = 'imx-primary-icon';
+    let color = 'imx-icon-info';
     switch (changeType) {
       case 'Error':
-        color = 'imx-error-icon';
+        color = 'imx-icon-error';
         break;
       case 'Warn':
-        color = 'imx-warning-icon';
+        color = 'imx-icon-warning';
         break;
     }
     return color;
   }
 
   public async openLogSideSheet(log: ApiLogEntry): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    this.showBusyIndicator();
     let config: EuiSidesheetConfig;
     try {
       config = {
         title: await this.translateService.get('#LDS#Heading View Log Entry Details').toPromise(),
         subTitle: this.datePipe.transform(log.TimeStamp),
         padding: '0',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         testId: 'log-details-sidesheet',
         data: log,
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
     this.sidesheet.open(LogDetailsSidesheetComponent, config);
   }
 
   public ngOnDestroy(): void {
     if (this.stream) this.stream.close();
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

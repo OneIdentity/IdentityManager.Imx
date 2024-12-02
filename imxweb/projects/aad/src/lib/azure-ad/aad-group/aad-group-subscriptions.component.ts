@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,24 +26,24 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { PortalTargetsystemAadgroupSubsku } from 'imx-api-aad';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { PortalTargetsystemAadgroupSubsku } from '@imx-modules/imx-api-aad';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import {
   ClassloggerService,
   DataSourceToolbarFilter,
-  DataSourceToolbarSettings, DataTableComponent,
+  DataSourceToolbarSettings,
+  DataTableComponent,
   DynamicTabDataProviderDirective,
-  SettingsService
+  SettingsService,
 } from 'qbm';
 import { AzureAdService } from '../azure-ad.service';
 
 @Component({
   selector: 'imx-aad-group-subscriptions',
   templateUrl: './aad-group-subscriptions.component.html',
-  styleUrls: ['../azure-ad-common.scss']
+  styleUrls: ['../azure-ad-common.scss'],
 })
 export class AadGroupSubscriptionsComponent implements OnInit {
-
   @ViewChild('dataTable', { static: false }) public dataTable: DataTableComponent<PortalTargetsystemAadgroupSubsku>;
   public dstSettings: DataSourceToolbarSettings;
   public navigationState: CollectionLoadParameters;
@@ -52,13 +52,13 @@ export class AadGroupSubscriptionsComponent implements OnInit {
   public readonly DisplayColumns = DisplayColumns;
 
   private displayedColumns: IClientProperty[] = [];
-  private referrer: { objecttable: string; objectuid: string; };
+  private referrer: { objecttable: string; objectuid: string };
 
   constructor(
     private readonly logger: ClassloggerService,
     private readonly aadService: AzureAdService,
     settings: SettingsService,
-    dataProvider: DynamicTabDataProviderDirective
+    dataProvider: DynamicTabDataProviderDirective,
   ) {
     this.navigationState = { PageSize: settings.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaAadGroupSub = this.aadService.aadGroupSubSchema;
@@ -66,10 +66,7 @@ export class AadGroupSubscriptionsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.displayedColumns = [
-      this.entitySchemaAadGroupSub.Columns.UID_AADSubSku,
-      this.entitySchemaAadGroupSub.Columns.XOrigin
-    ];
+    this.displayedColumns = [this.entitySchemaAadGroupSub.Columns.UID_AADSubSku, this.entitySchemaAadGroupSub.Columns?.XOrigin];
     await this.navigate();
   }
 
@@ -87,7 +84,6 @@ export class AadGroupSubscriptionsComponent implements OnInit {
     await this.navigate();
   }
 
-
   private async navigate(): Promise<void> {
     this.aadService.handleOpenLoader();
     try {
@@ -99,7 +95,7 @@ export class AadGroupSubscriptionsComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
       };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
+      this.logger.debug(this, `Head at ${data.Data.length + (this.navigationState.StartIndex ?? 0)} of ${data.totalCount} item(s)`);
     } finally {
       this.aadService.handleCloseLoader();
     }

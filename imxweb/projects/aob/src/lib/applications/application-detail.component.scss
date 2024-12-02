@@ -1,22 +1,13 @@
 @use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/assets/variables.scss';
-
-$imx-component-height: calc(100vh - 180px);
+@import 'base/mixins';
+@import 'base/variables';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-}
-
-:host ::ng-deep .mat-tab-body-wrapper {
-  .mat-tab-body-content {
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-  }
 }
 
 .imx-application-details {
@@ -28,7 +19,7 @@ $imx-component-height: calc(100vh - 180px);
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  height: $imx-component-height;
+  height: $IMX_Application_Details_Component_Height;
   overflow: hidden;
 }
 
@@ -67,21 +58,9 @@ $imx-component-height: calc(100vh - 180px);
   flex-grow: 1;
 }
 
-.imx-application-details-icon {
-  grid-column-start: 1;
-  grid-column-end: 2;
-  grid-row-start: 1;
-  grid-row-end: 3;
+.imx-application-details-image {
   width: 42px;
   height: 42px;
-  align-self: center;
-  object-fit: cover;
-}
-
-@mixin textOverflowEllipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .imx-application-details-title {
@@ -93,7 +72,7 @@ $imx-component-height: calc(100vh - 180px);
   font-size: 24px;
   min-height: 40px;
   margin: 0 15px 0 10px;
-  @include textOverflowEllipsis;
+  @include text-overflow-ellipsis;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -106,7 +85,7 @@ $imx-component-height: calc(100vh - 180px);
   grid-row-end: 2;
   font-size: 14px;
   margin: 0 15px 0 10px;
-  @include textOverflowEllipsis;
+  @include text-overflow-ellipsis;
 }
 
 .imx-info {
@@ -115,41 +94,19 @@ $imx-component-height: calc(100vh - 180px);
   margin-right: 50px;
 }
 
-.mat-tab-group {
-  overflow: hidden;
-  height: 100%;
-}
-
 imx-application-hyperview {
   overflow: auto;
   flex-grow: 1;
   padding: 1em;
 }
 
-// TODO: .mat-tab-body-wrapper does not pass information of the height to its child nodes,
-// because it does not stretch to the height of its parent container (which is a mat-tab-group).
-// Right now the only fix is to use the ng-deep selector.
-::ng-deep .mat-tab-body-wrapper {
-  height: inherit;
-
-  .mat-tab-body-content {
-    overflow: visible;
-  }
-}
 
 :host {
-  ::ng-deep .mat-tab-body-content {
-    background-color: rgba($color-gray-10, 0.1);
-  }
+
   .imx-application-content {
     background-color: $color-gray-0;
   }
 
-  .imx-application-content-no-app {
-    > .eui-icon {
-      color: $color-gray-30;
-    }
-  }
   .imx-application-details-subtitle {
     color: $color-gray-70;
   }
@@ -157,28 +114,18 @@ imx-application-hyperview {
 
 .eui-dark-theme {
   :host {
-    ::ng-deep .mat-tab-labels {
-      
-      background-color:$color-gray-70;
-    }
+
     .imx-application-content {
-      background-color:$color-gray-70;
+      background-color: $color-gray-70;
     }
 
-    ::ng-deep .mat-tab-body-content {
-      background-color:rgba($color-gray-70, 0.55);
-    }
-
-    
     .imx-application-content-no-app {
       .imx-application-content-no-app-text,
       .imx-application-content-no-app-description {
         color: $color-gray-20;
       }
-      > .eui-icon {
-        color: $color-gray-60;
-      }
     }
+
     .imx-application-details-subtitle {
       color: $color-gray-50;
     }
@@ -187,21 +134,10 @@ imx-application-hyperview {
 
 .eui-contrast-theme {
   :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-100;
-    }
-
-    ::ng-deep .mat-tab-body-content {
-      background-color: $color-gray-100;
-    }
     .imx-application-content {
       background-color: $color-gray-100;
     }
-    .imx-application-content-no-app {
-      > .eui-icon {
-        color: $color-gray-90;
-      }
-    }
+
     .imx-application-details-subtitle {
       color: $color-gray-50;
     }

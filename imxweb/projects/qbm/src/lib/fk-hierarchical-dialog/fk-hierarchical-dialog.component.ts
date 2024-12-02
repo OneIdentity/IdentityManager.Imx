@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,8 @@
  */
 
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
-import { OverlayRef } from '@angular/cdk/overlay';
 
 import {
   CollectionLoadParameters,
@@ -38,15 +37,15 @@ import {
   IEntity,
   IForeignKeyInfo,
   TypedEntity,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { MetadataService } from '../base/metadata.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { ConfirmationService } from '../confirmation/confirmation.service';
-import { ForeignKeyPickerData } from '../fk-advanced-picker/foreign-key-picker-data.interface';
-import { HierarchicalFkDatabase } from './hierarchical-fk-database';
-import { HierarchicalCandidate } from './hierarchical-candidate';
-import { DataTreeWrapperComponent } from '../data-tree-wrapper/data-tree-wrapper.component';
 import { FilterTreeParameter } from '../data-source-toolbar/data-model/filter-tree-parameter';
+import { DataTreeWrapperComponent } from '../data-tree-wrapper/data-tree-wrapper.component';
+import { ForeignKeyPickerData } from '../fk-advanced-picker/foreign-key-picker-data.interface';
+import { HierarchicalCandidate } from './hierarchical-candidate';
+import { HierarchicalFkDatabase } from './hierarchical-fk-database';
 
 @Component({
   selector: 'imx-fk-hierarchical-dialog',
@@ -74,7 +73,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
     private logger: ClassloggerService,
     private readonly confirmation: ConfirmationService,
     public readonly metadataProvider: MetadataService,
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: ForeignKeyPickerData
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: ForeignKeyPickerData,
   ) {
     this.closeClickSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
       if (!this.isChanged || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
@@ -96,7 +95,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     await this.getPreselectedEntities();
-    this.filters = (await this.hierarchyService?.fkTable?.GetDataModel())?.Filters;
+    this.filters = (await this.hierarchyService?.fkTable?.GetDataModel())?.Filters ?? [];
     this.tableNames = this.data.fkRelations?.map((elem) => elem.TableName);
   }
 
@@ -118,7 +117,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
     if (!this.data.isMultiValue) {
       this.selectedEntities = [entity];
       this.applySelection();
-    } 
+    }
   }
 
   public selectedNodesChanged(): void {
@@ -144,7 +143,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getKey(entity: IEntity): string {
+  private getKey(entity: IEntity): string | undefined {
     if (this.data.fkRelations && this.data.fkRelations.length > 1) {
       const xObjectKeyColumn = entity.GetColumn('XObjectKey');
       return xObjectKeyColumn ? xObjectKeyColumn.GetValue() : undefined;
@@ -156,8 +155,9 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
 
   private async getPreselectedEntities(): Promise<void> {
     if (this.data.fkRelations && this.data.fkRelations.length > 0 && this.data.idList && this.data.idList.length > 0) {
-      let over: OverlayRef;
-      setTimeout(() => (over = this.busyService.show()));
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
 
       try {
         const preselectedTemp: TypedEntity[] = [];
@@ -166,7 +166,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
         this.logger.debug(this, 'Getting preselected entities');
 
         for (const key of this.data.idList) {
-          let table: IForeignKeyInfo;
+          let table: IForeignKeyInfo | undefined;
           if (this.data.fkRelations.length > 1) {
             const tableName = DbObjectKey.FromXml(key).TableName;
             table = this.data.fkRelations.find((fkr) => fkr.TableName === tableName);
@@ -187,7 +187,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
           this.logger.debug(this, 'Getting preselected entity with navigation state', navigationState);
 
           const elements = await table.Get(navigationState);
-          if (elements.Entities.length) {
+          if (elements.Entities?.length) {
             const entity = await this.hierarchyService.buildEntityWithHasChilderen(elements.Entities[0], elements.Hierarchy);
             preselectedTemp.push(entity);
           }
@@ -197,7 +197,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
         this.selectedEntityCandidates = this.selectedEntities.map((elem) => new HierarchicalCandidate(elem));
         this.logger.debug(this, `Retrieved ${this.selectedEntities.length} preselected entities`);
       } finally {
-        setTimeout(() => this.busyService.hide(over));
+        this.busyService.hide();
       }
     }
   }

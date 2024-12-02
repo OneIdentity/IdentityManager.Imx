@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,10 +35,9 @@ import { CdrEditorProvider } from './cdr-editor-provider.interface';
  * registered editor provider.
  */
 export interface CdrEditorProviderRegistry extends CdrEditorProvider {
-
-    /**
-     * Registers an editor provider for column dependent references.
-     * @param provider The editor provider to register.
-     */
-    register(provider: CdrEditorProvider): void;
+  /**
+   * Registers an editor provider for column dependent references.
+   * @param provider The editor provider to register.
+   */
+  register(provider: CdrEditorProvider): void;
 }

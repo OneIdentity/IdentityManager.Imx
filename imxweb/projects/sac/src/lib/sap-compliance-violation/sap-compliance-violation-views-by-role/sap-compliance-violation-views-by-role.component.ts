@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,14 @@
  *
  */
 
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ByRoleResult, ByRoleResultElement, SAPUserFunctionSrcPROF } from 'imx-api-sac';
-import { SapRoleTreeNodeModel } from './../sap-compliance-violation.model';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { MatTableDataSource } from '@angular/material/table';
-import { EntitySchema, IClientProperty, TypedEntityCollectionData, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings } from 'qbm';
-import { MatSort } from '@angular/material/sort';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { ByRoleResult, ByRoleResultElement, SAPUserFunctionSrcPROF } from '@imx-modules/imx-api-sac';
+import { SapRoleTreeNodeModel } from './../sap-compliance-violation.model';
 
 @Component({
   selector: 'imx-sap-compliance-violation-views-by-role',
@@ -67,13 +65,13 @@ export class SapComplianceViolationViewsByRoleComponent implements OnInit {
   };
   public treeControl = new FlatTreeControl<SapRoleTreeNodeModel>(
     (node) => node.level,
-    (node) => node.expandable
+    (node) => node.expandable,
   );
   public treeFlattener = new MatTreeFlattener(
     this.transformer,
     (node) => node.level,
     (node) => node.expandable,
-    (node) => node.ChildElements
+    (node) => node.ChildElements,
   );
   public dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
   public selectedProfiles: SAPUserFunctionSrcPROF[] = [];
@@ -82,7 +80,7 @@ export class SapComplianceViolationViewsByRoleComponent implements OnInit {
   public extendProfiles = true;
   public showProfiles = false;
   public selectedRole: SapRoleTreeNodeModel;
-  public profileSearchControl = new FormControl<string>('');
+  public profileSearchControl = new FormControl<string>('', { nonNullable: true });
   private _resultByRole: ByRoleResult;
 
   constructor(private cdref: ChangeDetectorRef) {}
@@ -125,11 +123,11 @@ export class SapComplianceViolationViewsByRoleComponent implements OnInit {
       searchValue = searchValue.toLocaleLowerCase();
       this.profileDataSource.data = this.selectedProfiles.filter(
         (profile) =>
-          profile.Ident_SAPProfile.toLocaleLowerCase().includes(searchValue) ||
-          profile.Objects.toLocaleLowerCase().includes(searchValue) ||
-          profile.Field.toLocaleLowerCase().includes(searchValue)||
-          profile.LowerLimit.toLocaleLowerCase().includes(searchValue)||
-          profile.UpperLimit.toLocaleLowerCase().includes(searchValue)
+          profile.Ident_SAPProfile?.toLocaleLowerCase().includes(searchValue) ||
+          profile.Objects?.toLocaleLowerCase().includes(searchValue) ||
+          profile.Field?.toLocaleLowerCase().includes(searchValue) ||
+          profile.LowerLimit?.toLocaleLowerCase().includes(searchValue) ||
+          profile.UpperLimit?.toLocaleLowerCase().includes(searchValue),
       );
     } else {
       this.profileDataSource.data = this.selectedProfiles;

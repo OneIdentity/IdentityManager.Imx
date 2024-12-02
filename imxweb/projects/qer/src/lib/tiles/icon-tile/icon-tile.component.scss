@@ -1,53 +1,59 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-@import "../../../../../qbm/src/lib/tile/tile-variables.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/variables';
 
-:host > ::ng-deep imx-tile .mat-card {
+:host > ::ng-deep imx-tile .mat-mdc-card {
   height: 140px;
   display: flex;
-  width: $tile-width;
-  min-width: $tile-width;
+  width: $IMX_Tile_Width;
+  min-width: $IMX_Tile_Width;
   flex-direction: column;
   cursor: auto;
   padding: 25px;
   padding-bottom: 10px;
 }
 
-:host > ::ng-deep imx-tile .mat-card > .mat-card-actions:last-child {
+:host > ::ng-deep imx-tile .mat-mdc-card > .mat-mdc-card-actions:last-child {
   margin-bottom: 0;
   margin-left: -16px;
   margin-top: -10px;
+  padding: 8px;
 }
-.mat-card-title {
-  font-size: 1.3em;
+.mat-mdc-card-title {
   font-weight: 600;
   display: flex;
   cursor: auto;
+  line-height: normal;
+  margin-bottom: 4px;
+  h3{
+    font-size: inherit;
+  }
 }
 
-.mat-card-title > div {
+.mat-mdc-card-title > div {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
-.mat-card-title > eui-icon {
+.mat-mdc-card-title > eui-icon {
   color: $black-9;
   margin-right: 0.5em;
 }
 
-.mat-card-actions {
+.mat-mdc-card-actions {
   margin-left: 0;
   margin-right: 0;
   display: flex;
 }
 
-.mat-card-actions > .mat-button {
+.mat-mdc-card-actions > .mat-mdc-button {
   text-transform: uppercase;
 }
 
-.mat-card-subtitle {
+.mat-mdc-card-subtitle {
   flex: 1;
   font-size: small;
+  line-height: normal;
   text-align: left;
   overflow: auto;
   overflow-x: hidden;

@@ -13,10 +13,10 @@
 
     <imx-data-table
       [dst]="dst"
-      detailViewVisible="false"
+      [detailViewVisible]="false"
       mode="auto"
       data-imx-identifier="list-report-viewer-table"
-      [groupData]="groupData"
+      [groupData]="groupedData"
       (groupDataChanged)="onGroupingChange($event)"
     >
     </imx-data-table>

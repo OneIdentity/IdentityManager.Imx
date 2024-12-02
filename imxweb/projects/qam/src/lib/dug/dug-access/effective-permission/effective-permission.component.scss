@@ -1,0 +1,153 @@
+@import 'base/mixins';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  @include flex-row-container-fill();
+  overflow: hidden;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+    padding-bottom: 5px;
+  }
+
+  .dug-tree-card {
+    @include flex-column-container-fill();
+    max-width: 500px;
+    min-width: 500px;
+    margin: 3px;
+  }
+
+  .dug-tree-content {
+    @include flex-column-container-fill();
+    margin: 3px;
+  }
+
+  .effective-permission-content {
+    @include flex-column-container-fill();
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+
+  .effective-permission-content-card {
+    @include flex-column-container-fill();
+  }
+
+  .imx-single-permission {
+    @include flex-column-container($overflow: hidden);
+    align-items: center;
+  }
+
+  .imx-no-results {
+    flex: 1 1 auto;
+  }
+
+  .imx-trustee-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+  }
+  span[italic] {
+    font-style: italic;
+  }
+
+  span[caption] {
+    margin-right: 10px;
+    font-weight: 600;
+  }
+
+  .mat-mdc-card {
+    .mat-mdc-card-header {
+      margin-bottom: 20px;
+      font-weight: 600;
+      align-items: center;
+      @include flex-column-container();
+    }
+    .mat-mdc-card-content {
+      @include flex-row-container-fill();
+    }
+  }
+
+  .imx-scrollable {
+    overflow: auto;
+  }
+}
+
+:host {
+  .imx-no-results {
+    p {
+      color: $color-gray-50;
+    }
+  }
+
+  .effective-permission-content {
+    h3 {
+      color: $color-gray-40;
+    }
+  }
+
+  ::ng-deep .mat-tree {
+    background-color: transparent;
+  }
+
+  .effective-permission-content-card {
+    background-color: $color-gray-2;
+    border: 1px solid $color-gray-10;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-no-results {
+      p {
+        color: $color-gray-10;
+      }
+    }
+
+    .effective-permission-content {
+      h3 {
+        color: $color-gray-10;
+      }
+    }
+
+    .effective-permission-content-card {
+      background-color: $color-gray-80;
+      border: 1px solid $color-gray-90;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-no-results {
+      p {
+        color: $color-gray-0;
+      }
+    }
+
+    .effective-permission-content {
+      h3 {
+        color: $color-gray-0;
+      }
+    }
+
+    .effective-permission-content-card {
+      background-color: $color-gray-100;
+      border: 1px solid $color-gray-0;
+    }
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  :host {
+    .dug-tree-card {
+      max-width: 300px;
+      min-width: 300px;
+    }
+  }
+}

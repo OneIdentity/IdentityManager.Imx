@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,20 @@
  *
  */
 
-import { TypedEntity, EntitySchema, DisplayColumns, ValType } from 'imx-qbm-dbts';
+import { TypedEntity, EntitySchema, DisplayColumns, ValType } from '@imx-modules/imx-qbm-dbts';
 
 export class RoleComplianceViolationTypedEntity extends TypedEntity {
-    public static GetEntitySchema(): EntitySchema {
-        const columns = {
-            UID_ComplianceRule: { Type: ValType.String, ColumnName: 'UID_ComplianceRule' },
-            RuleName: { Type: ValType.String, ColumnName: 'RuleName' },
-            DbObjectKey: { Type: ValType.String, ColumnName: 'DbObjectKey' },
-            ObjectDisplay: { Type: ValType.String, ColumnName: 'ObjectDisplay' },
-            ObjectKeyElement: { Type: ValType.String, ColumnName: 'ObjectKeyElement' }
-        };
+  public static GetEntitySchema(): EntitySchema {
+    const columns = {
+      UID_ComplianceRule: { Type: ValType.String, ColumnName: 'UID_ComplianceRule' },
+      RuleName: { Type: ValType.String, ColumnName: 'RuleName' },
+      DbObjectKey: { Type: ValType.String, ColumnName: 'DbObjectKey' },
+      ObjectDisplay: { Type: ValType.String, ColumnName: 'ObjectDisplay' },
+      ObjectKeyElement: { Type: ValType.String, ColumnName: 'ObjectKeyElement' },
+    };
 
-        columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
+    columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
 
-        return { Columns: columns };
-    }
+    return { Columns: columns };
+  }
 }

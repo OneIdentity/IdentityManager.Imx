@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,8 +28,6 @@ import { MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx
 
 export class ImxMissingTranslationHandler implements MissingTranslationHandler {
   public handle(params: MissingTranslationHandlerParams): string {
-    return params.key.startsWith('#LDS#')
-      ? params.key.substring('#LDS#'.length)
-      : params.key;
+    return params.key.startsWith('#LDS#') ? params.key.substring('#LDS#'.length) : params.key;
   }
 }

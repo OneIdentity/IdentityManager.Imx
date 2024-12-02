@@ -1,11 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-:host {
-  .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-}
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .eui-dark-theme {
   :host {

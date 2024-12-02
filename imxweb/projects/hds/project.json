@@ -1,0 +1,65 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "hds",
+  "sourceRoot": "projects/hds/src",
+  "implicitDependencies": ["qer"],
+  "projectType": "library",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "prefix": "imx",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/hds/tsconfig.lib.json",
+        "project": "projects/hds/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/hds/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/hds/tsconfig.lib.json"
+        },
+        "dynamic": {
+          "project": "projects/hds/ng-package.dynamic.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/hds/tsconfig.lib.json"
+        },
+        "remote-qs": {
+          "tsConfig": "projects/hds/tsconfig.lib.json"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/hds"]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/hds/src/test.ts",
+        "tsConfig": "projects/hds/tsconfig.spec.json",
+        "karmaConfig": "projects/hds/karma.conf.js",
+        "codeCoverageExclude": ["projects/hds/src/**/test/*"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/hds/tsconfig.lib.json", "projects/hds/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

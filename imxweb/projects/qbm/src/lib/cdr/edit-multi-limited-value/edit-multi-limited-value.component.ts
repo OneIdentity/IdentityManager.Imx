@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,20 +25,24 @@
  */
 
 import { ChangeDetectorRef, Component, EventEmitter, OnDestroy } from '@angular/core';
-import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
+import { FormGroup, UntypedFormArray, UntypedFormControl } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 
-import { LimitedValueData } from 'imx-qbm-dbts';
-import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { LimitedValueData } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
-import { EntityColumnContainer } from '../entity-column-container';
 import { MultiValueService } from '../../multi-value/multi-value.service';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
+import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { EntityColumnContainer } from '../entity-column-container';
+
+interface LimitedForm {
+  array: UntypedFormArray;
+}
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing multi limited value columns
- * 
+ *
  * To change the value it uses a list of check boxes with one box per possible value.
  * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content.
  */
@@ -54,7 +58,9 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
    * The form control associated with the editor.
    */
   // TODO: Check Upgrade
-  public control = new UntypedFormArray([]);
+  public control = new FormGroup<LimitedForm>({
+    array: new UntypedFormArray([]),
+  });
 
   /**
    * The container that wraps the column functionality.
@@ -68,12 +74,12 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
   public readonly pendingChanged = new EventEmitter<boolean>();
 
   private readonly subscriptions: Subscription[] = [];
-  private isWriting = false;
+  public isWriting = false;
 
   constructor(
     private readonly logger: ClassloggerService,
     private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly multiValueProvider: MultiValueService
+    private readonly multiValueProvider: MultiValueService,
   ) {}
 
   /**
@@ -93,22 +99,20 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       this.columnContainer.init(cdref);
       this.initValues();
       this.subscriptions.push(
-        this.control.valueChanges
-        .pipe(
-          tap(() => this.pendingChanged.emit(true)),
-          debounceTime(1400),
-          distinctUntilChanged(),
-        )
-        .subscribe(
-          async (values) => await this.writeValue(values)
-        )
+        this.control.controls.array.valueChanges
+          .pipe(
+            tap(() => this.pendingChanged.emit(true)),
+            debounceTime(1400),
+            distinctUntilChanged(),
+          )
+          .subscribe(async (values) => await this.writeValue(values)),
       );
       this.subscriptions.push(
         this.columnContainer.subscribe(() => {
           if (this.isWriting) {
             return;
           }
-          if (this.getSelectedNamesMultiValue(this.control.value) !== this.columnContainer.value) {
+          if (this.getSelectedNamesMultiValue(this.control.controls.array.value) !== this.columnContainer.value) {
             this.initValues();
           }
 
@@ -116,7 +120,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
             this.subscriptions.push(
               cdref.minlengthSubject.subscribe(() => {
                 this.initValues();
-              })
+              }),
             );
           }
 
@@ -124,12 +128,12 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
             this.updateRequested.subscribe(() =>
               setTimeout(() => {
                 this.initValues();
-                this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
-              })
-            )
+                this.control.controls.array.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+              }),
+            ),
           );
           this.valueHasChanged.emit({ value: this.columnContainer.value });
-        })
+        }),
       );
       this.logger.trace(this, 'Control initialized');
     } else {
@@ -141,16 +145,16 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
    * Initializes possible values and marks all selected ones.
    */
   public initValues(): void {
-    if (this.control.controls?.length > 0) {
+    if (this.control.controls.array.controls?.length > 0) {
       return;
     }
     const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
-    this.columnContainer.limitedValuesContainer.values.forEach((limitedValueData) =>
-      this.control.push(new UntypedFormControl(this.isSelected(limitedValueData, selectedValues)))
+    this.columnContainer.limitedValuesContainer?.values?.forEach((limitedValueData) =>
+      this.control.controls.array.push(new UntypedFormControl(this.isSelected(limitedValueData, selectedValues))),
     );
     if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-      this.control.setValidators((control: UntypedFormArray) =>
-        control.controls.find((checkBox) => checkBox.value) ? null : { required: true }
+      this.control.controls.array.setValidators((control: UntypedFormArray) =>
+        control.controls.find((checkBox) => checkBox.value) ? null : { required: true },
       );
     }
   }
@@ -178,33 +182,32 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     try {
       this.logger.debug(this, 'writeValue - updateCdrValue...');
       this.isWriting = true;
-      this.control.disable({ emitEvent: false });
+      this.control.controls.array.disable({ emitEvent: false });
       this.changeDetectorRef.detectChanges();
       await this.columnContainer.updateValue(value);
     } catch (e) {
       this.logger.error(this, e);
     } finally {
       this.isWriting = false;
-      this.control.enable({ emitEvent: false });
+      this.control.controls.array.enable({ emitEvent: false });
       this.pendingChanged.emit(false);
       this.changeDetectorRef.detectChanges();
-      if (this.getSelectedNamesMultiValue(this.control.value) !== this.columnContainer.value) {
+      if (this.getSelectedNamesMultiValue(this.control.controls.array.value) !== this.columnContainer.value) {
         const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
-        this.control.controls.forEach((checkBox, index) =>
-          checkBox.setValue(this.isSelected(this.columnContainer.limitedValuesContainer.values[index], selectedValues), {
+        this.control.controls.array.controls.forEach((checkBox, index) =>
+          checkBox.setValue(this.isSelected(this.columnContainer.limitedValuesContainer.values?.[index], selectedValues), {
             emitEvent: false,
-          })
+          }),
         );
       }
     }
   }
 
-  
   /**
    * Gets the MultiValue of the selected values.
    * @param values The array of booleans provided by the checkboxes
    */
-  private getSelectedNamesMultiValue(values: boolean[]): string {
+  private getSelectedNamesMultiValue(values: boolean[]): string | undefined {
     return this.multiValueProvider.getMultiValue(this.getSelectedNames(values));
   }
 
@@ -216,13 +219,18 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     const selectedValues: string[] = [];
     values.forEach((value, index) => {
       if (value) {
-        selectedValues.push(this.columnContainer.limitedValuesContainer.values[index]?.Value);
+        const newValue = this.columnContainer.limitedValuesContainer.values?.[index]?.Value;
+        if (newValue) {
+          selectedValues.push(this.columnContainer.limitedValuesContainer.values?.[index]?.Value);
+        }
       }
     });
     return selectedValues;
   }
 
-  private isSelected(limitedValueData: LimitedValueData, selectedValues: string[]): boolean {
-    return selectedValues && selectedValues.indexOf(limitedValueData.Value + '') > -1;
+  private isSelected(limitedValueData: LimitedValueData | undefined, selectedValues: string[] | undefined): boolean {
+    if (!limitedValueData || !selectedValues) return false;
+
+    return selectedValues && selectedValues.indexOf(limitedValueData.Value) > -1;
   }
 }

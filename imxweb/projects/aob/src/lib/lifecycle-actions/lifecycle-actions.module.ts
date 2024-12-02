@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LifecycleActionComponent } from './lifecycle-action.component';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -34,10 +34,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatTableModule } from '@angular/material/table';
 import { EuiCoreModule } from '@elemental-ui/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { QbmModule, DataSourceToolbarModule, DataTableModule, LdsReplaceModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, DataViewModule, LdsReplaceModule, QbmModule } from 'qbm';
+import { LifecycleActionComponent } from './lifecycle-action.component';
 @NgModule({
   declarations: [LifecycleActionComponent],
   imports: [
@@ -56,7 +57,9 @@ import { QbmModule, DataSourceToolbarModule, DataTableModule, LdsReplaceModule }
     MatRadioModule,
     ReactiveFormsModule,
     QbmModule,
-    TranslateModule
+    TranslateModule,
+    DataViewModule,
+    MatTableModule,
   ],
 })
-export class LifecycleActionsModule { }
+export class LifecycleActionsModule {}

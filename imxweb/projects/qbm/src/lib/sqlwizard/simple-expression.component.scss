@@ -1,5 +1,3 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
-
 :host {
   display: flex;
   flex-direction: column;
@@ -14,15 +12,8 @@
   align-items: center;
 }
 
-.imx-delete-btn {
-  color: $color-red-60;
-}
-
-.imx-add-button {
-  color: $color-blue-60;
-}
-
 .imx-column-container {
   display: flex;
+  align-items: baseline;
   column-gap: 10px;
 }

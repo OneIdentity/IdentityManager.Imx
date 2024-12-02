@@ -1,54 +1,109 @@
-<h1 class="mat-headline">
-  <span>{{ '#LDS#Heading Responsibilities of My Reports' | translate }}</span>
-  <imx-help-contextual></imx-help-contextual>
-</h1>
-<mat-card class="imx-team-responsibilities-table-card">
-  <imx-data-source-toolbar
-    #dst
-    [options]="['filter']"
-    [settings]="dstSettings"
-    [busyService]="busyService"
-    (search)="getData({ search: $event })"
-    (navigationStateChanged)="getData($event)"
-    data-imx-identifier="view-team-responsibilities-dst"
-  >
-  </imx-data-source-toolbar>
-  <imx-data-table
-    #dataTable
-    [dst]="dst"
-    class="imx-pickcategory-table"
-    [detailViewVisible]="false"
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Responsibilities of My Reports' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+</div>
+<mat-card class="imx-card-fill">
+  <div>
+    <mat-slide-toggle (change)="onCustomFilterChange()" [(ngModel)]="customFilterValue">{{
+      '#LDS#Show only responsibilities for which actions are needed' | translate
+    }}</mat-slide-toggle>
+  </div>
+  <imx-data-view-auto-table
+    [dataSource]="dataSource"
     mode="manual"
-    [showSelectedItemsMenu]="false"
-    data-imx-identifier="view-team-responsibilities-datatable"
-    (highlightedEntityChanged)="onOpenDetails($event)"
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [matSortActive]="dataSource.sortId()"
+    [selectable]="true"
   >
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayName"></imx-data-table-column>
-    <imx-data-table-generic-column columnName="badges">
-      <ng-template let-responsibility>
-        <div *ngIf="isResponsibilityOrphaned(responsibility)" class="imx-badge-container">
-          <eui-badge>
-            {{ '#LDS#No one responsible' | translate }}
-          </eui-badge>
-        </div>
-      </ng-template>
-    </imx-data-table-generic-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_Person"></imx-data-table-column>
-    <!-- TODO Work item: #426008 -->
-    <!-- <imx-data-table-generic-column columnName="actions">
-      <ng-template let-responsibility>
-        <button
-          mat-flat-button
-          color="warn"
-          data-imx-identifier="team-responsibility-delete"
-          *ngIf="isResponsibilityDeletable(responsibility)"
-          (click)="onDeleteResponsibility(responsibility)"
+    <ng-container [matColumnDef]="entitySchema.Columns.DisplayName.ColumnName">
+      <ng-container *ngIf="dataSource.isSortable(entitySchema?.Columns?.DisplayName?.ColumnName)">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ entitySchema?.Columns?.DisplayName?.Display }}
+        </th>
+      </ng-container>
+      <ng-container *ngIf="!dataSource.isSortable(entitySchema?.Columns?.DisplayName?.ColumnName)">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.DisplayName?.Display }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>
+          {{ item.DisplayName.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.ExitDate.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.ExitDate?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>
+          {{ item.ExitDate.Column.GetDisplayValue() | shortDate }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_Person.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_Person?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>
+          {{ item.UID_Person.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'status'">
+      <th mat-header-cell *matHeaderCellDef>{{ '#LDS#Status' | translate }}</th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div
+          *ngIf="isActionNeeded(item)"
+          class="imx-action-needed"
+          [matTooltip]="'#LDS#The responsible identity will leave or has already left the organization.' | translate"
         >
-          <mat-icon>delete</mat-icon>
-          <span translate>#LDS#Delete</span>
-        </button>
-      </ng-template>
-    </imx-data-table-generic-column> -->
-  </imx-data-table>
-  <imx-data-source-paginator data-imx-identifier="view-team-responsibilities-paginator" [dst]="dst"> </imx-data-source-paginator>
+          <eui-icon icon="warning"></eui-icon>
+          <span>{{ '#LDS#Action needed' | translate }}</span>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'identitiesCount'">
+      <th mat-header-cell *matHeaderCellDef>{{ '#LDS#Assigned identities' | translate }}</th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>{{ identitiesCount(item) }}</span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'type'">
+      <th mat-header-cell *matHeaderCellDef>{{ '#LDS#Type' | translate }}</th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>{{ (!isDirectResponsibility(item) ? '#LDS#Role' : '#LDS#Direct') | translate }}</span>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
+<div class="imx-button-bar-transparent">
+  <imx-data-view-selection [dataSource]="dataSource"></imx-data-view-selection>
+  <div class="imx-action-buttons">
+    <button
+      [disabled]="!tableSelection.length || isResponsibilitiesDeletable()"
+      mat-flat-button
+      color="warn"
+      (click)="onDeleteResponsibilities()"
+    >
+      <eui-icon icon="delete"></eui-icon>
+      <span translate>#LDS#Remove responsibilities</span>
+    </button>
+    <button
+      [disabled]="!tableSelection.length || isResponsibilitiesDeletable()"
+      mat-flat-button
+      color="primary"
+      (click)="onReassignResponsibilities()"
+    >
+      <eui-icon icon="forward"></eui-icon>
+      <span translate>#LDS#Reassign responsibilities</span>
+    </button>
+  </div>
+</div>

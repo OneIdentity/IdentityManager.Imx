@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,13 +30,12 @@ import { DetailsView } from '../details-view.interface';
 
 @Component({
   selector: 'imx-duplicate-check',
-  templateUrl: './duplicate-check.component.html'
+  templateUrl: './duplicate-check.component.html',
 })
 export class DuplicateCheckComponent extends BaseViewerComponent implements DetailsView, OnInit {
-  public detail: string[][];
+  public declare detail: string[][];
 
   public ngOnInit(): void {
     super.ngOnInit();
   }
-
 }

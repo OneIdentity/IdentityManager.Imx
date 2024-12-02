@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,38 +24,32 @@
  *
  */
 
-import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Globals } from 'imx-qbm-dbts';
+import { Injectable, Injector, createNgModule } from '@angular/core';
+import { ImxConfig, TypedClient } from '@imx-modules/imx-api-qbm';
+import { Globals } from '@imx-modules/imx-qbm-dbts';
 import {
   AppConfigService,
-  imx_SessionService,
-  CdrRegistryService,
-  ImxTranslationProviderService,
-  ClassloggerService,
   AuthenticationService,
-  PluginLoaderService,
+  CaptchaService,
+  CdrRegistryService,
+  ClassloggerService,
+  ImxTranslationProviderService,
   SplashService,
-  SystemInfoService
+  SystemInfoService,
+  imx_SessionService,
 } from 'qbm';
-import {
-  NotificationStreamService
-} from 'qer';
+import { NotificationStreamService } from 'qer';
 import { environment } from '../environments/environment';
-import { TypedClient } from 'imx-api-qbm';
-import { PortalDocConfigurationService } from './portal-doc-configuration.service';
-
-import * as QBM from 'qbm';
-import * as QER from 'qer';
-
-declare var SystemJS: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppService {
+  public recaptchaSiteKeyV3: string | null = null;
+  private imxConfig: ImxConfig;
   constructor(
     public readonly registry: CdrRegistryService,
     private readonly logger: ClassloggerService,
@@ -65,22 +59,24 @@ export class AppService {
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
     private readonly title: Title,
-    private readonly pluginLoader: PluginLoaderService,
     private readonly authentication: AuthenticationService,
     private readonly notificationService: NotificationStreamService,
     private readonly splash: SplashService,
-    private readonly docSvc: PortalDocConfigurationService,
-  ) { }
+    private readonly injector: Injector,
+    private readonly captchaService: CaptchaService,
+  ) {}
 
   public async init(): Promise<void> {
     this.showSplash();
     await this.config.init(environment.clientUrl);
 
-    this.translateService.addLangs(this.config.Config.Translation.Langs);
-    const browserCulture = this.translateService.getBrowserCultureLang();
-    this.logger.debug(this, `Set ${browserCulture} as default language`);
-    this.translateService.setDefaultLang(browserCulture);
-    await this.translateService.use(browserCulture).toPromise();
+    if (this.config.Config.Translation?.Langs) {
+      this.translateService.addLangs(this.config.Config.Translation.Langs);
+    }
+
+    await this.translationProvider.init();
+
+    this.imxConfig = await this.systemInfoService.getImxConfig();
 
     this.translateService.onLangChange.subscribe(() => {
       this.setTitle();
@@ -88,8 +84,8 @@ export class AppService {
 
     this.setTitle();
 
-    this.authentication.onSessionResponse.subscribe(sessionState => {
-      if(sessionState && sessionState.IsLoggedIn) {
+    this.authentication.onSessionResponse.subscribe((sessionState) => {
+      if (sessionState && sessionState.IsLoggedIn) {
         // when the user logs in, start listening to notifications
         this.notificationService.openStream();
       }
@@ -97,17 +93,17 @@ export class AppService {
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
 
-    this.docSvc.setupPaths();
+    await this.loadModules(environment.appName);
 
-    SystemJS.set('qbm', SystemJS.newModule(QBM));
-    SystemJS.set('qer', SystemJS.newModule(QER));
-
-    await this.pluginLoader.loadModules(environment.appName);
+    if (this.imxConfig.RecaptchaPublicKey) {
+      this.captchaService.enableReCaptcha(this.imxConfig.RecaptchaPublicKey);
+      this.recaptchaSiteKeyV3 = this.imxConfig.RecaptchaPublicKey;
+    }
+    this.captchaService.captchaImageUrl = 'portal/captchaimage';
   }
 
   private async setTitle(): Promise<void> {
-    const imxConfig = await this.systemInfoService.getImxConfig();
-    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
+    const name = this.imxConfig.ProductName || Globals.QIM_ProductNameFull;
     this.config.Config.Title = await this.translateService.get('#LDS#Heading Web Portal').toPromise();
     const title = `${name} ${this.config.Config.Title}`;
     this.title.setTitle(title);
@@ -134,4 +130,37 @@ export class AppService {
     this.splash.update({ applicationName: title, message: loadingMsg });
   }
 
+  public async loadModules(appName: string): Promise<void> {
+    const apps = await this.session.Client.imx_applications_get();
+
+    const appInfo = apps.filter((app) => app.Name === appName)[0];
+
+    this.logger.debug(this, `▶️ Found config section for ${appInfo.DisplayName}`);
+
+    if (appInfo.PlugIns == null || appInfo.PlugIns.length === 0) {
+      this.logger.debug(this, `❌ No plugins found`);
+      return;
+    }
+
+    this.logger.debug(this, `▶️ Found ${appInfo.PlugIns.length} plugin(s)`);
+
+    for (const plugin of appInfo.PlugIns) {
+      this.logger.debug(this, `⚙️ Plugin: ${plugin.Container}`);
+
+      try {
+        this.logger.debug(this, '▶️ Importing module. DEV mode.');
+        await import(`html/qer-app-portal/${plugin.Container}/fesm2022/${plugin.Container}.mjs`)
+          .then((m) => {
+            if (plugin.Name) {
+              createNgModule(m[plugin.Name], this.injector);
+            }
+          })
+          .catch((error) =>
+            this.logger.error(this, `💥 Loading of ${plugin.Name} (${plugin.Container}) failed with the following error: ${error.message}`),
+          );
+      } catch (e) {
+        this.logger.error(this, `💥 Loading of ${plugin.Name} (${plugin.Container}) failed with the following error: ${e.message}`);
+      }
+    }
+  }
 }

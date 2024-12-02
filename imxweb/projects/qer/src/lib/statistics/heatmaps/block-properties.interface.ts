@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,26 +42,26 @@ export interface ColorValues {
 }
 
 export interface Block {
-    tooltip: string;
-    cols: string;
-    rows: string;
-    fontsize?: string;
-    class: ClassState;
-    backgroundColor: string;
-    color: string;
-    name: string;
-    state: BlockState;
-    object?: HeatmapDataTyped;
-    historyValues: number[];
-    historyColors: string[];
+  tooltip: string;
+  cols: string;
+  rows: string;
+  fontsize?: string;
+  class: ClassState;
+  backgroundColor: string;
+  color: string;
+  name: string;
+  state: BlockState;
+  object?: HeatmapDataTyped;
+  historyValues: number[];
+  historyColors: string[];
 }
 
 export interface AdditionalEntityProperties {
   backgroundColor: string;
   color: string;
-  class: ClassState;
-  state: BlockState;
-  stateDisplay: string;
+  class?: ClassState;
+  state?: BlockState;
+  stateDisplay?: string;
   ancestors: string;
   tooltip: string;
   historyValues: number[];
@@ -69,31 +69,31 @@ export interface AdditionalEntityProperties {
 }
 
 export interface StateProperties {
-  class?: ClassState,
-  state?: BlockState,
+  class?: ClassState;
+  state?: BlockState;
   stateDisplay?: string;
-  color?: string
+  color?: string;
 }
 
 export interface StateThresholds {
   error?: {
-    value?: number,
-    properties?: StateProperties
-  },
+    value?: number;
+    properties?: StateProperties;
+  };
   severeWarn?: {
-    value?: number,
-    properties?: StateProperties
-  },
+    value?: number;
+    properties?: StateProperties;
+  };
   warn?: {
-    value?: number,
-    properties?: StateProperties
-  },
+    value?: number;
+    properties?: StateProperties;
+  };
   lightWarn?: {
-    value?: number,
-    properties?: StateProperties
-  },
+    value?: number;
+    properties?: StateProperties;
+  };
   ok?: {
-    value?: number,
-    properties?: StateProperties
-  },
+    value?: number;
+    properties?: StateProperties;
+  };
 }

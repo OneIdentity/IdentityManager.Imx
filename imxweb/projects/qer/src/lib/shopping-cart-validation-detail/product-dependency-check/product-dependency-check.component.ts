@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,13 +31,12 @@ import { MandatoryAccProductResult } from './mandatory-acc-product-result.interf
 
 @Component({
   selector: 'imx-product-dependency-check',
-  templateUrl: './product-dependency-check.component.html'
+  templateUrl: './product-dependency-check.component.html',
 })
 export class ProductDependencyCheckComponent extends BaseViewerComponent implements DetailsView, OnInit {
-  public detail: MandatoryAccProductResult[];
+  public declare detail: MandatoryAccProductResult[];
 
   public ngOnInit(): void {
     super.ngOnInit();
   }
-
 }

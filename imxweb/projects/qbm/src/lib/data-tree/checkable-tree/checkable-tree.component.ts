@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,7 +41,7 @@ import {
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { SnackBarService } from '../../snackbar/snack-bar.service';
 import { TreeDatabase } from '../tree-database';
@@ -63,10 +63,12 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   /** the {@link FlatTreeControl| FlatTreeControl} of @angular/cdk */
   public treeControl: FlatTreeControl<TreeNode>;
 
-  @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
+  //@ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
+  @ContentChild('customDisplayTemplate', { static: true }) public customDisplayTemplate: TemplateRef<any>;
+  @ContentChild('additionalTemplate', { static: true }) public templateRef: TemplateRef<any>;
 
   /** currently selected entities */
-  @Input() public selectedEntities: IEntity[] = [];
+  @Input() public selectedEntities: (IEntity | undefined)[] = [];
 
   /** the service providing the data for the {@link TreeDatasource| TreeDatasource} */
   @Input() public database: TreeDatabase;
@@ -111,7 +113,10 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private readonly snackBar: SnackBarService, private readonly logger: ClassloggerService) {
+  constructor(
+    private readonly snackBar: SnackBarService,
+    private readonly logger: ClassloggerService,
+  ) {
     this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
   }
 
@@ -129,7 +134,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
         this.treeDataSource.dataChange.subscribe((elem) => {
           this.treeRendered.emit();
           this.updateCheckedTreeNodes(elem);
-        })
+        }),
       );
 
       this.logger.debug(this, `toggle Node of the selected entity to load its children`);
@@ -167,7 +172,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
           if (data) {
             this.initializeTreeData();
           }
-        })
+        }),
       );
     }
   }
@@ -189,7 +194,9 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
    */
   public add(childEntity: IEntity, uidParent: string) {
     const node = this.treeDataSource.data.find((elem) => this.getId(elem.item) === uidParent);
-    this.treeDataSource.addChildNode(node, childEntity);
+    if (node) {
+      this.treeDataSource.addChildNode(node, childEntity);
+    }
   }
 
   /**
@@ -199,7 +206,9 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
    */
   public updateNode(entity: IEntity, newNodeInfo: TreeNodeInfo) {
     const node = this.getNode(entity);
-    this.treeDataSource.updateNode(node, newNodeInfo);
+    if (node) {
+      this.treeDataSource.updateNode(node, newNodeInfo);
+    }
   }
 
   /**
@@ -208,8 +217,15 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
    */
   public deleteNode(entity: IEntity, withChildren: boolean) {
     const node = this.getNode(entity);
+    if (!node) {
+      return;
+    }
     const parent = this.getParentNode(node);
-    this.treeDataSource.removeNode(node,withChildren);
+    this.treeDataSource.removeNode(node, withChildren);
+
+    if (!parent) {
+      return;
+    }
 
     const des = this.treeControl.getDescendants(parent).filter((elem) => !elem.isLoadMoreNode);
     if (des.length === 0 || withChildren) {
@@ -227,16 +243,17 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   public isExpanded(entity: IEntity): boolean {
     const node = this.getNode(entity);
-    return this.treeControl.isExpanded(node);
+    return node ? this.treeControl.isExpanded(node) : false;
   }
 
-  public getEntityById(id: string): IEntity {
+  public getEntityById(id: string): IEntity | undefined {
     const node = this.treeDataSource.data.find((elem) => this.getId(elem.item) === id);
     return node?.item;
   }
 
   public hasChildren(entity: IEntity): boolean {
-    return this.isExpandable(this.getNode(entity));
+    const node = this.getNode(entity);
+    return node ? this.isExpandable(node) : false;
   }
 
   /** returns true, if the node has childnodes */
@@ -246,6 +263,10 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   /** Emits the selected treenode. */
   public selectNode(node: TreeNode): void {
+    if (!node.isSelectable) {
+      // node is not selectable
+      return;
+    }
     if (this.withMultiSelect) {
       this.checklistSelection.toggle(node);
       this.emitNodeCheckedEvent(node, this.checklistSelection.isSelected(node));
@@ -317,11 +338,11 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
     this.treeDataSource?.init(await this.database.initialize(this.navigationState));
   }
 
-  private getSelectedItem(): string {
+  private getSelectedItem(): string | null | undefined {
     return this.selectedEntities.length > 0 && this.selectedEntities[0] != null ? this.getId(this.selectedEntities[0]) : null;
   }
 
-  private getNode(entity: IEntity): TreeNode {
+  private getNode(entity: IEntity): TreeNode | undefined {
     return this.treeDataSource?.data.find((elem) => this.getId(elem.item) === this.getId(entity));
   }
 
@@ -382,8 +403,8 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
     }
   }
 
-  private updateSelectedEntities(current: IEntity, checked: boolean): void {
-    if (checked) {
+  private updateSelectedEntities(current: IEntity | undefined, checked: boolean): void {
+    if (checked && current) {
       this.selectedEntities.push(current);
     } else {
       const index = this.selectedEntities.findIndex((elem) => this.getId(elem) === this.getId(current));
@@ -391,7 +412,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
     }
   }
 
-  private getId(entity: IEntity): string {
-    return this.database ? this.database.getId(entity) : entity.GetKeys()[0];
+  private getId(entity: IEntity | undefined): string {
+    return this.database ? this.database.getId(entity) : entity?.GetKeys()[0] ?? '';
   }
 }

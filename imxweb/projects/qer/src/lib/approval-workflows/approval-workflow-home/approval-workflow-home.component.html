@@ -1,7 +1,7 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline-5">
   {{ '#LDS#Heading Approval Workflows' | translate }}
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 
 <mat-card class="imx-table-container">
   <imx-data-source-toolbar
@@ -9,7 +9,7 @@
     [options]="['search']"
     [busyService]="busyService"
     [settings]="dstSettings"
-    useThemedStyle="true"
+    [useThemedStyle]="true"
     (search)="getData({ search: $event })"
     (navigationStateChanged)="getData($event)"
     data-imx-identifier="approval-workflow-dst"
@@ -20,15 +20,15 @@
     #dataTable
     [dst]="dst"
     class="imx-pickcategory-table"
-    detailViewVisible="false"
-    showSelectedItemsMenu="false"
-    selectable="true"
+    [detailViewVisible]="false"
+    [showSelectedItemsMenu]="false"
+    [selectable]="true"
     (selectionChanged)="onSelectionChanged($event)"
     mode="manual"
     (highlightedEntityChanged)="viewDetails({ workFlow: $event })"
     data-imx-identifier="approval-workflow-datatable"
   >
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
       <ng-template let-item>
         <div data-imx-identifier="approval-workflow-table-column-display">{{ item.GetEntity().GetDisplay() }}</div>
         <div subtitle data-imx-identifier="approval-workflow-table-description">{{ item.Description.Column.GetDisplayValue() }}</div>
@@ -48,16 +48,27 @@
   <imx-data-source-paginator data-imx-identifier="approval-workflow-paginator" [dst]="dst"> </imx-data-source-paginator>
 </mat-card>
 
-<div class="button-row">
-  <imx-selected-elements [selectedElements]="selectedWorkFlows"></imx-selected-elements>
-  <div class="imx-menu-spacer"></div>
-  <button [disabled]="!canDelete" mat-stroked-button color="warn" (click)="deleteMultiple()" data-imx-identifier="approval-workflow-delete-workflows">
+<div class="imx-button-bar-transparent">
+  <imx-selected-elements class="justify-start" [selectedElements]="selectedWorkFlows"></imx-selected-elements>
+  <button
+    [disabled]="!canDelete"
+    mat-stroked-button
+    color="warn"
+    (click)="deleteMultiple()"
+    data-imx-identifier="approval-workflow-delete-workflows"
+  >
     <eui-icon icon="delete"></eui-icon>
     <span>
-      {{ '#LDS#Delete ({0})' | translate | ldsReplace : selectedWorkFlows.length }}
+      {{ '#LDS#Delete ({0})' | translate | ldsReplace: selectedWorkFlows.length }}
     </span>
   </button>
-  <button mat-raised-button class="filled-button" color="primary" (click)="createWorkflow()" data-imx-identifier="approval-workflow-create-workflow">
+  <button
+    mat-flat-button
+    class="imx-button-hover-warning"
+    color="primary"
+    (click)="createWorkflow()"
+    data-imx-identifier="approval-workflow-create-workflow"
+  >
     <eui-icon icon="add" size="s"></eui-icon>
     <span>
       {{ '#LDS#Create approval workflow' | translate }}

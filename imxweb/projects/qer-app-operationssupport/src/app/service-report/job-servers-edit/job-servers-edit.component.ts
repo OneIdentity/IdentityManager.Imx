@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { FormGroup, FormArray } from '@angular/forms';
 import { BaseCdr, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
-import { OpsupportJobservers } from 'imx-api-qbm';
+import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
 
 @Component({
   selector: 'imx-job-servers-edit',
@@ -39,12 +39,12 @@ export class JobServersEditComponent implements OnInit {
   public readonly serverDetailsFormGroup: FormGroup;
   public cdrList: ColumnDependentReference[] = [];
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public serverDetails:{data: OpsupportJobservers, properties: string[]},
+    @Inject(EUI_SIDESHEET_DATA) public serverDetails: { data: OpsupportJobservers; properties: string[] },
     private readonly sidesheet: EuiSidesheetService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackBarService: SnackBarService,
     private readonly euiLoadingService: EuiLoadingService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {
     this.serverDetailsFormGroup = new FormGroup({
       formArray: new FormArray([]),

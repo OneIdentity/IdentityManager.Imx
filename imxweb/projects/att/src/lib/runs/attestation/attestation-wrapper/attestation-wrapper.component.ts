@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,18 +33,22 @@ import { IdentityAttestationService } from '../../../identity-attestation.servic
 
 @Component({
   templateUrl: './attestation-wrapper.component.html',
-  styleUrls: ['./attestation-wrapper.component.scss']
+  styleUrls: ['./attestation-wrapper.component.scss'],
 })
-export class AttestationWrapperComponent implements OnInit, OnDestroy{
-  public referrer: { objecttable: string; objectuid: string; };
+export class AttestationWrapperComponent implements OnInit, OnDestroy {
+  public referrer: { objecttable: string; objectuid: string };
   public readonly pendingAttestations: HelperAlertContent = { loading: false };
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
     private readonly attestations: IdentityAttestationService,
-    dataProvider: DynamicTabDataProviderDirective){
-      this.referrer = dataProvider.data;
-    }
+    dataProvider: DynamicTabDataProviderDirective,
+  ) {
+    this.referrer = {
+      objecttable: dataProvider.data.objecttable,
+      objectuid: dataProvider.data.objectuid,
+    };
+  }
 
   public ngOnInit(): void {
     if (this.attestations) {
@@ -52,28 +56,24 @@ export class AttestationWrapperComponent implements OnInit, OnDestroy{
 
       this.updatePendingAttestations();
     }
-
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   private async updatePendingAttestations(): Promise<void> {
-
     this.pendingAttestations.loading = true;
 
     const statistics: ObjectAttestationStatistics = await this.attestations.getNumberOfPendingForUser(this.referrer);
 
     if (!statistics?.total) {
-      this.pendingAttestations.infoItems = [
-        { description: '#LDS#There are currently no attestation cases for this object.' }
-      ];
+      this.pendingAttestations.infoItems = [{ description: '#LDS#There are currently no attestation cases for this object.' }];
     } else {
       this.pendingAttestations.infoItems = [
         { description: '#LDS#Here you can get an overview of all attestations cases for this object.' },
         { description: '#LDS#Pending attestation cases: {0}', value: statistics.pendingTotal },
-        { description: '#LDS#Pending attestation cases you can approve or deny: {0}', value: statistics.pendingForUser }
+        { description: '#LDS#Pending attestation cases you can approve or deny: {0}', value: statistics.pendingForUser },
       ];
     }
 

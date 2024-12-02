@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,22 +27,22 @@
 import { Injectable } from '@angular/core';
 import { DefaultUrlSerializer } from '@angular/router';
 
-import { imx_SessionService } from '../session/imx-session.service';
-import { AppConfigService } from '../appConfig/appConfig.service';
 import { PlatformLocation } from '@angular/common';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { imx_SessionService } from '../session/imx-session.service';
 
 @Injectable()
 export class OAuthService {
   constructor(
     private readonly sessionService: imx_SessionService,
     private readonly config: AppConfigService,
-    private readonly platformLocation: PlatformLocation
-  ) { }
+    private readonly platformLocation: PlatformLocation,
+  ) {}
 
   public async GetProviderUrl(authentifier: string): Promise<string> {
     const module = '?Module=' + authentifier;
     return this.sessionService.Client.imx_oauth_get(authentifier, this.config.Config.WebAppIndex, {
-      redirecturi: this.platformLocation.pathname + this.platformLocation.hash + module
+      redirecturi: this.platformLocation.pathname + this.platformLocation.hash + module,
     });
   }
 
@@ -56,16 +56,20 @@ export class OAuthService {
     return keys.length > 0 && keys.includes('state') && (keys.includes('Code') || keys.includes('code'));
   }
 
-  public convertToOAuthLoginData(loginData: { [key: string]: any }): {
-    Module: string,
-    Code: string
-  } {
-    const moduleName = loginData['Module'] || (new DefaultUrlSerializer()).parse(loginData['state']).queryParamMap.get('Module');
+  public convertToOAuthLoginData(loginData: { [key: string]: any }):
+    | {
+        Module: string;
+        Code: string;
+      }
+    | undefined {
+    const moduleName = loginData['Module'] || new DefaultUrlSerializer().parse(loginData['state']).queryParamMap.get('Module');
     const code = loginData['Code'] || loginData['code'];
 
-    return moduleName && code ? {
-      Module: moduleName,
-      Code: code
-    } : undefined;
+    return moduleName && code
+      ? {
+          Module: moduleName,
+          Code: code,
+        }
+      : undefined;
   }
 }

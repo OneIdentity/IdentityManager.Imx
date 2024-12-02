@@ -1,14 +1,14 @@
-# Role Management
+# Role management
 
-The [role management module](../modules/RoleManangementModule.html) extends the Data Explorer with components for the following object types.
+The [role management module](../modules/RoleManangementModule.html) extends the Data Explorer with components for the following object types:
 
 - departments
 - cost centers
 - locations
 - application roles
 - resources
-- multi requestable / unsubscribeable resources
-- multi request resources
+- multi requestable/unsubscribable resources
+- multi-request resources
 - assignment resources
 
 The UI uses the [`RolesOverviewComponent`](../components/RolesOverviewComponent.html) for roles and the [`ResourcesComponent`](../components/ResourcesComponent.html) for resources.

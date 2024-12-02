@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 @import '../new-request-global.scss';
 
 @include Layout-Styles;
@@ -15,8 +16,8 @@
       flex-grow: 1;
     }
 
-    .imx-info-button-caption { 
-      @include imx-text();
+    .imx-info-button-caption {
+      @include new-request-text();
     }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { PolicyFilter } from 'imx-api-att';
+import { PolicyFilter } from '@imx-modules/imx-api-att';
 
 export interface SelectecObjectsInfo {
-    policyFilter: PolicyFilter;
-    uidAttestationObject: string;
-    uidPickCategory: string;
+  policyFilter: PolicyFilter;
+  uidAttestationObject: string;
+  uidPickCategory: string;
 }

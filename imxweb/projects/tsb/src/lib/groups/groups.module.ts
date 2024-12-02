@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,36 +24,37 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import {
+  BusyIndicatorModule,
+  CdrModule,
   DataSourceToolbarModule,
   DataTableModule,
-  CdrModule,
-  LdsReplaceModule,
   DataTreeModule,
-  ExtModule,
+  DataViewModule,
   DynamicTabsModule,
+  ExtModule,
+  HelpContextualModule,
+  LdsReplaceModule,
   ObjectHistoryModule,
-  BusyIndicatorModule,
   SelectedElementsModule,
-  HelpContextualModule
- } from 'qbm';
+} from 'qbm';
 
-import { GroupSidesheetComponent } from './group-sidesheet/group-sidesheet.component';
-import { GroupMembersComponent } from './group-sidesheet/group-members/group-members.component';
-import { DataExplorerGroupsComponent } from './groups.component';
-import { ChildSystemEntitlementsComponent } from './group-sidesheet/child-system-entitlements/child-system-entitlements.component';
-import { NoDataModule } from '../no-data/no-data.module';
-import { DataFiltersModule } from '../data-filters/data-filters.module';
-import { ProductOwnerSidesheetComponent } from './product-owner-sidesheet/product-owner-sidesheet.component';
 import { IdentityRoleMembershipsModule, ObjectHyperviewModule, OwnerControlModule, ServiceItemsEditFormModule } from 'qer';
+import { DataFiltersModule } from '../data-filters/data-filters.module';
+import { NoDataModule } from '../no-data/no-data.module';
 import { GroupMembershipsExtComponent } from './group-memberships-ext/group-memberships-ext.component';
+import { ChildSystemEntitlementsComponent } from './group-sidesheet/child-system-entitlements/child-system-entitlements.component';
+import { GroupMembersComponent } from './group-sidesheet/group-members/group-members.component';
+import { GroupSidesheetComponent } from './group-sidesheet/group-sidesheet.component';
+import { DataExplorerGroupsComponent } from './groups.component';
+import { ProductOwnerSidesheetComponent } from './product-owner-sidesheet/product-owner-sidesheet.component';
 
 @NgModule({
   declarations: [
@@ -88,7 +89,8 @@ import { GroupMembershipsExtComponent } from './group-memberships-ext/group-memb
     ObjectHistoryModule,
     IdentityRoleMembershipsModule,
     SelectedElementsModule,
-    HelpContextualModule
+    HelpContextualModule,
+    DataViewModule,
   ],
   exports: [DataExplorerGroupsComponent, ChildSystemEntitlementsComponent],
 })

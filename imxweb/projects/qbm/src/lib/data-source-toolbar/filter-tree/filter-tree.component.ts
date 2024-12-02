@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { FilterTreeData, IEntity } from 'imx-qbm-dbts';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { DataTreeComponent } from '../../data-tree/data-tree.component';
 import { TreeDatabase } from '../../data-tree/tree-database';
 import { FilterTreeParameter } from '../data-model/filter-tree-parameter';
@@ -42,9 +42,9 @@ import { FilterTreeDialogResultArg, FilterTreeSelectionArg } from './filter-tree
   styleUrls: ['./filter-tree.component.scss'],
 })
 export class FilterTreeComponent implements OnInit {
-  public database: TreeDatabase;
-  public currentlySelectedFilter: FilterTreeSelectionArg[];
-  public currentlySelectedFilterEntities: IEntity[];
+  public database: TreeDatabase | undefined;
+  public currentlySelectedFilter: (FilterTreeSelectionArg | undefined)[];
+  public currentlySelectedFilterEntities: (IEntity | undefined)[];
   @ViewChild('tree') private tree: DataTreeComponent;
 
   constructor(
@@ -53,7 +53,7 @@ export class FilterTreeComponent implements OnInit {
     public readonly data: { filterTreeParameter: FilterTreeParameter; preselection: FilterTreeSelectionArg[]; type: string },
     public dialogRef: MatDialogRef<FilterTreeComponent>,
     public changeDetector: ChangeDetectorRef,
-    private readonly entityWrapper: FilterTreeEntityWrapperService
+    private readonly entityWrapper: FilterTreeEntityWrapperService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -64,7 +64,7 @@ export class FilterTreeComponent implements OnInit {
     }
     if (this.data?.preselection) {
       this.currentlySelectedFilter = this.data.preselection;
-      this.currentlySelectedFilterEntities = this.currentlySelectedFilter.map(elem=> elem.entity).filter(elem=>elem != null);
+      this.currentlySelectedFilterEntities = this.currentlySelectedFilter.map((elem) => elem?.entity).filter((elem) => elem != null);
       this.changeDetector.detectChanges();
     }
   }
@@ -78,7 +78,7 @@ export class FilterTreeComponent implements OnInit {
     if (!this.data.filterTreeParameter.multiSelect) {
       return;
     }
-    this.currentlySelectedFilter = this.tree.selectedEntities.map((elem) => new FilterTreeDialogResultArg(elem));
+    this.currentlySelectedFilter = this.tree.selectedEntities.map((elem) => (elem ? new FilterTreeDialogResultArg(elem) : undefined));
   }
 
   public onNodeSelected(entity: IEntity): void {

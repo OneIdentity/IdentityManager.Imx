@@ -1,0 +1,15 @@
+<div class="imx-table-container">
+  <mat-card class="imx-card-fill">
+    <imx-data-source-toolbar class="imx-hidden" #dst [settings]="dstSettings" [options]="['search']" [busyService]="busyService">
+    </imx-data-source-toolbar>
+    <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.ReportDisplayName"></imx-data-table-column>
+      <imx-data-table-generic-column columnName="action">
+        <ng-template let-item>
+          <imx-ext class="preset-report-extension" id="presetReportButton" [referrer]="item.reportInfo"></imx-ext>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  </mat-card>
+</div>

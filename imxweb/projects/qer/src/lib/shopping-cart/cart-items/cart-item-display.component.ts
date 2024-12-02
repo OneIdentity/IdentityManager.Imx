@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,31 +28,32 @@ import { Component, OnInit, ComponentFactoryResolver, ViewChild, Input } from '@
 
 import { CartItemLogicService } from './cart-item-logic.service';
 import { ExtDirective, ClassloggerService } from 'qbm';
-import { PortalCartitem } from 'imx-api-qer';
+import { PortalCartitem } from '@imx-modules/imx-api-qer';
 
 @Component({
-    template: `<ng-template imxExtd></ng-template>`,
-    selector: 'imx-cart-item-display'
+  template: `<ng-template imxExtd></ng-template>`,
+  selector: 'imx-cart-item-display',
 })
 export class CartItemDisplayComponent implements OnInit {
-    @Input() public cartItem: PortalCartitem;
+  @Input() public cartItem: PortalCartitem;
 
-    @ViewChild(ExtDirective, { static: true }) public directive: ExtDirective;
+  @ViewChild(ExtDirective, { static: true }) public directive: ExtDirective;
 
-    constructor(
-        private componentFactoryResolver: ComponentFactoryResolver,
-        private logger: ClassloggerService,
-        private cartItemLogic: CartItemLogicService
-    ) { }
+  constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private logger: ClassloggerService,
+    private cartItemLogic: CartItemLogicService,
+  ) {}
 
-    public ngOnInit(): void {
-        const selectedProvider = this.cartItemLogic.getType(this.cartItem.DisplayType.value);
-        this.logger.trace(this, 'Getting cart item display component for ', this.cartItem.DisplayType.value);
-        if (selectedProvider) {
-            this.directive.viewContainerRef.clear();
-            const instance = this.directive.viewContainerRef
-                .createComponent(this.componentFactoryResolver.resolveComponentFactory(selectedProvider));
-            instance.instance.cartItem = this.cartItem;
-        }
+  public ngOnInit(): void {
+    const selectedProvider = this.cartItemLogic.getType(this.cartItem.DisplayType.value);
+    this.logger.trace(this, 'Getting cart item display component for ', this.cartItem.DisplayType.value);
+    if (selectedProvider) {
+      this.directive.viewContainerRef.clear();
+      const instance = this.directive.viewContainerRef.createComponent(
+        this.componentFactoryResolver.resolveComponentFactory(selectedProvider),
+      );
+      instance.instance.cartItem = this.cartItem;
     }
+  }
 }

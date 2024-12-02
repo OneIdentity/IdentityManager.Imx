@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -78,7 +78,12 @@ const routes: Routes = [
   declarations: [OpenSidesheetComponent, NewUserComponent, UserActivationComponent, ConfirmDialogComponent],
 })
 export class NewUserModule {
-  constructor(authService: AuthenticationService, router: Router, apiService: ApiService, private readonly logger: ClassloggerService) {
+  constructor(
+    authService: AuthenticationService,
+    router: Router,
+    apiService: ApiService,
+    private readonly logger: ClassloggerService,
+  ) {
     const newUserAuthProvider: AuthConfigProvider = {
       display: '#LDS#Create new account',
       name: 'NewUser',

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,20 @@
  *
  */
 
-import { Injectable } from "@angular/core";
-import { CachedPromise } from "imx-qbm-dbts";
-import { Subscription } from "rxjs";
-import { AuthenticationService } from "../authentication/authentication.service";
+import { Injectable } from '@angular/core';
+import { CachedPromise } from '@imx-modules/imx-qbm-dbts';
+import { Subscription } from 'rxjs';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 /** Provides caching for promises. */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CacheService {
-
-  constructor(private readonly authService: AuthenticationService) {
-  }
+  constructor(private readonly authService: AuthenticationService) {}
 
   private defaultOptions: CacheOptions = {
-    flushOnAuthentication: true
+    flushOnAuthentication: true,
   };
 
   /** Returns a new cached promise. The cache options can be configured
@@ -47,12 +45,13 @@ export class CacheService {
    * @param func Construction function for a new promise.
    */
   public buildCache<T>(func: () => Promise<T>, opts?: CacheOptions): CachedPromise<T> {
-
     var o = { ...this.defaultOptions, opts };
 
     var subscription: Subscription;
-    const cachedPromise = new CachedPromise(func, () => { subscription?.unsubscribe(); });
-    
+    const cachedPromise = new CachedPromise(func, () => {
+      subscription?.unsubscribe();
+    });
+
     if (o.flushOnAuthentication) {
       subscription = this.authService.onSessionResponse.subscribe(() => cachedPromise.reset());
     }
@@ -65,5 +64,5 @@ export interface CacheOptions {
   /** Sets whether the cache will be flushed on authentication events, i.e.
    * when the user logs on or off.
    */
-  flushOnAuthentication?: boolean
+  flushOnAuthentication?: boolean;
 }

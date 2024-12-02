@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
@@ -34,25 +34,25 @@ import { TsbPermissionsService } from '../admin/tsb-permissions.service';
 @Injectable({
   providedIn: 'root',
 })
-export class TsbNamespaceAdminGuardService implements CanActivate, OnDestroy {
+export class TsbNamespaceAdminGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly permissionService: TsbPermissionsService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   public canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): Observable<boolean> {
     return new Observable<boolean>((observer) => {
       this.onSessionResponse = this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (sessionState.IsLoggedIn) {
           // TODO Later: Berechtigungen sind noch nicht genau genug, non-admin-Pages lassen sich im Moment immer ansteuern
-          const navigateToAdmin  = route.url[0].path === 'admin';
+          const navigateToAdmin = route.url[0].path === 'admin';
           const userIsAdmin = await this.permissionService.isTsbNameSpaceAdminBase();
           if (navigateToAdmin && !userIsAdmin) {
-            this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+            this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
           }
 
           observer.next(!navigateToAdmin || userIsAdmin);

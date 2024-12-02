@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,26 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl, ValidatorFn, AbstractControl, UntypedFormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
 import { Platform } from '@angular/cdk/platform';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormGroup, UntypedFormControl, ValidatorFn } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 import moment from 'moment-timezone';
+import { Subscription } from 'rxjs';
 
-import { LdsReplacePipe, ClassloggerService, DataSourceToolbarSettings, MetadataService } from 'qbm';
-import { MetaTableData } from 'imx-api-qbm';
+import {
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  MetaTableData,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import { ClassloggerService, DataViewSource, LdsReplacePipe, MetadataService } from 'qbm';
+import { AobApiService } from '../aob-api-client.service';
 import { LifecycleActionParameter } from './lifecycle-action-parameter.interface';
 import { LifecycleAction } from './lifecycle-action.enum';
-import { EntitySchema, DisplayColumns, TypedEntityCollectionData, TypedEntity, IClientProperty } from 'imx-qbm-dbts';
-import { AobApiService } from '../aob-api-client.service';
 
 /**
  * A component that represents a dialog for submitting an {@link LifecycleAction|action} on the
@@ -47,12 +53,11 @@ import { AobApiService } from '../aob-api-client.service';
 @Component({
   selector: 'imx-entitlements-action',
   templateUrl: './lifecycle-action.component.html',
-  styleUrls: ['./lifecycle-action.component.scss']
+  styleUrls: ['./lifecycle-action.component.scss'],
+  providers: [DataViewSource],
 })
 export class LifecycleActionComponent implements OnDestroy, OnInit {
-
   public readonly DisplayColumns = DisplayColumns; // Enables use of this static class in Angular Templates.
-  public dstSettings: DataSourceToolbarSettings;
 
   public entitySchema: EntitySchema;
 
@@ -70,7 +75,7 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
 
   public publishFuture: boolean;
 
-  public readonly publishDateForm: UntypedFormGroup;
+  public readonly publishDateForm: FormGroup<{ datepickerFormControl: UntypedFormControl; whenToPublish: UntypedFormControl }>;
   public readonly datepickerFormControl: UntypedFormControl;
 
   public readonly browserCulture: string;
@@ -84,8 +89,6 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
   public get timeString(): string {
     return this.datepickerFormControl.value.toDate().toLocaleTimeString(this.browserCulture);
   }
-
-  private dataSource: TypedEntityCollectionData<TypedEntity>;
 
   /**
    * @ignore
@@ -104,7 +107,9 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
     private readonly translateService: TranslateService,
     private readonly metadataProvider: MetadataService,
     private readonly aobApiService: AobApiService,
-    private readonly platform: Platform) {
+    private readonly platform: Platform,
+    public dataSource: DataViewSource,
+  ) {
     this.browserCulture = this.translateService.currentLang;
 
     this.initCaptions();
@@ -114,53 +119,47 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
     // set date to tomorrow
     this.minDate = moment(curDate);
 
-    this.datepickerFormControl = new UntypedFormControl(this.minDate, this.validateDate(this.minDate, () => this.publishFuture));
+    this.datepickerFormControl = new UntypedFormControl(
+      this.minDate,
+      this.validateDate(this.minDate, () => this.publishFuture),
+    );
 
-    this.publishDateForm = new UntypedFormGroup({
+    this.publishDateForm = new FormGroup<{ datepickerFormControl: UntypedFormControl; whenToPublish: UntypedFormControl }>({
       datepickerFormControl: this.datepickerFormControl,
       whenToPublish: new UntypedFormControl('now'),
     });
 
-    this.subscriptions.push(this.publishDateForm.get('whenToPublish').valueChanges
-      .subscribe((when: 'now' | 'future') => {
+    this.subscriptions.push(
+      this.publishDateForm.controls.whenToPublish.valueChanges.subscribe((when: 'now' | 'future') => {
         this.whenToPublish = when;
         this.publishFuture = this.whenToPublish === 'future';
-      }));
+      }),
+    );
 
     this.publishFuture = false;
-
-    this.dataSource = {
-      Data: data.elements,
-      totalCount: data.elements.length
-    };
   }
 
   /**
    * @ignore Used internally.
    */
   public async ngOnInit(): Promise<void> {
-
     this.entitySchema = this.isApplication()
       ? this.aobApiService.typedClient.PortalApplication.GetSchema()
       : this.aobApiService.typedClient.PortalEntitlement.GetSchema();
 
-    this.displayedColumns = [
-      this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      this.entitySchema.Columns.UID_AERoleOwner
-    ];
+    this.displayedColumns = [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME], this.entitySchema.Columns.UID_AERoleOwner];
 
-    this.dstSettings = {
-      dataSource: this.dataSource,
-      entitySchema: this.entitySchema,
-      displayedColumns: this.displayedColumns,
-      navigationState: {
-        StartIndex: 0
-      }
-    };
+    this.dataSource.init({
+      execute: (): Promise<TypedEntityCollectionData<TypedEntity>> =>
+        Promise.resolve({ Data: this.data.elements, totalCount: this.data.elements.length }),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      localSource: true,
+    });
 
     await this.metadataProvider
-      .GetTableMetadata(this.entitySchema.TypeName)
-      .then((metadata: MetaTableData) => (this.tableDisplay = metadata.DisplaySingular));
+      .GetTableMetadata(this.entitySchema.TypeName || '')
+      .then((metadata: MetaTableData) => (this.tableDisplay = metadata.DisplaySingular || ''));
   }
 
   /**
@@ -168,7 +167,7 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
    * Unsubscribes all listeners.
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   /**
@@ -176,9 +175,10 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
    */
   public submitData(): void {
     this.logger.debug(this, `Close the ${this.data.action} dialog for ${this.data.elements.length} ${this.data.type}(s).`);
-    const result = this.data.action === LifecycleAction.Publish
-      ? { publishFuture: this.publishFuture, date: this.datepickerFormControl.value.toDate() }
-      : true;
+    const result =
+      this.data.action === LifecycleAction.Publish
+        ? { publishFuture: this.publishFuture, date: this.datepickerFormControl.value.toDate() }
+        : true;
     this.dialogRef.close(result);
   }
 
@@ -219,7 +219,9 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
     this.logger.debug(this, `Init captions for the ${this.data.action.toString()}-mode depending on the application count.`);
 
     const multipleEntitlements = this.data != null && this.data.elements != null && this.data.elements.length > 1;
-    let dialogTitle = multipleEntitlements ? '#LDS#Heading Unassign {0} Application Entitlements' : '#LDS#Heading Unassign Application Entitlement';
+    let dialogTitle = multipleEntitlements
+      ? '#LDS#Heading Unassign {0} Application Entitlements'
+      : '#LDS#Heading Unassign Application Entitlement';
     let buttonText = multipleEntitlements ? '#LDS#Unassign' : '#LDS#Unassign';
 
     if (this.data.type === 'AobApplication') {
@@ -232,7 +234,9 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
         dialogTitle = multipleEntitlements ? '#LDS#Heading Publish {0} Applications' : '#LDS#Heading Publish Application';
         buttonText = multipleEntitlements ? '#LDS#Publish' : '#LDS#Publish';
       } else {
-        dialogTitle = multipleEntitlements ? '#LDS#Heading Publish {0} Application Entitlements' : '#LDS#Heading Publish Application Entitlement';
+        dialogTitle = multipleEntitlements
+          ? '#LDS#Heading Publish {0} Application Entitlements'
+          : '#LDS#Heading Publish Application Entitlement';
         buttonText = multipleEntitlements ? '#LDS#Publish' : '#LDS#Publish';
       }
     } else if (this.isUnpublish()) {
@@ -240,16 +244,18 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
         dialogTitle = multipleEntitlements ? '#LDS#Heading Unpublish {0} Applications' : '#LDS#Heading Unpublish Application';
         buttonText = multipleEntitlements ? '#LDS#Unpublish' : '#LDS#Unpublish';
       } else {
-        dialogTitle = multipleEntitlements ? '#LDS#Heading Unpublish {0} Application Entitlements' : '#LDS#Heading Unpublish Application Entitlement';
+        dialogTitle = multipleEntitlements
+          ? '#LDS#Heading Unpublish {0} Application Entitlements'
+          : '#LDS#Heading Unpublish Application Entitlement';
         buttonText = multipleEntitlements ? '#LDS#Unpublish' : '#LDS#Unpublish';
       }
     }
 
-    this.translateService.get(dialogTitle)
-      .subscribe((trans: string) => this.dialogTitle = this.ldsReplace.transform(trans, this.data.elements.length));
+    this.translateService
+      .get(dialogTitle)
+      .subscribe((trans: string) => (this.dialogTitle = this.ldsReplace.transform(trans, this.data.elements.length)));
 
-    this.translateService.get(buttonText).
-      subscribe((trans: string) => this.actionButtonText = trans);
+    this.translateService.get(buttonText).subscribe((trans: string) => (this.actionButtonText = trans));
   }
 
   private validateDate(minDate: any, publishFuture: () => boolean): ValidatorFn {

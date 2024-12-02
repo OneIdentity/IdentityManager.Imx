@@ -1,3 +1,5 @@
+@import 'base/mixins';
+
 :host {
   width: 100%;
   height: 100%;
@@ -6,11 +8,9 @@
   flex-direction: column;
 
   .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-    height: initial;
+    @include flex-column-container($height: initial);
 
-    imx-bulk-editor  {
+    imx-bulk-editor {
       padding: 2px;
     }
   }
@@ -27,12 +27,4 @@ button {
 
 .imx-information {
   margin-bottom: 20px;
-}
-
-.imx-helper-alert {
-  width: 100%;
-
-  ::ng-deep .eui-alert {
-    margin-bottom: 20px;
-  }
 }

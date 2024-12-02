@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,19 +23,14 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-import * as TypeMoq from 'typemoq';
 
-import { SystemTreeNode } from './system-tree-node';
-import { OpsupportSystemoverview } from 'imx-api-qbm';
+import { OpsupportSystemoverview } from '@imx-modules/imx-api-qbm';
 import { CreateIReadValue } from 'qbm';
+import { SystemTreeNode } from './system-tree-node';
 
 describe('SystemTreeNode', () => {
   const dummyName = 'name';
-  let sysOverviewObjMock: TypeMoq.IMock<OpsupportSystemoverview>;
-
-  beforeEach(() => {
-    sysOverviewObjMock = TypeMoq.Mock.ofType<OpsupportSystemoverview>();
-  });
+  beforeEach(() => {});
 
   it('should be use name as Display', () => {
     const node = new SystemTreeNode(null, dummyName, 0, true, 1);
@@ -55,12 +50,9 @@ describe('SystemTreeNode', () => {
 
   it('should be use item.Element as Display', () => {
     const dummyDisplay = 'Person';
-    sysOverviewObjMock.setup(d => d.Element).returns(() => CreateIReadValue(dummyDisplay));
-    const node = new SystemTreeNode(sysOverviewObjMock.object, dummyName);
+
+    const sysOverviewObjMock = { Element: CreateIReadValue(dummyDisplay) } as OpsupportSystemoverview;
+    const node = new SystemTreeNode(sysOverviewObjMock, dummyName);
     expect(node.display).toBe(dummyDisplay);
   });
 });
-
-
-
-

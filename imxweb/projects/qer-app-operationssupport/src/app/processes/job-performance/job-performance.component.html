@@ -1,32 +1,38 @@
-<h1 class="mat-headline">
-  {{'#LDS#Heading Processing Performance' | translate}}
-</h1>
+<h2 class="mat-headline-5">
+  {{ '#LDS#Heading Processing Performance' | translate }}
+</h2>
 <div class="imx-content-header">
   <mat-form-field>
     <mat-select [(ngModel)]="this.queueName" (selectionChange)="selectionChange($event)">
       <mat-option *ngFor="let queue of Queues" [value]="queue">
-        {{queue}}
+        {{ queue }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 </div>
 <div class="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings"  (search)="onSearch($event)" [options]="['search', 'filter', 'groupBy']"
-    (navigationStateChanged)="getData($event)">
+  <imx-data-source-toolbar
+    [alwaysVisible]="true"
+    #dst
+    [settings]="dstSettings"
+    (search)="onSearch($event)"
+    [options]="['search', 'filter', 'groupBy']"
+    (navigationStateChanged)="getData($event)"
+  >
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.TaskName">
+  <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance.Columns.TaskName">
       <ng-template let-data>
         {{ data.TaskName.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.ComponentClass">
+    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance.Columns.ComponentClass">
       <ng-template let-data>
         {{ data.ComponentClass.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.CountPerMinute">
+    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance.Columns.CountPerMinute">
       <ng-template let-data>
         {{ data.CountPerMinute.Column.GetDisplayValue() }}
       </ng-template>
@@ -36,7 +42,7 @@
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+  <button mat-stroked-button color="primary" class="imx-button-icon" (click)="refresh()">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>

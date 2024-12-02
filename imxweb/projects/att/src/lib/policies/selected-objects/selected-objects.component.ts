@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,20 +28,19 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { PolicyFilter } from 'imx-api-att';
-import { ClassloggerService } from 'qbm';
-import { SelectecObjectsInfo } from './selected-objects-info.interface';
-import { PolicyService } from '../policy.service';
+import { PolicyFilter } from '@imx-modules/imx-api-att';
+import { calculateSidesheetWidth, ClassloggerService } from 'qbm';
 import { AttestationCasesComponentParameter } from '../attestation-cases/attestation-cases-component-parameter.interface';
 import { AttestationCasesComponent } from '../attestation-cases/attestation-cases.component';
+import { PolicyService } from '../policy.service';
+import { SelectecObjectsInfo } from './selected-objects-info.interface';
 
 @Component({
   templateUrl: './selected-objects.component.html',
   selector: 'imx-selected-objects',
-  styleUrls: ['./selected-objects.component.scss']
+  styleUrls: ['./selected-objects.component.scss'],
 })
 export class SelectedObjectsComponent implements OnInit, OnDestroy {
-
   public filter: PolicyFilter;
   public uidAttestationObject: string;
   public uidPickCategory: string;
@@ -51,12 +50,13 @@ export class SelectedObjectsComponent implements OnInit, OnDestroy {
   @Input() public popupSubtitle = '';
   @Input() public isTotal: boolean;
   @Input() public testId = '';
-  @Input() public filterSubject: BehaviorSubject<SelectecObjectsInfo>;
+  @Input() public filterSubject: BehaviorSubject<SelectecObjectsInfo | undefined>;
 
   constructor(
     private readonly sideSheet: EuiSidesheetService,
     private readonly policyService: PolicyService,
-    private readonly logger: ClassloggerService) { }
+    private readonly logger: ClassloggerService,
+  ) {}
 
   public ngOnInit(): void {
     if (this.filterSubject) {
@@ -88,30 +88,29 @@ export class SelectedObjectsComponent implements OnInit, OnDestroy {
       subtitle: this.popupSubtitle,
       uidPickCategory: this.uidPickCategory,
       uidobject: this.uidAttestationObject,
-      filter: this.filter.Elements,
-      concat: this.filter ? this.filter.ConcatenationType : 'OR',
-      canCreateRuns: false
+      filter: this.filter.Elements || [],
+      concat: this.filter?.ConcatenationType ? this.filter.ConcatenationType : 'OR',
+      canCreateRuns: false,
     };
     this.sideSheet.open(AttestationCasesComponent, {
       title: this.popupTitle,
       subTitle: this.popupSubtitle,
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
       testId: 'selected-objects-showmatching-sidesheet',
       data,
     });
   }
 
   private async getMatchCount(filter: PolicyFilter): Promise<number> {
-    if (filter.Elements.length === 0) { return -1; }
-    if (filter.Elements.findIndex(elem => elem.AttestationSubType == null ||
-      elem.AttestationSubType === '') >= 0) {
+    if (filter.Elements?.length === 0) {
+      return -1;
+    }
+    if ((filter.Elements?.findIndex((elem) => elem.AttestationSubType == null || elem.AttestationSubType === '') || -1) >= 0) {
       return -1;
     }
 
-    return (await this.policyService.getObjectsForFilter(this.uidAttestationObject,
-      this.uidPickCategory,
-      filter, { PageSize: -1 }))
+    return (await this.policyService.getObjectsForFilter(this.uidAttestationObject, this.uidPickCategory, filter, { PageSize: -1 }))
       .totalCount;
   }
 }

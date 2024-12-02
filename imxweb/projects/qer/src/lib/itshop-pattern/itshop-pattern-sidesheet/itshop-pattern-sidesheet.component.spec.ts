@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormsModule, ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -64,7 +64,7 @@ describe('ItshopPatternSidesheetComponent', () => {
   };
 
   const patterServiceStub = {
-    togglePublic: jasmine.createSpy('makePublic').and.returnValue({}),
+    togglePublic: jasmine.createSpy('togglePublic').and.returnValue({}),
     createCopy: jasmine.createSpy('createCopy').and.returnValue({}),
     handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
     handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
@@ -72,13 +72,17 @@ describe('ItshopPatternSidesheetComponent', () => {
     delete: jasmine.createSpy('delete').and.callThrough(),
     getPatternItems: jasmine.createSpy('getPatternItems').and.callThrough(),
   };
+  const formBuilder = {
+    array: jasmine.createSpy('togglePublic').and.returnValue(new FormArray([])),
+  };
 
   beforeEach(() => {
-    return MockBuilder([ItshopPatternSidesheetComponent, TranslateModule.forRoot(),FormsModule,ReactiveFormsModule])
+    return MockBuilder([ItshopPatternSidesheetComponent, TranslateModule.forRoot(), FormsModule, ReactiveFormsModule])
       .mock(ItshopPatternModule, { exportAll: true })
       .mock(ItshopPatternService, patterServiceStub)
       .mock(EuiSidesheetRef, mockSidesheetRef)
-      .mock(EUI_SIDESHEET_DATA, sidesheetData );
+      .mock(EUI_SIDESHEET_DATA, sidesheetData)
+      .mock(UntypedFormBuilder, formBuilder);
   });
 
   beforeEach(() => {

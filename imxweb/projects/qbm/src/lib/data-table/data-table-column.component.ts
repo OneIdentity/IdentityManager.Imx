@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,9 @@
  *
  */
 
-import {
-  Component,
-  Input,
-  ViewChild,
-  TemplateRef,
-  ContentChild,
-  OnInit
-} from '@angular/core';
+import { Component, ContentChild, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatColumnDef } from '@angular/material/table';
-import { IClientProperty, EntitySchema } from 'imx-qbm-dbts';
+import { EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 
 /**
@@ -64,10 +57,9 @@ import { ImxTranslationProviderService } from '../translation/imx-translation-pr
 @Component({
   selector: 'imx-data-table-column',
   templateUrl: './data-table-column.component.html',
-  styleUrls: ['./data-table-column.component.scss']
+  styleUrls: ['./data-table-column.component.scss'],
 })
 export class DataTableColumnComponent<T> implements OnInit {
-
   /**
    * Set alignment of column header and content
    */
@@ -94,17 +86,16 @@ export class DataTableColumnComponent<T> implements OnInit {
    */
   @Input() public alignContent: 'left' | 'center' | 'right' = 'left';
 
-
   public columnIndex: number;
 
   /**
    * Describes a typed entity property.
    */
   @Input()
-  public get entityColumn(): IClientProperty {
+  public get entityColumn(): IClientProperty | undefined {
     return this.entityColumnField;
   }
-  public set entityColumn(value: IClientProperty) {
+  public set entityColumn(value: IClientProperty | undefined) {
     this.entityColumnField = value;
   }
 
@@ -119,24 +110,22 @@ export class DataTableColumnComponent<T> implements OnInit {
    */
   @ViewChild(MatColumnDef, { static: true }) public columnDef: MatColumnDef;
 
-   /**
+  /**
    * The schema of a typed entity
    */
-    public entitySchema: EntitySchema;
+  public entitySchema: EntitySchema;
 
   /**
    * @ignore Used internally.
    */
-  private entityColumnField: IClientProperty;
+  private entityColumnField: IClientProperty | undefined;
 
   /**
    * Inject the 'translateProvider' for use in the template.
    */
-  constructor(
-    public readonly translateProvider: ImxTranslationProviderService
-  ) {}
+  constructor(public readonly translateProvider: ImxTranslationProviderService) {}
 
   public ngOnInit(): void {
-    this.columnDef.name = this.entityColumnField.ColumnName;
+    this.columnDef.name = this.entityColumnField?.ColumnName || '';
   }
 }

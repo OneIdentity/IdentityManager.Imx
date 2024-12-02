@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,7 @@
 import { ElementRef, Injectable, OnDestroy } from '@angular/core';
 import { EuiThemeService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import _ from 'lodash';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ColorValues } from '../heatmaps/block-properties.interface';
 
 export interface ColorThresholds {
@@ -39,7 +38,7 @@ export interface ColorThresholds {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StatisticsConstantsService implements OnDestroy {
   public colorValues: ColorValues;
@@ -62,9 +61,9 @@ export class StatisticsConstantsService implements OnDestroy {
   public resetZoomText: string;
 
   public pointStatusText: {
-    Stable: string,
-    Rising: string,
-    Falling: string
+    Stable: string;
+    Rising: string;
+    Falling: string;
   };
 
   private themeSub$: Subscription;
@@ -72,7 +71,7 @@ export class StatisticsConstantsService implements OnDestroy {
   constructor(
     private translate: TranslateService,
     private themeService: EuiThemeService,
-  ) { }
+  ) {}
 
   public ngOnDestroy(): void {
     this.themeSub$.unsubscribe();
@@ -89,7 +88,7 @@ export class StatisticsConstantsService implements OnDestroy {
         SevereWarn: getComputedStyle(element.nativeElement).getPropertyValue('--stat-severe-warn'),
         Error: getComputedStyle(element.nativeElement).getPropertyValue('--stat-error'),
         Light: getComputedStyle(element.nativeElement).getPropertyValue('--stat-light'),
-        Dark: getComputedStyle(element.nativeElement).getPropertyValue('--stat-dark')
+        Dark: getComputedStyle(element.nativeElement).getPropertyValue('--stat-dark'),
       };
     });
   }
@@ -114,12 +113,12 @@ export class StatisticsConstantsService implements OnDestroy {
     this.pointStatusText = {
       Stable: await this.translate.get('#LDS#Stable').toPromise(),
       Rising: await this.translate.get('#LDS#Increasing').toPromise(),
-      Falling: await this.translate.get('#LDS#Decreasing').toPromise()
-    }
+      Falling: await this.translate.get('#LDS#Decreasing').toPromise(),
+    };
   }
 
   public getColorsForValues(values: number[], thresholds: ColorThresholds): string[] {
-    return values.map(value => this.getColorForValue(value, thresholds));
+    return values.map((value) => this.getColorForValue(value, thresholds));
   }
 
   public getColorForValue(value: number, thresholds: ColorThresholds): string {

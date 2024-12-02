@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { DateFormat, DbObjectKey, FkCandidateBuilder, FkCandidateRouteDto, ValType } from 'imx-qbm-dbts';
+import { DateFormat, DbObjectKey, FkCandidateBuilder, FkCandidateRouteDto, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
   HistoryComparisonData,
   HistoryRollbackActionList,
@@ -35,7 +35,7 @@ import {
   RoleCompareItems,
   UiActionData,
   UiActionResultData,
-} from 'imx-api-qer';
+} from '@imx-modules/imx-api-qer';
 import { BaseCdr, ColumnDependentReference, EntityService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 
@@ -43,7 +43,10 @@ import { QerApiService } from '../../qer-api-client.service';
   providedIn: 'root',
 })
 export class RollebackService {
-  constructor(private readonly apiService: QerApiService, private readonly entityService: EntityService) {}
+  constructor(
+    private readonly apiService: QerApiService,
+    private readonly entityService: EntityService,
+  ) {}
 
   public createCdrDate(): ColumnDependentReference {
     return new BaseCdr(
@@ -55,9 +58,9 @@ export class RollebackService {
           DateFormat: DateFormat.Date,
         },
         undefined,
-        { ValueConstraint: { MaxValue: new Date() } }
+        { ValueConstraint: { MaxValue: new Date() } },
       ),
-      '#LDS#Comparison date'
+      '#LDS#Comparison date',
     );
   }
 
@@ -66,7 +69,7 @@ export class RollebackService {
     uid: string,
     options?: {
       CompareDate?: Date;
-    }
+    },
   ): Promise<HistoryComparisonData[]> {
     return this.apiService.client.portal_history_comparison_get(table, uid, options);
   }
@@ -77,7 +80,7 @@ export class RollebackService {
     options?: {
       CompareDate?: Date;
       CompareId?: string;
-    }
+    },
   ): Promise<UiActionData[]> {
     return this.apiService.client.portal_history_rollback_get(tablename, uid, options);
   }
@@ -89,7 +92,7 @@ export class RollebackService {
     options?: {
       CompareDate?: Date;
       CompareId?: string;
-    }
+    },
   ): Promise<UiActionResultData[]> {
     return this.apiService.client.portal_history_rollback_post(tablename, uid, action, options);
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,27 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { MatButtonModule} from '@angular/material/button';
-import { EuiCoreModule } from '@elemental-ui/core';
-import { MatMenuModule } from '@angular/material/menu';
+import { NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, SelectedElementsModule, HelpContextualModule  } from 'qbm';
-import { AttestationHistoryComponent } from './attestation-history.component';
-import { AttestationHistoryService } from './attestation-history.service';
-import { AttestationHistoryDetailsComponent } from './attestation-history-details/attestation-history-details.component';
-import { AttestationDecisionModule } from '../decision/attestation-decision.module';
-import { AttestationHistoryWrapperComponent } from './attestation-history-wrapper.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DataViewModule, HelpContextualModule, SelectedElementsModule } from 'qbm';
+import { ObjectHyperviewModule } from 'qer';
 import { AttestationDisplayModule } from '../attestation-display/attestation-display.module';
 import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-snapshot.module';
-import {AttestationHistoryFilterComponent} from './attestation-history-filter/attestation-history-filter.component';
-import { MatIconModule } from '@angular/material/icon';
+import { AttestationDecisionModule } from '../decision/attestation-decision.module';
+import { AttestationHistoryDetailsComponent } from './attestation-history-details/attestation-history-details.component';
+import { AttestationHistoryFilterComponent } from './attestation-history-filter/attestation-history-filter.component';
+import { AttestationHistoryWrapperComponent } from './attestation-history-wrapper.component';
+import { AttestationHistoryComponent } from './attestation-history.component';
+import { AttestationHistoryService } from './attestation-history.service';
 import { MyAttestationCasesComponent } from './my-attestation-cases/my-attestation-cases.component';
 
 @NgModule({
@@ -65,13 +67,18 @@ import { MyAttestationCasesComponent } from './my-attestation-cases/my-attestati
     MatMenuModule,
     MatTabsModule,
     MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
     TranslateModule,
     EuiCoreModule,
+    EuiMaterialModule,
     AttestationDecisionModule,
     AttestationDisplayModule,
     AttestationSnapshotModule,
     SelectedElementsModule,
     HelpContextualModule,
+    ObjectHyperviewModule,
+    DataViewModule,
   ],
   providers: [AttestationHistoryService],
 })

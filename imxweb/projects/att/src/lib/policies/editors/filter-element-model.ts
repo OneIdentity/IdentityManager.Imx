@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,38 +26,40 @@
 
 import { BehaviorSubject } from 'rxjs';
 
-import { ParmData, PolicyFilterElement } from 'imx-api-att';
-import { IEntityColumn, MultiValueProperty } from 'imx-qbm-dbts';
+import { ParmData, PolicyFilterElement } from '@imx-modules/imx-api-att';
+import { IEntityColumn, MultiValueProperty } from '@imx-modules/imx-qbm-dbts';
 import { SelectecObjectsInfo } from '../selected-objects/selected-objects-info.interface';
 import { FilterElementColumnService } from './filter-element-column.service';
 
 export class FilterElementModel {
   public columnForFilter: IEntityColumn;
-  public selectedObjectsSubject: BehaviorSubject<SelectecObjectsInfo> = new BehaviorSubject<SelectecObjectsInfo>(undefined);
+  public selectedObjectsSubject: BehaviorSubject<SelectecObjectsInfo | undefined> = new BehaviorSubject<SelectecObjectsInfo | undefined>(
+    undefined,
+  );
 
   public get parameterName(): string {
-    return this.filterElement.ParameterName;
+    return this.filterElement.ParameterName || '';
   }
   public set parameterName(value: string) {
     this.filterElement.ParameterName = value;
   }
 
   public get attestationSubType(): string {
-    return this.filterElement.AttestationSubType;
+    return this.filterElement.AttestationSubType || '';
   }
   public set attestationSubType(value: string) {
     this.filterElement.AttestationSubType = value;
   }
 
   public get parameterValue(): string {
-    return this.filterElement.ParameterValue;
+    return this.filterElement.ParameterValue || '';
   }
   public set parameterValue(value: string) {
     this.filterElement.ParameterValue = value;
   }
 
   public get parameterValue2(): string {
-    return this.filterElement.ParameterValue2;
+    return this.filterElement.ParameterValue2 || '';
   }
   public set parameterValue2(value: string) {
     this.filterElement.ParameterValue2 = value;
@@ -68,16 +70,16 @@ export class FilterElementModel {
     public displays: string[],
     public readonly filterElement: PolicyFilterElement,
     private readonly uidAttestationObject: string,
-    private readonly columnFactory: FilterElementColumnService
+    private readonly columnFactory: FilterElementColumnService,
   ) {
     this.setColumnForFilter();
   }
 
   public updateColumn(filter: PolicyFilterElement, displays: string[]): void {
-    this.attestationSubType = filter.AttestationSubType;
-    this.parameterName = filter.ParameterName;
-    this.parameterValue = filter.ParameterValue;
-    this.parameterValue2 = filter.ParameterValue2;
+    this.attestationSubType = filter.AttestationSubType || '';
+    this.parameterName = filter.ParameterName || '';
+    this.parameterValue = filter.ParameterValue || '';
+    this.parameterValue2 = filter.ParameterValue2 || '';
     this.displays = displays;
     this.setColumnForFilter();
     this.recalculateMatching();
@@ -103,7 +105,7 @@ export class FilterElementModel {
   }
 
   public getParameterData(parameterType: string): ParmData {
-    return FilterElementModel.getParameterData(this.parameterConfig, parameterType);
+    return FilterElementModel.getParameterData(this.parameterConfig, parameterType) || {};
   }
 
   public hasFk(): boolean {
@@ -114,11 +116,11 @@ export class FilterElementModel {
   }
 
   public getColumnName(): string {
-    return this.getParameterData(this.attestationSubType)?.ColumnName;
+    return this.getParameterData(this.attestationSubType)?.ColumnName || '';
   }
 
   public getTableName(): string {
-    return this.getParameterData(this.attestationSubType)?.TableName;
+    return this.getParameterData(this.attestationSubType)?.TableName || '';
   }
 
   public filterErrors(): { [key: string]: boolean } | null {
@@ -148,14 +150,17 @@ export class FilterElementModel {
   }
 
   private setColumnForFilter(): void {
-    this.columnForFilter = this.columnFactory.buildColumn(
+    const column = this.columnFactory.buildColumn(
       this.getParameterData(this.attestationSubType),
       this.attestationSubType,
       this.parameterValue,
       this.getColumnDisplay(),
       this.displays,
-      this.hasFk()
+      this.hasFk(),
     );
+    if (column) {
+      this.columnForFilter = column;
+    }
   }
 
   private getColumnDisplay(): string {
@@ -173,10 +178,10 @@ export class FilterElementModel {
     return parameterName === this.getParameterData(parameterType)?.RequiredParameter;
   }
 
-  public static getParameterData(parameters: ParmData[], parameterType: string): ParmData {
+  public static getParameterData(parameters: ParmData[], parameterType: string): ParmData | undefined {
     const arr = parameters.filter((p) => p.Uid === parameterType);
     if (arr.length !== 1) {
-      return null;
+      return undefined;
     }
 
     return arr[0];
@@ -210,7 +215,7 @@ export class FilterElementModel {
     if (str === '') {
       return '';
     }
-    const seperated = this.replaceAll(this.replaceAll(str, '\'', ''), ',', MultiValueProperty.DefaultSeparator);
+    const seperated = this.replaceAll(this.replaceAll(str, "'", ''), ',', MultiValueProperty.DefaultSeparator);
     return seperated;
   }
 

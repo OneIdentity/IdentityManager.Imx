@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,13 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
-import { DisplayColumns } from 'imx-qbm-dbts';
-import { ColumnDependentReference, BaseReadonlyCdr } from 'qbm';
+import { PortalShopServiceitems, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { DisplayColumns } from '@imx-modules/imx-qbm-dbts';
+import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 
 @Component({
   selector: 'imx-service-item-detail',
   templateUrl: './service-item-detail.component.html',
-  styleUrls: ['./service-item-detail.component.scss']
 })
 export class ServiceItemDetailComponent implements OnInit {
   @Input() public serviceItem: PortalShopServiceitems;
@@ -42,19 +41,16 @@ export class ServiceItemDetailComponent implements OnInit {
 
   public isRoleAssignment = true;
 
-  constructor() { }
+  constructor() {}
 
   public async ngOnInit(): Promise<void> {
-
     this.cdrList = [
       new BaseReadonlyCdr(this.serviceItem.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME)),
       new BaseReadonlyCdr(this.serviceItem.TableName.Column),
-      new BaseReadonlyCdr(this.serviceItem.Tags.Column)
+      new BaseReadonlyCdr(this.serviceItem.Tags.Column),
     ];
 
-    const properties = this.projectConfig.ITShopConfig.AccProductProperties;
-    this.cdrList = this.cdrList.concat(
-      properties.map(prop => new BaseReadonlyCdr(this.serviceItem.GetEntity().GetColumn(prop))));
+    const properties = this.projectConfig.ITShopConfig?.AccProductProperties;
+    this.cdrList = this.cdrList.concat(properties?.map((prop) => new BaseReadonlyCdr(this.serviceItem.GetEntity().GetColumn(prop))) || []);
   }
-
 }

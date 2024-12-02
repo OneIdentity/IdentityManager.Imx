@@ -1,0 +1,197 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "custom-app",
+  "implicitDependencies": ["qer"],
+  "projectType": "application",
+  "sourceRoot": "projects/custom-app/src",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "options": {
+        "outputPath": {
+          "base": "dist/custom-app",
+          "browser": ""
+        },
+        "allowedCommonJsDependencies": [
+          "lodash",
+          "highlight.js",
+          "file-saver",
+          "billboard.js",
+          "moment-timezone",
+          "core-js/fn/map",
+          "core-js/fn/set",
+          "core-js/fn/weak-map",
+          "core-js/fn/array/from",
+          "core-js/fn/object/assign",
+          "core-js/es/array/from",
+          "core-js/es/object/assign",
+          "core-js/es/map",
+          "core-js/es/set",
+          "core-js/es/weak-map",
+          "lodash.debounce",
+          "lodash.clamp",
+          "moment",
+          "@elemental-ui/cadence-icon/codepoints"
+        ],
+        "index": "projects/custom-app/src/index.html",
+        "browser": "projects/custom-app/src/main.ts",
+        "polyfills": ["projects/custom-app/src/polyfills.ts"],
+        "tsConfig": "projects/custom-app/tsconfig.app.json",
+        "aot": true,
+        "assets": [
+          "projects/custom-app/src/appconfig.json",
+          "projects/custom-app/src/assets",
+          {
+            "glob": "**/*",
+            "input": "./html",
+            "output": "./html"
+          },
+          {
+            "glob": "**/*",
+            "input": "./shared/assets/",
+            "output": "./assets"
+          },
+          {
+            "glob": "**/*",
+            "input": "./node_modules/@elemental-ui/core/assets",
+            "output": "./assets"
+          }
+        ],
+        "styles": ["projects/custom-app/src/styles.scss", "projects/qbm/src/lib/styles/imx-page-title.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "projects/custom-app/src/environments/environment.ts",
+              "with": "projects/custom-app/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": true,
+          "extractLicenses": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "20mb",
+              "maximumError": "40mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "remote-dev": {
+          "fileReplacements": [
+            {
+              "replace": "projects/custom-app/src/environments/environment.ts",
+              "with": "../imxweb_envs/custom-app/environments/environment.remote-dev.ts"
+            }
+          ],
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "remote-qs": {
+          "fileReplacements": [
+            {
+              "replace": "projects/custom-app/src/environments/environment.ts",
+              "with": "../imxweb_envs/custom-app/environments/environment.remote-qs.ts"
+            }
+          ],
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "es5": {
+          "tsConfig": "./projects/custom-app/tsconfig-es5.app.json"
+        }
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "custom-app:build"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "custom-app:build:production"
+        },
+        "development": {
+          "browserTarget": "custom-app:build:development"
+        },
+        "remote-dev": {
+          "browserTarget": "custom-app:build:remote-dev"
+        },
+        "remote-qs": {
+          "browserTarget": "custom-app:build:remote-qs"
+        },
+        "es5": {
+          "browserTarget": "custom-app:build:es5"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "custom-app:build"
+      }
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/custom-app/src/test.ts",
+        "polyfills": "projects/custom-app/src/polyfills.ts",
+        "tsConfig": "projects/custom-app/tsconfig.spec.json",
+        "karmaConfig": "projects/custom-app/karma.conf.js",
+        "assets": ["projects/custom-app/src/appconfig.json", "projects/custom-app/src/assets"],
+        "styles": ["projects/custom-app/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/custom-app/tsconfig.app.json", "projects/custom-app/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**"]
+      }
+    }
+  }
+}

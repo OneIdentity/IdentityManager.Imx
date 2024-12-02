@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-import { PortalShopServiceitems, ServiceItemsExtendedData } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, IWriteValue } from 'imx-qbm-dbts';
+import { PortalShopServiceitems, ServiceItemsExtendedData } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, IWriteValue } from '@imx-modules/imx-qbm-dbts';
 
 import { QerApiService } from '../../qer-api-client.service';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
@@ -43,7 +43,10 @@ export class NewRequestProductApiService implements OnDestroy {
   // public recipients: IWriteValue<string>;
   public entitySchema: EntitySchema;
 
-  constructor(private readonly qerApi: QerApiService, private readonly orchestration: NewRequestOrchestrationService) {
+  constructor(
+    private readonly qerApi: QerApiService,
+    private readonly orchestration: NewRequestOrchestrationService,
+  ) {
     this.entitySchema = this.qerApi.typedClient.PortalShopServiceitems.GetSchema();
   }
 
@@ -52,7 +55,7 @@ export class NewRequestProductApiService implements OnDestroy {
   }
 
   public async get(
-    parameters: CollectionLoadParameters | ServiceItemParameters = {}
+    parameters: CollectionLoadParameters | ServiceItemParameters = {},
   ): Promise<ExtendedTypedEntityCollection<PortalShopServiceitems, ServiceItemsExtendedData>> {
     return this.qerApi.typedClient.PortalShopServiceitems.Get(parameters, { signal: this.orchestration.abortController.signal });
   }

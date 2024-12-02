@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 
-import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { Subject } from 'rxjs';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
 
 /**
  * Generic implementation of a {@link ColumnDependentReference | column dependent reference}.
@@ -37,7 +37,6 @@ import { Subject } from 'rxjs';
  * const value = new BaseCdr(columnToUse, undefined, renderedReadonlyOrNot ); // Build a CDR with a give readOnly state
  */
 export class BaseCdr implements ColumnDependentReference {
-
   /**
    * A small hint, that is displayed on a hint icon
    */
@@ -53,18 +52,17 @@ export class BaseCdr implements ColumnDependentReference {
    */
   public minlengthSubject = new Subject<number>();
 
-  constructor(public readonly column: IEntityColumn, public readonly display?: string, public readonly isReadOnlyColumn?: boolean) {}
+  constructor(
+    public readonly column: IEntityColumn,
+    public readonly display?: string,
+  ) {}
 
   /**
    * Checks, whether a CDR should be rendered as read-only
    * @returns True, if the CDR needs to be show as 'read-only', otherwise false.
    */
   public isReadOnly(): boolean {
-    if (this.isReadOnlyColumn !== undefined) {
-      return this.column == null || this.isReadOnlyColumn || !this.column.GetMetadata().CanEdit();
-    } else {
-      return this.column == null || !this.column.GetMetadata().CanEdit();
-    }
+    return this.column == null || !this.column.GetMetadata().CanEdit();
   }
 
   /**

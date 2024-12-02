@@ -1,23 +1,32 @@
-<mat-form-field appearance="outline"  *ngIf="columnContainer?.canEdit; else isReadonly" [class]="control.errors?.['required'] ? 'mat-form-field-invalid' : ''">
-    <mat-label>{{ columnContainer?.display | translate }}</mat-label>
-    <input matInput value="_hidden" [hidden]="true" [required]="this.columnContainer?.isValueRequired"/>
-    <div [ngClass]="control.errors?.['required'] ? 'mat-error' : ''" [formGroup]="control" class="imx-multi-value-container">
-        <mat-checkbox [ngClass]="control.errors?.['required'] ? 'imx-red-checkbox' : ''" *ngFor="let item of columnContainer?.limitedValuesContainer?.values; let i=index" [formControlName]="i" [imxDisableControl]="!columnContainer?.canEdit" [attr.data-imx-identifier]="'cdr-edit-multi-limited-value-checkbox-' + columnContainer?.name">
-            {{ item.Description }}
-        </mat-checkbox>
-    </div>
-    <div matSuffix class="imx-suffix-container">
-      <mat-spinner diameter="30" *ngIf="isWriting"></mat-spinner>
-    </div>
+<mat-form-field
+  class="imx-form-field-width-full"
+  appearance="outline"
+  *ngIf="columnContainer?.canEdit; else isReadonly"
+  [class]="control.errors?.['required'] ? 'mat-form-field-invalid' : ''"
+>
+  <mat-label>{{ columnContainer.display | translate }}</mat-label>
+  <input matInput value="_hidden" [hidden]="true" [required]="this.columnContainer?.isValueRequired" class="input-hidden" />
+  <div [ngClass]="control.errors?.['required'] ? 'mat-error' : ''" [formGroup]="control" class="imx-multi-value-container">
+    <ng-container formArrayName="array">
+      <mat-checkbox
+        [ngClass]="control.errors?.['required'] ? 'imx-checkbox-error' : ''"
+        *ngFor="let item of columnContainer?.limitedValuesContainer?.values; let i = index"
+        [formControlName]="i"
+        [imxDisableControl]="!columnContainer?.canEdit"
+        [attr.data-imx-identifier]="'cdr-edit-multi-limited-value-checkbox-' + columnContainer?.name"
+      >
+        {{ item.Description }}
+      </mat-checkbox>
+    </ng-container>
+  </div>
+  <div matSuffix class="imx-suffix-container">
+    <mat-spinner diameter="30" *ngIf="isWriting"></mat-spinner>
+  </div>
 </mat-form-field>
 <mat-error class="imx-error-margin mat-form-field-subscript-wrapper" *ngIf="control.errors?.['required']">
-    {{ '#LDS#This field is mandatory.' | translate }}
+  {{ '#LDS#This field is mandatory.' | translate }}
 </mat-error>
 
 <ng-template #isReadonly>
-  <imx-view-property
-    [columnContainer]="columnContainer"
-    defaultValue="#LDS#Not set"
-  >
-  </imx-view-property>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
 </ng-template>

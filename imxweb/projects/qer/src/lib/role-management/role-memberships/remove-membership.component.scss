@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   display: flex;
@@ -13,31 +13,6 @@
   overflow: hidden;
 }
 
-.imx-helper-alert {
-  display: flex;
-  margin-bottom: 20px;
-  max-height: max(50%, 200px);
-
-  ::ng-deep .eui-alert-header{
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .imx-nondeletable-hint {
-    margin-top: 0px;
-  }
-
-  .imx-nondeletable-memberships {
-    overflow: auto;
-
-    > div {
-      font-weight: normal;
-    }
-
-  }
-}
-
 .beneath-checkbox {
   margin-left: 2em;
   margin-top: 0.5em;
@@ -47,39 +22,20 @@ mat-card {
   margin-bottom: 1em;
 }
 
-.mat-form-field {
-  width: 100%;
-}
-
-.hideBox{
+.hideBox {
   ::ng-deep .mat-checkbox-inner-container {
     display: none;
   }
 }
 
-.eui-dark-theme{
-  :host{
+.eui-dark-theme {
+  :host {
     background-color: $color-gray-70;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-70;
-    }
   }
 }
 
-div {
-  button {
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
-}
-
-.eui-contrast-theme{
-  :host{
+.eui-contrast-theme {
+  :host {
     background-color: $color-gray-90;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-90;
-    }
   }
 }

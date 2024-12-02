@@ -13,19 +13,55 @@
         {{ title }}
       </ng-container>
     </h1>
-    <imx-usermessage class="usermessage" panelClass="imx-small-message"></imx-usermessage>
+    <imx-usermessage class="usermessage" panelClass="imx-small-message" [target]="'login'"></imx-usermessage>
     <div *ngIf="sessionState?.isOAuth; else loginMask" class="imx-loginButtonpanel">
-      <button data-imx-identifier="logout-oauth-button" mat-button type="button" class="imx-button" (click)="logoutOAuth()">{{ '#LDS#OAuth logout' | translate }}</button>
+      <button data-imx-identifier="logout-oauth-button" mat-button type="button" class="imx-button" (click)="logoutOAuth()">
+        {{ '#LDS#OAuth logout' | translate }}
+      </button>
     </div>
 
     <ng-template imxExtd></ng-template>
 
     <!-- We want this to appear after the extension above, but only if we are not OAuth -->
-    <div class="imx-loginButtonpanel" *ngIf="!sessionState?.isOAuth">
-      <button *ngIf="!selectedConfigProvider?.customAuthFlow" data-imx-identifier="login-button-submit" mat-raised-button type="button" class="imx-button" (click)="login()">
+    <div class="imx-loginButtonpanel" *ngIf="!sessionState?.isOAuth && selectedProviderPreAuthState != preAuthStateType.Captcha">
+      <button
+        *ngIf="!showLoginButton"
+        data-imx-identifier="next-button-submit"
+        mat-flat-button
+        type="button"
+        class="imx-button"
+        (click)="checkPreAuth()"
+      >
+        {{ '#LDS#Next' | translate }}
+      </button>
+      <button
+        *ngIf="showBackButton"
+        data-imx-identifier="back-button"
+        mat-flat-button
+        type="button"
+        class="imx-button"
+        (click)="backToPreAuth()"
+      >
+        {{ '#LDS#Back' | translate }}
+      </button>
+      <button
+        *ngIf="!selectedConfigProvider?.customAuthFlow && showLoginButton"
+        data-imx-identifier="login-button-submit"
+        mat-flat-button
+        type="button"
+        class="imx-button"
+        (click)="login()"
+      >
         {{ '#LDS#Log in' | translate }}
       </button>
-      <button *ngIf="newUserConfigProvider" data-imx-identifier="signup-button-submit" mat-raised-button type="button" class="imx-button" (click)="createNewAccount()">
+      <button
+        *ngIf="showCreateAccountButton"
+        data-imx-identifier="signup-button-submit"
+        mat-flat-button
+        type="button"
+        class="imx-button"
+        (click)="createNewAccount()"
+      >
         {{ '#LDS#Create new account' | translate }}
       </button>
     </div>
@@ -35,28 +71,78 @@
         <div *ngIf="sessionState?.IsLoggedOut" class="imx-loginData">
           <div *ngIf="configurationProviders" class="imx-loginInput">
             <mat-form-field>
+              <mat-label>{{ '#LDS#Authentication' | translate }}</mat-label>
               <mat-select
                 data-imx-identifier="login-select-auth-provider"
                 placeholder="{{ '#LDS#Authentication' | translate }}"
                 [(ngModel)]="selectedConfigProvider"
                 (selectionChange)="onSelectAuthConfig()"
               >
-                <mat-option *ngFor="let authConfig of configurationProviders" [value]="authConfig" [attr.data-imx-identifier]="'login-option-auth-provider' + authConfig.name">
+                <mat-option
+                  *ngFor="let authConfig of configurationProviders"
+                  [value]="authConfig"
+                  [attr.data-imx-identifier]="'login-option-auth-provider' + authConfig.name"
+                >
                   {{ authConfig.display | translate }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
-          <div [hidden]="selectedConfigProvider?.isOAuth2" *ngFor="let authProp of selectedConfigProvider?.authProps" class="imx-loginInput">
-            <input
-              attr.data-imx-identifier="login-input-{{ authProp.name.toLowerCase() }}"
-              [type]="authProp.inputType"
-              [placeholder]="authProp.display"
-              [(ngModel)]="loginData[authProp.name]"
-              (keyup.enter)="login()"
-              class="imx-login-input"
-            />
-          </div>
+          <ng-container *ngIf="showLoginButton">
+            <div [hidden]="selectedConfigProvider?.isOAuth2" *ngFor="let authProp of selectedConfigProvider?.authProps">
+              <mat-form-field>
+                <input
+                  #authPropertyInput="matInput"
+                  matInput
+                  attr.data-imx-identifier="login-input-{{ authProp.name }}"
+                  [type]="authProp.inputType"
+                  [placeholder]="authProp.display"
+                  [(ngModel)]="loginData[authProp.name]"
+                  (keyup.enter)="login()"
+                  class="imx-input-login"
+                  [disabled]="authProp.disabled"
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="selectedProviderPreAuthState == preAuthStateType.PreAuth">
+            <div *ngFor="let authProp of selectedConfigProvider?.preAuthProps">
+              <mat-form-field>
+                <input
+                  matInput
+                  #preAuthPropertyInput="matInput"
+                  attr.data-imx-identifier="login-input-{{ authProp.name }}"
+                  [type]="authProp.inputType"
+                  [placeholder]="authProp.display"
+                  [(ngModel)]="loginData[authProp.name]"
+                  (keyup.enter)="checkPreAuth()"
+                  class="imx-input-next"
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="selectedProviderPreAuthState == preAuthStateType.Captcha">
+            <div *ngFor="let authProp of selectedConfigProvider?.preAuthProps">
+              <mat-form-field>
+                <input
+                  matInput
+                  attr.data-imx-identifier="login-input-{{ authProp.name }}"
+                  [type]="authProp.inputType"
+                  [placeholder]="authProp.display"
+                  [(ngModel)]="loginData[authProp.name]"
+                  (keyup.enter)="checkPreAuth()"
+                  class="imx-input-next"
+                  [disabled]="true"
+                />
+              </mat-form-field>
+            </div>
+            <imx-captcha
+              [disableButton]="false"
+              [showBackButton]="true"
+              (nextClick)="onVerifyCaptcha()"
+              (onBackEvent)="backToPreAuth()"
+            ></imx-captcha>
+          </ng-container>
         </div>
         <div *ngIf="sessionState?.IsAwaitingSecondaryAuth">
           <imx-2fahost></imx-2fahost>

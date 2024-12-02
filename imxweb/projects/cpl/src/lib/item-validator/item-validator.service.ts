@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,18 +25,18 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalRules } from 'imx-api-cpl';
-import { EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalRules } from '@imx-modules/imx-api-cpl';
+import { EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ItemValidatorService {
-  constructor(private readonly api: ApiService) { }
+  constructor(private readonly api: ApiService) {}
 
   public async getRules(): Promise<ExtendedTypedEntityCollection<PortalRules, unknown>> {
-      return await this.api.typedClient.PortalRules.Get({PageSize: 1000});
+    return await this.api.typedClient.PortalRules.Get({ PageSize: 1000 });
   }
 
   public getRulesSchema(): EntitySchema {

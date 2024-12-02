@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 .riskanalysis-sidesheet {
   background-color: $asher-gray;
@@ -9,17 +9,17 @@
   overflow: auto;
 }
 
-.eui-dark-theme{
-  :host{
-    .riskanalysis-sidesheet{
+.eui-dark-theme {
+  :host {
+    .riskanalysis-sidesheet {
       background-color: $color-gray-80;
     }
   }
 }
 
-.eui-contrast-theme{
-  :host{
-    .riskanalysis-sidesheet{
+.eui-contrast-theme {
+  :host {
+    .riskanalysis-sidesheet {
       background-color: $color-gray-100;
     }
   }

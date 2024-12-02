@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,38 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TeamResponsibilitiesComponent } from './team-responsibilities.component';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule, Routes } from '@angular/router';
-import { ClassloggerService, DataSourceToolbarModule, DataTableModule, ExtService, HELP_CONTEXTUAL, HelpContextualComponent, HelpContextualModule, MenuItem, MenuService, RouteGuardService } from 'qbm';
-import { ManagerGuardService } from '../guards/manager-guard.service';
-import { isPersonManager } from '../admin/qer-permissions-helper';
-import { TeamResponsibilitiesService } from './team-responsibilities.service';
-import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { TeamResponsibilitySidesheetComponent } from './team-responsibility-sidesheet/team-responsibility-sidesheet.component';
-import { TeamResponsibilityTileComponent } from './team-responsibility-tile/team-responsibility-tile.component'
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
+import { TranslateModule } from '@ngx-translate/core';
+import {
+  ClassloggerService,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  DateModule,
+  ExtService,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
+  LdsReplaceModule,
+  MenuService,
+  RouteGuardService,
+} from 'qbm';
+import { isPersonManager } from '../admin/qer-permissions-helper';
+import { ManagerGuardService } from '../guards/manager-guard.service';
 import { TilesModule } from '../tiles/tiles.module';
+import { TeamResponsibilitiesComponent } from './team-responsibilities.component';
+import { TeamResponsibilitiesService } from './team-responsibilities.service';
+import { TeamResponsibilityAssignSidesheetComponent } from './team-responsibility-assign-sidesheet/team-responsibility-assign-sidesheet.component';
+import { TeamResponsibilityDialogComponent } from './team-responsibility-dialog/team-responsibility-dialog.component';
+import { TeamResponsibilitySidesheetComponent } from './team-responsibility-sidesheet/team-responsibility-sidesheet.component';
+import { TeamResponsibilityStatusDialogComponent } from './team-responsibility-status-dialog/team-responsibility-status-dialog.component';
+import { TeamResponsibilityTileComponent } from './team-responsibility-tile/team-responsibility-tile.component';
 
 const routes: Routes = [
   {
@@ -44,18 +63,20 @@ const routes: Routes = [
     component: TeamResponsibilitiesComponent,
     canActivate: [RouteGuardService, ManagerGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.TeamResponsibilities
-    }
-  }
+    data: {
+      contextId: HELP_CONTEXTUAL.TeamResponsibilities,
+    },
+  },
 ];
-
 
 @NgModule({
   declarations: [
     TeamResponsibilitiesComponent,
     TeamResponsibilitySidesheetComponent,
-    TeamResponsibilityTileComponent
+    TeamResponsibilityTileComponent,
+    TeamResponsibilityDialogComponent,
+    TeamResponsibilityAssignSidesheetComponent,
+    TeamResponsibilityStatusDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -66,42 +87,44 @@ const routes: Routes = [
     DataTableModule,
     TranslateModule,
     TilesModule,
-    HelpContextualModule
+    HelpContextualModule,
+    DataViewModule,
+    LdsReplaceModule,
+    MatSlideToggleModule,
+    MatTooltipModule,
+    FormsModule,
+    DateModule,
   ],
-  providers:[
-    TeamResponsibilitiesService
-  ]
+  providers: [TeamResponsibilitiesService],
 })
 export class TeamResponsibilitiesModule {
   constructor(
     private readonly menuService: MenuService,
     private readonly extService: ExtService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ TeamResponsibilitiesModule loaded');
     this.setupMenu();
-    this.extService.register('Dashboard-SmallTiles', { instance:TeamResponsibilityTileComponent});
+    this.extService.register('Dashboard-SmallTiles', { instance: TeamResponsibilityTileComponent });
   }
 
   private async setupMenu(): Promise<void> {
-    this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
-
-        const items: MenuItem[] = [];
-        if (isPersonManager(groups)) {
-          return {
-            id: 'ROOT_Responsibilities',
-            title: '#LDS#Responsibilities',
-            sorting: '30',
-            items: [{
+    this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig?: ProjectConfig, groups?: string[]) => {
+      if (isPersonManager(features)) {
+        return {
+          id: 'ROOT_Responsibilities',
+          title: '#LDS#Responsibilities',
+          sorting: '30',
+          items: [
+            {
               id: 'QER_Team_Responsibilities',
               navigationCommands: { commands: ['teamresponsibilities'] },
               title: '#LDS#Menu Entry Responsibilities of my reports',
               sorting: '30-10',
-            }]
-          };
-        }
-      },
-    );
+            },
+          ],
+        };
+      }
+    });
   }
 }

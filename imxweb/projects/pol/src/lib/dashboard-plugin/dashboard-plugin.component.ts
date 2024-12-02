@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,20 +30,22 @@ import { Router } from '@angular/router';
 import { DashboardService, PendingItemsType, UserModelService } from 'qer';
 
 @Component({
-  templateUrl: './dashboard-plugin.component.html'
+  templateUrl: './dashboard-plugin.component.html',
 })
 export class DashboardPluginComponent implements OnInit {
-
   public pendingItems: PendingItemsType;
 
   constructor(
     public readonly router: Router,
     private readonly dashboardService: DashboardService,
-    private readonly userModelSvc: UserModelService
-  ) { }
+    private readonly userModelSvc: UserModelService,
+  ) {}
+
+  public hasPendingItems(): boolean {
+    return !!this.pendingItems?.OpenQERPolicyHasObject && this.pendingItems.OpenQERPolicyHasObject > 0;
+  }
 
   public async ngOnInit(): Promise<void> {
-
     const busy = this.dashboardService.beginBusy();
 
     try {

@@ -1,25 +1,43 @@
-<mat-form-field appearance="outline"
-  *ngIf="hasCandidatesOrIsLoading && columnContainer?.canEdit; else noCandidatesAvailOrReadonly">
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else readonlyview">
   <mat-label>
-    {{ columnContainer?.display | translate }}
-    <ng-container *ngIf="selectedTable && columnContainer?.fkRelations?.length > 1 && !isHierarchical">
-      ({{ '#LDS#Table: {0}' | translate | ldsReplace : metadataProvider.tables[selectedTable.TableName]?.DisplaySingular
-      || selectedTable.TableName }})
+    {{ columnContainer.display | translate }}
+    <ng-container *ngIf="selectedTable && (columnContainer?.fkRelations?.length ?? 0) > 1 && !isHierarchical">
+      ({{
+        '#LDS#Table: {0}'
+          | translate
+          | ldsReplace: metadataProvider.tables[selectedTable.TableName]?.DisplaySingular || selectedTable.TableName
+      }})
     </ng-container>
   </mat-label>
   <eui-icon icon="search" *ngIf="columnContainer?.canEdit && auto.isOpen" matPrefix></eui-icon>
 
-  <input #inputControl matInput type="search" [formControl]="control" [matAutocomplete]="auto"
-    [readonly]="!columnContainer?.canEdit || isHierarchical" (keydown.esc)="close($event); inputControl.blur()"
-    (focusout)="close($event)" (focus)="inputFocus()"
+  <input
+    #inputControl
+    matInput
+    type="text"
+    [formControl]="control"
+    [matAutocomplete]="auto"
+    [readonly]="!columnContainer?.canEdit || isHierarchical"
+    (keydown.esc)="close($event); inputControl.blur()"
+    (focusout)="close($event)"
+    (focus)="inputFocus()"
     [attr.data-imx-identifier]="'cdr-edit-fk-input-search-candidates-' + columnContainer?.name"
-    [required]="columnContainer.isValueRequired" />
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="getDisplay"
-    (optionSelected)="optionSelected($event); inputControl.blur()" (opened)="onOpened()" #autocomplete>
+    [required]="columnContainer.isValueRequired"
+  />
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    [displayWith]="getDisplay"
+    (optionSelected)="optionSelected($event); inputControl.blur()"
+    (opened)="onOpened()"
+    #autocomplete
+  >
     <ng-container *ngIf="!loading">
-      <mat-option *ngFor="let candidate of candidates; index as i; trackBy: candidateTrackByFn" [value]="candidate"
+      <mat-option
+        *ngFor="let candidate of candidates; index as i; trackBy: candidateTrackByFn"
+        [value]="candidate"
         class="imx-candidate-option"
-        [attr.data-imx-identifier]="'cdr-edit-fk-mat-option-assign-candidate-' + columnContainer?.name">
+        [attr.data-imx-identifier]="'cdr-edit-fk-mat-option-assign-candidate-' + columnContainer?.name"
+      >
         <div class="imx-candidate-item">
           <div class="imx-candidate-content">
             <div class="imx-candidate-display">{{ getDisplay(candidate) }}</div>
@@ -29,35 +47,47 @@
           </div>
         </div>
       </mat-option>
-      </ng-container>
-      <mat-option *ngIf="loading" disabled>{{ '#LDS#Loading...' | translate }}</mat-option>
+    </ng-container>
+    <mat-option *ngIf="loading" disabled>{{ '#LDS#Loading...' | translate }}</mat-option>
   </mat-autocomplete>
   <div matSuffix class="imx-suffix-container">
     <mat-spinner diameter="30" *ngIf="loading"></mat-spinner>
-    <eui-icon *ngIf="columnContainer?.canEdit && control.value && !loading" icon="close" class="imx-icon-delete"
+    <eui-icon
+      *ngIf="columnContainer?.canEdit && control.value && !loading"
+      icon="close"
+      class="imx-icon-delete"
       (click)="removeAssignment($event)"
-      [attr.data-imx-identifier]="'cdr-edit-fk-button-remove-assignment-' + columnContainer?.name"></eui-icon>
+      [attr.data-imx-identifier]="'cdr-edit-fk-button-remove-assignment-' + columnContainer?.name"
+    ></eui-icon>
     <div class="imx-spacer"></div>
-    <button *ngIf="columnContainer?.canEdit && (isHierarchical || columnContainer?.fkRelations?.length > 1)" mat-button
-      color="primary" type="button" (click)="editAssignment($event)"
-      [attr.data-imx-identifier]="'cdr-edit-fk-button-open-picker-' + columnContainer?.name">
+    <button
+      *ngIf="columnContainer?.canEdit && (isHierarchical || (columnContainer?.fkRelations?.length ?? 0) > 1)"
+      mat-button
+      color="primary"
+      type="button"
+      (click)="editAssignment($event)"
+      [attr.data-imx-identifier]="'cdr-edit-fk-button-open-picker-' + columnContainer?.name"
+    >
       {{ columnContainer?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Select' | translate) }}
     </button>
   </div>
   <mat-error *ngIf="control.errors?.checkAutocomplete">
-    {{ '#LDS#The value entered in the {0} box could not be found. Please select a value from the list.' | translate |
-    ldsReplace : (columnContainer?.display | translate) }}
+    {{
+      '#LDS#The value entered in the {0} box could not be found. Please select a value from the list.'
+        | translate
+        | ldsReplace: (columnContainer.display | translate)
+    }}
   </mat-error>
   <mat-error *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>
 
-<ng-template #noCandidatesAvailOrReadonly>
-  <imx-view-property *ngIf="columnContainer?.canEdit" [columnContainer]="columnContainer" defaultValue="#LDS#No data"
-    [attr.data-imx-identifier]="'cdr-edit-fk-no-candidates-' + columnContainer?.name">
-  </imx-view-property>
-  <imx-view-property *ngIf="!columnContainer?.canEdit" [columnContainer]="columnContainer" defaultValue="#LDS#Not set"
-    [attr.data-imx-identifier]="'cdr-edit-fk-candidates-readonly-' + columnContainer?.name">
+<ng-template #readonlyview>
+  <imx-view-property
+    [columnContainer]="columnContainer"
+    defaultValue="#LDS#Not set"
+    [attr.data-imx-identifier]="'cdr-edit-fk-candidates-readonly-' + columnContainer?.name"
+  >
   </imx-view-property>
 </ng-template>

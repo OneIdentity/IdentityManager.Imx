@@ -1,11 +1,5 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+@import 'base/mixins';
 
-  .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-  }
+:host {
+  @include flex-column-container($height: 100%);
 }

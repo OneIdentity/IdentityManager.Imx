@@ -17,36 +17,38 @@
         #dataTable
         data-imx-identifier="roles-entitlements-table"
         [dst]="dst"
-        detailViewVisible="false"
+        [detailViewVisible]="false"
         [noDataText]="'#LDS#There are currently no entitlements assigned.' | translate"
         mode="manual"
         [selectable]="canEdit"
         [showSelectionInfo]="false"
         (selectionChanged)="onSelectionChanged($event)"
       >
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetDisplay() }}</div>
             <div class="imx-subtext">{{ entitlementTypes.get(item.GetEntity().GetKeys().toString()) }}</div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin" [columnLabel]="'#LDS#Origin' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.XOrigin" [columnLabel]="'#LDS#Origin' | translate">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetColumn('XOrigin').GetDisplayValue() }}</div>
-            <eui-badge *ngIf="item.GetEntity().GetColumn('XMarkedForDeletion').GetValue() > 0" class="spaced-badge">
+            <eui-badge *ngIf="item.GetEntity().GetColumn('XMarkedForDeletion').GetValue() > 0">
               {{ item.GetEntity().GetColumn('XMarkedForDeletion').GetDisplayValue() }}
             </eui-badge>
             <eui-badge color="gray" *ngIf="isNotEffective(item)">{{ '#LDS#Not effective' | translate }} </eui-badge>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted" [columnLabel]="'#LDS#Added on' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.XDateInserted" [columnLabel]="'#LDS#Added on' | translate">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetColumn('XDateInserted').GetValue() | date }}</div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.ValidUntil">
           <ng-template let-item>
-            <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{ getValidUntil(item) }}</eui-badge>
+            <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{
+              getValidUntil(item)
+            }}</eui-badge>
           </ng-template>
         </imx-data-table-column>
       </imx-data-table>
@@ -55,8 +57,7 @@
   </div>
 
   <div eui-sidesheet-actions *ngIf="canEdit || hasRecommendations">
-    <imx-selected-elements *ngIf="canEdit" [selectedElements]="selectedEntities"></imx-selected-elements>
-    <div class="imx-menu-spacer"></div>
+    <imx-selected-elements class="justify-start" *ngIf="canEdit" [selectedElements]="selectedEntities"></imx-selected-elements>
     <button
       *ngIf="hasRecommendations"
       data-imx-identifier="roles-entitlements-recommendation-button"

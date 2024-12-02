@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,16 @@
  *
  */
 
+import { ActivatedRouteSnapshot } from '@angular/router';
 
-import { ActivatedRouteSnapshot, ParamMap } from '@angular/router';
-import * as TypeMoq from 'typemoq';
-
-import { QueryParametersHandler } from './query-parameters-handler';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
+import { QueryParametersHandler } from './query-parameters-handler';
 
-function CreateActiveRouteSnapshot(queryParams: { [key: string]: any }): ActivatedRouteSnapshot {
-  const mock = TypeMoq.Mock.ofType<ActivatedRouteSnapshot>();
-  mock
-    .setup(item => item.queryParamMap)
-    .returns(() => {
-      const mockParamMap = TypeMoq.Mock.ofType<ParamMap>();
-      mockParamMap.setup(item => item.keys).returns(() => Object.keys(queryParams));
-      mockParamMap.setup(item => item.get(TypeMoq.It.isAnyString())).returns((key: string) => queryParams[key]);
-      return mockParamMap.object;
-    });
-  return mock.object;
+function CreateActiveRouteSnapshot(queryParams: { [key: string]: string }): ActivatedRouteSnapshot {
+  return { queryParamMap: { keys: Object.keys(queryParams), get: (key: string) => queryParams[key] } } as unknown as ActivatedRouteSnapshot;
 }
 
 describe('QueryParametersHandler', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
@@ -53,39 +41,39 @@ describe('QueryParametersHandler', () => {
   [
     {
       search: '',
-      expected: undefined
+      expected: undefined,
     },
     {
       search: '?',
-      expected: undefined
+      expected: undefined,
     },
     {
       search: '?a',
-      expected: { 'a': '' }
+      expected: { a: '' },
     },
     {
       search: '?a=1',
-      expected: { 'a': '1' }
+      expected: { a: '1' },
     },
     {
       search: '?a=1&b=2',
-      expected: { 'a': '1', 'b': '2' }
+      expected: { a: '1', b: '2' },
     },
     {
       search: '?a=1&b=2',
-      route: CreateActiveRouteSnapshot({ 'c': '3' }),
-      expected: { 'a': '1', 'b': '2', 'c': '3' }
+      route: CreateActiveRouteSnapshot({ c: '3' }),
+      expected: { a: '1', b: '2', c: '3' },
     },
     {
       search: '?a=1&b=2',
-      route: CreateActiveRouteSnapshot({ 'c': '3' }),
+      route: CreateActiveRouteSnapshot({ c: '3' }),
       filter: (key: string) => key === 'c',
-      expected: { 'c': '3' }
-    }
-  ].forEach(testcase =>
+      expected: { c: '3' },
+    },
+  ].forEach((testcase) =>
     it('can parse querystrings correctly', () => {
       const handler = new QueryParametersHandler(testcase.search, testcase.route);
       expect(handler.GetQueryParameters(testcase.filter)).toEqual(testcase.expected);
-    })
+    }),
   );
 });

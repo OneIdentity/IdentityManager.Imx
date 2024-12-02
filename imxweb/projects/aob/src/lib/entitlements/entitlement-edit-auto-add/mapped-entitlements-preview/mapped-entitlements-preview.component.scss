@@ -1,35 +1,7 @@
+@import 'base/mixins';
+
 .eui-sidesheet-content {
-  height: inherit;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-
-  .imx-content-card {
-    flex: 1 1 auto;
-    overflow: hidden;
-
-    .imx-table-container {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      height: calc(100% - 80px);
-      flex: 1 1 auto;
-    }
-  }
-}
-
-.eui-sidesheet-actions {
-  .justify-start {
-    margin-right: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: auto;
-  }
-
-  button:not(:last-of-type):not(.justify-start) {
-    margin-right: 10px;
-  }
+  @include flex-column-container($overflow: hidden, $height: inherit);
 }
 
 .imx-info-text {

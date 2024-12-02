@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { IConnectorProvider, ConnectorProvider } from './connector-provider';
+import { ConnectorProvider, IConnectorProvider } from './connector-provider';
 import { HvElement, HyperViewLayout, LayoutResult, toPixelString } from './hyperview-types';
 
 /**
  * Hyperview layouter that arranges the elements in a horizontal line.
  */
 export class HyperviewLayoutHorizontal implements HyperViewLayout {
-
   private elements: HvElement[];
 
   constructor(elements: HvElement[]) {
@@ -55,7 +54,7 @@ export class HyperviewLayoutHorizontal implements HyperViewLayout {
 
         if (index > 0) {
           const previousElement = es[index - 1].element;
-          element.style.left = toPixelString((previousElement.offsetLeft + previousElement.offsetWidth + 10));
+          element.style.left = toPixelString(previousElement.offsetLeft + previousElement.offsetWidth + 10);
           element.style.zIndex = '100';
         }
       });
@@ -63,15 +62,16 @@ export class HyperviewLayoutHorizontal implements HyperViewLayout {
       // calculate the maximum height
       const maxw = this.getMaxHeight();
 
-      firstElement.style.top = toPixelString(((maxw - firstElement.offsetHeight) / 2));
+      firstElement.style.top = toPixelString((maxw - firstElement.offsetHeight) / 2);
 
       es.slice(1).forEach((node) => {
         const element = node.element;
-        element.style.top = toPixelString(((maxw - element.offsetHeight) / 2));
+        element.style.top = toPixelString((maxw - element.offsetHeight) / 2);
       });
 
       return { size: { width: 0, height: maxw } };
     }
+    return { size: { width: 0, height: 0 } };
   }
 
   /**

@@ -1,0 +1,41 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+
+/* Dark theme */
+
+/* High-contrast theme */
+
+/* Dark + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  eui-masthead {
+    header.eui-masthead {
+      background-color: $color-blue-80;
+    }
+
+    .mat-toolbar.mat-primary {
+      background-color: $color-blue-80;
+      color: $color-gray-0;
+    }
+  }
+}
+
+/* Responsivity */
+@media only screen and (max-width: 768px) {
+  eui-masthead {
+    .mat-toolbar {
+      .mat-toolbar-row {
+        width: unset;
+        justify-content: center;
+      }
+
+      .imx-masthead-space,
+      .imx-masthead--controls {
+        display: none;
+      }
+    }
+  }
+}

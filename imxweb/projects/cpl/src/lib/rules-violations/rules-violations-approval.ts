@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRulesViolations } from 'imx-api-cpl';
+import { PortalRulesViolations } from '@imx-modules/imx-api-cpl';
 import { BaseCdr } from 'qbm';
 
 /**
@@ -55,7 +55,7 @@ export class RulesViolationsApproval extends PortalRulesViolations {
   constructor(
     readonly baseObject: PortalRulesViolations,
     private readonly hasRiskIndex: boolean,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
   ) {
     super(baseObject.GetEntity());
 

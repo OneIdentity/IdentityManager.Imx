@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { AppcontainerService } from './appcontainer.service';
 import { environment } from '../environments/environment';
 import { AppConfigService } from 'qbm';
 
-[false, true].forEach(environmentIsProduction => {
+[false, true].forEach((environmentIsProduction) => {
   describe('AppcontainerService Constructor with environmentIsProduction=' + environmentIsProduction, () => {
     let service: AppcontainerService;
 
@@ -44,11 +44,11 @@ import { AppConfigService } from 'qbm';
               public Config = {
                 Basepath: '',
                 Title: '',
-                WebAppIndex: ''
+                WebAppIndex: '',
               };
-            }
-          }
-        ]
+            },
+          },
+        ],
       }).get(AppcontainerService);
 
       environment.production = environmentIsProduction;
@@ -69,11 +69,11 @@ describe('AppcontainerService Methods', () => {
     Config: {
       Basepath: '',
       Title: '',
-      WebAppIndex: ''
+      WebAppIndex: '',
     },
     client: {
-      imx_applications_get: jasmine.createSpy('imx_applications_get').and.returnValue(Promise.resolve(nodeAppInfo))
-    }
+      imx_applications_get: jasmine.createSpy('imx_applications_get').and.returnValue(Promise.resolve(nodeAppInfo)),
+    },
   };
 
   beforeEach(() => {
@@ -84,9 +84,9 @@ describe('AppcontainerService Methods', () => {
         AppcontainerService,
         {
           provide: AppConfigService,
-          useValue: appConfigServiceStub
-        }
-      ]
+          useValue: appConfigServiceStub,
+        },
+      ],
     }).get(AppcontainerService);
   });
 

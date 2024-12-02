@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { AbstractControl, UntypedFormControl, ValidatorFn } from '@angular/forms';
 
-import { ValType } from 'imx-qbm-dbts';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { EditorBase } from '../editor-base';
 import { NumberError } from './number-error.interface';

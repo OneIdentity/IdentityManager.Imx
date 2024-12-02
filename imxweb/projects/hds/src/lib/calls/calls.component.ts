@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,30 +26,39 @@
 
 import { Component, ErrorHandler, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { PortalCalls } from 'imx-api-hds';
-import { HdsApiService } from '../hds-api-client.service';
-import { CallsSidesheetComponent, CallsSidesheetData } from './calls-sidesheet/calls-sidesheet.component';
+import { PortalCalls } from '@imx-modules/imx-api-hds';
 import {
-  DataSourceToolbarSettings,
-  SettingsService,
+  CollectionLoadParameters,
+  DataModel,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import {
+  BusyService,
   DataSourceToolbarFilter,
-  LdsReplacePipe,
+  DataViewInitParameters,
+  DataViewSource,
+  HELP_CONTEXTUAL,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL, BusyService } from 'qbm';
-import { CollectionLoadParameters, EntitySchema, FilterData, IClientProperty, ValType, DataModel } from 'imx-qbm-dbts';
+  LdsReplacePipe,
+  calculateSidesheetWidth,
+} from 'qbm';
+import { HdsApiService } from '../hds-api-client.service';
+import { CallsSidesheetComponent, CallsSidesheetData } from './calls-sidesheet/calls-sidesheet.component';
 
 @Component({
   selector: 'imx-calls',
   templateUrl: './calls.component.html',
   styleUrls: ['./calls.component.scss'],
+  providers: [DataViewSource],
 })
 export class CallsComponent implements OnInit {
   public entitySchema: EntitySchema;
-  public dstSettings: DataSourceToolbarSettings;
   public displayedColumns: IClientProperty[] = [];
-  public collectionLoadParameters: CollectionLoadParameters;
   public filterOptions: DataSourceToolbarFilter[] = [];
   public dataModel: DataModel;
 
@@ -61,11 +70,10 @@ export class CallsComponent implements OnInit {
     private readonly translate: TranslateService,
     private readonly hdsApiService: HdsApiService,
     private readonly euiLoadingService: EuiLoadingService,
-    private readonly settingsService: SettingsService,
     private replacePipe: LdsReplacePipe,
-    private readonly helpContextualService: HelpContextualService
+    private readonly helpContextualService: HelpContextualService,
+    public dataSource: DataViewSource<PortalCalls>,
   ) {
-    this.collectionLoadParameters = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, OrderBy: 'XDateInserted desc' };
     this.entitySchema = this.hdsApiService.typedClient.PortalCalls.GetSchema();
   }
 
@@ -74,10 +82,7 @@ export class CallsComponent implements OnInit {
     try {
       this.displayedColumns = [
         this.entitySchema.Columns.CallNumber,
-        {
-          ColumnName: 'description',
-          Type: ValType.String,
-        },
+        this.entitySchema.Columns.DescriptionHotline,
         this.entitySchema.Columns.IsClosed,
         this.entitySchema.Columns.IsHistory,
         this.entitySchema.Columns.IsHold,
@@ -89,13 +94,20 @@ export class CallsComponent implements OnInit {
         this.entitySchema.Columns.UID_TroubleProduct,
         this.entitySchema.Columns.UID_TroubleSeverity,
         this.entitySchema.Columns.UID_TroubleTypeHotline,
-        {
-          ColumnName: 'actionHotLine',
-          Type: ValType.String,
-        },
+        this.entitySchema.Columns.ActionHotline,
       ];
       await this.setFilter();
-      await this.loadTickets();
+      const dataViewInitParameters: DataViewInitParameters<PortalCalls> = {
+        execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalCalls>> =>
+          this.hdsApiService.typedClient.PortalCalls.Get(params),
+        schema: this.entitySchema,
+        columnsToDisplay: this.displayedColumns,
+        dataModel: this.dataModel,
+        highlightEntity: (call: PortalCalls) => {
+          this.onSelected(call);
+        },
+      };
+      this.dataSource.init(dataViewInitParameters);
     } finally {
       isBusy.endBusy();
     }
@@ -118,23 +130,25 @@ export class CallsComponent implements OnInit {
       let euiSidesheetConfig: EuiSidesheetConfig = {
         testId: 'calls-sidesheet',
         title: title,
+        subTitle: isNew ? undefined : ticket.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         data: sidesheetData,
         disableClose: true,
-        headerComponent: isNew ? HelpContextualComponent : undefined
+        headerComponent: isNew ? HelpContextualComponent : undefined,
       };
 
-      if (!isNew){
-
+      if (!isNew) {
         euiSidesheetConfig.subTitle = this.replacePipe.transform(
           await this.translate.get('#LDS#Heading Ticket Number: {0}').toPromise(),
-          ticket.CallNumber.value.toString()
-          );
-          this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.HelpDeskSupportTicketsCreate);
+          ticket.CallNumber.value.toString(),
+        );
+        this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.HelpDeskSupportTicketsEdit);
+      } else {
+        this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.HelpDeskSupportTicketsCreate);
       }
       let sidesheetRef = this.sidesheet.open(CallsSidesheetComponent, euiSidesheetConfig);
-      sidesheetRef.afterClosed().subscribe(() => this.loadTickets());
+      sidesheetRef.afterClosed().subscribe(() => this.dataSource.updateState());
     }
   }
 
@@ -150,41 +164,10 @@ export class CallsComponent implements OnInit {
     }
   }
 
-  private async loadTickets(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    try {
-      let tickets = await this.hdsApiService.typedClient.PortalCalls.Get(this.collectionLoadParameters);
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: tickets,
-        entitySchema: this.entitySchema,
-        navigationState: this.collectionLoadParameters,
-        filters: this.filterOptions,
-      };
-    } catch (error) {
-      this.errorHandler.handleError(error);
-    } finally {
-      isBusy.endBusy();
-    }
-  }
-
-  public async onNavigationStateChanged(collectionLoadParameters?: CollectionLoadParameters): Promise<void> {
-    if (collectionLoadParameters) {
-      this.collectionLoadParameters = collectionLoadParameters;
-    }
-    await this.loadTickets();
-  }
-
-  public async onSearch(keywords: string): Promise<void> {
-    this.collectionLoadParameters.StartIndex = 0;
-    this.collectionLoadParameters.search = keywords;
-    await this.loadTickets();
-  }
-
-  public async onSelected(ticket: PortalCalls): Promise<void> {
+  public async onSelected(ticket: TypedEntity): Promise<void> {
     let overlayRef = this.euiLoadingService.show();
     try {
-      if (ticket.EntityKeysData?.Keys?.length > 0) {
+      if (!!ticket.EntityKeysData?.Keys && ticket.EntityKeysData?.Keys?.length > 0) {
         let interactiveTickets = (await this.hdsApiService.typedClient.PortalCallsInteractive.Get_byid(ticket.EntityKeysData.Keys[0])).Data;
         if (interactiveTickets?.length > 0) this.viewTicket(interactiveTickets[0], false);
       }
@@ -200,18 +183,14 @@ export class CallsComponent implements OnInit {
   }
 
   private async setFilter(): Promise<void> {
-    this.dataModel = await this.getDataModel();
-    this.filterOptions = this.dataModel.Filters;
+    this.dataModel = await this.hdsApiService.client.portal_calls_datamodel_get();
+    this.filterOptions = this.dataModel?.Filters || [];
     this.filterOptions.map((filter) => {
       if (filter.Name === 'callstate') {
-        filter.InitialValue = 'HDS-2B3E666A806E7CDC288CAE36AE8623DC';
+        filter.CurrentValue = 'HDS-2B3E666A806E7CDC288CAE36AE8623DC';
       }
     });
-  }
-
-  private async getDataModel(groupFilter?: FilterData[]): Promise<DataModel> {
-    return this.hdsApiService.client.portal_calls_datamodel_get({
-      filter: groupFilter,
-    });
+    this.dataSource.state.update((state) => ({ ...state, callstate: 'HDS-2B3E666A806E7CDC288CAE36AE8623DC' }));
+    this.dataSource.predefinedFilters.set(this.filterOptions);
   }
 }

@@ -1,5 +1,6 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
   display: flex;
@@ -11,29 +12,13 @@ imx-data-source-toolbar {
   display: none;
 }
 
-.mat-table {
-  box-shadow: none;
-
-  .mat-cell {
-    max-width: 20vw;
-  }
-}
-
-.mat-card-avatar {
+.mat-mdc-card-avatar {
   background-color: $black-b;
   color: $white;
   padding: 5px;
   height: 25px;
   width: 25px;
   user-select: none;
-}
-
-.mat-dialog-content {
-  overflow: hidden;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: inherit;
 }
 
 .mat-column-__Display {
@@ -69,19 +54,9 @@ div[imxActionsLabel] {
   overflow: auto;
 }
 
-.mat-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-
-  button {
-    margin-left: 10px;
-    margin-top: 10px;
-  }
-}
-
-@mixin imx-entitlements-settings-block {
-  display: flex;
-  flex-direction: column;
+.imx-entitlements-publish-itshops,
+.imx-entitlements-publish-date {
+  @include flex-column-container();
   padding-bottom: 20px;
 
   h5 {
@@ -90,12 +65,11 @@ div[imxActionsLabel] {
 }
 
 .imx-entitlements-publish-itshops {
-  @include imx-entitlements-settings-block;
   overflow: auto;
   width: 380px;
   margin-right: 20px;
 
-  .mat-card {
+  .mat-mdc-card {
     display: flex;
     align-items: center;
     height: 50px;
@@ -103,11 +77,9 @@ div[imxActionsLabel] {
     margin-bottom: 15px;
   }
 
-  .mat-card-title {
+  .mat-mdc-card-title {
     font-size: 16px;
     margin-left: 10px;
-    text-overflow: ellipsis;
-    overflow: hidden;
     white-space: nowrap;
   }
 
@@ -116,24 +88,16 @@ div[imxActionsLabel] {
     color: $black-9;
   }
 
-  .mat-error {
+  .mat-mdc-form-field-error {
     font-size: 12px;
     margin-right: 15px;
   }
 }
 
 .imx-entitlements-publish-date {
-  @include imx-entitlements-settings-block;
+  @include flex-column-container;
+  gap: 25px;
   width: 400px;
-
-  .mat-radio-button {
-    margin-right: 60px;
-  }
-
-  .mat-form-field {
-    width: 159px;
-    margin-top: 30px;
-  }
 
   .mat-small {
     display: block;
@@ -145,18 +109,9 @@ div[imxActionsLabel] {
 
 .eui-dark-theme {
   :host {
-    .mat-card-avatar {
-      background-color: $color-gray-60;
-      color: $color-gray-80;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .mat-card-avatar {
-      background-color: $color-gray-80;
-      color: $color-gray-100;
+    .mat-mdc-card-avatar {
+      background-color: #616566;
+      color: #2f3233;
     }
   }
 }

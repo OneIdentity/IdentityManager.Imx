@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,20 +33,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { MatButtonModule } from '@angular/material/button';
 
-
-
 @NgModule({
-  declarations: [
-    HelpContextualComponent,
-    HelpContextualDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    TranslateModule,
-    EuiCoreModule,
-    MatButtonModule
-  ],
-  exports: [HelpContextualComponent]
+  declarations: [HelpContextualComponent, HelpContextualDialogComponent],
+  imports: [CommonModule, MatDialogModule, TranslateModule, EuiCoreModule, MatButtonModule],
+  exports: [HelpContextualComponent],
 })
-export class HelpContextualModule { }
+export class HelpContextualModule {}

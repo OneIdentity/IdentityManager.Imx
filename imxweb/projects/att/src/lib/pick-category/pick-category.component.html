@@ -1,47 +1,43 @@
 <div class="imx-pickcategory-page">
-  <div class="heading-wrapper">
-    <h1 class="mat-headline">
-      <span>{{ '#LDS#Heading Sample Data' | translate }}</span>
+  <div class="imx-header-toolbar">
+    <h2 class="mat-headline-5">
+      <span>{{ '#LDS#Heading Sampling Data' | translate }}</span>
       <imx-help-contextual></imx-help-contextual>
-    </h1>
+    </h2>
+    <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
   </div>
   <mat-card>
-    <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
-      <imx-data-source-toolbar
-        #dst
-        [options]="['search']"
-        [settings]="dstSettings"
-        (search)="getData({ search: $event })"
-        (navigationStateChanged)="getData($event)"
-        data-imx-identifier="pick-category-dst"
-      >
-      </imx-data-source-toolbar>
-      <imx-data-table
-        #dataTable
-        [dst]="dst"
-        class="imx-pickcategory-table"
-        [detailViewVisible]="false"
-        mode="manual"
-        (highlightedEntityChanged)="viewDetails($event)"
-        [selectable]="true"
-        [showSelectedItemsMenu]="false"
-        (selectionChanged)="onSelectionChanged($event)"
-        data-imx-identifier="pick-category-datatable"
-      >
-        <imx-data-table-column data-imx-identifier="pick-category-table-column-display" [entityColumn]="dstWrapper.propertyDisplay"> </imx-data-table-column>
-        <imx-data-table-column data-imx-identifier="pick-category-table-column-isManual" [entityColumn]="dstSettings.entitySchema?.Columns.IsManual"> </imx-data-table-column>
-      </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="pick-category-paginator" [dst]="dst"> </imx-data-source-paginator>
+    <div class="imx-table-container">
+      <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+        <ng-container [matColumnDef]="entitySchema.Columns.DisplayName.ColumnName">
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchema?.Columns?.DisplayName?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            {{ item.GetEntity().GetColumn('DisplayName').GetDisplayValue() }}
+          </td>
+        </ng-container>
+        <ng-container [matColumnDef]="entitySchema.Columns.IsManual.ColumnName">
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchema?.Columns?.IsManual?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            {{ item.GetEntity().GetColumn('IsManual').GetDisplayValue() }}
+          </td>
+        </ng-container>
+      </imx-data-view-auto-table>
+      <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
     </div>
   </mat-card>
-  <div class="imx-button-bar">
-    <imx-selected-elements [selectedElements]="selectedPickCategoryItems"></imx-selected-elements>
-    <div class="imx-menu-spacer"></div>
-    <button mat-stroked-button color="warn" [disabled]="!selectedItemsCanBeDeleted()" data-imx-identifier="pick-category-details-button-delete" (click)="delete()">
+  <div class="imx-button-bar-transparent">
+    <imx-data-view-selection [dataSource]="dataSource" class="justify-start"></imx-data-view-selection>
+    <button
+      mat-stroked-button
+      color="warn"
+      [disabled]="!selectedItemsCanBeDeleted()"
+      data-imx-identifier="pick-category-details-button-delete"
+      (click)="delete()"
+    >
       <eui-icon icon="delete"></eui-icon>
       {{ '#LDS#Delete' | translate }}
     </button>
-    <button mat-raised-button color="primary" data-imx-identifier="pick-category-button-create-new" (click)="createNewPickCategory()">
+    <button mat-flat-button color="primary" data-imx-identifier="pick-category-button-create-new" (click)="createNewPickCategory()">
       <eui-icon icon="add"></eui-icon>
       {{ '#LDS#Create sample' | translate }}
     </button>

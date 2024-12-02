@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DisplayColumns, EntitySchema, IReadValue, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, IReadValue, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 
 export class PersonDbQueueInfo extends TypedEntity {
   public readonly Object: IReadValue<string> = this.GetEntityValue('Object');
@@ -42,11 +42,11 @@ export class PersonDbQueueInfo extends TypedEntity {
         Type: ValType.String,
         IsReadOnly: true,
       },
-     SortOrder: {
+      SortOrder: {
         ColumnName: 'SortOrder',
         Type: ValType.String,
         IsReadOnly: true,
-      }
+      },
     };
     columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
     columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY_LONG;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-export class AttestationInquiry{
+export class AttestationInquiry {
   public static headCaption = '#LDS#Inquiry made by';
   public static queryCaption = '#LDS#Inquiry';
   public static queryDate = '#LDS#Inquiry made on';

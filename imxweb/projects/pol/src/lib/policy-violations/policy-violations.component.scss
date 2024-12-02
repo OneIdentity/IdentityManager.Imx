@@ -1,88 +1,37 @@
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 :host {
   .imx-main-column {
-    flex-direction: column;
+    flex-direction: column !important;
   }
-}
-
-@mixin imx-flex-column-container {
-  display: flex;
-  flex-direction: column;
-}
-
-@mixin imx-flex-row-container {
-  display: flex;
-  flex-direction: row;
 }
 
 .eui-sidesheet-content {
-  @include imx-flex-column-container();
+  @include flex-column-container();
 }
 
 .heading-wrapper {
-  @include imx-flex-row-container();
+  @include flex-row-container();
   flex: 0 0 auto;
-
-  .helper-alert {
-    display: flex;
-    margin-bottom: 15px;
-  }
-
-  .alert-wrapper {
-    margin: 0 0 0 auto;
-    align-self: flex-end;
-    width: 50%;
-  }
 }
 
 :host {
-  @include imx-flex-column-container();
-  overflow: hidden;
-  height: inherit;
-  width: inherit;
-  max-width: 100%;
+  @include flex-column-container($overflow: hidden, $height: inherit, $width: inherit, $max-width: 100%);
 }
 
 .imx-policyviolation-page {
-  background-color: inherit;
-  @include imx-flex-column-container();
-  overflow: hidden;
-  display: flex;
-  height: 100%;
+  @include flex-column-container($overflow: hidden, $height: 100%);
 
-  .mat-card {
-    @include imx-flex-fill-control-hidden-overflow();
-    margin-right: 3px;
-  }
-
-  div.imx-table-container {
-    @include imx-flex-column-container();
-    overflow: hidden;
-    height: inherit;
+  div.imx-policyviolation-table {
+    @include flex-column-container($overflow: hidden, $height: inherit);
     flex: 1 1 auto;
 
-    .imx-policyviolation-table {
-      flex-grow: 1;
-      overflow: auto;
-
-      .imx-main-column {
+    .imx-column-container {
+     .imx-main-column {
         max-width: 600px;
         margin-right: 10px;
       }
-
-      .imx-decision {
-        @include imx-button-column-right();
-        > button:not(:last-of-type) {
-          margin-right: 5px;
-        }
-      }
     }
-  }
-
-  .imx-button-bar {
-    @include imx-button-bar;
   }
 }
 
@@ -90,11 +39,6 @@
   .imx-rules-violations-page {
     .heading-wrapper {
       display: block;
-
-      .alert-wrapper {
-        margin: 0 0 20px 0;
-        width: 100%;
-      }
     }
   }
 }
@@ -102,12 +46,5 @@
 @media only screen and (max-width: 1024px) {
   ::ng-deep .mat-column-decision {
     display: none;
-  }
-}
-.eui-dark-theme {
-  :host {
-    .imx-button-bar {
-      color: $color-gray-30;
-    }
   }
 }

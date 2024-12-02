@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,13 @@
  */
 
 import { Component, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
-import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { HistoryComparisonData } from '@imx-modules/imx-api-qbm';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { SettingsService } from '../../settings/settings-service';
-import { HistoryComparisonData } from 'imx-api-qbm';
 
 interface IColumn {
   id: string;
@@ -46,7 +45,7 @@ class Column implements IColumn {
   public title: string;
 }
 
-function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: number, skip: number }): T[] {
+function getLocalDataForPage<T>(allData: T[], state: { page: number; pageSize: number; skip: number }): T[] {
   if (state) {
     const currentIndex = state.page * state.pageSize;
     return allData.slice(currentIndex, currentIndex + state.pageSize);
@@ -58,11 +57,11 @@ function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: n
 @Component({
   selector: 'imx-object-history-state-comparison',
   templateUrl: './object-history-state-comparison.component.html',
-  styleUrls: ['./object-history-state-comparison.component.scss']
+  styleUrls: ['./object-history-state-comparison.component.scss'],
 })
 export class ObjectHistoryStateComparisonComponent implements OnInit, OnChanges {
   public get columns(): string[] {
-    return this.columnDefs.map(c => c.id);
+    return this.columnDefs.map((c) => c.id);
   }
 
   public dataCollection: TypedEntityCollectionData<HistoryComparisonData>;
@@ -72,18 +71,18 @@ export class ObjectHistoryStateComparisonComponent implements OnInit, OnChanges 
     size: 5,
     sizeOptions: [20, 50, 100],
     showFirstLastButtons: false,
-    hidden: false
+    hidden: false,
   };
 
-  @Input() public historyComparisonData: HistoryComparisonData[] ;
+  @Input() public historyComparisonData: HistoryComparisonData[];
 
-  private stateCached: { page: number, pageSize: number, skip: number };
+  private stateCached: { page: number; pageSize: number; skip: number };
   @ViewChild(MatPaginator) private paginator: MatPaginator;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private translationProvider: TranslateService,
-    settings: SettingsService
+    settings: SettingsService,
   ) {
     this.paginatorConfig.size = settings.DefaultPageSize;
   }
@@ -92,27 +91,27 @@ export class ObjectHistoryStateComparisonComponent implements OnInit, OnChanges 
     await this.addColumnDef({
       id: 'TableName',
       title: '#LDS#Changed property',
-      getValue: (row: HistoryComparisonData) => row.TableName
+      getValue: (row: HistoryComparisonData) => row.TableName,
     });
     await this.addColumnDef({
       id: 'ChangeType',
       title: '#LDS#Type of changed property',
-      getValue: (row: HistoryComparisonData) => row.ChangeType
+      getValue: (row: HistoryComparisonData) => row.ChangeType,
     });
     await this.addColumnDef({
       id: 'Property',
       title: '#LDS#Changed property',
-      getValue: (row: HistoryComparisonData) => row.Property
+      getValue: (row: HistoryComparisonData) => row.Property,
     });
     await this.addColumnDef({
       id: 'HistoryValueDisplay',
       title: '#LDS#Old value',
-      getValue: (row: HistoryComparisonData) => row.HistoryValueDisplay
+      getValue: (row: HistoryComparisonData) => row.HistoryValueDisplay,
     });
     await this.addColumnDef({
       id: 'CurrentValueDisplay',
       title: '#LDS#Current value',
-      getValue: (row: HistoryComparisonData) => row.CurrentValueDisplay
+      getValue: (row: HistoryComparisonData) => row.CurrentValueDisplay,
     });
   }
 
@@ -124,7 +123,7 @@ export class ObjectHistoryStateComparisonComponent implements OnInit, OnChanges 
     this.updateDataCollection({
       skip: e.pageIndex * e.pageSize,
       page: e.pageIndex,
-      pageSize: e.pageSize
+      pageSize: e.pageSize,
     });
   }
 
@@ -144,7 +143,7 @@ export class ObjectHistoryStateComparisonComponent implements OnInit, OnChanges 
     this.columnDefs.push(column);
   }
 
-  private updateDataCollection(state?: { page: number, pageSize: number, skip: number }): void {
+  private updateDataCollection(state?: { page: number; pageSize: number; skip: number }): void {
     if (state) {
       this.stateCached = state;
     }
@@ -152,16 +151,15 @@ export class ObjectHistoryStateComparisonComponent implements OnInit, OnChanges 
       this.stateCached = {
         skip: this.paginatorConfig.index * this.paginatorConfig.size,
         page: this.paginatorConfig.index,
-        pageSize: this.paginatorConfig.size
+        pageSize: this.paginatorConfig.size,
       };
     }
 
     let table = this.activatedRoute.snapshot.paramMap.get('table');
     this.dataCollection = {
-      tableName: table,
+      tableName: table ?? '',
       totalCount: this.historyComparisonData.length,
-      Data: getLocalDataForPage(this.historyComparisonData, this.stateCached)
+      Data: getLocalDataForPage(this.historyComparisonData, this.stateCached),
     };
   }
 }
-

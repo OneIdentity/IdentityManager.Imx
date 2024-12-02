@@ -1,0 +1,65 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "qam",
+  "sourceRoot": "projects/qam/src",
+  "implicitDependencies": ["qer"],
+  "projectType": "library",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "prefix": "imx",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/qam/tsconfig.lib.json",
+        "project": "projects/qam/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/qam/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/qam/tsconfig.lib.json"
+        },
+        "dynamic": {
+          "project": "projects/qam/ng-package.dynamic.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/qam/tsconfig.lib.json"
+        },
+        "remote-qs": {
+          "tsConfig": "projects/qam/tsconfig.lib.json"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/qam"]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/qam/src/test.ts",
+        "tsConfig": "projects/qam/tsconfig.spec.json",
+        "karmaConfig": "projects/qam/karma.conf.js",
+        "codeCoverageExclude": ["projects/qam/src/**/test/*"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/qam/tsconfig.lib.json", "projects/qam/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

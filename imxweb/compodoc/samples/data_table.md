@@ -2,20 +2,21 @@
 
 A frequently recurring task is the representation of data in tables. The IMX QBM library offers components that facilitate the visualization of data and take the special IMX data structure into account.
 
-Data tables offer a lot of configuration possibilities. We will present the most important ones in this sample.
+Data tables offer a lot of configuration possibilities. This example shows you the most important ones.
 
-The two most important modules in this context are "data-source-toolbar" (projects\qbm\src\lib\data-source-toolbar) and "data-table" (projects\qbm\src\lib\data-table).
+The two most important modules in this context are `data-source-toolbar` (projects\qbm\src\lib\data-source-toolbar) and `data-table` (projects\qbm\src\lib\data-table).
 
-The basic structure consists of 3 elements, the data source toolbar, the actual table and a paginator.
+The basic structure consists of three elements:
+- the data source toolbar
+- the actual table
+- a paginator
 
 ![overall Structure](../../assets/images/data_table/1-overall-structure.png)
 
-In addition to the ability to search, filter, etc, the Data Source Toolbar contains a Data Source component that is used by the Data Table and the Paginator to display data and move within the data set. Think of the DST (Data Source Toolbar) as a link between the Data Table and the Paginator.
+In addition to the ability to search, filter, and so on, the data source toolbar contains a data source component that is used by the data table and the paginator to display data and move within the data set. The data source toolbar is a link between the data table and the paginator.
 
+The "Hello World" version of the data table component looks like this.
 
-The "Hello World" version of the Data Table component looks like as follow.
-
-> Code
 ``` html
 <h1 class="mat-headline">{{ '#LDS#Identities' | translate }}</h1>
 
@@ -34,7 +35,6 @@ The "Hello World" version of the Data Table component looks like as follow.
 <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
 ```
 
-> Code 
 ``` ts
 
 @Component({
@@ -83,11 +83,10 @@ export class SelectIdentityComponent implements OnInit {
 
 ```
 
-The minimum set of properties that must be set are "EntitySchema", "DisplayColumns" and "CollectionLoadParameters". 
+The minimum set of properties that must be specified are `EntitySchema`, `DisplayColumns` and `CollectionLoadParameters`. 
 
-Three places in the .ts Datei are worth to be highlighted.
+The following parts of the .ts Datei are important.
 
-> Code
 ``` ts
  this.displayedColumns = [
       this.schema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
@@ -95,9 +94,8 @@ Three places in the .ts Datei are worth to be highlighted.
     ];
 ```
 
-"displayedColumns" defines which columns the table should display.
+`displayedColumns` defines which columns the table should display.
 
-> Code
 ``` ts
   public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
     if (newState) {
@@ -107,9 +105,8 @@ Three places in the .ts Datei are worth to be highlighted.
   }
 ```
 
-This event handler is called every time the state of the data changes, e.g. when the user navigates to the next page.
+This event handler is called every time the state of the data changes, for example when the user navigates to the next page.
 
-> Code
 ``` ts
  private async navigate(): Promise<void> {
     const data = await this.qerApiClient.typedClient.PortalPersonAll.Get(this.navigationState);
@@ -122,7 +119,7 @@ This event handler is called every time the state of the data changes, e.g. when
     };
   }
 ```
-The "navigate()" method retrievs data from the API server. The actual request is made by calling the API client ("this.qerApiClient.typedClient.PortalPersonAll.Get(this.navigationState)"). The concept of API clients is described in a separate sample.
+The `navigate()` method retrieves data from the API Server. The actual request is made by calling the API client (`this.qerApiClient.typedClient.PortalPersonAll.Get(this.navigationState)`). The concept of API clients is described in another example.
 
 The first version of the component looks like this.
 
@@ -130,9 +127,8 @@ The first version of the component looks like this.
 
 ## Designing the table
 
-The table above shows two fields that are rendered automatically. It is also possible to design columns manually. Whether the table is rendered automatically or manually is controlled by the "mode" input field.
+The table now shows two fields that are rendered automatically. It is also possible to design columns manually. Whether the table is rendered automatically or manually is controlled by the `mode` input field.
 
-> Code
 ``` html
 <imx-data-table
   [dst]="dst"
@@ -141,11 +137,10 @@ The table above shows two fields that are rendered automatically. It is also pos
 </imx-data-table>
 ```
 
-"mode" can take two values: "auto" and "manual". 
+`mode` can take two values: `auto` and `manual`. 
 
-To display the previous table in manual mode, we need to add the two columns to the html template.
+To display the table in manual mode, the two columns must be added to the html template.
 
-> Code
 ``` html
 <imx-data-table [dst]="dst" mode="manual">
   <imx-data-table-column [entityColumn]="schema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
@@ -160,11 +155,8 @@ To display the previous table in manual mode, we need to add the two columns to 
   </imx-data-table-column>
 </imx-data-table>
 ```
-In the next step we will add a new column to the table containing a button and slightly modify the first column.
+The first column currently shows the default display name of the object. A second row that indicates whether the person is a primary identity or not is added.
 
-The first column currently shows the default display of the object. We want to add a second row that indicates whether the person is a primary identity or not.
-
-> Code
 ``` html
 <imx-data-table [dst]="dst" mode="manual">
   <imx-data-table-column [entityColumn]="schema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
@@ -181,10 +173,9 @@ The first column currently shows the default display of the object. We want to a
 </imx-data-table>
 ```
 
-Next we will add a third column that will contain a button. To display data of an object the table uses the "<imx-data-table-column>" tag. To display other types of elements, such as buttons, we use the "<imx-data-table-generic-column>" tag.
-Before we can display the button, we need to add the new synthetic column to the columns to be displayed. This is done in the *.ts file.
+In the following, a third column that contains a button is added. To display data of an object, the table uses the `<imx-data-table-column>` tag. To display other types of elements, such as buttons, the `<imx-data-table-generic-column>` tag is used.
+Before the button can be displayed, the new column must be added to the columns to be displayed. This is done in the `*.ts` file.
 
-> Code
 ``` ts
  this.displayedColumns = [
       this.schema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
@@ -197,7 +188,6 @@ Before we can display the button, we need to add the new synthetic column to the
 ```
 
 
-> Code
 ``` html
 <imx-data-table [dst]="dst" mode="manual">
   <imx-data-table-column [entityColumn]="schema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
@@ -221,14 +211,13 @@ Before we can display the button, we need to add the new synthetic column to the
 </imx-data-table>
 ```
 
-The extended component now looks like this.
+The final result looks like this.
 
-![Version with search enabled](../../assets/images/data_table/4-table-with-search.png)
+![Version with buttons](../../assets/images/data_table/4-table-with-buttons.png)
 
 ## Adding search
 
-Enabling search is pretty straightforward. 
-To do this, you must first enable the "search" option and secondly implement a method that processes the output of the "search" output parameter. 
+To add a search bar, the `search` option must be enabled and a method that processes the output of the `search` output parameter must be implemented. 
 
 The following code snippets shows these changes.
 
@@ -254,8 +243,3 @@ The following code snippets shows these changes.
 
 
 ![Version with search enabled](../../assets/images/data_table/3-table-with-search-enabled.png)
-
-
-
-
-

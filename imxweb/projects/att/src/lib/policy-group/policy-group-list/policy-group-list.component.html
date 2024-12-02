@@ -1,47 +1,52 @@
-<h1 class="mat-headline">
-  <span>{{ '#LDS#Heading Policy Collections' | translate }}</span>
-  <imx-help-contextual></imx-help-contextual>
-</h1>
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Policy Collections' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+</div>
 
-<mat-card class="imx-content-card">
-  <imx-data-source-toolbar
-    #dst
-    [settings]="dstSettings"
-    [options]="['search', 'filter', 'groupBy', 'settings']"
-    (search)="onSearch($event)"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-  >
-  </imx-data-source-toolbar>
-  <div class="imx-table-container">
-    <imx-data-table
-      [dst]="dst"
-      detailViewVisible="false"
-      mode="manual"
-      [groupData]="groupedData"
-      (groupDataChanged)="onGroupingChange($event)"
-      (highlightedEntityChanged)="editPolicy($event)"
-    >
-      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.Ident_AttestationPolicyGroup"></imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.UID_PersonOwner"></imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.UID_QERPickCategory"></imx-data-table-column>
-      <imx-data-table-generic-column columnName="actions" [columnLabel]="">
-        <ng-template let-prod>
-          <div class="imx-button-column">
-            <button mat-stroked-button color="warn" (click)="delete(prod, $event)" data-imx-identifier="policy-group-list-delete-policy">
-              <eui-icon icon="delete"></eui-icon>
-              {{ '#LDS#Delete' | translate }}
-            </button>
-          </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-    </imx-data-table>
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-  </div>
+<mat-card class="imx-card-fill">
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+    <ng-container [matColumnDef]="entitySchemaPolicy.Columns.Ident_AttestationPolicyGroup.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchemaPolicy?.Columns?.Ident_AttestationPolicyGroup?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.Ident_AttestationPolicyGroup.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchemaPolicy.Columns.UID_PersonOwner.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchemaPolicy?.Columns?.UID_PersonOwner?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.UID_PersonOwner.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchemaPolicy.Columns.UID_QERPickCategory.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchemaPolicy?.Columns?.UID_QERPickCategory?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.UID_QERPickCategory.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'actions'">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <button mat-stroked-button color="warn" (click)="delete(item, $event)" data-imx-identifier="policy-group-list-delete-policy">
+          <eui-icon icon="delete"></eui-icon>
+          {{ '#LDS#Delete' | translate }}
+        </button>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
 
-<div class="button-row">
-  <span class="imx-toolbar-spacer"></span>
-  <button mat-raised-button color="primary" data-imx-identifier="policy-list-group-create-new-policy-group" (click)="newPolicyGroup()">
+<div class="imx-button-bar-transparent">
+  <button mat-flat-button color="primary" data-imx-identifier="policy-list-group-create-new-policy-group" (click)="newPolicyGroup()">
     <eui-icon icon="add"></eui-icon>
     {{ '#LDS#Create policy collection' | translate }}
   </button>

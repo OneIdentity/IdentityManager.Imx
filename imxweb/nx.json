@@ -1,0 +1,48 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "master",
+  "workspaceLayout": {
+    "appsDir": "projects",
+    "libsDir": "projects"
+  },
+  "parallel": 5,
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "lint": {
+      "cache": true,
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore", "{workspaceRoot}/eslint.config.js"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": ["testing", "^production", "{projectRoot}/karma.conf.js"]
+    },
+    "e2e": {
+      "cache": true
+    }
+  },
+  "namedInputs": {
+    "sharedGlobals": ["{workspaceRoot}/package.json", "{workspaceRoot}/shared/**/*"],
+    "default": ["{projectRoot}/src/**/*", "sharedGlobals"],
+    "production": ["default", "!{projectRoot}/**/*.spec.ts"],
+    "testing": ["default"]
+  },
+  "generators": {
+    "@nx/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "karma",
+      "e2eTestRunner": "none"
+    },
+    "@nx/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "karma"
+    },
+    "@nx/angular:component": {
+      "style": "scss"
+    }
+  }
+}

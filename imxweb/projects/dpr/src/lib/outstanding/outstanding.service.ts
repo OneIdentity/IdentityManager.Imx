@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,39 +26,40 @@
 
 import { Injectable } from '@angular/core';
 
-import { DependencyToConfirm, OpsupportNamespaces, OpsupportOutstandingTables, OutstandingAction, OutstandingObject } from 'imx-api-dpr';
-import { ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import {
+  DependencyToConfirm,
+  OpsupportNamespaces,
+  OpsupportOutstandingTables,
+  OutstandingAction,
+  OutstandingObject,
+} from '@imx-modules/imx-api-dpr';
+import { ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { ApiService } from '../api.service';
 
 @Injectable()
 export class OutstandingService {
-
-
-  constructor(private apiService: ApiService) { }
-
+  constructor(private apiService: ApiService) {}
 
   public async getNamespaces(): Promise<ExtendedTypedEntityCollection<OpsupportNamespaces, unknown>> {
     return this.apiService.typedClient.OpsupportNamespaces.Get({ PageSize: 1024 });
   }
 
-  public async getTableData(newNamespace: OpsupportNamespaces):
-    Promise<ExtendedTypedEntityCollection<OpsupportOutstandingTables, unknown>> {
-    return this.apiService.typedClient.OpsupportOutstandingTables.Get(
-      { PageSize: 1024, namespace: newNamespace.Ident_DPRNameSpace.value });
+  public async getTableData(
+    newNamespace: OpsupportNamespaces,
+  ): Promise<ExtendedTypedEntityCollection<OpsupportOutstandingTables, unknown>> {
+    return this.apiService.typedClient.OpsupportOutstandingTables.Get({ PageSize: 1024, namespace: newNamespace.Ident_DPRNameSpace.value });
   }
 
   public async getDependencies(action: OutstandingAction, values: string[]): Promise<DependencyToConfirm[]> {
-    return this.apiService.client.opsupport_outstanding_dependencies_post(action,
-      values);
+    return this.apiService.client.opsupport_outstanding_dependencies_post(action, values);
   }
 
   public async getOutstandingTable(tableName: string, namespace: string, actionfilter: string): Promise<OutstandingObject[]> {
     return this.apiService.client.opsupport_outstanding_table_get(tableName, {
       namespace: namespace,
-      actionfilter: actionfilter
+      actionfilter: actionfilter,
     });
   }
-
 
   public getOutstandingNamespace(namespace: string, actionfilter: string): Promise<OutstandingObject[]> {
     return this.apiService.client.opsupport_outstanding_namespace_get(namespace, { actionfilter: actionfilter });

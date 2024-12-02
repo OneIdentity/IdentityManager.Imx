@@ -1,5 +1,4 @@
-
-:host{
+:host {
   display: flex;
   flex-flow: column;
   flex: 1;
@@ -8,7 +7,7 @@
     padding: 0.5em 0.5em 0.5em 0;
     overflow: auto;
 
-    &.loading{
+    &.loading {
       justify-content: center;
       flex: 1;
       align-content: center;

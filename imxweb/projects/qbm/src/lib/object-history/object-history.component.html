@@ -1,19 +1,30 @@
 <div class="imx-content-header">
   <div class="grid-title-inline-leftelem">
     <div *ngIf="showTitle">
-      <h1 class="mat-headline">
+      <h2 class="mat-headline-5">
         <span class="imx-object-overview-tab-header">{{ '#LDS#History' | translate }}</span>
-      </h1>
+      </h2>
     </div>
   </div>
 
   <div class="imx-viewmode-content-controls">
-    <mat-form-field>
-      <mat-select [(ngModel)]="viewModeValue" (selectionChange)="onViewModeChange()">
-        <mat-option *ngFor="let mode of viewModes" [value]="mode.value" class="mat-option-object-history">{{ mode.display }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <button mat-icon-button color="primary" [attr.data-imx-identifier]="'history-button-refresh'" (click)="refresh(true)" matTooltip="{{ '#LDS#Refresh' | translate }}">
+    <eui-select
+      class="small-multi-select"
+      [(ngModel)]="viewModeValue"
+      [hideClearButton]="true"
+      [options]="viewModes"
+      (selectionChange)="onViewModeChange()"
+      [inputControl]="viewModeControl"
+    >
+    </eui-select>
+    <button
+      mat-icon-button
+      color="primary"
+      [attr.data-imx-identifier]="'history-button-refresh'"
+      [disabled]="viewModeValue === viewModeStateComparison && compareDateFormControl.invalid"
+      (click)="refresh(true)"
+      matTooltip="{{ '#LDS#Refresh' | translate }}"
+    >
       <eui-icon icon="sync"></eui-icon>
     </button>
     <ng-container *ngIf="viewModeValue === viewModeStateOverview">
@@ -21,23 +32,39 @@
         mat-icon-button
         color="primary"
         [attr.data-imx-identifier]="'history-state-overview-mode-tooltip-button'"
-        matTooltip="{{ '#LDS#Here you can get an overview of all changes. Additionally, you can see how long the respective change was valid.' | translate }}"
-        matTooltipPosition="right"
+        matTooltip="{{
+          '#LDS#Here you can get an overview of all changes. Additionally, you can see how long the respective change was valid.'
+            | translate
+        }}"
       >
         <eui-icon icon="info"></eui-icon>
       </button>
     </ng-container>
     <ng-container *ngIf="viewModeValue === viewModeStateComparison">
-      <eui-date-picker [dateControl]="compareDateFormControl" appearance="legacy" [allowTextInput]="false" [useClearIcon]="true" [max]="momentToday"></eui-date-picker>
       <button
         mat-icon-button
         color="primary"
         [attr.data-imx-identifier]="'history-state-comparison-mode-tooltip-button'"
-        matTooltip="{{ '#LDS#Here you can compare the current state of the object with the state of the object at a different point in time.' | translate }}"
-        matTooltipPosition="right"
+        matTooltip="{{
+          '#LDS#Here you can compare the current state of the object with the state of the object at a different point in time.' | translate
+        }}"
       >
         <eui-icon icon="info"></eui-icon>
       </button>
+      <eui-date-picker
+        [dateControl]="compareDateFormControl"
+        #datePicker
+        [label]="'#LDS#Comparison date' | translate"
+        [placeholder]="'#LDS#Date in the past' | translate"
+        [max]="momentToday"
+        [required]="true"
+        [useLegacyFloatingLabel]="true"
+      >
+        <mat-error *ngIf="datePicker.getErrors()['matDatepickerMax']">{{
+          '#LDS#Specify a date that lies in the past.' | translate
+        }}</mat-error>
+        <mat-error *ngIf="datePicker.getErrors()['required']">{{ '#LDS#Specify a date.' | translate }}</mat-error>
+      </eui-date-picker>
     </ng-container>
     <ng-container *ngIf="viewModeValue === viewModeGrid">
       <div class="imx-timeline-from">
@@ -46,7 +73,7 @@
           class="small"
           [dateControl]="timelineFromDateFormControl"
           [useClearIcon]="true"
-          [max]="timelineTo.date !== 'Invalid date' ? timelineTo.date : momentToday"
+          [max]="timelineToDateMoment"
         ></eui-date-picker>
         <eui-time-picker
           [timeControl]="timelineFromTimeFormControl"
@@ -67,16 +94,46 @@
           size="s"
         ></eui-time-picker>
       </div>
+      <button mat-icon-button matTooltip="{{ '#LDS#Filter' | translate }}" [matMenuTriggerFor]="filterHistory" color="primary">
+        <eui-icon icon="filter"></eui-icon>
+      </button>
+      <mat-menu #filterHistory="matMenu" class="imx-filter-history">
+        <button mat-menu-item (click)="onFilterTypeChanged(eventChangeTypes.Add)">
+          <mat-checkbox [ngModel]="getFilterTypeValue(eventChangeTypes.Add)">
+            <eui-icon class="imx-filter-icon imx-filter-icon-add" icon="add"></eui-icon>
+            <span>{{ '#LDS#Add/create events' | translate }}</span>
+          </mat-checkbox>
+        </button>
+        <button mat-menu-item (click)="onFilterTypeChanged(eventChangeTypes.Edit)">
+          <mat-checkbox [ngModel]="getFilterTypeValue(eventChangeTypes.Edit)">
+            <eui-icon class="imx-filter-icon imx-filter-icon-edit" icon="edit"></eui-icon>
+            <span>{{ '#LDS#Change events' | translate }}</span>
+          </mat-checkbox>
+        </button>
+        <button mat-menu-item (click)="onFilterTypeChanged(eventChangeTypes.Remove)">
+          <mat-checkbox [ngModel]="getFilterTypeValue(eventChangeTypes.Remove)">
+            <eui-icon class="imx-filter-icon imx-filter-icon-remove" icon="removetask"></eui-icon>
+            <span>{{ '#LDS#Remove/delete events' | translate }}</span>
+          </mat-checkbox>
+        </button>
+      </mat-menu>
     </ng-container>
     <!-- Switches between new and old look -->
-    <mat-button-toggle-group *ngIf="viewModeValue === viewModeGrid" (change)="onLookSelectionChanged($event)" data-imx-identifier="object-history-toggle-group-looks">
+    <mat-button-toggle-group
+      *ngIf="viewModeValue === viewModeGrid"
+      class="imx-button-toggle-group-info"
+      [hideSingleSelectionIndicator]="true"
+      (change)="onLookSelectionChanged($event)"
+      data-imx-identifier="object-history-toggle-group-looks"
+    >
       <mat-button-toggle
         *ngFor="let look of looks; let index = index"
+        [ngClass]="{ 'imx-button-toggle-icon-32': look === 'table' }"
         [value]="look"
         [checked]="look === selectedLook"
         matTooltipPosition="above"
-        [matTooltip]="(look === 'timeline' ? '#LDS#Switch to timeline view' : '#LDS#Switch to table view') | translate"
-        [attr.aria-label]="(look === 'timeline' ? '#LDS#Switch to timeline view' : '#LDS#Switch to table view') | translate"
+        [matTooltip]="(look === 'timeline' ? '#LDS#Show as timeline' : '#LDS#Show as table') | translate"
+        [attr.aria-label]="(look === 'timeline' ? '#LDS#Show as timeline' : '#LDS#Show as table') | translate"
         [attr.data-imx-identifier]="'dst-togglegroup-looks-button-' + look"
       >
         <eui-icon [size]="look === 'timeline' ? '24px' : '32px'" [icon]="lookIcons[index]"></eui-icon>
@@ -87,8 +144,14 @@
 <ng-container *ngIf="selectedLook === 'table'">
   <div class="imx-viewmode-content" [ngSwitch]="viewModeValue">
     <imx-object-history-gridview *ngSwitchCase="viewModeGrid" [historyData]="filteredHistoryData"></imx-object-history-gridview>
-    <imx-object-history-state-overview *ngSwitchCase="viewModeStateOverview" [stateOverviewItems]="stateOverviewItems"></imx-object-history-state-overview>
-    <imx-object-history-state-comparison *ngSwitchCase="viewModeStateComparison" [historyComparisonData]="historyComparisonData"></imx-object-history-state-comparison>
+    <imx-object-history-state-overview
+      *ngSwitchCase="viewModeStateOverview"
+      [stateOverviewItems]="stateOverviewItems"
+    ></imx-object-history-state-overview>
+    <imx-object-history-state-comparison
+      *ngSwitchCase="viewModeStateComparison"
+      [historyComparisonData]="historyComparisonData"
+    ></imx-object-history-state-comparison>
   </div>
 </ng-container>
 <div class="imx-viewmode-content" *ngIf="selectedLook === 'timeline'">

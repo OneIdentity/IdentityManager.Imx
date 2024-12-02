@@ -1,9 +1,8 @@
 <ng-container *ngIf="selectedIdentity">
-
-  <h1 class="mat-headline">
+  <h2 class="mat-headline-5">
     <span translate>#LDS#Heading Profile Settings</span>
     <imx-help-contextual [contextId]="selectedContextId"></imx-help-contextual>
-  </h1>
+  </h2>
 
   <imx-identity-select
     [entities]="identities"
@@ -13,7 +12,7 @@
     data-imx-identifier="edit-profile-select-identity"
   ></imx-identity-select>
 
-  <mat-tab-group *ngIf="!mailToBeUnsubscribed; else unsubscribeDisplay" [(selectedIndex)]="tabIndex">
+  <mat-tab-group mat-stretch-tabs="false" *ngIf="!mailToBeUnsubscribed; else unsubscribeDisplay" [(selectedIndex)]="tabIndex">
     <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
       <ng-template matTabContent>
         <mat-card class="no-grow" *ngIf="canShowEntitlementsHyperview">
@@ -28,28 +27,32 @@
             </mat-radio-group>
           </mat-card-content>
         </mat-card>
-        <imx-object-hyperview [objectType]="'Person'" [objectUid]="userUid"
-          [hyperviewName]="isShowEntitlementsHyperview ? 'VI_Person_Person_Entitlements_Overview' : ''">
+        <imx-object-hyperview
+          [condensed]="true"
+          [objectType]="'Person'"
+          [objectUid]="userUid"
+          [hyperviewName]="isShowEntitlementsHyperview ? 'VI_Person_Person_Entitlements_Overview' : ''"
+        >
         </imx-object-hyperview>
       </ng-template>
     </mat-tab>
     <mat-tab label="{{ '#LDS#Heading Main Data' | translate }}" data-imx-identifier="profile-main-data">
-      <mat-card>
+      <mat-card class="imx-card-scroll-content">
         <mat-card-content>
           <form [formGroup]="form" id="form" (ngSubmit)="save()">
             <imx-cdr-editor
               *ngFor="let cdr of cdrList"
               [cdr]="cdr"
-              (controlCreated)="form.addControl(cdr.column.ColumnName, $event)"
+              (controlCreated)="form.addControl(cdr?.column?.ColumnName ?? '', $event)"
               [attr.data-imx-identifier]="'edit-profile-property-' + cdr.column.ColumnName"
             >
             </imx-cdr-editor>
           </form>
         </mat-card-content>
       </mat-card>
-      <div class="imx-button-bar">
+      <div class="imx-button-bar-transparent">
         <button
-          mat-raised-button
+          mat-flat-button
           [disabled]="!form.dirty || form.invalid"
           type="submit"
           (click)="save()"
@@ -66,12 +69,21 @@
         <imx-mail-subscriptions [uidPerson]="userUid" [mailInfo]="mailInfo"></imx-mail-subscriptions>
       </ng-template>
     </mat-tab>
-    <mat-tab #passwordQuestionTab label="{{ '#LDS#Heading Password Questions' | translate }}" data-imx-identifier="profile-password-questions" *ngIf="canManagePasswordQuestions">
+    <mat-tab
+      #passwordQuestionTab
+      label="{{ '#LDS#Heading Password Questions' | translate }}"
+      data-imx-identifier="profile-password-questions"
+      *ngIf="canManagePasswordQuestions"
+    >
       <ng-template matTabContent>
         <imx-password-questions [passwordQuestionType]="'portal'"></imx-password-questions>
       </ng-template>
     </mat-tab>
-    <mat-tab label="{{ '#LDS#Heading Security Keys' | translate }}" data-imx-identifier="profile-security-keys" *ngIf="canManageSecurityKeys">
+    <mat-tab
+      label="{{ '#LDS#Heading Security Keys' | translate }}"
+      data-imx-identifier="profile-security-keys"
+      *ngIf="canManageSecurityKeys"
+    >
       <ng-template matTabContent>
         <imx-security-keys></imx-security-keys>
       </ng-template>
@@ -91,11 +103,11 @@
         {{ '#LDS#Heading Email Notification' | translate }}
       </mat-card-title>
       <mat-card-content>
-        <div>{{ mailToBeUnsubscribed.Display }}</div>
-        <div class="imx-mail-description">{{ mailToBeUnsubscribed.Description }}</div>
-        <div class="imx-mail-info" *ngIf="!mailToBeUnsubscribed.AllowUnsubscribe || !mailToBeUnsubscribed.IsSubscribed">
+        <div>{{ mailToBeUnsubscribed?.Display }}</div>
+        <div class="imx-mail-description">{{ mailToBeUnsubscribed?.Description }}</div>
+        <div class="imx-mail-info" *ngIf="!mailToBeUnsubscribed?.AllowUnsubscribe || !mailToBeUnsubscribed?.IsSubscribed">
           <eui-alert [dismissable]="false" type="warning" class="mat-elevation-z0">
-            <eui-alert-header class="mat-elevation-z0" *ngIf="!mailToBeUnsubscribed.AllowUnsubscribe; else unsubscribeAllowed">
+            <eui-alert-header class="mat-elevation-z0" *ngIf="!mailToBeUnsubscribed?.AllowUnsubscribe; else unsubscribeAllowed">
               {{ '#LDS#You cannot deactivate this notification. You do not have permission to deactivate this notification.' | translate }}
             </eui-alert-header>
             <ng-template #unsubscribeAllowed>
@@ -112,10 +124,10 @@
         {{ '#LDS#View profile' | translate }}
       </button>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
-        (click)="unsubscribe(mailToBeUnsubscribed.UidMail)"
-        [disabled]="!mailToBeUnsubscribed.IsSubscribed || !mailToBeUnsubscribed.AllowUnsubscribe"
+        (click)="unsubscribe(mailToBeUnsubscribed?.UidMail)"
+        [disabled]="!mailToBeUnsubscribed?.IsSubscribed || !mailToBeUnsubscribed?.AllowUnsubscribe"
         data-imx-identifier="edit-profile-button-unsubscribe"
       >
         {{ '#LDS#Deactivate notification' | translate }}

@@ -1,0 +1,42 @@
+@import 'base/mixins';
+
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-dialog-container {
+  .mat-mdc-dialog-title {
+    display: flex;
+    align-items: baseline;
+    margin: 0 0 10px;
+  }
+
+  .mat-mdc-dialog-actions {
+    justify-content: flex-end;
+
+    .justify-start {
+      margin-right: auto;
+    }
+  }
+}
+
+/* Imx */
+.imx-dialog {
+  &-title {
+    font-weight: 600;
+    font-size: 24px;
+  }
+
+  &-content {
+    &-flex {
+      &-column {
+        &.mat-mdc-dialog-content {
+          @include flex-column-container($overflow: auto, $height: 100%);
+        }
+      }
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

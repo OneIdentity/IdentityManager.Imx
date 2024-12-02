@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,44 +24,43 @@
  *
  */
 
-
-import { IEntityColumn, ValueConstraint } from 'imx-qbm-dbts';
+import { IEntityColumn, ValueConstraint } from '@imx-modules/imx-qbm-dbts';
 import { Subject } from 'rxjs';
 
 /**
  * Defines a column dependent reference.
  */
 export interface ColumnDependentReference {
-    /**
-     * The column of the entity.
-     */
-    column: IEntityColumn;
+  /**
+   * The column of the entity.
+   */
+  column: IEntityColumn;
 
-    /**
-     * Custom display - if it is set it will be used instead of column.GetMetadata().GetDisplay()
-     */
-    display?: string;
+  /**
+   * Custom display - if it is set it will be used instead of column.GetMetadata().GetDisplay()
+   */
+  display?: string;
 
-    /**
-     * Custom MinLength - is evaluated in addition to column.GetMetadata().GetMinLength()
-     */
-    minLength?: number;
+  /**
+   * Custom MinLength - is evaluated in addition to column.GetMetadata().GetMinLength()
+   */
+  minLength?: number;
 
-    minlengthSubject?: Subject<number>
+  minlengthSubject?: Subject<number>;
 
-    /**
-     * Custom valueConstraint - if it is set it will be used instead of column.GetMetadata().valueConstraint
-     */
-    valueConstraint?: ValueConstraint;
+  /**
+   * Custom valueConstraint - if it is set it will be used instead of column.GetMetadata().valueConstraint
+   */
+  valueConstraint?: ValueConstraint;
 
-    /**
-     * Optional hint
-     */
-    hint?: string;
+  /**
+   * Optional hint
+   */
+  hint?: string;
 
-    /**
-     * Returns whether the column should be only displayed (true)
-     * or also allow editing (false).
-     */
-    isReadOnly(): boolean;
+  /**
+   * Returns whether the column should be only displayed (true)
+   * or also allow editing (false).
+   */
+  isReadOnly(): boolean;
 }

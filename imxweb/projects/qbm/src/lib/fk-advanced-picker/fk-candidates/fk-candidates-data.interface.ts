@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,21 @@
  *
  */
 
-import { CollectionLoadParameters, EntityCollectionData, FilterTreeData, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import {
+  ApiRequestOptions,
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  FilterTreeData,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 
 export interface FkCandidatesData {
-  get: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>;
-  GetFilterTree?: (parentKey: string) => Promise<FilterTreeData>;
-  getTyped?: (parameters: CollectionLoadParameters) => Promise<TypedEntityCollectionData<TypedEntity>>;
-  isMultiValue: boolean;
+  Get?: (parameters: CollectionLoadParameters, opts?: ApiRequestOptions) => EntityCollectionData | Promise<EntityCollectionData>;
+  GetFilterTree?: (parentKey: string, opts?: ApiRequestOptions) => Promise<FilterTreeData>;
+  GetDataModel?: (opts?: ApiRequestOptions) => Promise<DataModel>;
+  getTyped?: (parameters: CollectionLoadParameters, opts?: ApiRequestOptions) => Promise<TypedEntityCollectionData<TypedEntity>>;
+  isMultiValue?: boolean;
   preselectedEntities?: TypedEntity[];
 }

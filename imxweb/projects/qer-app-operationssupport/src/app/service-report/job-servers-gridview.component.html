@@ -9,7 +9,7 @@
   >
     <imx-data-source-toolbar-custom *ngIf="withRefresh" [customContentTemplate]="customToolbarTemplate"> </imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" (highlightedEntityChanged)="edit($event)">
+  <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual" (highlightedEntityChanged)="edit($event)">
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Ident_Server"> </imx-data-table-column>
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Connection">
       <ng-template let-data>
@@ -55,9 +55,14 @@
       <ng-template let-data>
         <div class="imx-button-column">
           <button mat-button (click)="checkServer(data, $event)" data-imx-identifier="service-availability-table-check-server">
-            <span translate>#LDS#Check service</span>
+            <span translate>#LDS#Check job server</span>
           </button>
-          <button mat-button color="primary" (click)="getServerDetails(dstSettings.extendedData, $event)" data-imx-identifier="service-availability-table-column-details-button">
+          <button
+            mat-button
+            color="primary"
+            (click)="getServerDetails(data, $event)"
+            data-imx-identifier="service-availability-table-column-details-button"
+          >
             {{ '#LDS#Details' | translate }}
           </button>
         </div>
@@ -68,7 +73,7 @@
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+  <button mat-stroked-button color="primary" class="imx-button-icon" (click)="refresh()">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>

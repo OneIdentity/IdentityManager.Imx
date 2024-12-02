@@ -1,44 +1,61 @@
 <div *ngIf="data?.description" class="mat-h3">{{ data.description | translate }}</div>
 <div *ngIf="requestsDst" class="imx-requests-table">
-  <imx-data-source-toolbar #dst [hidden]="true" [settings]="requestsDst"
-    data-imx-identifier="workflow-action-data-source-toolbar">
+  <imx-data-source-toolbar #dst [hidden]="true" [settings]="requestsDst" data-imx-identifier="workflow-action-data-source-toolbar">
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" data-imx-identifier="workflow-action-table">
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayOrg">
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns?.DisplayOrg">
       <ng-template let-pwo>
-        <imx-request-display [personWantsOrg]="pwo" data-imx-identifier="imx-request-display">
-        </imx-request-display>
+        <imx-request-display [personWantsOrg]="pwo" data-imx-identifier="imx-request-display"> </imx-request-display>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.MaxValidDays">
-    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns?.OrderDate"> </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns?.ValidUntil"> </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns?.MaxValidDays"> </imx-data-table-column>
   </imx-data-table>
 </div>
 <form [formGroup]="formGroup">
   <mat-error *ngIf="invalidProlongationDate" class="imx-action-validation">
-    {{ '#LDS#The specified renewal date exceeds the maximum allowed validity period of one or more products. Check the products and change the validity period if necessary.' | translate }}
+    {{
+      '#LDS#The specified renewal date exceeds the maximum allowed validity period of one or more products. Check the products and change the validity period if necessary.'
+        | translate
+    }}
   </mat-error>
   <mat-error *ngIf="invalidUnsubscriptionDate" class="imx-action-validation">
-    {{ '#LDS#The specified unsubscribe date exceeds the maximum allowed validity period of one or more products. Check the products and change the unsubscribe date if necessary.' | translate }}
+    {{
+      '#LDS#The specified unsubscribe date exceeds the maximum allowed validity period of one or more products. Check the products and change the unsubscribe date if necessary.'
+        | translate
+    }}
   </mat-error>
-  <imx-cdr-editor *ngIf="data.prolongation" [cdr]="data.prolongation"
-    (controlCreated)="addProlongationMaxValidDaysCheck($event)" data-imx-identifier="workflow-action-prolongate">
+  <imx-cdr-editor
+    *ngIf="data.prolongation"
+    [cdr]="data.prolongation"
+    (controlCreated)="addProlongationMaxValidDaysCheck($event)"
+    data-imx-identifier="workflow-action-prolongate"
+  >
   </imx-cdr-editor>
-  <imx-cdr-editor *ngIf="data.unsubscription" [cdr]="data.unsubscription"
-    (controlCreated)="addUnsubscribeMaxValidDaysCheck($event)" data-imx-identifier="workflow-action-unsubscribe">
+  <imx-cdr-editor
+    *ngIf="data.unsubscription"
+    [cdr]="data.unsubscription"
+    (controlCreated)="addUnsubscribeMaxValidDaysCheck($event)"
+    data-imx-identifier="workflow-action-unsubscribe"
+  >
   </imx-cdr-editor>
-  <imx-decision-reason [reasonStandard]="data.justification" [reasonFreetext]="data.reason"
-    (controlCreated)="formGroup.addControl('reason', $event)" data-imx-identifier="workflow-action-reason">
+  <imx-decision-reason
+    [reasonStandard]="data.justification"
+    [reasonFreetext]="data.reason"
+    (controlCreated)="formGroup.addControl('reason', $event)"
+    data-imx-identifier="workflow-action-reason"
+  >
   </imx-decision-reason>
 </form>
 <div class="imx-request-actions">
-  <button mat-raised-button data-imx-identifier="workflow-action-save-button" color="primary"
+  <button
+    mat-flat-button
+    data-imx-identifier="workflow-action-save-button"
+    color="primary"
     [disabled]="invalidProlongationDate || invalidUnsubscriptionDate || formGroup.invalid"
-    (click)="sidesheet.close(true)">
+    (click)="sidesheet.close(true)"
+  >
     {{ '#LDS#Save' | translate }}
   </button>
 </div>

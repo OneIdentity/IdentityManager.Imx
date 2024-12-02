@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,21 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { UserConfig } from 'imx-api-qer';
-import { QerApiService } from './qer-api-client.service';
+import { Router } from '@angular/router';
+import { UserConfig } from '@imx-modules/imx-api-qer';
+import { UserModelService } from './user/user-model.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class RequestsFeatureGuardService implements CanActivate {
-
+export class RequestsFeatureGuardService {
   constructor(
-    private qerService: QerApiService,
-    private readonly router: Router
-  ) { }
+    private userModelService: UserModelService,
+    private readonly router: Router,
+  ) {}
 
-  public async getUserConfig(): Promise<UserConfig> {
-    return this.qerService.client.portal_person_config_get();
+  public getUserConfig(): Promise<UserConfig> {
+    return this.userModelService.getUserConfig();
   }
 
   public async canActivate(): Promise<boolean> {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -48,5 +48,5 @@ describe('ShoppingCartValidationDetailService', () => {
     service.register(DuplicateCheckComponent, 'DuplicateCheck');
     service.register(ProductDependencyCheckComponent, 'ProductDependencyCheck');
     expect(service.viewers.length).toBe(3);
-  })
+  });
 });

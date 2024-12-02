@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
-import { IEntity } from 'imx-qbm-dbts';
-import { RoleService } from '../role.service';
-import { ConfirmationService, ExtService, TabItem } from 'qbm';
 import { MatTabGroup } from '@angular/material/tabs';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
+import { ConfirmationService, ExtService, TabItem } from 'qbm';
 import { Subscription } from 'rxjs';
 import { DataManagementService } from '../data-management.service';
+import { RoleService } from '../role.service';
 
 @Component({
   selector: 'imx-role-detail',
@@ -41,7 +41,7 @@ import { DataManagementService } from '../data-management.service';
 export class RoleDetailComponent implements OnInit, OnDestroy {
   @ViewChild('tabs') public tabs: MatTabGroup;
   public dynamicTabs: TabItem[] = [];
-  public parameters: { tablename: string; entity: IEntity };
+  public parameters: { tablename?: string; entity?: IEntity };
   public subscriptions$: Subscription[] = [];
 
   private defaultClickHandler: Function;
@@ -55,11 +55,11 @@ export class RoleDetailComponent implements OnInit, OnDestroy {
     private readonly roleService: RoleService,
     private dataManagementService: DataManagementService,
     private readonly confirm: ConfirmationService,
-    private readonly tabService: ExtService
+    private readonly tabService: ExtService,
   ) {
     this.parameters = {
       tablename: this.roleService.ownershipInfo.TableName,
-      entity: this.dataManagementService.entityInteractive.GetEntity(),
+      entity: this.dataManagementService.entityInteractive?.GetEntity(),
     };
     this.dataManagementService.mainDataDirty$.subscribe((flag) => {
       this.canClose = !flag;
@@ -73,7 +73,7 @@ export class RoleDetailComponent implements OnInit, OnDestroy {
       }
       if (!this.canClose || !this.autoMembershipsValid) {
         this.confirmIsOpen = true;
-        const close = await this.confirm.confirmLeaveWithUnsavedChanges(null, null, true);
+        const close = await this.confirm.confirmLeaveWithUnsavedChanges(undefined, undefined, true);
         this.confirmIsOpen = false;
         if (close) {
           this.sidesheetRef.close();
@@ -84,27 +84,29 @@ export class RoleDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  public get objectType(): string {
-    return this.dataManagementService.entityInteractive.GetEntity().TypeName;
+  public get objectType(): string | undefined {
+    return this.dataManagementService.entityInteractive?.GetEntity().TypeName;
   }
 
-  public get objectUid(): string {
-    return this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
+  public get objectUid(): string | undefined {
+    return this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(',');
   }
 
   public async ngOnInit(): Promise<void> {
     /**
      * Resolve an issue where the mat-tab navigation arrows could appear on first load
      */
-    this.subscriptions$.push(
-      this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
-        // Recalculate header
-        this.tabs.updatePagination();
-      })
-    );
+    if (this.sidesheetRef?.componentInstance) {
+      this.subscriptions$.push(
+        this.sidesheetRef.componentInstance?.onOpen().subscribe(() => {
+          // Recalculate header
+          this.tabs.updatePagination();
+        }),
+      );
+    }
     this.dynamicTabs = (
       await this.tabService.getFittingComponents<TabItem>('roleOverview', (ext) => ext.inputData.checkVisibility(this.parameters))
-    ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+    ).sort((tab1: TabItem, tab2: TabItem) => (tab1.sortOrder ?? 0) - (tab2.sortOrder ?? 0));
 
     // implement tab checking logic
     this.defaultClickHandler = this.tabs._handleClick;

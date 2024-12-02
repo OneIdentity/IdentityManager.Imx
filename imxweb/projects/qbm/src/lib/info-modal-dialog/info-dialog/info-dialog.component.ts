@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,14 +30,14 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'imx-info-dialog',
   templateUrl: './info-dialog.component.html',
-  styleUrls: ['./info-dialog.component.scss']
+  styleUrls: ['./info-dialog.component.scss'],
 })
 export class InfoDialogComponent {
-
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: {
-      content: TemplateRef<unknown>,
-      title?: string
-    }
-  ) { }
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      content: TemplateRef<unknown>;
+      title?: string;
+    },
+  ) {}
 }

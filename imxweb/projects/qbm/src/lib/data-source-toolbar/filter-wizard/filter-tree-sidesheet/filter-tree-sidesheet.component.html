@@ -1,0 +1,36 @@
+<div eui-sidesheet-content class="imx-filter-sheet">
+  <div class="imx-top-line">
+    <p class="imx-margin-right-auto">
+      <span boldText>{{ '#LDS#Selected item' | translate }}:</span>
+      <span content>{{ currentlySelectedFilter?.display ?? '-' }}</span>
+    </p>
+    <button
+      data-imx-identifier="tree-filter-sidesheet-collapse-all"
+      mat-icon-button
+      color="primary"
+      (click)="closeAllNodes()"
+      [disabled]="!this.dynamicDataSource.isRootNodeOpen"
+      [matTooltip]="'#LDS#Collapse all' | translate"
+      [attr.aria-label]="'#LDS#Collapse all' | translate"
+    >
+      <eui-icon icon="compress"></eui-icon>
+    </button>
+  </div>
+  <imx-custom-tree-control
+    class="imx-tree-control"
+    [dynamicDataSource]="dynamicDataSource"
+    [treeControl]="treeControl"
+    [hasChild]="hasChild"
+    [isLoading]="isLoading"
+    [nodeContent]="categoryNodeContent"
+    (selectedNode)="onSelectedNodeChanged($event)"
+    [isSelected]="selectFn"
+  ></imx-custom-tree-control>
+</div>
+
+<ng-template #categoryNodeContent let-node>
+  <div class="imx-filter-tree-node" [ngClass]="{ 'imx-selected-text': node.isSelected }">
+    <eui-icon *ngIf="node.hasChildren" icon="folder" class="imx-icon-info"></eui-icon>
+    <span class="imx-margin-left-5" [ngClass]="{ 'imx-bold-text': node.hasChildren }">{{ node.nodeDisplay }}</span>
+  </div>
+</ng-template>

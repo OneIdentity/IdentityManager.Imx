@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,29 +25,32 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EntityColumnData, EntityData, IEntityColumn, TypedEntity, ValType } from 'imx-qbm-dbts';
-import { EntityService, AuthenticationService, ColumnDependentReference, BaseReadonlyCdr, CdrFactoryService } from 'qbm';
+import { EntityColumnData, EntityData, IEntityColumn, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
+import { AuthenticationService, BaseReadonlyCdr, ColumnDependentReference, EntityService, ISessionState } from 'qbm';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DecisionStepSevice {
   private uidUser: string;
-  constructor(private readonly entityService: EntityService, authentication: AuthenticationService) {
-    authentication.onSessionResponse.subscribe((session) => (this.uidUser = session.UserUid));
+  constructor(
+    private readonly entityService: EntityService,
+    authentication: AuthenticationService,
+  ) {
+    authentication.onSessionResponse.subscribe((session: ISessionState) => (this.uidUser = session.UserUid || ''));
   }
 
-  public getCurrentStepCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference {
+  public getCurrentStepCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference | undefined {
     const steps = extended.WorkflowSteps?.Entities?.filter(
       (elem) =>
         elem?.Columns?.UID_QERWorkingMethod.Value === entity.GetEntity().GetColumn('UID_QERWorkingMethod').GetValue() &&
-        elem.Columns.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue()
+        elem.Columns.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue(),
     );
 
     const step = steps.find((elem) => this.isFitting(extended.WorkflowData?.Entities, elem));
 
     return step?.Columns.Ident_PWODecisionStep == null
-      ? null
+      ? undefined
       : new BaseReadonlyCdr(this.createEntityColumn(step.Columns.Ident_PWODecisionStep), display);
   }
 
@@ -59,7 +62,7 @@ export class DecisionStepSevice {
     return workflowData.some(
       (elem) =>
         elem?.Columns?.UID_QERWorkingStep.Value === step?.Columns?.UID_QERWorkingStep.Value &&
-        elem?.Columns?.UID_PersonHead.Value === this.uidUser
+        elem?.Columns?.UID_PersonHead.Value === this.uidUser,
     );
   }
 }
