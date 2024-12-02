@@ -42,26 +42,30 @@ function overwrite() {
     .filter((file) => file.endsWith('.tgz'))
     .forEach((file) => {
       if (file.includes('imx-')) {
-        const filePath = path.join(imxDir, file);
+        const filePath = path.join(__dirname, imxDir, file);
         const baseName = path.parse(file).name;
-        installArg += '@' + imxDir + '/' + baseName + '@' + filePath + ' ';
+        installArg += ['@', path.join(imxDir, baseName), '@', filePath, ' '].join('');
         console.log(filePath);
       } else if (file.includes('cadence-icon')) {
-        const filePath = path.join(imxDir, file);
-        installArg += '@elemental-ui/cadence-icon' + '@' + filePath + ' ';
+        const filePath = path.join(__dirname, imxDir, file);
+        installArg += [path.join('@elemental-ui', 'cadence-icon'), '@', filePath, ' '].join('');
         console.log(filePath);
       } else if (file.includes('core')) {
-        const filePath = path.join(imxDir, file);
-        installArg += '@elemental-ui/core' + '@' + filePath + ' ';
+        const filePath = path.join(__dirname, imxDir, file);
+        installArg += [path.join('@elemental-ui', 'core'), '@', filePath, ' '].join('');
         console.log(filePath);
       }
     });
 
-  const child = child_process.spawnSync('npm', ['i', installArg, '--save=false'], { encoding: 'utf8', shell: true });
+  const child = child_process.spawnSync('npm', ['i', installArg, '--save=false'], {
+    encoding: 'utf8',
+    shell: true,
+  });
+  console.log(child);
   if (child.status === 0) {
     console.log('Overwrite Finished');
   } else {
-    console.log('There was an error:')
+    console.log('There was an error:');
     console.error(child.output);
     process.exit(1);
   }
