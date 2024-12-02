@@ -4,23 +4,27 @@
   display: flex;
   flex-direction: column;
   row-gap: 10px;
-  padding: 10px 0 10px 0;
+  padding: 20px;
+  flex: 1 1 auto;
 
-  .mat-checkbox {
+  .mat-mdc-checkbox {
     display: block;
   }
 
-  .mat-radio-button {
-    display: block;
-    margin-right: 5px;
-
-    label.mat-radio-label {
-      white-space: normal;
-    }
-  }
-
-  .imx-filter-title {
+  .imx-filter-title,
+  // Need to ng deep to overwrite elemental values, specificity wins still
+  .imx-filter-title ::ng-deep label.eui-label {
     font-size: 16px;
     font-weight: 600;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  imx-busy-indicator {
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
   }
 }

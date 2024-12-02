@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalPersonGroupmemberships, portal_person_groupmemberships_get_args } from 'imx-api-tsb';
-import { EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalPersonGroupmemberships, portal_person_groupmemberships_get_args } from '@imx-modules/imx-api-tsb';
+import { EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { TsbApiService } from '../../tsb-api-client.service';
 
 @Injectable({ providedIn: 'root' })
@@ -38,7 +38,11 @@ export class GroupMembershipsExtService {
     return this.apiService.typedClient.PortalPersonGroupmemberships.GetSchema();
   }
 
-  public getGroupMemberships(uid: string, parameters: portal_person_groupmemberships_get_args): Promise<ExtendedTypedEntityCollection<PortalPersonGroupmemberships, unknown>> {
-    return this.apiService.typedClient.PortalPersonGroupmemberships.Get(uid, parameters);
+  public getGroupMemberships(
+    uid: string,
+    parameters: portal_person_groupmemberships_get_args,
+    signal: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalPersonGroupmemberships, unknown>> {
+    return this.apiService.typedClient.PortalPersonGroupmemberships.Get(uid, parameters, { signal });
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,14 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { RoleRecommendationItem } from 'imx-api-qer';
-import { EntitySchema } from 'imx-qbm-dbts';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { RoleRecommendationItem } from '@imx-modules/imx-api-qer';
+import { EntitySchema, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { BusyService, ConfirmationService, DataSourceToolbarSettings } from 'qbm';
 
+import { RoleService } from '../../role.service';
 import { RoleRecommendationResultItem } from './role-recommendation-result-item';
 import { RoleRecommendationResultBuilder } from './role-recommendation-result-item-builder';
-import { RoleService } from '../../role.service';
 
 @Component({
   selector: 'imx-role-recommendations',
@@ -61,10 +61,12 @@ export class RoleRecommendationsComponent implements OnInit {
       submitButtonTitle?: string;
       actionColumnTitle?: string;
       hideActionConfirmation?: boolean;
+      applyWithoutSelection?: boolean;
+      noDataText?: string;
     },
     public roleService: RoleService,
     public sidesheetRef: EuiSidesheetRef,
-    private confirm: ConfirmationService
+    private confirm: ConfirmationService,
   ) {
     this.entitySchema = RoleRecommendationResultItem.GetEntitySchema();
     this.recommendationText =
@@ -82,15 +84,15 @@ export class RoleRecommendationsComponent implements OnInit {
         this.buildDataSource(this.data.recommendation);
       } else {
         const recommendation = await this.roleService.getRecommendations(this.data.tablename, this.data.uidRole);
-        this.buildDataSource(recommendation.Items);
+        this.buildDataSource(recommendation.Items ?? []);
       }
     } finally {
       isbusy.endBusy();
     }
   }
 
-  public async onSelectionChanged(items: RoleRecommendationResultItem[]): Promise<any> {
-    this.selectedEntities = items;
+  public async onSelectionChanged(items: TypedEntity[]): Promise<any> {
+    this.selectedEntities = items as RoleRecommendationResultItem[];
   }
 
   public async applyActions(): Promise<void> {
@@ -102,14 +104,15 @@ export class RoleRecommendationsComponent implements OnInit {
       return arr.Type.value === 1 ? elements + 1 : elements;
     }, 0);
     if (
-      this.data.hideActionConfirmation || await this.confirm.confirm({
+      this.data.hideActionConfirmation ||
+      (await this.confirm.confirm({
         Title: '#LDS#Heading Perform Recommended Actions',
         Message:
           '#LDS#Are you sure you want to perform the selected recommended actions? {0} entitlement assignments will be added to your shopping cart so you can request them. {1} entitlement assignments will be removed.',
         Parameter: [added, remove],
-      })
+      }))
     ) {
-      this.sidesheetRef.close(this.selectedEntities);
+      this.sidesheetRef.close({ items: this.selectedEntities });
     }
   }
 

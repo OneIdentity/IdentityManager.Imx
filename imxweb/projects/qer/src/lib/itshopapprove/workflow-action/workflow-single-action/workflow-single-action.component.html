@@ -3,6 +3,7 @@
     <imx-cdr-editor
       *ngFor="let cdr of columns; let i = index"
       [cdr]="cdr"
+      [validateOnlyOnChange]="true"
       (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
       [attr.data-imx-identifier]="'column_' + cdr.column.ColumnName + '_' + i"
     >
@@ -27,7 +28,7 @@
       >
       </imx-cdr-editor>
     </ng-container>
-    
+
     <imx-cdr-editor
       *ngFor="let cdr of requestParameterColumns; let i = index"
       [cdr]="cdr"
@@ -40,7 +41,7 @@
       *ngIf="data.workflow"
       class="imx-custom-property"
       [title]="data.workflow.title"
-      [entities]="data.workflow.data[data.requests[0].key]"
+      [entities]="data.workflow.data[data.requests[0].GetEntity().GetKeys()[0]]"
       (controlCreated)="onFormControlCreated('customSelect', $event)"
       (selectionChange)="onChangeDirectDecisionTarget($event)"
       [placeholder]="data.workflow.placeholder"

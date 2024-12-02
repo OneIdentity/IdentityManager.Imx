@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,12 +36,10 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule } from 'qbm';
 
-import { DataExplorerFiltersComponent} from './data-explorer-filters.component';
+import { DataExplorerFiltersComponent } from './data-explorer-filters.component';
 
 @NgModule({
-  declarations: [
-    DataExplorerFiltersComponent
-  ],
+  declarations: [DataExplorerFiltersComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -57,12 +55,9 @@ import { DataExplorerFiltersComponent} from './data-explorer-filters.component';
     DataSourceToolbarModule,
     DataTableModule,
     LdsReplaceModule,
-    DataTreeModule
+    DataTreeModule,
   ],
-  providers: [
-  ],
-  exports: [
-    DataExplorerFiltersComponent
-  ]
+  providers: [],
+  exports: [DataExplorerFiltersComponent],
 })
 export class DataFiltersModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, Inject, OnInit } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 
-import { IEntityColumn, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { HistoryOperationsData, OpsupportQueueJobaffects, ReactivateJobMode } from 'imx-api-qbm';
-import { CdrFactoryService, ImxTranslationProviderService, SnackBarService } from 'qbm';
-import { QueueTreeService } from './queue-tree.service';
+import { HistoryOperationsData, OpsupportQueueJobaffects, ReactivateJobMode } from '@imx-modules/imx-api-qbm';
+import { IEntityColumn, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth, CdrFactoryService, ImxTranslationProviderService, SnackBarService } from 'qbm';
 import { ErrorMessageSidesheetComponent } from '../error-message-sidesheet/error-message-sidesheet.component';
+import { QueueTreeService } from './queue-tree.service';
 
 @Component({
   templateUrl: './single-frozen-job.component.html',
@@ -51,23 +51,24 @@ export class SingleFrozenJobComponent implements OnInit {
   private backTitle = '';
 
   public affectedObjects: OpsupportQueueJobaffects[] = [];
-  public operations: HistoryOperationsData;
-  public genprocid: string;
+  public operations: HistoryOperationsData | undefined;
+  public genprocid: string | undefined;
   public busy = false;
   public busyReload = false;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: {
-      UID_Tree: string,
-      disableRefresh: boolean,
-      load: (startId: string) => Promise<TypedEntityCollectionData<TypedEntity>>
+    @Inject(EUI_SIDESHEET_DATA)
+    public readonly data: {
+      UID_Tree: string;
+      disableRefresh: boolean;
+      load: (startId: string) => Promise<TypedEntityCollectionData<TypedEntity>>;
     },
     public queueService: QueueTreeService,
     private sidesheet: EuiSidesheetService,
     private translate: TranslateService,
     private busyService: EuiLoadingService,
     private translationProvider: ImxTranslationProviderService,
-    private snackbarService: SnackBarService
+    private snackbarService: SnackBarService,
   ) {
     // TODO (TFS 805984): Use ngx-translate get and ldsReplace direct
     this.translationProvider
@@ -75,21 +76,20 @@ export class SingleFrozenJobComponent implements OnInit {
       .subscribe((value: string) =>
         this.translationProvider
           .Translate({ key: '#LDS#Go back to {0}', parameters: [`"${value}"`] })
-          .subscribe((composedValue: string) => (this.backTitle = composedValue))
+          .subscribe((composedValue: string) => (this.backTitle = composedValue)),
       );
     this.queueService.load = data.load;
   }
 
   public ReactivateJobMode = ReactivateJobMode;
 
-  public mode: ReactivateJobMode = -1;
+  public mode: ReactivateJobMode;
 
   public async ngOnInit(): Promise<void> {
     try {
       this.busy = true;
       await this.loadView(this.data.UID_Tree);
-    }
-    finally {
+    } finally {
       this.busy = false;
     }
   }
@@ -124,21 +124,20 @@ export class SingleFrozenJobComponent implements OnInit {
     }
 
     const processTree = await this.queueService.LoadItems();
-    const root = processTree.find((el: TypedEntity) => this.getColumn(el, 'IsRootJob').GetValue);
+    const root = processTree.find((el: TypedEntity) => this.getColumn(el, 'IsRootJob')?.GetValue());
     if (root) {
       this.queueService.SetRoot(root);
-      this.jobDisplay = this.getColumn(root, 'JobChainName').GetDisplayValue();
+      this.jobDisplay = this.getColumn(root, 'JobChainName')?.GetDisplayValue() ?? '';
       this.queueService.ExpandAll();
 
       // load affected objects
-      this.affectedObjects = await this.queueService.GetAffectedObjects(root.GetEntity().GetColumn("UID_Job").GetValue());
-      this.genprocid = root.GetEntity().GetColumn("GenProcID").GetValue();
-      this.operations = await this.queueService.GetChangeOperations(this.genprocid);
-    }
-    else {
+      this.affectedObjects = await this.queueService.GetAffectedObjects(root.GetEntity().GetColumn('UID_Job').GetValue());
+      this.genprocid = root.GetEntity().GetColumn('GenProcID').GetValue();
+      this.operations = this.genprocid ? await this.queueService.GetChangeOperations(this.genprocid) : undefined;
+    } else {
       this.affectedObjects = [];
-      this.operations = null;
-      this.genprocid = null;
+      this.operations = undefined;
+      this.genprocid = undefined;
     }
   }
 
@@ -152,11 +151,11 @@ export class SingleFrozenJobComponent implements OnInit {
   public displayAccessor(data: TypedEntity, index: number): string {
     return index === 0
       ? this.Display
-      : this.getColumn(data, 'JobName')?.GetDisplayValue() ?? this.getColumn(data, 'UID_JobOrigin')?.GetDisplayValue();
+      : this.getColumn(data, 'JobName')?.GetDisplayValue() ?? this.getColumn(data, 'UID_JobOrigin')?.GetDisplayValue() ?? '';
   }
 
   public hasProgress(item: TypedEntity): boolean {
-    return this.getColumn(item, 'IsRootJob').GetValue();
+    return this.getColumn(item, 'IsRootJob')?.GetValue() ?? false;
   }
 
   public getTotalSteps(): number {
@@ -168,7 +167,11 @@ export class SingleFrozenJobComponent implements OnInit {
   }
 
   public isFrozen(dataItem: TypedEntity): boolean {
-    return this.getColumn(dataItem, 'Ready2EXE')?.GetValue().toUpperCase() === 'FROZEN' || this.getColumn(dataItem, 'Ready2EXE')?.GetValue().toUpperCase() === 'OVERLIMIT' || this.getColumn(dataItem, 'WasError')?.GetValue();
+    return (
+      this.getColumn(dataItem, 'Ready2EXE')?.GetValue().toUpperCase() === 'FROZEN' ||
+      this.getColumn(dataItem, 'Ready2EXE')?.GetValue().toUpperCase() === 'OVERLIMIT' ||
+      this.getColumn(dataItem, 'WasError')?.GetValue()
+    );
   }
 
   public async showMessage(dataItem: TypedEntity): Promise<void> {
@@ -176,23 +179,23 @@ export class SingleFrozenJobComponent implements OnInit {
       .open(ErrorMessageSidesheetComponent, {
         title: await this.translate.get('#LDS#Heading View Error Message').toPromise(),
         padding: '0',
-        width: 'max(50%,500px)',
+        width: calculateSidesheetWidth(800, 0.5),
         testId: 'error-message-sidesheet',
-        data: this.getColumn(dataItem, 'ErrorMessages').GetDisplayValue(),
+        data: this.getColumn(dataItem, 'ErrorMessages')?.GetDisplayValue(),
       })
       .afterClosed()
       .toPromise();
   }
 
   public getColumnDisplay(name: string): string {
-    return this.queueService.QueueTreeEntitySchema.Columns[name].Display;
+    return this.queueService.QueueTreeEntitySchema.Columns[name].Display ?? '';
   }
 
-  public getValue(entity: TypedEntity, name: string): any {
-    return this.getColumn(entity, name).GetValue() ?? '';
+  public getValue(entity: TypedEntity | undefined, name: string): any {
+    return this.getColumn(entity, name)?.GetValue() ?? '';
   }
 
-  public getColumn(entity: TypedEntity, name: string): IEntityColumn {
-    return CdrFactoryService.tryGetColumn(entity.GetEntity(), name);
+  public getColumn(entity: TypedEntity | undefined, name: string): IEntityColumn | undefined {
+    return entity ? CdrFactoryService.tryGetColumn(entity?.GetEntity(), name) : undefined;
   }
 }

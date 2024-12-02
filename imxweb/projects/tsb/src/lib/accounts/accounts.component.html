@@ -1,77 +1,74 @@
 <mat-card class="data-explorer data-explorer--accounts">
-  <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="data-explorer-card-header">
-    <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Heading User Accounts</span>
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Heading User Accounts</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
-
-  <imx-data-source-toolbar
-    #dst
-    [settings]="dstSettings"
-    [options]="['search', 'sort', 'filter', 'filterTree', 'settings']"
-    [hiddenFilters]="['namespace']"
-    [busyService]="busyService"
-    [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (filterTreeSelectionChanged)="filterByTree($event)"
-    (search)="onSearch($event)"
-    (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)"
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
     (updateConfig)="updateConfig($event)"
     (deleteConfigById)="deleteConfigById($event)"
-  >
-    <div imx-data-source-toolbar-custom-filter (click)="$event.stopPropagation()">
-      <imx-target-system-filter
-        #dataExplorerFilters
-        [targetSystemData]="targetSystemData"
-        (selectedFiltersChanged)="onNavigationStateChanged()"
-        [dst]="dst"
-        [treeDbWrapper]="treeDbWrapper"
-      ></imx-target-system-filter>
-    </div>
-  </imx-data-source-toolbar>
-
-  <div *ngIf="dataExplorerFilters.showTsSyncStatus">
-    <imx-data-explorer-no-data [mode]="dataExplorerFilters.tsIssueMode"></imx-data-explorer-no-data>
-  </div>
-
-  <eui-alert class="sync-status-alert" type="info" condensed="true" [colored]="true" *ngIf="dataExplorerFilters.showTsSyncAlert">
-    <span translate>#LDS#There is currently no data synchronization configured for the selected domain.</span>
-  </eui-alert>
-
-  <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="imx-data-explorer-content">
+  ></imx-data-view-toolbar>
+  <div class="imx-data-explorer-content">
     <div class="data-explorer-table">
-      <imx-data-table [dst]="dst" (highlightedEntityChanged)="onAccountChanged($event)" detailViewVisible="false" mode="manual">
-        <imx-data-table-column width="500px" [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-          <ng-template let-item>
+      <imx-data-view-auto-table
+        [dataSource]="dataSource"
+        mode="manual"
+        matSort
+        (matSortChange)="dataSource?.sortChange($event)"
+        [matSortActive]="dataSource.sortId()"
+        [matSortDirection]="dataSource.sortDirection()"
+      >
+        <ng-container [matColumnDef]="this.DisplayColumns.DISPLAY_PROPERTYNAME">
+          <th mat-header-cell *matHeaderCellDef width="500px">
+            {{ entitySchemaUnsAccount?.Columns?.[this.DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+          </th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
             <div [style.max-width]="'500px'" class="imx-ellipse-column">{{ item.GetEntity().GetDisplay() }}</div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column width="300px" [entityColumn]="entitySchemaUnsAccount?.Columns.UID_Person">
-          <ng-template let-item>
-            <div [style.max-width]="'300px'" class="imx-ellipse-column">{{ item.UID_Person.Column.GetDisplayValue() }}</div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.AccountDisabled"> </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.UID_UNSRoot">
-          <ng-template let-item>
+          </td>
+        </ng-container>
+        <ng-container [matColumnDef]="entitySchemaUnsAccount.Columns.UID_Person.ColumnName">
+          <th mat-header-cell *matHeaderCellDef width="300px">
+            {{ entitySchemaUnsAccount?.Columns?.UID_Person?.Display }}
+          </th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            <div [style.max-width]="'300px'" class="imx-ellipse-column">
+              {{ item.UID_Person.Column.GetDisplayValue() }}
+            </div>
+          </td>
+        </ng-container>
+        <ng-container [matColumnDef]="entitySchemaUnsAccount.Columns.AccountDisabled.ColumnName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ entitySchemaUnsAccount?.Columns?.AccountDisabled?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            <div class="imx-ellipse-column">{{ item.AccountDisabled.Column.GetDisplayValue() }}</div>
+          </td>
+        </ng-container>
+        <ng-container [matColumnDef]="entitySchemaUnsAccount.Columns.UID_UNSRoot.ColumnName">
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchemaUnsAccount?.Columns?.UID_UNSRoot?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
             <div>{{ item.UID_UNSRoot.Column.GetDisplayValue() }}</div>
             <div subtitle>{{ item.UID_DPRNameSpace.Column.GetDisplayValue() }}</div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-generic-column alignHeader="center" alignContent="center" [columnName]="entitySchemaUnsAccount?.Columns.XMarkedForDeletion.ColumnName">
-          <ng-template let-item>
+          </td>
+        </ng-container>
+        <ng-container
+          [matColumnDef]="entitySchemaUnsAccount.Columns.XMarkedForDeletion.ColumnName"
+          alignHeader="center"
+          alignContent="center"
+        >
+          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
             <div *ngIf="item.XMarkedForDeletion.value !== 0">
               <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
             </div>
-          </ng-template>
-        </imx-data-table-generic-column>
-      </imx-data-table>
-      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+          </td>
+        </ng-container>
+      </imx-data-view-auto-table>
+      <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
     </div>
   </div>
 </mat-card>
-<div class="data-explorer-bottom-button-row">
+<div class="imx-button-bar-transparent">
   <button mat-stroked-button data-imx-identifier="accounts-button-show-report-for-targetsystem" (click)="openReportOptionsSidesheet()">
     <eui-icon icon="reports"></eui-icon>
     {{ '#LDS#Download target system report' | translate }}

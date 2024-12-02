@@ -1,12 +1,12 @@
-@import '../../../../../shared/scss/common-table.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  @include imx-flex-fill-control-hidden-overflow();
+  @include flex-column-container-fill();
 
-  .mat-stroked-button,
-  .mat-raised-button {
-    @include imx-icon-for-image-button();
+  .mat-mdc-outlined-button,
+  .mat-mdc-unelevated-button {
+    @include image-button-icon();
   }
 
   .recommendation-approve-icon {
@@ -15,26 +15,6 @@
 
   .recommendation-deny-icon {
     color: $color-red-60;
-  }
-
-  .escalation-approver-toggle {
-    margin: 0.5em;
-  }
-
-  .imx-table-container {
-    flex-grow: 1;
-    overflow: auto;
-  }
-
-  .imx-button-bar {
-    @include imx-button-bar();
-  }
-
-  .imx-decision {
-    @include imx-button-column-right();
-    > button:not(:last-of-type) {
-      margin-right: 5px;
-    }
   }
 
   @media only screen and (max-width: 1024px) {
@@ -47,7 +27,8 @@
   .toggle-wrapper {
     /* so that the tooltip on the toggle is centered */
     flex-grow: 0;
-    display: inline;
+    display:flex;
+    justify-content: space-between;
   }
 
   .imx-badge-container {
@@ -65,82 +46,12 @@
     flex-direction: column;
     height: 100%;
   }
-
-  .imx-icons-container {
-    padding-right: 15px;
-    .table-icon {
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-      height: 14px;
-      &:not(:first-of-type) {
-        margin-left: 8px;
-        padding-left: 8px;
-      }
-      .mat-icon,
-      .eui-icon {
-        padding-right: 6px;
-      }
-    }
-  }
-}
-
-:host {
-  .imx-icons-container {
-    .table-icon {
-      color: $color-gray-60;
-      &--warning {
-        .eui-icon {
-          color: $color-orange-60;
-        }
-      }
-      &--primary {
-        .mat-icon {
-          color: $color-blue-60;
-        }
-      }
-      &--alert {
-        .eui-icon,
-        span {
-          color: $color-red-60;
-        }
-      }
-      &:not(:first-of-type) {
-        border-left: 1px solid $color-gray-20;
-      }
-    }
-  }
 }
 
 .eui-dark-theme {
   :host {
     .imx-data-tree-container {
       background-color: $color-gray-70;
-    }
-    .imx-icons-container {
-      .table-icon {
-        color: $color-gray-10;
-
-        &--warning {
-          .eui-icon {
-            color: $color-orange-40;
-          }
-        }
-        &--primary {
-          .mat-icon {
-            color: $color-blue-40;
-          }
-        }
-        &--alert {
-          .eui-icon,
-          span {
-            color: $color-red-40;
-          }
-        }
-        &:not(:first-of-type) {
-          border-left: 1px solid $color-gray-10;
-        }
-      }
     }
   }
 }
@@ -149,30 +60,6 @@
   :host {
     .imx-data-tree-container {
       background-color: $color-gray-100;
-    }
-    .imx-icons-container {
-      .table-icon {
-        color: $color-gray-0;
-        &--warning {
-          .eui-icon {
-            color: $color-orange-40;
-          }
-        }
-        &--primary {
-          .mat-icon {
-            color: $color-blue-40;
-          }
-        }
-        &--alert {
-          .eui-icon,
-          span {
-            color: $color-red-40;
-          }
-        }
-        &:not(:first-of-type) {
-          border-left: 1px solid $color-gray-10;
-        }
-      }
     }
   }
 }

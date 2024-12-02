@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,14 +36,6 @@ import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [IdentityRoleMembershipsComponent],
-  imports: [
-    CommonModule,
-    EuiCoreModule,
-    DataSourceToolbarModule,
-    DataTableModule,
-    TranslateModule,
-    MatButtonModule,
-    MatCardModule
-  ]
+  imports: [CommonModule, EuiCoreModule, DataSourceToolbarModule, DataTableModule, TranslateModule, MatButtonModule, MatCardModule],
 })
-export class IdentityRoleMembershipsModule { }
+export class IdentityRoleMembershipsModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,14 @@
 
 import { Injectable } from '@angular/core';
 
-import { TsbUserConfig } from 'imx-api-tsb';
+import { TsbUserConfig } from '@imx-modules/imx-api-tsb';
 import { TsbApiService } from '../tsb-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TargetSystemService {
-  constructor(private readonly apiService: TsbApiService) { }
+  constructor(private readonly apiService: TsbApiService) {}
 
   public async getUserConfig(): Promise<TsbUserConfig> {
     return this.apiService.client.portal_targetsystem_userconfig_get();

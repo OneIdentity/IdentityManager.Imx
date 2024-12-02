@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,15 +28,16 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HELP_CONTEXTUAL, RouteGuardService } from 'qbm';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
-import { NewRequestComponent } from './new-request.component';
+import { NEW_REQUEST_ROUTE } from './constants';
 import { NewRequestPeerGroupComponent } from './new-request-peer-group/new-request-peer-group.component';
+import { NewRequestProductBundleComponent } from './new-request-product-bundle/new-request-product-bundle.component';
 import { NewRequestProductComponent } from './new-request-product/new-request-product.component';
 import { NewRequestReferenceUserComponent } from './new-request-reference-user/new-request-reference-user.component';
-import { NewRequestProductBundleComponent } from './new-request-product-bundle/new-request-product-bundle.component';
+import { NewRequestComponent } from './new-request.component';
 
 const routes: Routes = [
   {
-    path: 'newrequest',
+    path: NEW_REQUEST_ROUTE,
     component: NewRequestComponent,
     canActivate: [RouteGuardService, RequestsFeatureGuardService],
     resolve: [RouteGuardService],
@@ -72,9 +73,9 @@ const routes: Routes = [
         pathMatch: 'full',
       },
     ],
-    data:{
-      contextId: HELP_CONTEXTUAL.NewRequest
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.NewRequest,
+    },
   },
 ];
 

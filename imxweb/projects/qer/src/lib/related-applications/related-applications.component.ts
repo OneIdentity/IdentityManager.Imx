@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,33 +24,34 @@
  *
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { calculateSidesheetWidth } from 'qbm';
 import { RelatedApplicationsSidesheetComponent } from './related-applications-sidesheet/related-applications-sidesheet.component';
 
 @Component({
   selector: 'imx-related-applications',
-  template: ''
+  template: '',
 })
 export class RelatedApplicationsComponent implements OnInit {
-  constructor( private readonly sidesheet: EuiSidesheetService,
-  private router: Router,
-  private readonly translate: TranslateService ) { }
+  constructor(
+    private readonly sidesheet: EuiSidesheetService,
+    private router: Router,
+    private readonly translate: TranslateService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-
     const sidesheetRef = this.sidesheet.open(RelatedApplicationsSidesheetComponent, {
       testId: 'related-applications-sidesheet',
       title: await this.translate.get('#LDS#Heading Other Web Applications').toPromise(),
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
     });
 
     sidesheetRef.closeClicked().subscribe(() => {
-        this.router.navigate(['dashboard'])
+      this.router.navigate(['dashboard']);
     });
   }
-
 }

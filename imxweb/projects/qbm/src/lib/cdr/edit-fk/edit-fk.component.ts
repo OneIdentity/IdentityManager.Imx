@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,8 +42,16 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { CollectionLoadParameters, DbObjectKey, IForeignKeyInfo, ValueStruct } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DbObjectKey,
+  EntityColumnData,
+  EntityData,
+  IForeignKeyInfo,
+  ValueStruct,
+} from '@imx-modules/imx-qbm-dbts';
 import { MetadataService } from '../../base/metadata.service';
+import { calculateSidesheetWidth } from '../../base/sidesheet-helper';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { Candidate } from '../../fk-advanced-picker/candidate.interface';
 import { FkAdvancedPickerComponent } from '../../fk-advanced-picker/fk-advanced-picker.component';
@@ -79,21 +87,6 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   public readonly updateRequested = new Subject<void>();
 
   /**
-   * Indicator that the component is loading data from the server, or has a candidate list.
-   */
-  public get hasCandidatesOrIsLoading(): boolean {
-    return (
-      this.candidatesTotalCount > 0 ||
-      // make sure the user can change selectedTable even if there are no available candidates
-      // in the first candidate table
-      this.columnContainer?.fkRelations?.length > 1 ||
-      this.parameters?.search?.length > 0 ||
-      this.parameters?.filter != null ||
-      this.loading
-    );
-  }
-
-  /**
    * The form control associated with the editor.
    */
   public readonly control = new UntypedFormControl(undefined);
@@ -111,14 +104,13 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   /**
    * A list of possible candidates, that can be selected.
    */
+  // public candidates: Candidate[] ;
   private _candidates: Candidate[];
-
   public get candidates(): Candidate[] {
     return this._candidates;
   }
-
-  public set candidates(value: Candidate[]) {
-    this._candidates = value;
+  public set candidates(value: Candidate[] | undefined | null) {
+    this._candidates = value || [];
   }
 
   /**
@@ -130,7 +122,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * The table, the user is currently selecting items from.
    * It is possible to choose elements from different tables at the same time.
    */
-  public selectedTable: IForeignKeyInfo;
+  public selectedTable: IForeignKeyInfo | undefined;
 
   /**
    * Indicator, whether the candidate data is hierarchical or not.
@@ -149,7 +141,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
 
   private parameters: CollectionLoadParameters = { PageSize: this.pageSize, StartIndex: 0 };
   private savedParameters: CollectionLoadParameters;
-  private savedCandidates: Candidate[];
+  private savedCandidates: Candidate[] | undefined | null;
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
@@ -166,7 +158,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly translator: TranslateService,
     public readonly metadataProvider: MetadataService,
-    private readonly errorHandler: ErrorHandler
+    private readonly errorHandler: ErrorHandler,
   ) {
     this.subscribers.push(
       this.control.valueChanges.pipe(debounceTime(500)).subscribe(async (keyword) => {
@@ -176,7 +168,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         }
 
         return this.search(keyword);
-      })
+      }),
     );
   }
 
@@ -233,7 +225,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * @returns The display of the candidate object.
    */
   public getDisplay(candidate: Candidate): string {
-    return candidate ? candidate.DisplayValue : undefined;
+    return candidate?.DisplayValue ?? '';
   }
 
   /**
@@ -300,11 +292,11 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       subTitle: await this.translator.get(this.columnContainer?.display).toPromise(),
       padding: '0',
       disableClose: true,
-      width: 'max(600px,60%)',
+      width: calculateSidesheetWidth(),
       testId: this.isHierarchical ? 'edit-fk-hierarchy-sidesheet' : 'edit-fk-sidesheet',
       data: {
         fkRelations: this.columnContainer.fkRelations,
-        selectedTableName: this.selectedTable.TableName,
+        selectedTableName: this.selectedTable?.TableName,
         idList: this.columnContainer.value ? [this.columnContainer.value] : [],
       },
     });
@@ -343,7 +335,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
           cdref.minlengthSubject.subscribe((elem) => {
             this.setControlValue();
             this.changeDetectorRef.detectChanges();
-          })
+          }),
         );
       }
 
@@ -361,7 +353,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
                 this,
                 `Control (${this.columnContainer.name}) set to new value:`,
                 this.columnContainer.value,
-                this.control.value
+                this.control.value,
               );
               this.candidates = [];
               this.setControlValue();
@@ -371,7 +363,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
             }
           }
           this.valueHasChanged.emit({ value: this.control.value });
-        })
+        }),
       );
 
       this.subscribers.push(
@@ -387,7 +379,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
             }
             this.valueHasChanged.emit({ value: this.control.value });
           });
-        })
+        }),
       );
       this.logger.trace(this, 'Control initialized', this.control.value);
     } else {
@@ -402,7 +394,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   private setControlValue(): void {
     const fkRelations = this.columnContainer.fkRelations;
     if (fkRelations && fkRelations.length > 0) {
-      let table: IForeignKeyInfo;
+      let table: IForeignKeyInfo | undefined;
       if (fkRelations.length > 1 && this.columnContainer.value) {
         this.logger.trace(this, 'the column already has a value, and it is a dynamic foreign key');
         const dbObjectKey = DbObjectKey.FromXml(this.columnContainer.value);
@@ -415,7 +407,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     this.control.setValue(this.getValueStruct(), { emitEvent: false });
 
     const autoCompleteValidator = (control) =>
-      control.value != null || this.parameters.search == null || this.candidates?.length > 0 ? null : { checkAutocomplete: true };
+      control.value != null || this.parameters.search == null || !!this.candidates?.length ? null : { checkAutocomplete: true };
     if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
       this.control.setValidators([
         (control) => (control.value == null || control.value.length === 0 ? { required: true } : null),
@@ -445,7 +437,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * Updates the value for the CDR.
    * @param value The new value struct, that should be used as the new control value.
    */
-  private async writeValue(value: ValueStruct<string>): Promise<void> {
+  private async writeValue(value: ValueStruct<string | undefined>): Promise<void> {
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.equal(this.getValueStruct(), value)) {
@@ -493,45 +485,50 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         const multipleFkRelations = this.columnContainer.fkRelations && this.columnContainer.fkRelations.length > 1;
         const identityRelatedTable = this.selectedTable.TableName === 'Person';
 
-        const newCandidates = candidateCollection.Entities?.map((entityData) => {
-          let key: string = '';
-          let detailValue: string = entityData.LongDisplay ?? '';
-          const defaultEmailColumn = entityData.Columns?.['DefaultEmailAddress'];
-          /**
-           * If the candidates data relate to identities (fkRelation Person table)
-           * then we want to use the email address for the detail line (displayLong)
-           */
-          if (defaultEmailColumn && identityRelatedTable) {
-            detailValue = defaultEmailColumn.Value;
-          }
-          if (multipleFkRelations) {
-            this.logger.trace(this, 'dynamic foreign key');
-            const xObjectKeyColumn = entityData.Columns?.['XObjectKey'];
-            key = xObjectKeyColumn ? xObjectKeyColumn.Value : undefined;
-          } else {
-            this.logger.trace(this, 'foreign key');
-
-            const parentColumn = entityData.Columns ? entityData.Columns[this.columnContainer.fkRelations[0].ColumnName] : undefined;
-            if (parentColumn != null) {
-              this.logger.trace(this, 'Use value from explicit parent column');
-              key = parentColumn.Value;
-            } else {
-              this.logger.trace(this, 'Use the primary key');
-              const keys = entityData.Keys;
-              key = keys && keys.length ? keys[0] : '';
+        const newCandidates: Candidate[] =
+          candidateCollection.Entities?.map((entityData) => {
+            let key: string | null | undefined = null;
+            let detailValue: string = entityData.LongDisplay ?? '';
+            const defaultEmailColumn = entityData?.Columns?.['DefaultEmailAddress'];
+            /**
+             * If the candidates data relate to identities (fkRelation Person table)
+             * then we want to use the email address for the detail line (displayLong)
+             */
+            if (defaultEmailColumn && identityRelatedTable) {
+              detailValue = defaultEmailColumn.Value;
             }
-          }
-          return {
-            DataValue: key,
-            DisplayValue: entityData.Display,
-            displayLong: detailValue,
-          };
-        });
+            if (multipleFkRelations) {
+              this.logger.trace(this, 'dynamic foreign key');
+              const xObjectKeyColumn = entityData.Columns?.['XObjectKey'];
+              key = xObjectKeyColumn ? xObjectKeyColumn.Value : undefined;
+            } else {
+              this.logger.trace(this, 'foreign key');
+              const parentColumn = entityData.Columns
+                ? this.getColumCaseInsensitive(
+                    entityData,
+                    this.columnContainer.fkRelations?.[0].fkColumnName || this.columnContainer.fkRelations?.[0].ColumnName || '',
+                  )
+                : undefined;
+              if (parentColumn != null) {
+                this.logger.trace(this, 'Use value from explicit parent column');
+                key = parentColumn?.Value ?? '';
+              } else {
+                this.logger.trace(this, 'Use the primary key');
+                const keys = entityData.Keys;
+                key = keys && keys.length ? keys[0] : '';
+              }
+            }
+            return {
+              DataValue: key ?? '',
+              DisplayValue: entityData.Display ?? '',
+              displayLong: detailValue,
+            };
+          }) ?? [];
         if (concatCandidates) {
-          this.candidates.push(...(newCandidates || []));          
+          if (newCandidates) this.candidates?.push(...(newCandidates || []));
           this.savedCandidates = this.candidates;
         } else {
-          this.candidates = newCandidates || [];
+          this.candidates = newCandidates;
           this.savedCandidates = this.candidates;
         }
       } finally {
@@ -541,7 +538,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     }
   }
 
-  private getValueStruct(): ValueStruct<string> {
+  private getValueStruct(): ValueStruct<string> | undefined {
     if (this.columnContainer.value) {
       return { DataValue: this.columnContainer.value, DisplayValue: this.columnContainer.displayValue || '' };
     }
@@ -549,9 +546,9 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     return undefined;
   }
 
-  private equal(value: ValueStruct<string>, value2: ValueStruct<string>): boolean {
+  private equal(value: ValueStruct<string | undefined> | undefined, value2: ValueStruct<string | undefined> | undefined): boolean {
     if (value && value2) {
-      return value.DataValue === value2.DataValue && value.DisplayValue === value.DisplayValue;
+      return value.DataValue === value2.DataValue && value.DisplayValue === value2.DisplayValue;
     }
 
     return value == null && value2 == null;
@@ -575,13 +572,25 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     }, 0);
   }
 
+  private getColumCaseInsensitive(entityData: EntityData, columnname: string): EntityColumnData | undefined {
+    const index = Object.keys(entityData.Columns ?? []).find((key) => key.toLowerCase() === columnname.toLowerCase());
+    if (index) {
+      return entityData.Columns?.[index];
+    }
+    return undefined;
+  }
+
   private async onScroll(event: any): Promise<void> {
     if (
       event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 10 &&
       !this.loading &&
-      this.candidatesTotalCount > this.pageSize + this.parameters.StartIndex
+      this.candidatesTotalCount > this.pageSize + (this.parameters.StartIndex ?? 0)
     ) {
       this.changeDetectorRef.detectChanges();
+      if (!this.parameters.StartIndex) {
+        this.parameters.StartIndex = 0;
+      }
+
       this.parameters.StartIndex += this.pageSize;
       await this.updateCandidates(this.parameters, false, true);
       this.changeDetectorRef.detectChanges();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,32 +24,26 @@
  *
  */
 
-import {
-  Component,
-  Input,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  ElementRef
-} from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { Chart, ChartOptions, bar, donut, line } from 'billboard.js';
 import { Subscription } from 'rxjs';
-import { bar, Chart, ChartOptions, donut, line } from 'billboard.js';
 
-import { ChartDto, HeatmapDto } from 'imx-api-qer';
-import { HeatmapSidesheetComponent } from '../../heatmaps/heatmap-sidesheet/heatmap-sidesheet.component';
+import { ChartDto, HeatmapDto } from '@imx-modules/imx-api-qer';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { calculateSidesheetWidth } from 'qbm';
+import { ChartDataTyped } from '../../charts/chart-data-typed';
+import { ChartTableService } from '../../charts/chart-table/chart-table-service.service';
+import { ChartDetails } from '../../charts/chart-tile/chart-details';
+import { PointStatTyped } from '../../charts/chart-tile/point-stat-visual/point-stat-typed';
 import { ChartsSidesheetComponent } from '../../charts/charts-sidesheet/charts-sidesheet.component';
+import { StatisticsChartHandlerService } from '../../charts/statistics-chart-handler.service';
+import { HeatmapSidesheetComponent } from '../../heatmaps/heatmap-sidesheet/heatmap-sidesheet.component';
+import { StatisticsApiService } from '../../statistics-api.service';
 import { ChartInfoTyped } from '../chart-info-typed';
 import { HeatmapInfoTyped } from '../heatmap-info-typed';
 import { GenericStatisticEntity, GenericSummaryEntity, StatisticsDataService } from '../statistics-data.service';
-import { StatisticsChartHandlerService } from '../../charts/statistics-chart-handler.service';
-import { ChartTableService } from '../../charts/chart-table/chart-table-service.service';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { ChartDataTyped } from '../../charts/chart-data-typed';
-import { StatisticsApiService } from '../../statistics-api.service';
-import { PointStatTyped } from '../../charts/chart-tile/point-stat-visual/point-stat-typed';
-import { ChartDetails } from '../../charts/chart-tile/chart-details';
-
 
 export interface DetailedChartInfo {
   chartData: ChartDto;
@@ -93,7 +87,8 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
     private tableService: ChartTableService,
     private chartHandler: StatisticsChartHandlerService,
     private sidesheetService: EuiSidesheetService,
-    private loader: EuiLoadingService
+    private loader: EuiLoadingService,
+    private translateService: TranslateService,
   ) {}
 
   public get isFavorite(): boolean {
@@ -123,9 +118,10 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
     if (this.isChart(this.stat)) {
       const stat = this.summaryStat as ChartDto;
       // Check if we have data
-      return stat?.Data && stat.Data.length > 0;
-      }
+      return !!stat?.Data?.length;
     }
+    return false;
+  }
 
   public ngOnInit(): void {
     // Attempt to get cached results, otherwise subscribe to get them
@@ -140,7 +136,7 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
       this.dataService.summaryStats$[this.id].subscribe((summaryStat) => {
         this.summaryStat = summaryStat;
         this.dataService.cacheSummaryStat(this.id, summaryStat);
-      })
+      }),
     );
   }
 
@@ -148,7 +144,6 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
     this.subscriptons$.forEach((sub) => sub.unsubscribe());
     delete this.dataService.cachedCharts[this.cacheId];
   }
-
 
   public isHeatmap(stat: GenericStatisticEntity): stat is HeatmapInfoTyped {
     return stat instanceof HeatmapInfoTyped;
@@ -228,11 +223,11 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
     }
     const response: StatisticsSidesheetResponse | null = await this.sidesheetService
       .open(HeatmapSidesheetComponent, {
-        title: heatmapInfo.GetEntity().GetDisplay(),
-        subTitle: heatmapInfo.GetEntity().GetColumn('Description').GetValue(),
+        title: this.translateService.instant('#LDS#Heading View Statistic Details'),
+        subTitle: heatmapInfo.GetEntity().GetDisplay(),
         icon: 'partition',
         padding: '0px',
-        width: '90%',
+        width: calculateSidesheetWidth(1000, 0.9),
         testId: 'statistics-heatmap-sidesheet',
         data: {
           heatmapInfo,
@@ -259,11 +254,11 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
     }
     const response: StatisticsSidesheetResponse | null = await this.sidesheetService
       .open(ChartsSidesheetComponent, {
-        title: chartInfo.GetEntity().GetDisplay(),
-        subTitle: !!this.chartDetails?.pointStatus ? '' : chartInfo.GetEntity().GetColumn('Description').GetValue(),
+        title: this.translateService.instant('#LDS#Heading View Statistic Details'),
+        subTitle: chartInfo.GetEntity().GetDisplay(),
         icon: this.chartDetails.icon,
         padding: '0px',
-        width: '60%',
+        width: calculateSidesheetWidth(),
         testId: 'statistics-chart-sidesheet',
         data: {
           chartInfo,
@@ -285,14 +280,14 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
 
   public async getChartOptionsWithHistory(chartInfo: ChartInfoTyped): Promise<DetailedChartInfo> {
     const chartData = await this.statisticsApi.getChart(chartInfo.GetEntity().GetColumn('Id').GetValue());
-    const tableData = this.tableService.getDataSource(chartData.Data);
-    let chartOptions: ChartOptions;
+    const tableData = this.tableService.getDataSource(chartData.Data ?? []);
+    let chartOptions: ChartOptions = {};
     switch (true) {
       case !!this.chartDetails?.pointStatus:
         chartOptions = this.chartHandler.getLineData(chartData, {
           dataLimit: 1,
           nXTicks: 10,
-          enableZoom: true
+          enableZoom: true,
         });
         break;
       case this.chartDetails.type === donut():
@@ -310,7 +305,7 @@ export class StatisticsCardsVisualsComponent implements OnInit, OnDestroy {
         chartOptions = this.chartHandler.getLineData(chartData, {
           dataLimit: 10,
           pointLimit: 20,
-          enableZoom: true
+          enableZoom: true,
         });
         break;
     }

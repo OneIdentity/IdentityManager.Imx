@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,33 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, IClientProperty, TypedEntity } from 'imx-qbm-dbts';
+import { EUI_SIDESHEET_DATA, EuiLoadingService } from '@elemental-ui/core';
+import {
+  CollectionLoadParameters,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 
 @Component({
   selector: 'imx-identity-rule-violations-mitigation-control',
   templateUrl: './identity-rule-violations-mitigation-control.component.html',
-  styleUrls: ['./identity-rule-violations-mitigation-control.component.scss']
+  styleUrls: ['./identity-rule-violations-mitigation-control.component.scss'],
 })
 export class IdentityRuleViolationsMitigationControlComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   constructor(
     private readonly busy: EuiLoadingService,
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      getData: (param: CollectionLoadParameters) => Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>>,
-      entitySchema: EntitySchema,
-      displayedColumns: IClientProperty[]
-    }
-  ) { }
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      getData: (param: CollectionLoadParameters) => Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>>;
+      entitySchema: EntitySchema;
+      displayedColumns: IClientProperty[];
+    },
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.getData({});
@@ -56,23 +61,20 @@ export class IdentityRuleViolationsMitigationControlComponent implements OnInit 
   }
 
   public async getData(param: CollectionLoadParameters): Promise<void> {
-    let overlay: OverlayRef;
-
-    setTimeout(() => { overlay = this.busy.show(); });
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
 
     try {
-
       const dataSource = await this.data.getData(param);
       this.dstSettings = {
         displayedColumns: this.data.displayedColumns,
         dataSource,
         entitySchema: this.data.entitySchema,
-        navigationState: param
+        navigationState: param,
       };
     } finally {
-      setTimeout(() => this.busy.hide(overlay));
+      this.busy.hide();
     }
-
   }
-
 }

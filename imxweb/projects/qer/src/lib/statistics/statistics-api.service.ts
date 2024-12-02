@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,22 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ChartDto, ChartInfoDto, HeatmapDto, HeatmapInfoDto, HeatmapSummaryDto, ProfileSettings } from 'imx-api-qer';
+import { ChartAreaData, ChartDto, ChartInfoDto, HeatmapDto, HeatmapInfoDto, HeatmapSummaryDto } from '@imx-modules/imx-api-qer';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StatisticsApiService {
-
   constructor(
     private apiClient: QerApiService,
     private readonly qerConfig: ProjectConfigurationService,
-  ) { }
+  ) {}
+
+  public async getStatAreas(): Promise<ChartAreaData[]> {
+    return this.apiClient.client.portal_statistics_areas_get();
+  }
 
   // Heatmap calls
   public async getHeatmapList(): Promise<HeatmapInfoDto[]> {
@@ -63,18 +66,18 @@ export class StatisticsApiService {
 
   // Favorites calls
   public async getFavorites(): Promise<string[]> {
-    return this.apiClient.v2Client.portal_profile_get().then((val)=> val.PreferredStatisticIdsOrder ?? []);
+    return this.apiClient.v2Client.portal_profile_get().then((val) => val.PreferredStatisticIdsOrder ?? []);
   }
 
   public async postFavorites(favorites: string[]): Promise<void> {
     return this.apiClient.v2Client.portal_profile_post({
-      PreferredStatisticIdsOrder: favorites
+      PreferredStatisticIdsOrder: favorites,
     });
   }
 
   // Org stats calls
   public async getOrgStats(): Promise<string[]> {
-    return this.qerConfig.getConfig().then(val => val.StatisticsConfig?.OrganizationStatistics ?? []);
+    return this.qerConfig.getConfig().then((val) => val.StatisticsConfig?.OrganizationStatistics ?? []);
   }
 
   public async postOrgStats(orgStats: string[]): Promise<void> {

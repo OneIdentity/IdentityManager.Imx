@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { EntitySchema } from 'imx-qbm-dbts';
-import { CdrFactoryService, ColumnDependentReference, ShortDatePipe } from 'qbm';
-import { Block } from '../block-properties.interface';
-import { bar, ChartOptions, Chart } from 'billboard.js';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { EntitySchema } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
+import { bar, Chart, ChartOptions } from 'billboard.js';
+import { CdrFactoryService, ColumnDependentReference, ShortDatePipe } from 'qbm';
 import { fromEvent, Subscription } from 'rxjs';
+import { Block } from '../block-properties.interface';
 import { HeatmapDataTyped } from '../heatmap-data-typed';
 
 @Component({
@@ -42,8 +42,8 @@ import { HeatmapDataTyped } from '../heatmap-data-typed';
 export class BlockDetailSidesheetComponent implements OnInit, OnDestroy {
   @ViewChild('chartWrapper', { read: ElementRef }) public chartWrapper: ElementRef<HTMLElement>;
 
-  public topCdrList: ColumnDependentReference[];
-  public bottomCdrList: ColumnDependentReference[];
+  public topCdrList: (ColumnDependentReference | undefined)[];
+  public bottomCdrList: (ColumnDependentReference | undefined)[];
 
   public isLoading = true;
   public chart: Chart;
@@ -61,7 +61,7 @@ export class BlockDetailSidesheetComponent implements OnInit, OnDestroy {
     private cdrService: CdrFactoryService,
     private translate: TranslateService,
     private sidesheetRef: EuiSidesheetRef,
-    private shortDate: ShortDatePipe
+    private shortDate: ShortDatePipe,
   ) {}
 
   public get schema(): EntitySchema {
@@ -81,17 +81,19 @@ export class BlockDetailSidesheetComponent implements OnInit, OnDestroy {
     this.chartTooltip = await this.translate.get('#LDS#Value at this time').toPromise();
     this.setupChart();
 
-    this.subscriptions$.push(
-      this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
-        if (this.chart) {
-          this.chart.resize({
-            height: this.chartWrapper.nativeElement.offsetHeight,
-            width: this.chartWrapper.nativeElement.offsetWidth,
-          });
-          this.isLoading = false;
-        }
-      })
-    );
+    if (this.sidesheetRef?.componentInstance) {
+      this.subscriptions$.push(
+        this.sidesheetRef.componentInstance?.onOpen().subscribe(() => {
+          if (this.chart) {
+            this.chart.resize({
+              height: this.chartWrapper.nativeElement.offsetHeight,
+              width: this.chartWrapper.nativeElement.offsetWidth,
+            });
+            this.isLoading = false;
+          }
+        }),
+      );
+    }
 
     // Subscribe to resize charts when window size changes
     this.subscriptions$.push(
@@ -102,7 +104,7 @@ export class BlockDetailSidesheetComponent implements OnInit, OnDestroy {
             width: this.chartWrapper.nativeElement.offsetWidth,
           });
         }
-      })
+      }),
     );
   }
 
@@ -116,8 +118,8 @@ export class BlockDetailSidesheetComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const colors = [];
-    const values = [];
+    const colors: string[] = [];
+    const values: number[] = [];
     const datesFormatted: string[] = [];
     // Trim undefined values
     this.data.block.historyValues.forEach((value, index) => {
@@ -142,7 +144,7 @@ export class BlockDetailSidesheetComponent implements OnInit, OnDestroy {
           [this.chartTooltip, ...values],
         ],
         color: (color, d) => {
-          return colors[d.index];
+          return d.index != null ? colors[d.index] : '';
         },
       },
       bar: {

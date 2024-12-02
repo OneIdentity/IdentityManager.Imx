@@ -1,68 +1,24 @@
-@import '../../../../../shared/scss/common-table.scss';
-@mixin imx-flex-column-container {
-  display: flex;
-  flex-direction: column;
-}
-
-@mixin imx-flex-row-container {
-  display: flex;
-  flex-direction: row;
-}
-
-.eui-sidesheet-content {
-  @include imx-flex-column-container();
-}
+@import 'base/mixins';
 
 .heading-wrapper {
-  @include imx-flex-row-container();
+  @include flex-row-container();
   flex: 0 0 auto;
-
-  .helper-alert {
-    display: flex;
-    margin-bottom: 15px;
-  }
 }
 
 :host {
-  @include imx-flex-column-container();
-  overflow: hidden;
-  height: 100%;
-  max-width: 100%;
+  @include flex-column-container($overflow: hidden, $height: 100%, $max-width: 100%);
 }
 
 .imx-pattern-page {
   background-color: inherit;
- @include imx-flex-fill-control-hidden-overflow();
+  @include flex-column-container-fill();
 
-  .mat-card {
-   @include imx-flex-fill-control-hidden-overflow();
-  }
-
-  div.imx-table-container {
-    @include imx-flex-column-container();
-    overflow: hidden;
-    height: inherit;
-
-    .imx-patterns-table {
-      flex-grow: 1;
-      overflow: auto;
-    }
-  }
-
-  .imx-button-bar {
-    @include imx-button-bar();
-  }
 }
 
 @media screen and (max-width: 768px) {
   .imx-pattern-page {
     .heading-wrapper {
       display: block;
-
-      .alert-wrapper {
-        margin: 0 0 20px 0;
-        width: 100%;
-      }
     }
   }
 }

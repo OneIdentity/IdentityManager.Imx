@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,20 +27,22 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
-import { FilterType, CompareOperator } from 'imx-qbm-dbts';
-import { imx_SessionService, AppConfigService, TextContainer, LdsReplacePipe } from 'qbm';
-import { IssueAction } from './service-issues.models';
+import { CompareOperator, FilterType } from '@imx-modules/imx-qbm-dbts';
+import { AppConfigService, LdsReplacePipe, TextContainer, imx_SessionService } from 'qbm';
 import { SubscriptionService } from '../../base/subscription.service';
-import { ServiceIssueType, ServiceIssueItem } from './service-issue-item';
-import { SystemStatusService } from '../system-status/system-status.service';
-import { UnresolvedRefsService } from '../../unresolved-refs/unresolved-refs.service';
 import { SyncService } from '../../sync/sync.service';
+import { UnresolvedRefsService } from '../../unresolved-refs/unresolved-refs.service';
+import { SystemOverviewService } from '../system-overview/system-overview.service';
+import { SystemTreeDatabase } from '../system-overview/system-tree/system-tree-database';
+import { SystemStatusService } from '../system-status/system-status.service';
+import { ServiceIssueItem, ServiceIssueType } from './service-issue-item';
+import { IssueAction } from './service-issues.models';
 
 @Injectable()
 export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]> {
   public isLoading = false;
-  private jobDisabled = false;
-  private dbDisabled = false;
+  private jobDisabled: boolean | undefined = false;
+  private dbDisabled: boolean | undefined = false;
 
   constructor(
     private router: Router,
@@ -50,7 +52,9 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
     private ldsPipe: LdsReplacePipe,
     private syncJournalService: SyncService,
     private unresolvedRefsService: UnresolvedRefsService,
-    private configService: AppConfigService
+    private configService: AppConfigService,
+    private systemOverviewService: SystemOverviewService,
+    private database: SystemTreeDatabase,
   ) {
     super();
     this.itemsInternal = [];
@@ -65,6 +69,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
       await this.checkInactiveServers();
       await this.checkUnresolvedRefs();
       await this.checkSyncIssues();
+      await this.checkSystemOverview();
     } finally {
       this.isLoading = false;
     }
@@ -98,7 +103,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
           caption: '#LDS#View',
           action: () => this.goToQueue(queue.QueueName.value),
         },
-        queue.QueueName.value
+        queue.QueueName.value,
       );
 
       this.remove(ServiceIssueType.FrozenJobs, queuesWithFrozenJobs);
@@ -121,7 +126,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         '#LDS#Compilation',
         { key: '#LDS#Database must be compiled' },
         'database',
-        'errorBubble issueBubble'
+        'errorBubble issueBubble',
       );
     } else {
       this.remove(ServiceIssueType.CompilationRequired);
@@ -135,8 +140,8 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         'warningBubble issueBubble',
         {
           caption: '#LDS#Button Start',
-          action: async () => this.changeStatus(false, this.dbDisabled),
-        }
+          action: async () => this.changeStatus(false, this.dbDisabled!),
+        },
       );
     } else {
       this.remove(ServiceIssueType.JobServiceDisabled);
@@ -150,8 +155,8 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         'warningBubble issueBubble',
         {
           caption: '#LDS#Button Start',
-          action: async () => this.changeStatus(this.jobDisabled, false),
-        }
+          action: async () => this.changeStatus(this.jobDisabled!, false),
+        },
       );
     } else {
       this.remove(ServiceIssueType.DbSchedulerDisabled);
@@ -162,7 +167,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         '#LDS#Maintenance',
         { key: '#LDS#Database runs in maintenance mode' },
         'database',
-        'errorBubble issueBubble'
+        'errorBubble issueBubble',
       );
     } else {
       this.remove(ServiceIssueType.MaintenanceMode);
@@ -192,7 +197,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
       {
         caption: '#LDS#View',
         action: () => this.router.navigate(['/ServicesInactive']),
-      }
+      },
     );
   }
 
@@ -229,7 +234,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
           this.router.navigate(['/SyncJournal/'], {
             queryParams: { filter: JSON.stringify(filter) },
           }),
-      }
+      },
     );
   }
 
@@ -243,7 +248,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
   }
 
   private async updateUnresolvedRefs(totalCount: number): Promise<void> {
-    if (totalCount <= this.configService.Config.DatastoreIssueTreshold) {
+    if (!!this.configService.Config.DatastoreIssueTreshold && totalCount <= this.configService.Config.DatastoreIssueTreshold) {
       this.remove(ServiceIssueType.UnresolvedRefs);
       return;
     }
@@ -260,8 +265,27 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
       {
         caption: '#LDS#View',
         action: () => this.router.navigate(['/unresolvedRefs']),
-      }
+      },
     );
+  }
+
+  private async checkSystemOverview(): Promise<void> {
+    const entity = await this.systemOverviewService.ItemsProvider();
+    this.database.initialize(entity);
+    const thresholdCount = this.database.ExceededThresholdsCounter;
+    const type = ServiceIssueType.SystemThresholdExceeded;
+
+    if (thresholdCount > 0) {
+      await this.update(
+        type,
+        '#LDS#System information',
+        { key: '#LDS#{0} thresholds exceeded', parameters: [thresholdCount] },
+        'warning',
+        '',
+      );
+    } else {
+      this.remove(type);
+    }
   }
 
   private async changeStatus(jobService: boolean, dbService: boolean): Promise<void> {
@@ -280,17 +304,14 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
     icon: string,
     severityClass: string,
     action?: IssueAction,
-    id?: string
+    id?: string,
   ): Promise<void> {
-    let issueItem: ServiceIssueItem;
+    let issueItem =
+      serviceType === ServiceIssueType.FrozenJobs
+        ? this.itemsInternal.find((item) => item.id === id)
+        : this.itemsInternal.find((item) => item.type === serviceType);
 
-    if (serviceType === ServiceIssueType.FrozenJobs) {
-      issueItem = this.itemsInternal.find((item) => item.id === id);
-    } else {
-      issueItem = this.itemsInternal.find((item) => item.type === serviceType);
-    }
-
-    if (issueItem == null) {
+    if (!issueItem) {
       issueItem = new ServiceIssueItem();
       issueItem.type = serviceType;
       issueItem.action = action;
@@ -303,12 +324,14 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
     issueItem.title = await this.translater.get(title).toPromise();
     const tranlatedKey = await this.translater.get(text.key).toPromise();
     // workaround, weil er aus text.parameters[0], text.parameters[1] aus irgendeinem Grund "text.parameters[0], text.parameters[1]" macht
-    issueItem.text = this.ldsPipe.transform(
-      tranlatedKey,
-      text.parameters?.length > 0 ? text.parameters[0] : '',
-      text.parameters?.length > 1 ? text.parameters[1] : ''
-    );
-    if (action) {
+    if (text.parameters) {
+      issueItem.text = this.ldsPipe.transform(
+        tranlatedKey,
+        text.parameters?.length > 0 ? text.parameters[0] : '',
+        text.parameters?.length > 1 ? text.parameters[1] : '',
+      );
+    }
+    if (issueItem.action && action) {
       issueItem.action.caption = await this.translater.get(action.caption).toPromise();
     }
   }

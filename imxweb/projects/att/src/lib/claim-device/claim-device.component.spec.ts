@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,15 +30,15 @@ import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { BehaviorSubject } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM, ISessionState, LdsReplaceModule } from 'qbm';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
+import { AuthenticationService, clearStylesFromDOM, ISessionState } from 'qbm';
 import { PersonService } from 'qer';
 import { ClaimDeviceComponent } from './claim-device.component';
 import { ClaimDeviceService } from './claim-device.service';
-import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 
 @Component({
   selector: 'imx-cdr-editor',
-  template: '<p>MockCdrEditor</p>'
+  template: '<p>MockCdrEditor</p>',
 })
 class MockCdrEditor {
   @Input() public cdr: any;
@@ -48,7 +48,7 @@ describe('ClaimDeviceComponent', () => {
   let component: ClaimDeviceComponent;
   let fixture: MockedComponentFixture<ClaimDeviceComponent>;
 
-  const claimGroupServiceStub = new class {
+  const claimGroupServiceStub = new (class {
     numberOfSuggestedOwners = 0;
 
     hasSuggestedOwners = jasmine.createSpy('hasSuggestedOwners').and.callFake(() => Promise.resolve(this.numberOfSuggestedOwners > 0));
@@ -57,13 +57,13 @@ describe('ClaimDeviceComponent', () => {
       column: {
         ColumnName: 'UID_Hardware',
         GetValue: () => 'device-key',
-        GetDisplayValue: () => 'displayvalue for some device'
-      }
+        GetDisplayValue: () => 'displayvalue for some device',
+      },
     });
 
     createColumnSuggestedOwner = jasmine.createSpy('createColumnSuggestedOwner').and.returnValue({
       ColumnName: 'some column name',
-      GetValue: () => 'some value'
+      GetValue: () => 'some value',
     });
 
     reset() {
@@ -73,38 +73,39 @@ describe('ClaimDeviceComponent', () => {
       this.createColumnSuggestedOwner.calls.reset();
       this.numberOfSuggestedOwners = 0;
     }
-  }();
+  })();
 
   const personServiceStub = {
     createColumnCandidatesPerson: jasmine.createSpy('createColumnCandidatesPerson').and.returnValue({
       ColumnName: 'personColumn',
-      GetValue: () => 'some value'
-    })
+      GetValue: () => 'some value',
+    }),
   };
 
   const authStub = {
     onSessionResponse: new BehaviorSubject<ISessionState>({
-      UserUid: "",
-      Username: ""
-    })
-  }
+      UserUid: '',
+      Username: '',
+    }),
+  };
+
+  const euiLoadingServiceStud = {
+    overlayRefs: [],
+  };
 
   beforeEach(() => {
     return MockBuilder(ClaimDeviceComponent)
       .mock(ClaimDeviceService, claimGroupServiceStub)
       .mock(PersonService, personServiceStub)
-      .mock(EuiLoadingService)
+      .mock(EuiLoadingService, euiLoadingServiceStud)
       .mock(AuthenticationService, authStub)
-      .beforeCompileComponents(testBed => {
+      .beforeCompileComponents((testBed) => {
         testBed.configureTestingModule({
-          declarations: [
-            ClaimDeviceComponent,
-            MockCdrEditor
-          ],
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+          declarations: [ClaimDeviceComponent, MockCdrEditor],
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        });
       });
-    });
-  })
+  });
 
   beforeEach(() => {
     claimGroupServiceStub.reset();
@@ -123,16 +124,13 @@ describe('ClaimDeviceComponent', () => {
     const cdr = { display: 'some display' };
 
     component.ownerCandidateListChange({
-      value: { createOwnerCdr: () => cdr }
+      value: { createOwnerCdr: () => cdr },
     } as MatRadioChange);
 
     expect(component.ownerCdr.display).toEqual(cdr.display);
   });
 
-  for (const method of [
-    () => component.loadSuggestedOwners(),
-    () => component.stepChange({ selectedIndex: 2 } as StepperSelectionEvent)
-  ]) {
+  for (const method of [() => component.loadSuggestedOwners(), () => component.stepChange({ selectedIndex: 2 } as StepperSelectionEvent)]) {
     it('loads owner candidates', async () => {
       await method();
       expect(component.ownershipOptions.length).toEqual(2);

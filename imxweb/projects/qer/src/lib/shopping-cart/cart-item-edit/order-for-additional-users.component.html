@@ -1,12 +1,24 @@
 <div class="imx-content">
-  <p>{{ LdsExplanation | translate | ldsReplace:[data.display] }}</p>
+  <p>{{ LdsExplanation | translate | ldsReplace: [data.display] }}</p>
   <imx-fk-selector #fkSelector [data]="data.fkData" (elementSelected)="close([$event])"></imx-fk-selector>
 </div>
 
 <div class="imx-actions">
-  <button *ngIf="fkSelector?.selectedCandidates?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()" data-imx-identifier="cdr-fkadvancedpicker-button-clear-selection">
-      {{ '#LDS#Clear selection' | translate }}
-    </button>
-  <button data-imx-identifier="order-additional-button-apply" mat-raised-button color="primary"
-      (click)="close(fkSelector?.selectedCandidates)">{{'#LDS#Apply' | translate}}</button>
-  </div>
+  <button
+    *ngIf="!!fkSelector?.selectedCandidates?.length"
+    mat-stroked-button
+    type="button"
+    (click)="fkSelector.clearSelection()"
+    data-imx-identifier="cdr-fkadvancedpicker-button-clear-selection"
+  >
+    {{ '#LDS#Clear selection' | translate }}
+  </button>
+  <button
+    data-imx-identifier="order-additional-button-apply"
+    mat-flat-button
+    color="primary"
+    (click)="close(fkSelector?.selectedCandidates)"
+  >
+    {{ '#LDS#Apply' | translate }}
+  </button>
+</div>

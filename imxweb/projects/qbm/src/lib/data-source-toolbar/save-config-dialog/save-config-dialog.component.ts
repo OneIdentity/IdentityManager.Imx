@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,28 +25,27 @@
  */
 
 import { Component, Inject } from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
+import { FormControl, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'imx-save-config-dialog',
   templateUrl: './save-config-dialog.component.html',
-  styleUrls: ['./save-config-dialog.component.scss']
+  styleUrls: ['./save-config-dialog.component.scss'],
 })
 export class SaveConfigDialogComponent {
-
-  public formControl = new FormControl<string>('', Validators.required)
+  public formControl = new FormControl<string>('', Validators.required);
 
   public get displayName(): string {
-    return this.formControl.value;
+    return this.formControl.value ?? '';
   }
 
   constructor(
     private dialogRef: MatDialogRef<SaveConfigDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data?: {
-      currentName: string
-    }
+    @Inject(MAT_DIALOG_DATA)
+    public data?: {
+      currentName: string;
+    },
   ) {
     if (data?.currentName) {
       this.formControl.reset(data.currentName);
@@ -58,7 +57,6 @@ export class SaveConfigDialogComponent {
   }
 
   public get isNew(): boolean {
-    return this.data?.currentName ? this.formControl.value !== this.data.currentName: true;
+    return this.data?.currentName ? this.formControl.value !== this.data.currentName : true;
   }
-
 }

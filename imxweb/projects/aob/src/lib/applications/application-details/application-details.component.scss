@@ -1,11 +1,9 @@
 @use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex: 1 1 auto;
+  @include flex-column-container-fill();
   min-height: 100%;
 
   .imx-application-details-content .imx-application-details-grid.hidden {
@@ -14,44 +12,25 @@
 }
 
 .imx-application-details-content {
-  display: flex;
+  @include flex-row-container-fill();
   overflow: hidden;
-  flex: 1 1 auto;
 
   imx-busy-indicator {
     flex: 0 0 0;
   }
 
   .imx-application-details-grid {
-    display: flex;
+    @include flex-row-container($max-width: 1500px, $max-height: 800px, $overflow: auto);
     flex-wrap: wrap;
     padding: 16px 24px;
-    overflow: auto;
-    max-width: 1500px;
-    max-height: 800px;
 
-    > .mat-card {
+    > .mat-mdc-card {
       background-color: transparent;
     }
 
-    .mat-card-title {
+    .mat-mdc-card-title {
       font-size: 18px;
       line-height: 36px;
-    }
-
-    .mat-button {
-      vertical-align: middle;
-      padding: 0 2px;
-      min-width: 0;
-      margin-left: 5px;
-
-      ::ng-deep .mat-button-wrapper {
-        vertical-align: text-bottom;
-      }
-    }
-
-    .mat-button[hidden] {
-      display: none;
     }
 
     .mat-divider-horizontal {
@@ -66,9 +45,8 @@
   min-width: 200px;
   box-shadow: none;
 
-  .mat-card-content {
-    display: flex;
-    flex-direction: column;
+  .mat-mdc-card-content {
+    @include flex-column-container();
     margin-bottom: -15px;
 
     > * {
@@ -77,37 +55,8 @@
   }
 }
 
-.imx-button-area {
-  background-color: transparent;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-
-  .justify-start {
-    margin-right: auto;
-    justify-self: start;
-  }
-
-  .imx-additional-actions {
-    margin-right: 5px;
-    margin-left: 5px;
-  }
-
-  .mat-stroked-button,
-  .mat-raised-button {
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
-  > button:not(:last-of-type) {
-    margin-right: 16px;
-  }
-}
-
 .imx-application-property-multi {
-  display: flex;
-  flex-direction: column;
+  @include flex-column-container();
 
   > span {
     font-weight: 600;
@@ -115,9 +64,7 @@
     text-overflow: ellipsis;
   }
 
-  > .mat-button {
-    width: auto;
-    padding: 0px;
+  > .mat-mdc-button {
     line-height: 1.3rem;
     align-self: flex-start;
   }
@@ -127,10 +74,8 @@ li {
   list-style-type: none;
   margin: 10px;
 
-  .mat-card {
-    display: flex;
-    flex-direction: row;
-    height: 3.2rem;
+  .mat-mdc-card {
+    @include flex-row-container();
 
     > .imx-card-title {
       font-size: 16px;
@@ -143,22 +88,16 @@ li {
   }
 }
 
-.mat-dialog-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: inherit;
-}
-
 .imx-application-state {
-  display: flex;
+  @include flex-row-container();
+
   flex-wrap: wrap;
   flex: 0 0 64%;
   align-content: flex-start;
   box-shadow: none;
   padding: 0;
 
-  > .mat-card {
+  > .mat-mdc-card {
     background-color: transparent;
   }
 }
@@ -170,41 +109,23 @@ li {
   padding-left: 5px;
   padding-right: 0;
 
-  .mat-card-content {
-    display: flex;
+  .mat-mdc-card-content {
+    @include flex-row-container();
+
     align-items: center;
   }
 
-  .mat-chip {
-    border-radius: 3px;
-    width: max-content;
-    user-select: none;
-  }
-
-  @mixin publish-state-style {
+  .imx-application-unpublished-state,
+  .imx-application-willbepublished-state,
+  .imx-application-published-state {
+    @include flex-row-container();
+    align-items: center;
     font-weight: 600;
     font-size: 12px;
-    display: flex;
-    align-items: center;
 
     .eui-icon,
     .mat-icon {
       margin-right: 6px;
-    }
-  }
-
-  .imx-application-unpublished-state,
-  .imx-application-willbepublished-state {
-    @include publish-state-style;
-  }
-
-  .imx-application-published-state {
-    @include publish-state-style;
-
-    .mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
     }
   }
 
@@ -220,7 +141,7 @@ li {
   padding-left: 0;
   padding-right: 0;
 
-  .mat-card-title {
+  .mat-mdc-card-title {
     line-height: 45px;
   }
 
@@ -228,24 +149,13 @@ li {
     margin-bottom: 8px;
   }
 
-  .mat-icon {
-    margin-right: 5px;
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    visibility: hidden;
-  }
-
-  .checked .mat-icon {
-    visibility: visible;
-  }
-
   span {
     font-size: 14px;
   }
 
-  .mat-card-content > div {
-    display: flex;
+  .mat-mdc-card-content > div {
+    @include flex-row-container();
+
     align-items: center;
   }
 }
@@ -255,12 +165,13 @@ li {
   box-shadow: none;
   overflow: hidden;
 
-  .mat-card-title {
+  .mat-mdc-card-title {
     line-height: 45px;
   }
 
-  .mat-card-content {
-    display: flex;
+  .mat-mdc-card-content {
+    @include flex-row-container();
+
     flex-wrap: wrap;
 
     imx-column-info,
@@ -274,18 +185,6 @@ li {
 
 .imx-multivalue-item {
   margin: 10px 0;
-}
-
-.mat-card-avatar {
-  padding: 5px;
-  height: 25px;
-  width: 25px;
-  user-select: none;
-}
-
-:host ::ng-deep body .mat-dialog-container {
-  display: flex;
-  flex-direction: column;
 }
 
 //Themeing
@@ -304,17 +203,6 @@ li {
   .imx-application-published-state {
     color: $color-green-60;
   }
-
-  .imx-application-progress {
-    .mat-icon {
-      color: $color-green-60;
-    }
-  }
-
-  .mat-card-avatar {
-    background-color: $color-gray-30;
-    color: $color-gray-0;
-  }
 }
 
 .eui-dark-theme {
@@ -325,11 +213,6 @@ li {
       }
     }
 
-    .mat-card-avatar {
-      background-color: $color-gray-60;
-      color: $color-gray-80;
-    }
-
     .imx-application-publish {
       .imx-application-unpublished-state,
       .imx-application-willbepublished-state {
@@ -337,12 +220,6 @@ li {
       }
 
       .imx-application-published-state {
-        color: $color-green-40;
-      }
-    }
-
-    .imx-application-progress {
-      .mat-icon {
         color: $color-green-40;
       }
     }
@@ -361,12 +238,7 @@ li {
       background-color: $color-gray-90;
     }
 
-    .mat-card-avatar {
-      background-color: $color-gray-80;
-      color: $color-gray-70;
-    }
-
-    .mat-card {
+    .mat-mdc-card {
       border-color: $color-gray-90;
     }
 
@@ -377,12 +249,6 @@ li {
       }
 
       .imx-application-published-state {
-        color: $color-green-20;
-      }
-    }
-
-    .imx-application-progress {
-      .mat-icon {
         color: $color-green-20;
       }
     }

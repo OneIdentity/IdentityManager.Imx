@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,42 +24,41 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
 
-import { PortalCartitem } from 'imx-api-qer';
+import { PortalCartitem } from '@imx-modules/imx-api-qer';
+import { DisplayColumns, EntitySchema, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
-  DataSourceToolbarSettings,
-  SnackBarService,
   ClassloggerService,
-  DataTableComponent,
-  ConfirmationService,
   ClientPropertyForTableColumns,
-  LdsReplacePipe
+  ConfirmationService,
+  DataViewSource,
+  LdsReplacePipe,
+  SnackBarService,
+  calculateSidesheetWidth,
 } from 'qbm';
-import { DisplayColumns, EntitySchema, TypedEntity, ValType, ValueStruct } from 'imx-qbm-dbts';
+import { Subject } from 'rxjs';
+import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
+import { UserModelService } from '../../user/user-model.service';
+import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service';
+import { CartItemEditParameter } from '../cart-item-edit/cart-item-edit-parameter.interface';
 import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
+import { CartItemValidationOverviewComponent } from '../cart-item-validation-overview/cart-item-validation-overview.component';
 import { CartItemsService } from '../cart-items.service';
 import { ShoppingCart } from '../shopping-cart';
 import { CartItemCheckStatus } from './cart-item-check-status.enum';
-import { CartItemValidationOverviewComponent } from '../cart-item-validation-overview/cart-item-validation-overview.component';
-import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service';
-import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
-import { Subject } from 'rxjs';
-import { CartItemEditParameter } from '../cart-item-edit/cart-item-edit-parameter.interface';
-import { UserModelService } from '../../user/user-model.service';
 
 @Component({
   templateUrl: './cart-items.component.html',
   styleUrls: ['./cart-items.component.scss'],
-  selector: 'imx-cart-items'
+  selector: 'imx-cart-items',
+  providers: [DataViewSource],
 })
 export class CartItemsComponent implements OnInit, OnChanges {
   public CartItemCheckStatus = CartItemCheckStatus;
-  public dstSettings: DataSourceToolbarSettings;
   public removeButtonLabel = '';
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
@@ -67,10 +66,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
 
   public readonly itemStatus = {
     enabled: (cartItem: PortalCartitem): boolean => {
-      return cartItem.UID_ShoppingCartItemParent.value == null ||
+      return (
+        cartItem.UID_ShoppingCartItemParent.value == null ||
         cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
-        cartItem.IsOptionalChild.value;
-    }
+        cartItem.IsOptionalChild.value
+      );
+    },
   };
 
   @Input() public shoppingCart: ShoppingCart;
@@ -80,8 +81,6 @@ export class CartItemsComponent implements OnInit, OnChanges {
   @Output() public dataChange: EventEmitter<boolean> = new EventEmitter();
 
   @Output() public selectionChange: EventEmitter<PortalCartitem[]> = new EventEmitter();
-
-  @ViewChild(DataTableComponent) private cartItemsTable: DataTableComponent<TypedEntity>;
 
   private selectedItems: PortalCartitem[] = [];
 
@@ -97,6 +96,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
     private readonly cartItemClone: CartItemCloneService,
     private readonly userModelService: UserModelService,
     private readonly ldsReplace: LdsReplacePipe,
+    public dataSource: DataViewSource<PortalCartitem>,
   ) {
     this.entitySchema = cartItemsService.PortalCartitemSchema;
     this.displayedColumns = [
@@ -106,9 +106,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
         ColumnName: 'removeItemButton',
         Type: ValType.String,
         afterAdditionals: true,
-        untranslatedDisplay: '#LDS#Remove'
-      }
-
+        untranslatedDisplay: '#LDS#Remove',
+      },
     ];
   }
 
@@ -119,35 +118,32 @@ export class CartItemsComponent implements OnInit, OnChanges {
     } else {
       this.removeButtonLabel = await this.translateService.get('#LDS#Remove from list').toPromise();
     }
+    this.dataSource.itemStatus = this.itemStatus;
   }
 
-  public ngOnChanges(changes: SimpleChanges): void {
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.shoppingCart) {
       if (this.shoppingCart) {
-        this.dstSettings = {
-          dataSource: {
-            totalCount: this.shoppingCart.totalCount,
-            Data: this.shoppingCart.getItemsSorted()
-          },
-          entitySchema: this.entitySchema,
-          navigationState: {},
-          displayedColumns: this.displayedColumns
-        };
-      } else {
-        this.dstSettings = undefined;
+        await this.dataSource.init({
+          execute: () =>
+            Promise.resolve({
+              totalCount: this.shoppingCart.totalCount,
+              Data: this.shoppingCart.getItemsSorted() || [],
+            }),
+          schema: this.entitySchema,
+          columnsToDisplay: this.displayedColumns,
+          selectionChange: (selection: PortalCartitem[]) => this.onSelectionChanged(selection),
+        });
       }
     }
   }
 
   public async editCartItem(portalCartitem: PortalCartitem): Promise<void> {
     this.busyService.show();
-    const observable = new Subject<any>();
-    const entityWrapper = await this.cartItemsService.getInteractiveCartitem(
-      portalCartitem.GetEntity().GetKeys().join(''),
-      () => {
-        observable.next();
-      }
-    );
+    const observable = new Subject<void>();
+    const entityWrapper = await this.cartItemsService.getInteractiveCartitem(portalCartitem.GetEntity().GetKeys().join(''), () => {
+      observable.next();
+    });
     this.busyService.hide();
     const cartItem = entityWrapper.typedEntity;
     let reloadItems = false;
@@ -156,42 +152,40 @@ export class CartItemsComponent implements OnInit, OnChanges {
       entityWrapper,
       multiple: false,
       updated: observable,
-      cloneItem: this.itemCanBeCloned(cartItem) ?
-        async () => {
-          reloadItems = true;
-          this.logger.trace(this, 'shopping cart must be reloaded');
-          this.cartItemClone.cloneItemForPersons({
-            personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
-            accProduct: {
-              DataValue: cartItem.UID_AccProduct.value,
-              DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue()
-            },
-            uidITShopOrg: cartItem.UID_ITShopOrg.value,
-            display: cartItem.GetEntity().GetDisplay()
-          });
-        }
-        : undefined
+      cloneItem: this.itemCanBeCloned(cartItem)
+        ? async () => {
+            reloadItems = true;
+            this.logger.trace(this, 'shopping cart must be reloaded');
+            this.cartItemClone.cloneItemForPersons({
+              personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
+              accProduct: {
+                DataValue: cartItem.UID_AccProduct.value,
+                DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue(),
+              },
+              uidITShopOrg: cartItem.UID_ITShopOrg.value,
+              display: cartItem.GetEntity().GetDisplay(),
+            });
+          }
+        : undefined,
     };
-    
-    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent,
-      {
-        title: await this.translateService.get('#LDS#Heading Edit Product').toPromise(),
-        subTitle: await this.getSubtitleDisplay(portalCartitem),
-        disableClose: true,
-        width: '700px',
-        testId: 'cart-item-edit-sidesheet',
-        data: itemEditParameter
-      });
 
+    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent, {
+      title: await this.translateService.get('#LDS#Heading Edit Product').toPromise(),
+      subTitle: await this.getSubtitleDisplay(portalCartitem),
+      disableClose: true,
+      width: calculateSidesheetWidth(700, 0.4),
+      testId: 'cart-item-edit-sidesheet',
+      data: itemEditParameter,
+    });
 
-    sidesheetRef.afterClosed().subscribe(async doSave => {
+    sidesheetRef.afterClosed().subscribe(async (doSave) => {
       if (doSave) {
-        setTimeout(() => this.busyService.show());
+        this.showBusyIndicator();
         try {
           await this.cartItemsService.save(entityWrapper);
           this.logger.debug(this, 'data is cart item saved.');
         } finally {
-          setTimeout(() => this.busyService.hide());
+          this.busyService.hide();
           this.dataChange.emit(false);
         }
       } else {
@@ -205,34 +199,33 @@ export class CartItemsComponent implements OnInit, OnChanges {
   public onSelectionChanged(items: PortalCartitem[]): void {
     this.logger.trace(this, 'selection changed', items);
     this.selectedItems = items;
-    this.selectionChange.emit(items);
+    this.selectionChange.emit(this.selectedItems);
   }
 
   public async moveSelectedToCart(): Promise<void> {
-    setTimeout(() => this.busyService.show());
+    this.showBusyIndicator();
     try {
-      await this.cartItemsService.moveToCart(this.selectedItems);      
-      await this.userModelService.reloadPendingItems();
+      await this.cartItemsService.moveToCart(this.selectedItems);
 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your shopping cart.' });
     } finally {
-      setTimeout(() => this.busyService.hide());
+      await this.userModelService.reloadPendingItems();
+      this.busyService.hide();
       this.router.navigate(['/shoppingcart/']);
     }
   }
 
   public async moveSelectedToLater(): Promise<void> {
-    setTimeout(() => this.busyService.show());
+    this.showBusyIndicator();
     try {
-      await this.cartItemsService.moveToLater(this.selectedItems); 
+      await this.cartItemsService.moveToLater(this.selectedItems);
+
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your Saved for Later list.' });
     } finally {
-      setTimeout(() => this.busyService.hide());
-      this.dataChange.emit(true);
       await this.userModelService.reloadPendingItems();
-      if (this.cartItemsTable) {
-        this.cartItemsTable.clearSelection();
-      }
+      this.busyService.hide();
+      this.dataChange.emit(true);
+      this.dataSource.selection.clear();
     }
   }
 
@@ -244,37 +237,37 @@ export class CartItemsComponent implements OnInit, OnChanges {
     this.removeRequests(this.selectedItems, false);
   }
 
-  public async editSelectedItems(): Promise<void>{
-    this.busyService.show()
+  public async editSelectedItems(): Promise<void> {
+    this.showBusyIndicator();
     let entityWrappers: ExtendedEntityWrapper<PortalCartitem>[] = [];
-    for await (const selectedItem of this.selectedItems){
-      entityWrappers.push(await this.cartItemsService.getInteractiveCartitem(
-        selectedItem.GetEntity().GetKeys().join('')
-      ))
+    for await (const selectedItem of this.selectedItems) {
+      entityWrappers.push(await this.cartItemsService.getInteractiveCartitem(selectedItem.GetEntity().GetKeys().join('')));
     }
     const baseCartItem = await this.createBaseCartItem(entityWrappers);
     this.busyService.hide();
 
-    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent,
-      {
-        title: this.ldsReplace.transform(await this.translateService.get('#LDS#Heading Edit Common Request Properties ({0})').toPromise(), this.selectedItems.length),
-        width: '700px',
-        disableClose: true,
-        testId: 'cart-item-edit-sidesheet',
-        data: {
-          entityWrapper: baseCartItem,
-          multiple: true
-        }
-      });
+    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent, {
+      title: this.ldsReplace.transform(
+        await this.translateService.get('#LDS#Heading Edit Common Request Properties ({0})').toPromise(),
+        this.selectedItems.length,
+      ),
+      width: calculateSidesheetWidth(700, 0.4),
+      disableClose: true,
+      testId: 'cart-item-edit-sidesheet',
+      data: {
+        entityWrapper: baseCartItem,
+        multiple: true,
+      },
+    });
 
-    sidesheetRef.afterClosed().subscribe(async doSave => {
+    sidesheetRef.afterClosed().subscribe(async (doSave) => {
       if (doSave) {
         this.busyService.show();
         try {
           await this.saveCartItems(baseCartItem, entityWrappers);
           this.logger.debug(this, 'data is cart item saved.');
         } finally {
-          setTimeout(() => this.busyService.hide());
+          this.busyService.hide();
           this.dataChange.emit(false);
         }
       }
@@ -289,80 +282,69 @@ export class CartItemsComponent implements OnInit, OnChanges {
     const cartItem: PortalCartitem = event.item;
     event.selectableRows.push(
       cartItem.UID_ShoppingCartItemParent.value == null ||
-      cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
-      cartItem.IsOptionalChild.value
+        cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
+        cartItem.IsOptionalChild.value,
     );
   }
 
   public haveSelectedItems(): boolean {
-    return this.selectedItems != null &&
-      this.selectedItems.length > 0;
+    return this.selectedItems != null && this.selectedItems.length > 0;
   }
 
   public itemsCanBeMoved(allowOptional: boolean = false): boolean {
-    return this.haveSelectedItems() &&
-      this.selectedItems.every(item => this.itemCanBeMoved(item, allowOptional));
+    return this.haveSelectedItems() && this.selectedItems.every((item) => this.itemCanBeMoved(item, allowOptional));
   }
 
   public itemsCanBeDeleted(): boolean {
     return this.itemsCanBeMoved(true);
   }
 
-  public itemsCanBeEdited(): boolean{
-    return this.HasSelectedItems() && this.selectedItems.every(item => !item.IsNoCopyParametersPerson.value);
-  }
-
-  public getCheckStatusIcon(cartItem: PortalCartitem): string {
-    switch (cartItem.CheckResult.value) {
-      case CartItemCheckStatus.ok:
-        return 'check';
-      case CartItemCheckStatus.notChecked:
-        return 'question';
-      case CartItemCheckStatus.warning:
-        return 'warning';
-      case CartItemCheckStatus.error:
-        return 'error';
-    }
+  public itemsCanBeEdited(): boolean {
+    return this.HasSelectedItems() && this.selectedItems.every((item) => !item.IsNoCopyParametersPerson.value);
   }
 
   public async showValidationOverview(cartItem: PortalCartitem): Promise<void> {
     if (cartItem.CheckResult.value === CartItemCheckStatus.notChecked) {
       return;
     }
-    this.sidesheetService.open(CartItemValidationOverviewComponent,
-      {
-        title: await this.translateService.get('#LDS#Heading View Validation Results').toPromise(),
-        subTitle: await this.getSubtitleDisplay(cartItem),
-        width: '750px',
-        testId: 'cart-item-validation-results-sidesheet',
-        data: {
-          checkResult: this.shoppingCart.getCartItemCheckResult(cartItem),
-          personOrderedDisplay: cartItem.UID_PersonOrdered.Column.GetDisplayValue(),
-          cartItemDisplay: cartItem.GetEntity().GetDisplay()
-        }
-      });
+    this.sidesheetService.open(CartItemValidationOverviewComponent, {
+      title: await this.translateService.get('#LDS#Heading View Validation Results').toPromise(),
+      subTitle: await this.getSubtitleDisplay(cartItem),
+      width: calculateSidesheetWidth(800),
+      testId: 'cart-item-validation-results-sidesheet',
+      data: {
+        checkResult: this.shoppingCart.getCartItemCheckResult(cartItem),
+        personOrderedDisplay: cartItem.UID_PersonOrdered.Column.GetDisplayValue(),
+        cartItemDisplay: cartItem.GetEntity().GetDisplay(),
+      },
+    });
   }
 
   public setValidationOverviewButtonColor(cartItem: PortalCartitem): string {
     switch (cartItem.CheckResult.value) {
-      case CartItemCheckStatus.error: return 'warn';
-      case CartItemCheckStatus.warning: return 'accent';
-      default: return '';
+      case CartItemCheckStatus.error:
+        return 'warn';
+      case CartItemCheckStatus.warning:
+        return 'accent';
+      default:
+        return '';
     }
   }
 
   private async getSubtitleDisplay(cartItem: PortalCartitem): Promise<string> {
-    return this.translateService.get(
-      `${cartItem.GetEntity().GetDisplay()} - ${cartItem.UID_PersonOrdered.Column.GetDisplayValue()}`
-    ).toPromise();
+    return this.translateService
+      .get(`${cartItem.GetEntity().GetDisplay()} - ${cartItem.UID_PersonOrdered.Column.GetDisplayValue()}`)
+      .toPromise();
   }
 
   private itemCanBeCloned(cartitem: PortalCartitem): boolean {
-    return !this.forLater &&
+    return (
+      !this.forLater &&
       cartitem.CanCopy.value &&
       (cartitem.UID_ShoppingCartItemParent.value == null || cartitem.UID_ShoppingCartItemParent.value.length === 0) &&
       (cartitem.Assignment.value == null || cartitem.Assignment.value.length === 0) &&
-      (cartitem.UID_PersonWantsOrg.value == null || cartitem.UID_PersonWantsOrg.value.length === 0);
+      (cartitem.UID_PersonWantsOrg.value == null || cartitem.UID_PersonWantsOrg.value.length === 0)
+    );
   }
 
   private itemCanBeMoved(cartItem: PortalCartitem, allowOptional: boolean = false, traversed: string[] = []): boolean {
@@ -372,7 +354,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
       return false;
     }
 
-    if (traversed.find(itemUid => itemUid === uid)) {
+    if (traversed.find((itemUid) => itemUid === uid)) {
       return false;
     }
 
@@ -384,17 +366,17 @@ export class CartItemsComponent implements OnInit, OnChanges {
       return this.itemCanBeMoved(parent, allowOptional, traversed);
     }
 
-    return this.selectedItems.find(item => item.GetEntity().GetKeys()[0] === uid) != null;
+    return this.selectedItems.find((item) => item.GetEntity().GetKeys()[0] === uid) != null;
   }
 
-  private getNextSelectedAncestor(cartItem: PortalCartitem): PortalCartitem {
+  private getNextSelectedAncestor(cartItem: PortalCartitem): PortalCartitem | null {
     const parent = this.shoppingCart.getItem(cartItem.UID_ShoppingCartItemParent.value);
 
     if (parent == null) {
       return null;
     }
 
-    if (this.selectedItems.find(item => item.GetEntity().GetKeys()[0] === parent.GetEntity().GetKeys()[0])) {
+    if (this.selectedItems.find((item) => item.GetEntity().GetKeys()[0] === parent.GetEntity().GetKeys()[0])) {
       return parent;
     }
 
@@ -402,89 +384,114 @@ export class CartItemsComponent implements OnInit, OnChanges {
   }
 
   private async removeRequests(cartItems: PortalCartitem[], singleSelect: boolean): Promise<void> {
+    const dialogTitleShoppingCart = singleSelect
+      ? '#LDS#Heading Remove Product From Cart'
+      : '#LDS#Heading Remove Selected Products From Cart';
 
-    const dialogTitleShoppingCart = singleSelect ?
-      '#LDS#Heading Remove Product From Cart' :
-      '#LDS#Heading Remove Selected Products From Cart';
+    const dialogTitleWatchList = singleSelect
+      ? '#LDS#Heading Remove Product From Saved For Later List'
+      : '#LDS#Heading Remove Selected Products From Saved For Later List';
 
-    const dialogTitleWatchList = singleSelect ?
-      '#LDS#Heading Remove Product From Saved For Later List' :
-      '#LDS#Heading Remove Selected Products From Saved For Later List';
+    const askForConfirmationShoppingCart = singleSelect
+      ? '#LDS#Are you sure you want to remove the product from your shopping cart?'
+      : '#LDS#Are you sure you want to remove the selected products from your shopping cart?';
 
-    const askForConfirmationShoppingCart = singleSelect ?
-      '#LDS#Are you sure you want to remove the product from your shopping cart?' :
-      '#LDS#Are you sure you want to remove the selected products from your shopping cart?';
+    const askForConfirmationWatchList = singleSelect
+      ? '#LDS#Are you sure you want to remove the product from your Saved for Later list?'
+      : '#LDS#Are you sure you want to remove the selected products from your Saved for Later list?';
 
-    const askForConfirmationWatchList = singleSelect ?
-      '#LDS#Are you sure you want to remove the product from your Saved for Later list?' :
-      '#LDS#Are you sure you want to remove the selected products from your Saved for Later list?';
+    const snackBarMessageShoppingCart = singleSelect
+      ? '#LDS#The product has been successfully removed from your shopping cart.'
+      : '#LDS#The selected products have been successfully removed from your shopping cart.';
 
-    const snackBarMessageShoppingCart = singleSelect ?
-      '#LDS#The product has been successfully removed from your shopping cart.' :
-      '#LDS#The selected products have been successfully removed from your shopping cart.';
+    const snackBarMessageWatchList = singleSelect
+      ? '#LDS#The product has been successfully removed from your Saved for Later list.'
+      : '#LDS#The selected products have been successfully removed from your Saved for Later list.';
 
-    const snackBarMessageWatchList = singleSelect ?
-      '#LDS#The product has been successfully removed from your Saved for Later list.' :
-      '#LDS#The selected products have been successfully removed from your Saved for Later list.';
-
-    if (await this.confirmationService.confirm({
-      Title: this.forLater ? dialogTitleWatchList : dialogTitleShoppingCart,
-      Message: this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart,
-      identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete'
-    })) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+    if (
+      await this.confirmationService.confirm({
+        Title: this.forLater ? dialogTitleWatchList : dialogTitleShoppingCart,
+        Message: this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart,
+        identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete',
+      })
+    ) {
+      this.showBusyIndicator();
       try {
-        await this.cartItemsService.removeItems(cartItems.filter(item => this.getNextSelectedAncestor(item) == null));
+        await this.cartItemsService.removeItems(cartItems.filter((item) => this.getNextSelectedAncestor(item) == null));
         this.logger.debug(this, 'selected items are removed from list');
         this.snackBarService.open({ key: this.forLater ? snackBarMessageWatchList : snackBarMessageShoppingCart }, '#LDS#Close');
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
-        this.dataChange.emit(true);        
         await this.userModelService.reloadPendingItems();
+        this.busyService.hide();
+        this.dataChange.emit(true);
 
-        this.cartItemsTable?.clearSelection();
+        this.dataSource.selection.clear();
       }
     }
   }
 
-  private async createBaseCartItem(cartItems: ExtendedEntityWrapper<PortalCartitem>[]): Promise<ExtendedEntityWrapper<PortalCartitem>>{
+  private async createBaseCartItem(cartItems: ExtendedEntityWrapper<PortalCartitem>[]): Promise<ExtendedEntityWrapper<PortalCartitem>> {
     const baseCartItem = await this.cartItemsService.getInteractiveCartitem();
-    if(cartItems.filter(cartItem => !!cartItem.typedEntity.ValidFrom.value && cartItem.typedEntity.ValidFrom.value === cartItems[0].typedEntity.ValidFrom.value).length === cartItems.length){
+    if (
+      cartItems.filter(
+        (cartItem) =>
+          !!cartItem.typedEntity.ValidFrom.value && cartItem.typedEntity.ValidFrom.value === cartItems[0].typedEntity.ValidFrom.value,
+      ).length === cartItems.length
+    ) {
       await baseCartItem.typedEntity.ValidFrom.Column.PutValue(new Date(cartItems[0].typedEntity.ValidFrom.value));
     }
-    if(cartItems.filter(cartItem => !!cartItem.typedEntity.ValidUntil.value && cartItem.typedEntity.ValidUntil.value === cartItems[0].typedEntity.ValidUntil.value).length === cartItems.length){
+    if (
+      cartItems.filter(
+        (cartItem) =>
+          !!cartItem.typedEntity.ValidUntil.value && cartItem.typedEntity.ValidUntil.value === cartItems[0].typedEntity.ValidUntil.value,
+      ).length === cartItems.length
+    ) {
       await baseCartItem.typedEntity.ValidUntil.Column.PutValue(new Date(cartItems[0].typedEntity.ValidUntil.value));
     }
-    if(cartItems.filter(cartItem => cartItem.typedEntity.OrderReason.value === cartItems[0].typedEntity.OrderReason.value).length === cartItems.length){
+    if (
+      cartItems.filter((cartItem) => cartItem.typedEntity.OrderReason.value === cartItems[0].typedEntity.OrderReason.value).length ===
+      cartItems.length
+    ) {
       await baseCartItem.typedEntity.OrderReason.Column.PutValue(cartItems[0].typedEntity.OrderReason.value);
     }
-    if(cartItems.filter(cartItem => cartItem.typedEntity.UID_QERJustificationOrder.value === cartItems[0].typedEntity.UID_QERJustificationOrder.value).length === cartItems.length){
+    if (
+      cartItems.filter(
+        (cartItem) => cartItem.typedEntity.UID_QERJustificationOrder.value === cartItems[0].typedEntity.UID_QERJustificationOrder.value,
+      ).length === cartItems.length
+    ) {
       await baseCartItem.typedEntity.UID_QERJustificationOrder.Column.PutValue(cartItems[0].typedEntity.UID_QERJustificationOrder.value);
     }
     return baseCartItem;
   }
 
-  private async saveCartItems(baseCartItem: ExtendedEntityWrapper<PortalCartitem>, cartItems: ExtendedEntityWrapper<PortalCartitem>[]): Promise<void>{
-
+  private async saveCartItems(
+    baseCartItem: ExtendedEntityWrapper<PortalCartitem>,
+    cartItems: ExtendedEntityWrapper<PortalCartitem>[],
+  ): Promise<void> {
     const newValidFrom = baseCartItem.typedEntity.ValidFrom.Column.GetValue();
     const newValidUntil = baseCartItem.typedEntity.ValidUntil.Column.GetValue();
     const newOrderReason = baseCartItem.typedEntity.OrderReason.Column.GetValue();
     const newJustificationOrder = baseCartItem.typedEntity.UID_QERJustificationOrder.Column.GetValue();
     for await (const cartItem of cartItems) {
-      if(!!newValidFrom){
+      if (!!newValidFrom) {
         await cartItem.typedEntity.ValidFrom.Column.PutValue(new Date(newValidFrom));
       }
-      if(!!newValidUntil){
+      if (!!newValidUntil) {
         await cartItem.typedEntity.ValidUntil.Column.PutValue(new Date(newValidUntil));
       }
-      if(!!newOrderReason){
+      if (!!newOrderReason) {
         await cartItem.typedEntity.OrderReason.Column.PutValue(newOrderReason);
       }
-      if(!!newJustificationOrder){
+      if (!!newJustificationOrder) {
         await cartItem.typedEntity.UID_QERJustificationOrder.Column.PutValue(newJustificationOrder);
       }
-    };
+    }
     await this.cartItemsService.saveItems(cartItems);
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

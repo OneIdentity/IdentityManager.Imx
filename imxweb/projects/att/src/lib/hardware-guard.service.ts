@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { SystemInfoService } from 'qbm';
+import { AppConfigService, SystemInfoService } from 'qbm';
 import { ProjectConfigurationService } from 'qer';
 
 @Injectable({
@@ -34,19 +34,20 @@ import { ProjectConfigurationService } from 'qer';
 })
 export class HardwareGuardService implements CanActivate {
   constructor(
+    private readonly config: AppConfigService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly systemInfo: SystemInfoService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   public async canActivate(): Promise<boolean> {
-    const preprops = (await this.systemInfo.get()).PreProps;
-    const hardware = (await this.projectConfig.getConfig()).DeviceConfig.VI_Hardware_Enabled;
+    const preprops = (await this.systemInfo.get()).PreProps || [];
+    const hardware = !!(await this.projectConfig.getConfig()).DeviceConfig?.VI_Hardware_Enabled;
     if (hardware && preprops.includes('MAC')) {
       return true;
     }
 
-    this.router.navigate(['']);
+    this.router.navigate([this.config.Config.routeConfig?.start], { queryParams: {} });
     return false;
   }
 }

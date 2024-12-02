@@ -1,0 +1,17 @@
+<mat-tab-group>
+  <mat-tab label="{{'#LDS#Access analysis on {0}' | translate | ldsReplace: displayResource}}">
+    <ng-template matTabContent>
+      <imx-dge-access-detail [dug]="dug"></imx-dge-access-detail>
+    </ng-template>
+  </mat-tab>
+  <mat-tab *ngIf="dugBackingFolder" [label]="'#LDS#Access analysis on backing folder permissions' | translate">
+    <imx-dge-access-detail [dug]="dugBackingFolder"></imx-dge-access-detail>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Access Detail' | translate">
+    <h2 class="imx-margin-vertical-10">{{ldsAccess | translate}}</h2>
+    <ul>
+      <li *ngFor="let identity of identities">{{ identity.Display }}</li>
+    </ul>
+  </mat-tab>
+</mat-tab-group>

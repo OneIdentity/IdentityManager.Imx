@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,33 +25,44 @@
  */
 
 import { Component, ErrorHandler, Input, OnInit } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
+import { FormControl } from '@angular/forms';
 import { SnackBarService } from 'qbm';
 import { MailInfoType, MailSubscriptionService } from './mailsubscription.service';
 
 @Component({
   selector: 'imx-mail-subscriptions',
   templateUrl: './mailsubscriptions.component.html',
-  styleUrls: ['./mailsubscriptions.component.scss']
+  styleUrls: ['./mailsubscriptions.component.scss'],
 })
 export class MailSubscriptionsComponent implements OnInit {
   public selectedOptions: string[] = [];
+  public filteredSelectedOptions: string[] = [];
   public selectionChanged = false;
-
-  @Input() public mailInfo: MailInfoType[];
+  public searchControl: FormControl<string> = new FormControl();
+  public filteredMailInfo: MailInfoType[];
+  @Input() public set mailInfo(value: MailInfoType[]) {
+    this._mailInfo = value;
+    this.filteredMailInfo = value;
+    this.selectedOptions = this.mailInfo.filter((item) => item.IsSubscribed).map((item) => item.UidMail);
+    this.filteredSelectedOptions = this.selectedOptions;
+  }
+  public get mailInfo(): MailInfoType[] {
+    return this._mailInfo;
+  }
   @Input() public uidPerson: string;
+  private _mailInfo: MailInfoType[];
 
   constructor(
     private readonly mailSvc: MailSubscriptionService,
     private readonly errorHandler: ErrorHandler,
     private readonly busy: EuiLoadingService,
-    private readonly snackBar: SnackBarService
-  ) { }
+    private readonly snackBar: SnackBarService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-    this.selectedOptions = this.mailInfo.filter(item => item.IsSubscribed).map(item => item.UidMail);
+    this.searchControl.valueChanges.subscribe((searchValue) => this.filterItems(searchValue.toLowerCase()));
   }
 
   public async saveChanges(): Promise<void> {
@@ -60,10 +71,16 @@ export class MailSubscriptionsComponent implements OnInit {
       const subscribed = this.mailSvc.getMailsToSubscribe(this.mailInfo, this.selectedOptions);
 
       if (unsubscribed.length > 0) {
-        await this.mailSvc.unsubscribe(this.uidPerson, unsubscribed.map(c => c.UidMail));
+        await this.mailSvc.unsubscribe(
+          this.uidPerson,
+          unsubscribed.map((c) => c.UidMail),
+        );
       }
       if (subscribed.length > 0) {
-        await this.mailSvc.subscribe(this.uidPerson, subscribed.map(c => c.UidMail));
+        await this.mailSvc.subscribe(
+          this.uidPerson,
+          subscribed.map((c) => c.UidMail),
+        );
       }
       for (const m of this.mailInfo) {
         m.IsSubscribed = this.selectedOptions.includes(m.UidMail);
@@ -76,16 +93,43 @@ export class MailSubscriptionsComponent implements OnInit {
   public onSelectionChanged(): void {
     this.selectionChanged = true;
   }
+  public onSelectAllChange(checked: boolean): void {
+    if (checked) {
+      this.filteredSelectedOptions = this.filteredMailInfo.map((item) => item.UidMail);
+    } else {
+      this.filteredSelectedOptions = [];
+    }
+    this.selectionChanged = true;
+  }
 
-  private async wrap(call: (() => Promise<void>)): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busy.show());
+  public get allSelected(): boolean {
+    return this.filteredMailInfo.length == this.filteredSelectedOptions.length && !!this.filteredSelectedOptions.length;
+  }
+
+  public get partiallySelected(): boolean {
+    return this.filteredMailInfo.length != this.filteredSelectedOptions.length && !!this.filteredSelectedOptions.length;
+  }
+
+  private async wrap(call: () => Promise<void>): Promise<void> {
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
+
     try {
       await call();
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
-      setTimeout(() => this.busy.hide(overlayRef));
+      this.busy.hide();
     }
+  }
+
+  private filterItems(search: string): void {
+    this.filteredMailInfo = this.mailInfo.filter(
+      (item) => item.Display.toLowerCase().includes(search) || item.Description.toLowerCase().includes(search),
+    );
+    this.filteredSelectedOptions = this.selectedOptions.filter((option) =>
+      this.filteredMailInfo.some((mailInfo) => mailInfo.UidMail === option),
+    );
   }
 }

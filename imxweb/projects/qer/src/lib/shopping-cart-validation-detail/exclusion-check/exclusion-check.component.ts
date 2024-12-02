@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,11 +31,10 @@ import { ExclusionResult } from './exclusion-result.interface';
 
 @Component({
   selector: 'imx-exclusion-check',
-  templateUrl: './exclusion-check.component.html'
+  templateUrl: './exclusion-check.component.html',
 })
 export class ExclusionCheckComponent extends BaseViewerComponent implements DetailsView, OnInit {
-
-  public detail: ExclusionResult[];
+  public declare detail: ExclusionResult[];
 
   public ngOnInit(): void {
     super.ngOnInit();

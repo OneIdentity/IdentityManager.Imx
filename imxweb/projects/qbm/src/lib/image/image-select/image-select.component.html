@@ -1,33 +1,54 @@
-<mat-form-field appearance="outline">
-  <mat-label>{{ valueWrapper?.display | translate }}</mat-label>
-  <div class="imx-form-input-container">
-    <input matInput [formControl]="control" [hidden]="control?.value?.length > 0"
-      [required]="valueWrapper?.isValueRequired" [readonly]="true" />
-    <img *ngIf="control?.value" [src]="imageProvider.addBase64Prefix(control?.value)">
-    <div matSuffix *ngIf="valueWrapper?.canEdit">
-      <div class="imx-suffix-container">
-        <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
-        <div *ngIf="valueWrapper?.value?.length; else add" class="imx-buttons-change-remove">
-          <button mat-button color="primary" type="button" (click)="change.emit()"
-            [attr.data-imx-identifier]="'edit-image-button-change-' + valueWrapper?.name">
-            {{ '#LDS#Change' | translate }}
-          </button>
-          <button *ngIf="!hideRemoveButton" mat-button color="primary" type="button" (click)="remove.emit()"
-            [attr.data-imx-identifier]="'edit-image-button-remove-' + valueWrapper?.name">
-            {{ '#LDS#Remove' | translate }}
-          </button>
-        </div>
-        <ng-template #add>
-          <button class="imx-button-add" mat-button color="primary" type="button" (click)="change.emit()"
-            [attr.data-imx-identifier]="'edit-image-button-add-' + valueWrapper?.name">
-            {{ '#LDS#Add' | translate }}
-          </button>
-        </ng-template>
+<mat-form-field class="imx-form-field-width-full" appearance="outline">
+  <mat-label>{{ valueWrapper?.display ?? '' | translate }}</mat-label>
+  <input
+    matInput
+    [formControl]="control"
+    [hidden]="control?.value?.length > 0"
+    [required]="valueWrapper?.isValueRequired"
+    [readonly]="true"
+    [ngClass]="{ 'input-hidden': control?.value?.length > 0 }"
+  />
+  <img *ngIf="control?.value" [src]="imageProvider.addBase64Prefix(control?.value)" />
+  <div matSuffix *ngIf="valueWrapper?.canEdit">
+    <div class="imx-suffix-container">
+      <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+      <div *ngIf="valueWrapper?.value?.length; else add" class="imx-button-stepper-vertical">
+        <button
+          mat-button
+          color="primary"
+          type="button"
+          (click)="change.emit()"
+          [attr.data-imx-identifier]="'edit-image-button-change-' + valueWrapper?.name"
+        >
+          {{ '#LDS#Change' | translate }}
+        </button>
+        <button
+          *ngIf="!hideRemoveButton"
+          mat-button
+          color="primary"
+          type="button"
+          (click)="remove.emit()"
+          [attr.data-imx-identifier]="'edit-image-button-remove-' + valueWrapper?.name"
+        >
+          {{ '#LDS#Remove' | translate }}
+        </button>
       </div>
+      <ng-template #add>
+        <button
+          class="imx-button-add"
+          mat-button
+          color="primary"
+          type="button"
+          (click)="change.emit()"
+          [attr.data-imx-identifier]="'edit-image-button-add-' + valueWrapper?.name"
+        >
+          {{ '#LDS#Add' | translate }}
+        </button>
+      </ng-template>
     </div>
   </div>
   <mat-hint>
-    {{ fileFormatHint || valueWrapper?.hint | translate }}
+    {{ (fileFormatHint || valueWrapper?.hint) ?? '' | translate }}
   </mat-hint>
   <mat-error *ngIf="!fileFormatHint?.length && !valueWrapper?.hint?.length && control?.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}

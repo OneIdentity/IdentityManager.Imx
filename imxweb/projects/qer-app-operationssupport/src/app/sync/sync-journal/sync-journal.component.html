@@ -1,38 +1,49 @@
 <div class="imx-content-header">
-  <h1  class="mat-headline">
-    {{'#LDS#Synchronization log' | translate}} {{ caption }}
-  </h1>
+  <h2 class="mat-headline-5">{{ '#LDS#Synchronization log' | translate }} {{ caption }}</h2>
 </div>
-<input [hidden]="true" [euiDownload]="{}"> <!-- dummy element as reference for EuiDownloadDirective-->
-<div class ="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']"
-    (navigationStateChanged)="getData($event)">
+<input [hidden]="true" [euiDownload]="{ url: '' }" />
+<!-- dummy element as reference for EuiDownloadDirective-->
+<div class="imx-table-container">
+  <imx-data-source-toolbar
+    [alwaysVisible]="true"
+    #dst
+    [settings]="dstSettings"
+    [options]="['filter', 'groupBy']"
+    (navigationStateChanged)="getData($event)"
+  >
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.CreationTime">
+  <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo.Columns.CreationTime">
       <ng-template let-data>
         {{ data.CreationTime.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionConfigDisplay">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo.Columns.ProjectionConfigDisplay">
       <ng-template let-data>
         {{ data.ProjectionConfigDisplay.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionState">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo.Columns.ProjectionState">
       <ng-template let-data>
         {{ data.ProjectionState.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionStartInfoDisplay">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo.Columns.ProjectionStartInfoDisplay">
       <ng-template let-data>
         {{ data.ProjectionStartInfoDisplay.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-generic-column columnName="actions">
       <ng-template let-dataItem>
-        <button mat-button color="primary" [attr.data-imx-identifier]="'sync-journal-' + dataItem.GetEntity().GetKeys()[0]" (click)="showReport(dataItem)">{{'#LDS#Download report' |translate}}</button>
+        <button
+          mat-button
+          color="primary"
+          [attr.data-imx-identifier]="'sync-journal-' + dataItem.GetEntity().GetKeys()[0]"
+          (click)="showReport(dataItem)"
+        >
+          {{ '#LDS#Download report' | translate }}
+        </button>
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
@@ -40,7 +51,7 @@
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button mat-stroked-button color="primary" class="imx-refresh-button" data-imx-identifier="sync-journal-refresh-button" (click)="refresh()">
+  <button mat-stroked-button color="primary" class="imx-button-icon" data-imx-identifier="sync-journal-refresh-button" (click)="refresh()">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>

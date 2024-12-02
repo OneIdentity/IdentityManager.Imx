@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,18 @@
 
 import { Injectable } from '@angular/core';
 import {
-  GetSelectedProductType,
-  SelectedProductItem,
-  SelectedProductSource,
-} from './new-request-selected-products/selected-product-item.interface';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import {
   PortalItshopPatternItem,
   PortalItshopPatternRequestable,
   PortalItshopPeergroupMemberships,
   PortalShopServiceitems,
-} from 'imx-api-qer';
+} from '@imx-modules/imx-api-qer';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import {
+  GetSelectedProductType,
+  SelectedProductItem,
+  SelectedProductSource,
+} from './new-request-selected-products/selected-product-item.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -52,6 +53,11 @@ export class NewRequestSelectionService {
   public selectedProducts$ = new BehaviorSubject<SelectedProductItem[]>([]);
   public selectedProductsCleared$ = new BehaviorSubject<boolean>(true);
 
+  public get selectedProductEntities(): TypedEntity[] {
+    return this.selectedProductsProperty.map((product) => product.item);
+  }
+
+
   constructor() {}
 
   public clearProducts(): void {
@@ -60,10 +66,10 @@ export class NewRequestSelectionService {
   }
 
   public addProducts(
-    products: PortalShopServiceitems[] | PortalItshopPeergroupMemberships[] | PortalItshopPatternItem[],
+    products: TypedEntity[],
     productSource: SelectedProductSource = SelectedProductSource.Undefined,
     wholeBundle: boolean = false,
-    productBundle?: PortalItshopPatternRequestable
+    productBundle?: PortalItshopPatternRequestable,
   ): void {
     productSource === SelectedProductSource.ProductBundles
       ? this.addBundleItems(products as PortalItshopPatternItem[], productBundle, wholeBundle)
@@ -72,7 +78,7 @@ export class NewRequestSelectionService {
 
   private addNonBundleItems(
     products: PortalShopServiceitems[] | PortalItshopPeergroupMemberships[],
-    productSource: SelectedProductSource = SelectedProductSource.Undefined
+    productSource: SelectedProductSource = SelectedProductSource.Undefined,
   ): void {
     this.selectedProducts = this.selectedProducts.filter((x) => x.source != productSource);
 
@@ -81,16 +87,22 @@ export class NewRequestSelectionService {
     });
   }
 
-  private addBundleItems(products: PortalItshopPatternItem[], productBundle: PortalItshopPatternRequestable, wholeBundle: boolean): void {
-    wholeBundle
-      ? (this.selectedProducts = this.selectedProducts.filter(
+  private addBundleItems(
+    products: PortalItshopPatternItem[],
+    productBundle: PortalItshopPatternRequestable | undefined,
+    wholeBundle: boolean,
+  ): void {
+    // determine all items that do not belong to the specified product bundle
+    this.selectedProducts = wholeBundle
+      ? this.selectedProducts.filter(
           (x) =>
             !(x.item instanceof PortalItshopPatternItem) ||
             (x.item instanceof PortalItshopPatternItem &&
-              x.item.GetEntity().GetColumn('UID_ShoppingCartPattern').GetValue() != productBundle.UID_ShoppingCartPattern.value)
-        ))
+              x.item.GetEntity().GetColumn('UID_ShoppingCartPattern').GetValue() !== productBundle?.UID_ShoppingCartPattern.value),
+        )
       : (this.selectedProducts = this.selectedProducts.filter((x) => !(x.item instanceof PortalItshopPatternItem)));
 
+    // add all products from the specified product bundle
     products.forEach((x) => {
       this.selectedProducts.push({
         item: x,

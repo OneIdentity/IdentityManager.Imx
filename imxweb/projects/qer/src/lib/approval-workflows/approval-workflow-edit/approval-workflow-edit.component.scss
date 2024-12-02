@@ -1,5 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-@import "../approval-workflow-styles.scss";
+@import 'base/mixins';
 
 :host {
   ::ng-deep .cytoscape-dom-context-menus-container {
@@ -15,7 +14,7 @@
     height: 100%;
     padding: 0;
     overflow: hidden;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
   }
 
   #graph {
@@ -28,8 +27,10 @@
   }
 
   .eui-sidesheet-actions {
+    display: flex;
+    justify-content: space-between;
     column-gap: 15px;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
   }
 
   .top-actions {
@@ -41,56 +42,6 @@
       display: flex;
       align-items: center;
       gap: 15px;
-    }
-  }
-
-  .info-button, .save-button {
-    @include Ease-Transition;
-  }
-
-  .bottom-actions {
-    display: flex;
-    justify-content: space-between;
-
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
-
-}
-
-// Theming
-:host {
-  .info-button:hover {
-    color: $color-orange-60
-  }
-
-  .save-button:hover:not(:disabled) {
-    background-color: $color-orange-60;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    .info-button:hover {
-      color: $color-orange-40
-    }
-
-    .save-button:hover:not(:disabled) {
-      background-color: $color-orange-40;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .info-button:hover {
-      color: $color-orange-40
-    }
-
-    .save-button:hover:not(:disabled) {
-      background-color: $color-orange-40;
     }
   }
 }

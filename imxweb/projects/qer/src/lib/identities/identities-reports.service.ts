@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,22 @@
 
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
-import { EuiDownloadDirective, EuiSidesheetService } from '@elemental-ui/core';
+import { ElementRef, Injectable, Injector } from '@angular/core';
+import { EuiDownloadDirective, EuiDownloadService, EuiSidesheetService } from '@elemental-ui/core';
+import { PortalAdminPerson, PortalPersonReports } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { CollectionLoadParameters, EntityCollectionData, ValType } from 'imx-qbm-dbts';
-import { AppConfigService, BaseCdr, ColumnDependentReference, ElementalUiConfigService, EntityService, SettingsService } from 'qbm';
+import {
+  AppConfigService,
+  BaseCdr,
+  calculateSidesheetWidth,
+  CdrSidesheetComponent,
+  ColumnDependentReference,
+  ElementalUiConfigService,
+  EntityService,
+  SettingsService,
+} from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
-import { CdrSidesheetComponent } from 'qbm';
-import { PortalAdminPerson, PortalPersonReports } from 'imx-api-qer';
 
 @Injectable()
 export class IdentitiesReportsService {
@@ -48,7 +56,8 @@ export class IdentitiesReportsService {
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly http: HttpClient,
     private readonly injector: Injector,
-    private readonly overlay: Overlay
+    private readonly overlay: Overlay,
+    private readonly downloadService: EuiDownloadService,
   ) {}
 
   public async personsReport(person: PortalPersonReports | PortalAdminPerson): Promise<void> {
@@ -60,7 +69,7 @@ export class IdentitiesReportsService {
         title: await this.translate.get('#LDS#Heading Download Report').toPromise(),
         subTitle: person.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         testId: 'identities-report-sidesheet',
         data: { cdrs: Object.values(cdrs), buttonCaption: '#LDS#Download report' },
       })
@@ -87,7 +96,13 @@ export class IdentitiesReportsService {
 
   public async viewReport(url: string): Promise<void> {
     // not pretty, but the download directive does not support dynamic URLs
-    const directive = new EuiDownloadDirective(null /* no element */, this.http, this.overlay, this.injector);
+    const directive = new EuiDownloadDirective(
+      new ElementRef('') /* no element */,
+      this.http,
+      this.overlay,
+      this.injector,
+      this.downloadService,
+    );
     directive.downloadOptions = {
       ...this.elementalUiConfigService.Config.downloadOptions,
       fileMimeType: '',
@@ -125,9 +140,9 @@ export class IdentitiesReportsService {
             MinLen: 0,
           },
           undefined,
-          { Value: 30 }
+          { Value: 30 },
         ),
-        '#LDS#Period to be considered (in days)'
+        '#LDS#Period to be considered (in days)',
       ),
       withSubIdentites: new BaseCdr(
         this.entityService.createLocalEntityColumn(
@@ -137,9 +152,9 @@ export class IdentitiesReportsService {
             MinLen: 0,
           },
           undefined,
-          { Value: false }
+          { Value: false },
         ),
-        '#LDS#Include subidentities'
+        '#LDS#Include subidentities',
       ),
     };
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,20 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, ErrorHandler, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { OwnershipInformation, PortalPersonReports, ProjectConfig } from '@imx-modules/imx-api-qer';
 import { TranslateService } from '@ngx-translate/core';
-import { OwnershipInformation, PortalPersonReports, ProjectConfig } from 'imx-api-qer';
+import { calculateSidesheetWidth } from 'qbm';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
+import { CreateNewIdentityComponent } from '../../identities/create-new-identity/create-new-identity.component';
+import { IdentitiesService } from '../../identities/identities.service';
 import { IdentitySidesheetComponent } from '../../identities/identity-sidesheet/identity-sidesheet.component';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { UserModelService } from '../../user/user-model.service';
 import { DashboardService } from '../start/dashboard.service';
-import { CreateNewIdentityComponent } from '../../identities/create-new-identity/create-new-identity.component';
-import { IdentitiesService } from '../../identities/identities.service';
 
 @Component({
   templateUrl: './businessowner-chartsummary.component.html',
@@ -46,11 +46,13 @@ import { IdentitiesService } from '../../identities/identities.service';
 })
 export class BusinessOwnerChartSummaryComponent implements OnInit {
   public reports: PortalPersonReports[];
-  public ownerships: OwnershipInformation[];
+  public ownerships: OwnershipInformation[] | undefined;
   public get viewReady(): boolean {
     return !this.dashboardService.isBusy;
   }
   public allReportsCount: number;
+
+  public isPersonManager: boolean;
 
   private projectConfig: ProjectConfig;
 
@@ -65,7 +67,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     private readonly identitiesService: IdentitiesService,
     private readonly userModelService: UserModelService,
     public readonly qerPermissions: QerPermissionsService,
-    public readonly translate: TranslateService
+    public readonly translate: TranslateService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -73,6 +75,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     try {
       const userConfig = await this.userModelService.getUserConfig();
       this.ownerships = userConfig.Ownerships;
+      this.isPersonManager = await this.qerPermissions.isPersonManager();
 
       this.projectConfig = await this.configService.getConfig();
 
@@ -90,13 +93,14 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     const uid = identity.GetEntity().GetKeys()[0];
     let selectedIdentity: PortalPersonReports;
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       const identityCollection = await this.qerClient.typedClient.PortalPersonReportsInteractive.Get_byid(uid);
       selectedIdentity = identityCollection?.Data?.[0];
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
 
     if (!selectedIdentity) {
@@ -110,14 +114,14 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
         subTitle: selectedIdentity.GetEntity().GetDisplay(),
         padding: '0px',
         disableClose: true,
-        width: 'max(768px, 90%)',
+        width: calculateSidesheetWidth(1100, 0.7),
         icon: 'contactinfo',
         testId: 'businessowner-identity-sidesheet',
         data: {
           isAdmin: false,
           projectConfig: this.projectConfig,
           selectedIdentity,
-          canEdit: true
+          canEdit: true,
         },
       })
       .afterClosed()
@@ -127,19 +131,22 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
   }
 
   public async openCreateNewIdentitySidesheet(): Promise<void> {
-   const identityCreated = await this.sideSheet.open(CreateNewIdentityComponent, {
-      title: await this.translate.get('#LDS#Heading Create Identity').toPromise(),
-      headerColour: 'iris-blue',
-      padding: '0px',
-      width: 'max(650px, 65%)',
-      disableClose: true,
-      testId: 'create-new-identity-sidesheet',
-      icon: 'contactinfo',
-      data: {
-        selectedIdentity: await this.identitiesService.createEmptyEntity(),
-        projectConfig: this.projectConfig
-      }
-    }).afterClosed().toPromise();
+    const identityCreated = await this.sideSheet
+      .open(CreateNewIdentityComponent, {
+        title: await this.translate.get('#LDS#Heading Create Identity').toPromise(),
+        headerColour: 'iris-blue',
+        padding: '0px',
+        width: calculateSidesheetWidth(1000),
+        disableClose: true,
+        testId: 'create-new-identity-sidesheet',
+        icon: 'contactinfo',
+        data: {
+          selectedIdentity: await this.identitiesService.createEmptyEntity(),
+          projectConfig: this.projectConfig,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (identityCreated) {
       const busy = this.dashboardService.beginBusy();
@@ -148,7 +155,8 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
       } finally {
         busy.endBusy();
       }
- }  }
+    }
+  }
 
   public openOwnership(ownerShip: OwnershipInformation): void {
     this.router.navigate(['myresponsibilities', ownerShip.TableName]);
@@ -156,7 +164,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
 
   private async getData(): Promise<void> {
     await this.loadIndirectOrDirectReports();
-    if (this.allReportsCount > 0 ) {
+    if (this.allReportsCount > 0) {
       await this.loadDirectReports();
     }
   }
@@ -167,7 +175,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
         await this.qerClient.typedClient.PortalPersonReports.Get({
           OnlyDirect: true, // direct reports only
           PageSize: 10000,
-          isinactive: '0'
+          isinactive: '0',
         })
       ).Data;
     }
@@ -175,9 +183,11 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
 
   private async loadIndirectOrDirectReports(): Promise<void> {
     if (await this.qerPermissions.isPersonManager()) {
-      this.allReportsCount = (await this.qerClient.typedClient.PortalPersonReports.Get({
-        PageSize: -1
-      })).totalCount;
+      this.allReportsCount = (
+        await this.qerClient.typedClient.PortalPersonReports.Get({
+          PageSize: -1,
+        })
+      ).totalCount;
     }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,22 @@
  *
  */
 
-import { Component, Input, OnInit } from "@angular/core";
-import { ConfigSettingValidValue } from "imx-api-qbm";
-import { imx_SessionService } from "../session/imx-session.service";
-import { KeyData } from "./config-section";
-import { ConfigService } from "./config.service";
+import { Component, Input, OnInit } from '@angular/core';
+import { ConfigSettingValidValue } from '@imx-modules/imx-api-qbm';
+import { imx_SessionService } from '../session/imx-session.service';
+import { KeyData } from './config-section';
+import { ConfigService } from './config.service';
 
 @Component({
   templateUrl: './select-value.component.html',
   styles: ['.wide-field {min-width:450px;}'],
-  selector: 'imx-config-select'
+  selector: 'imx-config-select',
 })
 export class SelectValueComponent implements OnInit {
-
-  constructor(private readonly session: imx_SessionService, public readonly configSvc: ConfigService) { }
+  constructor(
+    private readonly session: imx_SessionService,
+    public readonly configSvc: ConfigService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.validvalues = await this.session.Client.admin_apiconfig_values_get(this.configSvc.appId, this.conf.Path);
@@ -46,5 +48,4 @@ export class SelectValueComponent implements OnInit {
   @Input() conf: KeyData;
 
   public validvalues: ConfigSettingValidValue[] = [];
-
 }

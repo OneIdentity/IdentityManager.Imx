@@ -3,6 +3,6 @@
   "dest": "../../dist/aob",
   "lib": {
     "entryFile": "src/public-api.ts",
-    "styleIncludePaths": ["../../shared/assets"]
+    "styleIncludePaths": ["../../shared/scss"]
   }
 }

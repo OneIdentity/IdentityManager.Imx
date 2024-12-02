@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { AttestationSnapshotData } from 'imx-api-att';
+import { AttestationSnapshotData } from '@imx-modules/imx-api-att';
+import { EntityColumnData } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -39,10 +41,11 @@ export class AttestationSnapshotComponent implements OnInit {
   public snapshot: AttestationSnapshotData;
 
   @Input() public uidCase: string;
-  @Input() public date :string;
+  @Input() public date: string;
   constructor(
     private readonly attApi: ApiService,
-    private readonly busy: EuiLoadingService
+    private readonly busy: EuiLoadingService,
+    private translate: TranslateService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -54,6 +57,13 @@ export class AttestationSnapshotComponent implements OnInit {
       this.busy.hide(overlay);
     }
   }
+  public getColumnDisplayValue(column: any): string {
+    return (column as EntityColumnData).DisplayValue || this.translate.instant('#LDS#Not set');
+  }
+
+  public getColumnCaption(column: any): string {
+    return (column as EntityColumnData).Caption || '';
+  }
 
   public get attestationDate(): string {
     return this.date;
@@ -63,11 +73,11 @@ export class AttestationSnapshotComponent implements OnInit {
    * Ordering Objects array by Display (if Displays are equal, then by TableDisplay) in ascending order
    */
   private sortObjectsByDisplay(): void {
-    this.snapshot.Objects.sort((obj1, obj2) => {
-      const display1 = obj1.Data.Display;
-      const display2 = obj2.Data.Display;
-      const tableDisplay1 = obj1.TableDisplay;
-      const tableDisplay2 = obj2.TableDisplay;
+    this.snapshot.Objects?.sort((obj1, obj2) => {
+      const display1 = obj1.Data?.Display || '';
+      const display2 = obj2.Data?.Display || '';
+      const tableDisplay1 = obj1.TableDisplay || '';
+      const tableDisplay2 = obj2.TableDisplay || '';
 
       if (display1 === display2) return tableDisplay1 < tableDisplay2 ? -1 : 1;
 

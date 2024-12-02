@@ -1,58 +1,51 @@
 <div *ngIf="!pqa" class="imx-loginInput">
-    <input placeholder="{{'#LDS#User name' | translate}}" type="text" [(ngModel)]="userName"
-        [attr.data-imx-identifier]="'pwd-username'" [required]="true">
+  <input
+    class="imx-input-login"
+    placeholder="{{ '#LDS#User' | translate }}"
+    type="text"
+    [(ngModel)]="userName"
+    [attr.data-imx-identifier]="'pwd-username'"
+    [required]="true"
+  />
 
-    <div class="alert-container">
-        <eui-alert type="info" [condensed]="true"><span translate>#LDS#Please enter the characters from the image.</span>
-        </eui-alert>
-    </div>
-
-    <div class="captcha-container">
-        <imx-captcha></imx-captcha>
-
-        <input placeholder="{{'#LDS#Enter characters from the image' | translate}}" type="text"
-            [(ngModel)]="captchaSvc.Response" [attr.data-imx-identifier]="'captcha-code'" [required]="true">
-    </div>
-
-    <div class="buttonbar">
-        <button mat-raised-button (click)="captchaSvc.ReinitCaptcha()">{{
-            '#LDS#Refresh image' | translate}}</button>
-        <button mat-raised-button color="primary" class="imx-next-button" [disabled]="!userName || !captchaSvc.Response"
-            (click)="LoadQuestions()">
-            {{'#LDS#Next' | translate}}
-        </button>
-    </div>
+  <imx-captcha [disableButton]="!userName" (nextClick)="LoadQuestions()"></imx-captcha>
 </div>
 
 <div class="imx-loginInput" *ngIf="pqa">
-    <div *ngIf="pqa.EnoughQuestions">
-        <ng-container *ngFor="let currentPqa of pqa.Questions; let idx=index; trackBy:trackByFn">
-            <mat-card>
-                <eui-icon icon="question" [attr.aria-label]="'#LDS#Question' | translate"></eui-icon>
-                {{ currentPqa.Question }}
-            </mat-card>
+  <div *ngIf="pqa.EnoughQuestions">
+    <ng-container *ngFor="let currentPqa of pqa.Questions; let idx = index; trackBy: trackByFn">
+      <mat-card>
+        <eui-icon icon="question" [attr.aria-label]="'#LDS#Question' | translate"></eui-icon>
+        {{ currentPqa.Question }}
+      </mat-card>
 
-            <div class="pwd-answer">
-                <input placeholder="{{'#LDS#Answer' | translate}}" type="password" autocomplete="off" [(ngModel)]="Answers[idx]"
-                    [attr.data-imx-identifier]="'pwd-answer'" [required]="true">
-            </div>
+      <div class="pwd-answer">
+        <input
+          class="imx-input-login"
+          placeholder="{{ '#LDS#Answer' | translate }}"
+          type="password"
+          autocomplete="off"
+          [(ngModel)]="Answers[idx]"
+          [attr.data-imx-identifier]="'pwd-answer'"
+          [required]="true"
+        />
+      </div>
+    </ng-container>
 
-        </ng-container>
-
-        <div class="buttonbar">
-            <button mat-raised-button type="button" [disabled]="!pqa.EnoughQuestions || !AllQuestionsAnswered()"
-                (click)="Login()">{{'#LDS#Submit' | translate}}</button>
-        </div>
-
+    <div class="buttonbar">
+      <button mat-flat-button type="button" [disabled]="!pqa.EnoughQuestions || !AllQuestionsAnswered()" (click)="Login()">
+        {{ '#LDS#Submit' | translate }}
+      </button>
     </div>
+  </div>
 
-    <div class="alert-container" *ngIf="!pqa.EnoughQuestions">
-        <eui-alert type="error" [condensed]="true" data-imx-identifier="not-enough-questions">
-            <span translate>#LDS#You cannot log in using the secret password questions. You have not set up any or not enough password questions and answers. Log in using a different method.</span>
-        </eui-alert>
+  <div *ngIf="!pqa.EnoughQuestions">
+    <eui-alert type="error" [condensed]="true" data-imx-identifier="not-enough-questions">
+      <span translate>{{ LdsKeyCannotLogin }}</span>
+    </eui-alert>
 
-        <div class="buttonbar">
-            <button mat-raised-button type="button" (click)="Reset()">{{'#LDS#Next' | translate}}</button>
-        </div>
+    <div class="buttonbar">
+      <button mat-flat-button type="button" (click)="Reset()">{{ '#LDS#Next' | translate }}</button>
     </div>
+  </div>
 </div>

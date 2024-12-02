@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,19 @@
  *
  */
 
-import { Observable, from } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { Observable, from } from 'rxjs';
 
 import { imx_SessionService } from 'qbm';
-import { SystemStatusInformation } from './system-status-information.interface';
 import { OpSupportUserService } from 'qer';
+import { SystemStatusInformation } from './system-status-information.interface';
 
 @Injectable()
 export class SystemStatusService {
-  constructor(private session: imx_SessionService, private readonly userService: OpSupportUserService) { }
+  constructor(
+    private session: imx_SessionService,
+    private readonly userService: OpSupportUserService,
+  ) {}
 
   public getStatus(): Observable<SystemStatusInformation> {
     return from(this.get());
@@ -50,11 +53,11 @@ export class SystemStatusService {
   public set(isJobServiceDisabled: boolean, isDbSchedulerDisabled: boolean): Promise<SystemStatusInformation> {
     return this.session.Client.opsupport_systemstatus_post('', {
       IsDbSchedulerDisabled: isDbSchedulerDisabled,
-      IsJobServiceDisabled: isJobServiceDisabled
+      IsJobServiceDisabled: isJobServiceDisabled,
     });
   }
 
   public async isSystemAdmin(): Promise<boolean> {
-    return (await this.userService.getGroups()).some(role => role.Name === 'VID_BaseData_SystemStop_EditRights');
+    return (await this.userService.getGroups()).some((role) => role.Name === 'VID_BaseData_SystemStop_EditRights');
   }
 }

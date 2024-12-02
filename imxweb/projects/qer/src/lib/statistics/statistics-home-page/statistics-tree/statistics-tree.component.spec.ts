@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,18 +39,18 @@ describe('StatisticsTreeComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([StatisticsTreeComponent])
-    .mock(StatisticsDataService, {
-      tree$: new Subject<GenericStatisticNode[]>(),
-      selectedNodeAncestors$: new Subject<GenericStatisticNode[]>(),
-      isSearch$: new BehaviorSubject<boolean>(false),
-      sideNavExpanded$: new Subject<boolean>()
-    })
-    .beforeCompileComponents(testBed => {
-      testBed.configureTestingModule({
-        schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
-        imports: [BrowserAnimationsModule ]
+      .mock(StatisticsDataService, {
+        tree$: new Subject<GenericStatisticNode[]>(),
+        selectedNodeAncestors$: new Subject<GenericStatisticNode[]>(),
+        isSearch$: new BehaviorSubject<boolean>(false),
+        sideNavExpanded$: new Subject<boolean>(),
       })
-    })
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          imports: [BrowserAnimationsModule],
+        });
+      });
   });
 
   beforeEach(() => {
@@ -61,7 +61,7 @@ describe('StatisticsTreeComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,25 +35,22 @@ import { DuplicatePatternItem } from './duplicate-pattern-item';
 @Component({
   selector: 'imx-duplicate-pattern-items',
   templateUrl: './duplicate-pattern-items.component.html',
-  styleUrls: ['./duplicate-pattern-items.component.scss']
+  styleUrls: ['./duplicate-pattern-items.component.scss'],
 })
 export class DuplicatePatternItemsComponent {
-
   public get columnNames(): string[] {
-    return this.displayedColumns.map(c => c.name);
+    return this.displayedColumns.map((c) => c.name);
   }
 
   public description1 = '#LDS#Each product can be added to the product bundle only once.';
   public description2 = '#LDS#The following products have already been added to the product bundle and cannot be added again.';
 
-  public readonly displayedColumns = [
-    { name: 'Display', title: '#LDS#Product' }
-  ];
+  public readonly displayedColumns = [{ name: 'Display', title: '#LDS#Product' }];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public readonly data: {
-      duplicatePatternItems: DuplicatePatternItem[]
-    }
-  ) {
-  }
+    @Inject(MAT_DIALOG_DATA)
+    public readonly data: {
+      duplicatePatternItems: DuplicatePatternItem[];
+    },
+  ) {}
 }

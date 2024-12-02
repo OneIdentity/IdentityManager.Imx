@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,22 @@
  *
  */
 
+import { ComponentRef, Type, ViewContainerRef } from '@angular/core';
+import { IValueMetadata, ValType } from '@imx-modules/imx-qbm-dbts';
 import { CdrEditorProvider } from './cdr-editor-provider.interface';
-import { ViewContainerRef, ComponentRef, Type } from '@angular/core';
-import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { CdrEditor } from './cdr-editor.interface';
-import { ValType, IValueMetadata } from 'imx-qbm-dbts';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
+import { DateRangeComponent } from './date-range/date-range.component';
 import { EditBooleanComponent } from './edit-boolean/edit-boolean.component';
-import { EditNumberComponent } from './edit-number/edit-number.component';
-import { EditMultiLimitedValueComponent } from './edit-multi-limited-value/edit-multi-limited-value.component';
+import { EditDateComponent } from './edit-date/edit-date.component';
+import { EditImageComponent } from './edit-image/edit-image.component';
 import { EditLimitedValueComponent } from './edit-limited-value/edit-limited-value.component';
+import { EditMultiLimitedValueComponent } from './edit-multi-limited-value/edit-multi-limited-value.component';
 import { EditMultiValueComponent } from './edit-multi-value/edit-multi-value.component';
 import { EditMultilineComponent } from './edit-multiline/edit-multiline.component';
-import { EditImageComponent } from './edit-image/edit-image.component';
-import { EditDateComponent } from './edit-date/edit-date.component';
+import { EditNumberComponent } from './edit-number/edit-number.component';
+import { EditBitmaskComponent } from './edit-bitmask/edit-bitmask.component';
 import { EditRiskIndexComponent } from './edit-risk-index/edit-risk-index.component';
-import { DateRangeComponent } from './date-range/date-range.component';
 import { EditUrlComponent } from './edit-url/edit-url.component';
 
 /**
@@ -61,7 +62,7 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
    * @param cdref A column dependent reference that contains the data for the editor.
    * @returns An instance of {@link CdrEditor}, that can be used or editing data.
    */
-  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> {
+  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> | null {
     const meta = cdref.column.GetMetadata();
     const multiLine = meta.IsMultiLine();
     const multiValue = meta.IsMultiValue();
@@ -74,6 +75,10 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
 
     if (type === ValType.Binary) {
       return this.createBound(EditImageComponent, parent, cdref);
+    }
+
+    if (type === ValType.Int && meta.GetBitMaskCaptions()?.length > 0) {
+      return this.createBound(EditBitmaskComponent, parent, cdref);
     }
 
     if (!multiLine && !multiValue && !range && !limitedValues && !isRiskIndexColumn) {
@@ -122,7 +127,7 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
   private createBound<T extends CdrEditor>(
     editor: Type<T>,
     parent: ViewContainerRef,
-    cdref: ColumnDependentReference
+    cdref: ColumnDependentReference,
   ): ComponentRef<CdrEditor> {
     const result = parent.createComponent(editor);
     result.instance.bind(cdref);
@@ -130,7 +135,7 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
   }
 
   /**
-   * @ignore only ised internally
+   * @ignore only used internally
    * Checks, if there are limited values defined for the column.
    * @returns True, if there are limited values available, otherwise false.
    */

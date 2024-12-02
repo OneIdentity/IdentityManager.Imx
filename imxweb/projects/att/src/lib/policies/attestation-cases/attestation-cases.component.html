@@ -1,23 +1,43 @@
-<div eui-sidesheet-content>
+<div eui-sidesheet-content class="imx-sidesheet-content-flex-container">
   <div class="heading-wrapper" *ngIf="data.canCreateRuns">
-    <eui-alert *ngIf="!hasSampleData" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+    <eui-alert *ngIf="!hasSampleData" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
       <ng-container>
         <div class="imx-helper-title">{{ '#LDS#Here you can select the objects to be attested.' | translate }}</div>
-        <div>{{ '#LDS#Note: After you have started an attestation, it may take some time until the associated attestation cases are created.' | translate }}</div>
+        <div>
+          {{
+            '#LDS#Note: After you have started an attestation, it may take some time until the associated attestation cases are created.'
+              | translate
+          }}
+        </div>
       </ng-container>
     </eui-alert>
-    <eui-alert class="helper-alert" type="warning" condensed="true" [colored]="true" *ngIf="showWarning" [dismissable]="true">
-      <div>{{ '#LDS#This policy affects many objects. Running this policy may take some time and generate notifications to many approvers.' | translate }}</div>
+    <eui-alert type="warning" [condensed]="true" [colored]="true" *ngIf="showWarning" [dismissable]="true">
+      <div>
+        {{
+          '#LDS#This policy affects many objects. Running this policy may take some time and generate notifications to many approvers.'
+            | translate
+        }}
+      </div>
     </eui-alert>
   </div>
 
   <mat-card *ngIf="hasSampleData" class="imx-cases-card">
-    <div class="imx-sample-data-info">
+    <div class="imx-sample-data-info imx-no-results">
       <eui-icon [icon]="'warning'"></eui-icon>
-      <p class="imx-larger-text">{{ '#LDS#A sample is assigned to this attestation policy. You can start the attestation only for all objects in the sample.' | translate }}</p>
-      <p>{{ '#LDS#Note: After you have started an attestation, it may take some time until the associated attestation cases are created.' | translate }}</p>
+      <p class="imx-larger-text">
+        {{
+          '#LDS#A sample is assigned to this attestation policy. You can start the attestation only for all objects in the sample.'
+            | translate
+        }}
+      </p>
+      <p>
+        {{
+          '#LDS#Note: After you have started an attestation, it may take some time until the associated attestation cases are created.'
+            | translate
+        }}
+      </p>
       <button
-        mat-raised-button
+        mat-flat-button
         color="primary"
         data-imx-identifier="matching-objects-button-run-all"
         title="{{ '#LDS#Creates attestation cases for all objects.' | translate }}"
@@ -29,29 +49,28 @@
   </mat-card>
 
   <mat-card *ngIf="!hasSampleData" class="imx-cases-card">
-    <ng-container *ngIf="!hierarchical; else tree">
-      <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['settings']" [disableFilterWizard]="true" (navigationStateChanged)="onNavigationStateChanged($event)">
-      </imx-data-source-toolbar>
-
-      <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="data.canCreateRuns" (selectionChanged)="onSelectionChanged($event)">
-        <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-          <ng-template let-data>
-            <div imxTitle>{{ data.GetEntity().GetDisplay() }}</div>
-            <div *ngIf="data.GetEntity().GetDisplay() !== data.GetEntity().GetDisplayLong()" subtitle>
-              {{ data.GetEntity().GetDisplayLong() }}
-            </div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-generic-column *ngIf="data.canCreateRuns" columnName="runMethod" [columnLabel]="">
-          <ng-template let-data>
-            <button [disabled]="dst.isChecked(data)" mat-button color="primary" data-imx-identifier="matching-objects-button-run-current" (click)="createRun([data])">
-              {{ '#LDS#Start attestation' | translate }}
-            </button>
-          </ng-template>
-        </imx-data-table-generic-column>
-      </imx-data-table>
-      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-    </ng-container>
+    <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+      <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchemaPolicy?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div imxTitle>{{ item.GetEntity().GetDisplay() }}</div>
+          <div *ngIf="item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()" subtitle>
+            {{ item.GetEntity().GetDisplayLong() }}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="'runMethod'" *ngIf="data.canCreateRuns">
+        <th mat-header-cell *matHeaderCellDef>{{ entitySchemaPolicy?.Columns?.DisplayName?.Display }}</th>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <button mat-button color="primary" (click)="createRun([item])">
+            {{ '#LDS#Start attestation' | translate }}
+          </button>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
   </mat-card>
 </div>
 <div eui-sidesheet-actions *ngIf="data.canCreateRuns && !hasSampleData">
@@ -65,7 +84,7 @@
     {{ '#LDS#Start attestation for all' | translate }}
   </button>
   <button
-    mat-raised-button
+    mat-flat-button
     color="primary"
     data-imx-identifier="matching-objects-button-run-selected"
     title="{{ '#LDS#Creates attestation cases for the selected objects.' | translate }}"
@@ -75,13 +94,3 @@
     {{ '#LDS#Start attestation for selected' | translate }}
   </button>
 </div>
-
-<ng-template #tree>
-   <imx-data-tree-wrapper
-      data-imx-identifier="attestation-cases-data-tree"
-      [database]="treeDatabase"
-      [entitySchema]="entitySchema"
-      [withSelectedNodeHighlight]="false"
-    >
-    </imx-data-tree-wrapper>
-</ng-template>

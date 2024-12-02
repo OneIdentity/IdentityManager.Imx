@@ -1,5 +1,8 @@
-<eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false" *ngIf="withActions">
-  {{ '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.' | translate }}
+<eui-alert class="imx-margin-top-20" [condensed]="true" [colored]="true" type="info" [dismissable]="false" *ngIf="withActions">
+  {{
+    '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.'
+      | translate
+  }}
 </eui-alert>
 <mat-card class="imx-memberships">
   <imx-data-source-toolbar
@@ -12,8 +15,14 @@
   ></imx-data-source-toolbar>
 
   <div class="imx-membership-table">
-    <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="identity-role-memberships-table" (highlightedEntityChanged)="onShowDetails($event)" mode="manual">
-      <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+    <imx-data-table
+      [dst]="dst"
+      [detailViewVisible]="false"
+      data-imx-identifier="identity-role-memberships-table"
+      (highlightedEntityChanged)="onShowDetails($event)"
+      mode="manual"
+    >
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
         <ng-template let-item>
           <div data-imx-identifier="identity-role-memberships-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
           <div *ngIf="item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()" subtitle>

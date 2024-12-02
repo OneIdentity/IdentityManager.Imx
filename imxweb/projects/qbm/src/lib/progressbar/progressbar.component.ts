@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,10 +29,8 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'imx-progressbar',
   templateUrl: './progressbar.component.html',
-  styleUrls: ['./progressbar.component.scss']
 })
 export class ImxProgressbarComponent implements OnInit {
-
   @Input() public caption: string;
   @Input() public maxValue = 0;
   @Input() public value: number;
@@ -41,11 +39,10 @@ export class ImxProgressbarComponent implements OnInit {
   public textVersion: string;
   public progressValue: number;
 
-
   public ngOnInit(): void {
-    this.textVersion = this.maxValue === 0 ? '-' :
-      this.inPercent ? (this.value / this.maxValue) * 100 + '%' : this.value + '/' + this.maxValue;
+    this.textVersion =
+      this.maxValue === 0 ? '-' : this.inPercent ? (this.value / this.maxValue) * 100 + '%' : this.value + '/' + this.maxValue;
 
-    this.progressValue = this.inPercent ? this.value : this.maxValue === 0 ? 0 : (this.value * 100 / this.maxValue);
+    this.progressValue = this.inPercent ? this.value : this.maxValue === 0 ? 0 : (this.value * 100) / this.maxValue;
   }
 }

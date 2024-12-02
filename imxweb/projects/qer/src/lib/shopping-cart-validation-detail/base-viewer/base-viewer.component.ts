@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,11 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { ICartItemCheck } from 'imx-api-qer';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
 import { DetailsView } from '../details-view.interface';
 
 @Component({
-  template: ''
+  template: '',
 })
 export class BaseViewerComponent implements DetailsView, OnInit {
   public check: ICartItemCheck;
@@ -39,6 +39,6 @@ export class BaseViewerComponent implements DetailsView, OnInit {
   public ngOnInit(): void {
     if (this.check) {
       this.detail = this.check.Detail;
-   }
+    }
   }
 }

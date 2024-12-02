@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,18 +40,18 @@ describe('FavoritesTabComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([FavoritesTabComponent, TranslateService])
-    .mock(StatisticsDataService, {
-      favStats$: new BehaviorSubject<GenericStatisticEntity[]>([]),
-      searchFavStats$: new BehaviorSubject<GenericStatisticEntity[]>([]),
-      isFavSearch$: new BehaviorSubject(false)
-    })
-    .mock(EuiLoadingService)
-    .mock(EuiSidesheetService)
-    .beforeCompileComponents(testBed => {
-      testBed.configureTestingModule({
-        schemas: [ CUSTOM_ELEMENTS_SCHEMA]
+      .mock(StatisticsDataService, {
+        favStats$: new BehaviorSubject<GenericStatisticEntity[]>([]),
+        searchFavStats$: new BehaviorSubject<GenericStatisticEntity[]>([]),
+        isFavSearch$: new BehaviorSubject(false),
       })
-    })
+      .mock(EuiLoadingService)
+      .mock(EuiSidesheetService)
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        });
+      });
   });
 
   beforeEach(() => {
@@ -62,7 +62,7 @@ describe('FavoritesTabComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

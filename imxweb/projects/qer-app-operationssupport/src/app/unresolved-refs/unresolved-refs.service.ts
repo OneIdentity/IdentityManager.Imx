@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { Injectable } from '@angular/core';
 
-import { OpsupportSyncDatastore } from 'imx-api-dpr';
-import { EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { OpsupportSyncDatastore } from '@imx-modules/imx-api-dpr';
+import { EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { DprApiService } from '../../../dpr-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UnresolvedRefsService {
   public schema: EntitySchema;

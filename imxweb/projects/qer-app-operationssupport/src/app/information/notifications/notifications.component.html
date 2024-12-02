@@ -1,10 +1,10 @@
 <div>
-  <h2 class="startSubTitle" translate>{{'#LDS#Notifications' | translate}}
-    <mat-spinner class="imx-spinner" diameter="16" *ngIf="notifications.isLoading"></mat-spinner>
+  <h2 class="startSubTitle" translate>
+    {{ '#LDS#Notifications' | translate }}
+    <mat-spinner class="imx-spinner-inline" diameter="16" *ngIf="notifications.isLoading"></mat-spinner>
   </h2>
   <div class="no-issue-detected" *ngIf="Notifications.length == 0">
-    <imx-icon-stack class="imx-ops-icon" [icon1]="'setdefault'" [icon2]="'clipboard'"
-      [text]="'#LDS#No process notifications' | translate">
+    <imx-icon-stack class="imx-ops-icon" [icon1]="'setdefault'" [icon2]="'clipboard'" [text]="'#LDS#No process notifications' | translate">
     </imx-icon-stack>
   </div>
 
@@ -12,12 +12,12 @@
     <mat-card *ngFor="let item of Notifications" class="imx-notification-card">
       <mat-card-content>
         <div class="notificationContentPane">
-          <eui-icon icon="{{ item.icon }}" size="30px"></eui-icon>
+          <eui-icon class="imx-icon-warning" [icon]="item.icon" size="30px"></eui-icon>
           <span class="notificationTitle">{{ item.title }}</span>
           <span class="notificationContent">{{ item.text }}</span>
-          <button mat-button *ngIf="item.action" (click)="item.action.action()"
-            class="issueAction">{{item.action.caption
-            }}</button>
+          <button mat-button color="primary" *ngIf="item.action" (click)="item.action.action()" class="issueAction">
+            {{ item.action.caption }}
+          </button>
         </div>
       </mat-card-content>
     </mat-card>

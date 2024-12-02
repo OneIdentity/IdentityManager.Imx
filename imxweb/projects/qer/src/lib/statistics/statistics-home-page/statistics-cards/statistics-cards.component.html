@@ -1,15 +1,28 @@
 <div class="above-card" *ngIf="!isSearch && showAncestors">
   <div class="ancestor-path">
-    <div *ngFor="let ancestor of selectedNodeAncestors; index as i; first as isFirst; last as isLast">
+    <div *ngFor="let ancestor of selectedNodeAncestors; index as i; first as isFirst; last as isLast" class="ancestor-path-item">
       <eui-icon *ngIf="!isFirst" icon="collapseright"></eui-icon>
-      <button mat-button color="primary" class="selectable-ancestor" *ngIf="!isLast" (click)="selectAncestor(i)" [attr.data-imx-identifier]="'parent-area-' + i">
-        <h3>{{ ancestor.leafName }} ({{ ancestor.countBelow }})</h3>
+      <button
+        mat-button
+        color="primary"
+        class="selectable-ancestor"
+        *ngIf="!isLast"
+        (click)="selectAncestor(i)"
+        [attr.data-imx-identifier]="'parent-area-' + i"
+      >
+        <h3>{{ !!ancestor.LeafNameHeading ? ancestor.LeafNameHeading : ancestor.leafName }} ({{ ancestor.countBelow }})</h3>
       </button>
       <button mat-button disabled class="unselectable-ancestor" *ngIf="isLast">
-        <h3>{{ ancestor.leafName }} ({{ ancestor.countBelow }})</h3>
+        <h3>{{ !!ancestor.LeafNameHeading ? ancestor.LeafNameHeading : ancestor.leafName }} ({{ ancestor.countBelow }})</h3>
       </button>
     </div>
-    <button *ngIf="isUserAdmin && isOrg" mat-stroked-button color="primary" (click)="openOrgSideSheet()" data-imx-identifier="org-open-sidesheet">
+    <button
+      *ngIf="isUserAdmin && isOrg"
+      mat-stroked-button
+      color="primary"
+      (click)="openOrgSideSheet()"
+      data-imx-identifier="org-open-sidesheet"
+    >
       <eui-icon icon="edit"></eui-icon>
       <span>{{ '#LDS#Edit shared statistics' | translate }}</span>
     </button>
@@ -24,11 +37,17 @@
 </div>
 
 <mat-card class="cards-container">
-  <eui-scroll *ngIf="(hasData && !isSearch) || (isSearch && searchHasData) else noData" [options]="{ alwaysShowTracks: true }">
+  <eui-scroll *ngIf="(hasData && !isSearch) || (isSearch && searchHasData); else noData" [options]="{ alwaysShowTracks: true }">
     <div #cardsWrapper class="cards-wrapper">
       <!-- Show normal cards -->
       <div *ngIf="!isSearch" class="grid-container">
-        <mat-card class="area-card" *ngFor="let node of selectedNode?.children; index as i" (click)="selectArea(node)" [attr.data-imx-identifier]="'select-area-' + i">
+        <mat-card
+          class="area-card"
+          *ngFor="let node of selectedNode?.children; index as i"
+          euiClickable
+          (click)="selectArea(node)"
+          [attr.data-imx-identifier]="'select-area-' + i"
+        >
           <span>
             {{ node.leafName }}
           </span>
@@ -39,54 +58,63 @@
             </p>
           </div>
         </mat-card>
-        <imx-statistics-cards-visuals *ngFor="let stat of selectedNode?.statistics; index as i" [stat]="stat" [attr.data-imx-identifier]="'select-statistic-' + i"> </imx-statistics-cards-visuals>
+        <imx-statistics-cards-visuals
+          *ngFor="let stat of selectedNode?.statistics; index as i"
+          [stat]="stat"
+          [attr.data-imx-identifier]="'select-statistic-' + i"
+        >
+        </imx-statistics-cards-visuals>
       </div>
 
       <!-- Show search cards -->
       <div *ngIf="isSearch && searchHasData" class="grid-container">
-        <imx-statistics-cards-visuals *ngFor="let stat of searchStats; index as i" [stat]="stat" [attr.data-imx-identifier]="'select-statistic-' + i"> </imx-statistics-cards-visuals>
+        <imx-statistics-cards-visuals
+          *ngFor="let stat of searchStats; index as i"
+          [stat]="stat"
+          [attr.data-imx-identifier]="'select-statistic-' + i"
+        >
+        </imx-statistics-cards-visuals>
       </div>
-
     </div>
   </eui-scroll>
 
-    <ng-template #noData class="cards-wrapper">
-      <!-- Show no search results -->
-      <div *ngIf="isSearch && !searchHasData" class="imx-no-data">
-        <div class="imx-no-data-top">
-          <eui-icon icon="content-alert"></eui-icon>
-          <div class="imx-no-data-text">
-            <h2>{{ '#LDS#Heading No Matching Results' | translate }}</h2>
-            <span>{{ '#LDS#There are no statistics that match your search.' | translate }}</span>
-          </div>
+  <ng-template #noData class="cards-wrapper">
+    <!-- Show no search results -->
+    <div *ngIf="isSearch && !searchHasData" class="imx-no-data">
+      <div class="imx-no-data-top">
+        <eui-icon icon="content-alert"></eui-icon>
+        <div class="imx-no-data-text">
+          <h2>{{ '#LDS#Heading No Matching Results' | translate }}</h2>
+          <span>{{ '#LDS#There are no statistics that match your search.' | translate }}</span>
         </div>
       </div>
+    </div>
 
-      <!-- Show the empty org results -->
-      <div *ngIf="!hasData && !isSearch && isOrg" class="imx-no-data">
-        <div class="imx-no-data-top">
-          <eui-icon icon="content-alert"></eui-icon>
-          <div class="imx-no-data-text">
-            <h2>{{ '#LDS#Heading No Shared Statistics' | translate }}</h2>
-            <span>{{ '#LDS#There are currently no shared statistics.' | translate }}</span>
-          </div>
+    <!-- Show the empty org results -->
+    <div *ngIf="!hasData && !isSearch && isOrg" class="imx-no-data">
+      <div class="imx-no-data-top">
+        <eui-icon icon="content-alert"></eui-icon>
+        <div class="imx-no-data-text">
+          <h2>{{ '#LDS#Heading No Shared Statistics' | translate }}</h2>
+          <span>{{ '#LDS#There are currently no shared statistics.' | translate }}</span>
         </div>
-        <!-- TODO: Add translations -->
-        <button *ngIf="isUserAdmin" mat-raised-button color="primary" (click)="openOrgSideSheet()" data-imx-identifier="org-open-sidesheet">
-          <eui-icon icon="network"></eui-icon>
-          <span>???Manage shared statistics???</span>
-        </button>
       </div>
+      <!-- TODO 454155: Add translations -->
+      <button *ngIf="isUserAdmin" mat-flat-button color="primary" (click)="openOrgSideSheet()" data-imx-identifier="org-open-sidesheet">
+        <eui-icon icon="network"></eui-icon>
+        <span>???Manage shared statistics???</span>
+      </button>
+    </div>
 
-      <!-- Show no stats -->
-      <div *ngIf="!hasData && !isSearch && isGrouped" class="imx-no-data">
-        <div class="imx-no-data-top">
-          <eui-icon icon="content-alert"></eui-icon>
-          <div class="imx-no-data-text">
-            <h2>{{ '#LDS#Heading No Statistics' | translate }}</h2>
-            <span>{{ '#LDS#There are currently no statistics.' | translate }}</span>
-          </div>
+    <!-- Show no stats -->
+    <div *ngIf="!hasData && !isSearch && isGrouped" class="imx-no-data">
+      <div class="imx-no-data-top">
+        <eui-icon icon="content-alert"></eui-icon>
+        <div class="imx-no-data-text">
+          <h2>{{ '#LDS#Heading No Statistics' | translate }}</h2>
+          <span>{{ '#LDS#There are currently no statistics.' | translate }}</span>
         </div>
       </div>
-    </ng-template>
-  </mat-card>
+    </div>
+  </ng-template>
+</mat-card>

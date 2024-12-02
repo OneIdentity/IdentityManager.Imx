@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { PolicyConfig, PortalPoliciesViolations, PortalPoliciesViolationslist, V2ApiClientMethodFactory } from 'imx-api-pol';
-import { DecisionInput } from 'imx-api-qer';
+import { PolicyConfig, PortalPoliciesViolations, PortalPoliciesViolationslist, V2ApiClientMethodFactory } from '@imx-modules/imx-api-pol';
+import { DecisionInput } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   DataModel,
@@ -44,19 +43,19 @@ import {
   MethodDescriptor,
   TypedEntityCollectionData,
   ValType,
-} from 'imx-qbm-dbts';
-import { BaseCdr, DataSourceToolbarExportMethod, EntityService, SnackBarService } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, calculateSidesheetWidth, DataSourceToolbarExportMethod, EntityService, SnackBarService } from 'qbm';
 import { JustificationService, JustificationType, UserModelService } from 'qer';
 import { ApiService } from '../api.service';
+import { PolicyViolation } from './policy-violation';
 import { PolicyViolationsActionParameters } from './policy-violations-action/policy-violations-action-parameters.interface';
 import { PolicyViolationsActionComponent } from './policy-violations-action/policy-violations-action.component';
-import { PolicyViolation } from './policy-violation';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PolicyViolationsService {
-  public readonly applied = new Subject();
+  public readonly applied = new Subject<void>();
 
   constructor(
     public readonly justificationService: JustificationService,
@@ -65,8 +64,8 @@ export class PolicyViolationsService {
     private readonly entityService: EntityService,
     private readonly translate: TranslateService,
     private readonly snackBar: SnackBarService,
+    private readonly sideSheet: EuiSidesheetService,
     private readonly userService: UserModelService,
-    private readonly sideSheet: EuiSidesheetService
   ) {}
 
   public get policyViolationsSchema(): EntitySchema {
@@ -77,7 +76,7 @@ export class PolicyViolationsService {
     return this.api.typedClient.PortalPoliciesViolations.GetSchema();
   }
 
-  public async getConfig(): Promise<PolicyConfig>{
+  public async getConfig(): Promise<PolicyConfig> {
     return this.api.client.portal_policy_config_get();
   }
 
@@ -85,8 +84,18 @@ export class PolicyViolationsService {
     return this.api.client.portal_policies_violations_datamodel_get();
   }
 
-  public async get(isApprovable: boolean, polDecisionParameters?: CollectionLoadParameters): Promise<TypedEntityCollectionData<PolicyViolation>> {
-    const collection = await this.api.typedClient.PortalPoliciesViolationslist.Get_list({approvable: isApprovable, ...polDecisionParameters});
+  public async get(
+    isApprovable: boolean,
+    polDecisionParameters?: CollectionLoadParameters,
+    signal?: AbortSignal,
+  ): Promise<TypedEntityCollectionData<PolicyViolation>> {
+    const collection = await this.api.typedClient.PortalPoliciesViolationslist.Get_list(
+      {
+        approvable: isApprovable,
+        ...polDecisionParameters,
+      },
+      { signal },
+    );
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
@@ -103,43 +112,48 @@ export class PolicyViolationsService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_policies_violations_list_get({...polDecisionParameters, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_policies_violations_list_get({ ...polDecisionParameters, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_policies_violations_list_get({...polDecisionParameters, withProperties})
+          method = factory.portal_policies_violations_list_get({ ...polDecisionParameters, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
-  public getGroupInfo(parameters: { by?: string; def?: string } & CollectionLoadParameters = {}): Promise<GroupInfoData> {
-    const  {withProperties, OrderBy, search, ...params }= parameters;
-    return this.api.client.portal_policies_violations_group_list_get({
-     ...params,
-      withcount: true
-    });
+  public getGroupInfo(
+    parameters: { by?: string; def?: string } & CollectionLoadParameters = {},
+    signal?: AbortSignal,
+  ): Promise<GroupInfoData> {
+    const { withProperties, OrderBy, search, ...params } = parameters;
+    return this.api.client.portal_policies_violations_group_list_get(
+      {
+        ...params,
+        withcount: true,
+      },
+      { signal },
+    );
   }
 
   // Methods for decision making
 
-  public async approve(policyViolations: PolicyViolation[]): Promise<void> {
-    let justification: BaseCdr;
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+  public async approve(policyViolations: PolicyViolation[]): Promise<boolean> {
+    let justification: BaseCdr | undefined;
+    this.showBusyIndicator();
 
     try {
       justification = await this.justificationService.createCdr(JustificationType.approvePolicyViolation);
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
 
-    const actionParameters: any = {
+    const actionParameters: PolicyViolationsActionParameters = {
       justification,
       reason: this.createCdrReason(justification ? '#LDS#Additional comments about your decision' : undefined),
     };
 
     return this.editAction({
-      title: '#LDS#Heading Grant Exception',
+      title: policyViolations.length > 1 ? '#LDS#Heading Grant Exceptions' : '#LDS#Heading Grant Exception',
       message: '#LDS#Exceptions have been successfully granted for {0} policy violations.',
       discardChangesOnAbort: true,
       data: {
@@ -157,16 +171,15 @@ export class PolicyViolationsService {
     });
   }
 
-  public async deny(policyViolations: PolicyViolation[]): Promise<void> {
-    let justification: BaseCdr;
+  public async deny(policyViolations: PolicyViolation[]): Promise<boolean> {
+    let justification: BaseCdr | undefined;
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    this.showBusyIndicator();
 
     try {
       justification = await this.justificationService.createCdr(JustificationType.denyPolicyViolation);
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
 
     const actionParameters: PolicyViolationsActionParameters = {
@@ -175,7 +188,7 @@ export class PolicyViolationsService {
     };
 
     return this.editAction({
-      title: '#LDS#Heading Deny Exception',
+      title: policyViolations.length > 1 ? '#LDS#Heading Deny Exceptions' : '#LDS#Heading Deny Exception',
       message: '#LDS#Exceptions have been successfully denied for {0} policy violations.',
       discardChangesOnAbort: true,
       data: {
@@ -203,8 +216,8 @@ export class PolicyViolationsService {
     return this.api.typedClient.PortalPoliciesViolations.Get(uidObject);
   }
 
-  public async getCandidates(uid:string,data: EntityKeysData,parameter?: CollectionLoadParameters){
-    return this.api.client.portal_policies_violations_UID_MitigatingControl_candidates_post(uid,data,parameter);
+  public async getCandidates(uid: string, data: EntityKeysData, parameter?: CollectionLoadParameters) {
+    return this.api.client.portal_policies_violations_UID_MitigatingControl_candidates_post(uid, data, parameter);
   }
 
   public createMitigatingControl(uid: string): PortalPoliciesViolations {
@@ -239,31 +252,31 @@ export class PolicyViolationsService {
     return new BaseCdr(column, display || '#LDS#Reason for your decision');
   }
 
-  private async editAction(config: any): Promise<void> {
-    const result = await this.sideSheet.open(PolicyViolationsActionComponent, {
-      title: await this.translate.get(config.title).toPromise(),
-      subTitle: config.data.policyViolations.length === 1
-        ? config.data.policyViolations[0].GetEntity().GetDisplay()
-        : '',
-      padding: '0',
-      width: '600px',
-      testId: `policy-violations-action-${config.data.approve ? 'approve' : 'deny'}`,
-      data: config.data
-    }).afterClosed().toPromise();
+  private async editAction(config: any): Promise<boolean> {
+    const result = await this.sideSheet
+      .open(PolicyViolationsActionComponent, {
+        title: await this.translate.get(config.title).toPromise(),
+        subTitle: config.data.policyViolations.length === 1 ? config.data.policyViolations[0].GetEntity().GetDisplay() : '',
+        padding: '0',
+        width: calculateSidesheetWidth(600, 0.4),
+        testId: `policy-violations-action-${config.data.approve ? 'approve' : 'deny'}`,
+        data: config.data,
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
-      let busyIndicator: OverlayRef;
-      setTimeout(() => (busyIndicator = this.busyService.show()));
+      this.showBusyIndicator();
 
       let success: boolean;
       try {
         for (const policyViolation of config.data.policyViolations) {
           await config.apply(policyViolation);
         }
-        success = true;        
+        success = true;
         await this.userService.reloadPendingItems();
       } finally {
-        setTimeout(() => this.busyService.hide(busyIndicator));
+        this.busyService.hide();
       }
 
       if (success) {
@@ -283,6 +296,14 @@ export class PolicyViolationsService {
         }
       }
       this.snackBar.open({ key: '#LDS#You have canceled the action.' });
+    }
+
+    return result;
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 }

@@ -1,0 +1,73 @@
+<div eui-sidesheet-content class="imx-padding-20">
+  <mat-card class="imx-card-sidesheet">
+    <imx-busy-indicator *ngIf="isLoading" class="imx-busy"></imx-busy-indicator>
+    <mat-tab-group mat-stretch-tabs="false" [ngClass]="{ hidden: isLoading }">
+      <mat-tab [label]="'#LDS#Memberships' | translate">
+        <div eui-sidesheet-content class="imx-sidesheet-content-flex-container">
+          <div class="imx-margin-bottom-20">
+            {{ "#LDS#'{0}' has access to the following governed data resources." | translate | ldsReplace: referrer?.display }}
+          </div>
+
+          <imx-trustee-view [data]="data" [busyService]="busyService"></imx-trustee-view>
+        </div>
+      </mat-tab>
+      <mat-tab [label]="'#LDS#Resources' | translate">
+        <div eui-sidesheet-content class="imx-sidesheet-content-flex-container-row">
+          <!-- show the access data organized by path-->
+          <div *ngIf="byPath.length > 0; else noResources" class="imx-resource-content">
+            <div class="imx-resource-toolbar">
+              <button
+                class="imx-margin-left-auto"
+                data-imx-identifier="collapse-all-toggle"
+                mat-icon-button
+                color="primary"
+                (click)="accordion?.closeAll()"
+                [matTooltip]="'#LDS#Collapse all' | translate"
+                [attr.aria-label]="'#LDS#Collapse all' | translate"
+              >
+                <eui-icon icon="compress"></eui-icon>
+              </button>
+              <button
+                data-imx-identifier="expand-all-toggle"
+                mat-icon-button
+                color="primary"
+                (click)="accordion?.openAll()"
+                [matTooltip]="'#LDS#Expand all' | translate"
+                [attr.aria-label]="'#LDS#Expand all' | translate"
+              >
+                <eui-icon icon="expand"></eui-icon>
+              </button>
+            </div>
+            <div class="imx-scrollable-resoures">
+              <eui-scroll class="imx-scroll-pad margin-padding-right-5">
+                <mat-accordion multi>
+                  <mat-expansion-panel class="imx-expansion-panel" *ngFor="let path of byPath" [expanded]="true">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        <span bold> {{ '#LDS#Path' | translate }}: </span>
+                        <span class="imx-margin-left-5">{{ path.DisplayPath }}</span></mat-panel-title
+                      >
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let trustee of path.Accesses" class="imx-resource-line">
+                      {{ trustee?.Display }}
+                      <button class="imx-margin-left-auto" mat-stroked-button (click)="openSourceDetective(trustee.UidQamTrustee)">
+                        {{ '#LDS#View assignment analysis' | translate }}
+                      </button>
+                    </div>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </eui-scroll>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
+
+<ng-template #noResources>
+  <div class="imx-no-results">
+    <eui-icon icon="content-alert"></eui-icon>
+    <p translate>#LDS#There are no resources assigned to the identity.</p>
+  </div>
+</ng-template>

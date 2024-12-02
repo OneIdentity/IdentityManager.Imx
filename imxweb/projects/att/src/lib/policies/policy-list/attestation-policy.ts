@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { PortalAttestationPolicy } from 'imx-api-att';
+import { PortalAttestationPolicy } from '@imx-modules/imx-api-att';
 
 export class AttestationPolicy extends PortalAttestationPolicy {
   public hasAttestations = false;

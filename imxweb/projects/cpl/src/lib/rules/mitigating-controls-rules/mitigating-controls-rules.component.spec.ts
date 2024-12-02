@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,13 +28,11 @@ import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
-import { clearStylesFromDOM, ConfirmationService, SnackBarService,  } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService, SnackBarService } from 'qbm';
 
 import { MitigatingControlsRulesComponent } from './mitigating-controls-rules.component';
 import { MitigatingControlsRulesService } from './mitigating-controls-rules.service';
 import { RulesMitigatingControls } from './rules-mitigating-controls';
-
-
 
 describe('MitigatingControlsRulesComponent', () => {
   let component: MitigatingControlsRulesComponent;
@@ -45,13 +43,13 @@ describe('MitigatingControlsRulesComponent', () => {
     GetEntity: () => ({
       GetKeys: () => [''],
       GetColumn: (column: string) => {
-        return {GetValue: () => ''}
-      }
+        return { GetValue: () => '' };
+      },
     }),
     UID_ComplianceRule: {},
     UID_MitigatingControl: {},
     UID_NonCompliance: {},
-  }
+  };
 
   beforeEach(() => {
     return MockBuilder([MitigatingControlsRulesComponent, UntypedFormBuilder, ChangeDetectorRef])
@@ -59,15 +57,15 @@ describe('MitigatingControlsRulesComponent', () => {
         createControl: jasmine.createSpy('createControl').and.returnValue(mockedControl),
         postControl: jasmine.createSpy('postControl').and.resolveTo({}),
         getControls: jasmine.createSpy('getControls').and.resolveTo({
-          Data: [mockedControl]
-        })
+          Data: [mockedControl],
+        }),
       })
       .mock(EuiLoadingService)
       .mock(SnackBarService)
       .mock(ConfirmationService)
-      .beforeCompileComponents(testBed => {
+      .beforeCompileComponents((testBed) => {
         testBed.configureTestingModule({
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
       });
   });
@@ -78,7 +76,7 @@ describe('MitigatingControlsRulesComponent', () => {
       uidNonCompliance: '',
       uidCompliance: '',
       mControls: [],
-      sidesheetRef: new EuiSidesheetRef(null)
+      sidesheetRef: new EuiSidesheetRef(null),
     });
     component = fixture.point.componentInstance;
     fixture.detectChanges();
@@ -86,7 +84,7 @@ describe('MitigatingControlsRulesComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -99,7 +97,7 @@ describe('MitigatingControlsRulesComponent', () => {
 
     await component.onSave();
     expect(fixture.point.injector.get(MitigatingControlsRulesService).postControl).not.toHaveBeenCalled();
-  })
+  });
 
   it('should create a control, save, and then delete', async () => {
     component.onCreateControl();
@@ -114,5 +112,5 @@ describe('MitigatingControlsRulesComponent', () => {
 
     await component.onDelete(mockedControl as RulesMitigatingControls, 0);
     expect(component.mControls.length).toBe(0);
-  })
+  });
 });

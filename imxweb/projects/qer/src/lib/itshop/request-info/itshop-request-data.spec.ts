@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { IClientProperty } from 'imx-qbm-dbts';
-import { ItshopRequestData } from "./itshop-request-data";
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
+import { ItshopRequestData } from './itshop-request-data';
 
 describe('ItshopRequestData', () => {
   function createParameterData(value, name) {
@@ -34,29 +34,23 @@ describe('ItshopRequestData', () => {
 
   it('should init request parameters', () => {
     const propertyColumnName = 'DisplayOrg';
-    const properties = { };
+    const properties = {};
     properties[propertyColumnName] = {
       ColumnName: propertyColumnName,
-      GetValue: () => 'some value'
+      GetValue: () => 'some value',
     };
 
     const parameters = [
-      [
-        createParameterData('some value 1.0', '1'),
-        createParameterData('some value 2.0', '2'),
-      ],
-      [
-        createParameterData('some value 1.1', '3'),
-        createParameterData('some value 2.1', '4'),
-      ]
+      [createParameterData('some value 1.0', '1'), createParameterData('some value 2.0', '2')],
+      [createParameterData('some value 1.1', '3'), createParameterData('some value 2.1', '4')],
     ];
 
     const extendedCollectionData = {
       index: 0,
       Parameters: {
         parameterCategory1: [[parameters[0][0]], [parameters[1][0]]],
-        parameterCategory2: [[parameters[0][1]], [parameters[1][1]]]
-      }
+        parameterCategory2: [[parameters[0][1]], [parameters[1][1]]],
+      },
     };
     const request = new ItshopRequestData(extendedCollectionData);
 

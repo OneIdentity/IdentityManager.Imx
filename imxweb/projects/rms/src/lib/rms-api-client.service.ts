@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { V2Client, TypedClient } from 'imx-api-rms';
-import { ApiClient } from 'imx-qbm-dbts';
+import { V2Client, TypedClient } from '@imx-modules/imx-api-rms';
+import { ApiClient } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, DynamicMethodService, ImxTranslationProviderService } from 'qbm';
 import { IRequestableEntitlementType, RequestableEntitlementTypeService } from 'qer';
 import { RequestableSystemRoleType } from './requestable-systemrole-type';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RmsApiService {
   private tc: TypedClient;
@@ -54,7 +54,8 @@ export class RmsApiService {
     private readonly logger: ClassloggerService,
     private readonly entlTypeService: RequestableEntitlementTypeService,
     private readonly dynamicMethodService: DynamicMethodService,
-    private readonly translationProvider: ImxTranslationProviderService) {
+    private readonly translationProvider: ImxTranslationProviderService,
+  ) {
     try {
       this.logger.debug(this, 'Initializing RMS API service');
 
@@ -63,7 +64,7 @@ export class RmsApiService {
       this.c = new V2Client(this.config.apiClient, schemaProvider);
       this.tc = new TypedClient(this.c, this.translationProvider);
 
-      this.entlTypeService.Register(() => this.GetSystemRoleType())
+      this.entlTypeService.Register(() => this.GetSystemRoleType());
     } catch (e) {
       this.logger.error(this, e);
     }

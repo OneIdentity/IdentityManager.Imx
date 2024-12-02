@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,34 +26,32 @@
 
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, FilterTreeData, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, FilterTreeData, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { TreeDatabase } from '../../data-tree/tree-database';
 import { TreeNode } from '../../data-tree/tree-node';
 import { TreeNodeResultParameter } from '../../data-tree/tree-node-result-parameter.interface';
 import { FilterTreeEntityWrapperService } from './filter-tree-entity-wrapper.service';
 
 export class FilterTreeDatabase extends TreeDatabase {
-  
-
   constructor(
     private readonly entityWrapper: FilterTreeEntityWrapperService,
     private readonly getFilterTree: (parentkey: string) => Promise<FilterTreeData>,
-    private readonly busyLoadingService: EuiLoadingService
+    private readonly busyLoadingService: EuiLoadingService,
   ) {
     super();
   }
 
   public async getData(showLoading: boolean, parameters: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
     let entities: IEntity[];
-    if (showLoading) {
-      setTimeout(() => this.busyLoadingService.show());
+    if (showLoading && this.busyLoadingService.overlayRefs.length === 0) {
+      this.busyLoadingService.show();
     }
 
     try {
-      entities = this.entityWrapper.convertToEntities(await this.getFilterTree(parameters.ParentKey), parameters['parentDisplay']);
+      entities = this.entityWrapper.convertToEntities(await this.getFilterTree(parameters.ParentKey ?? ''), parameters['parentDisplay']);
     } finally {
       if (showLoading) {
-        setTimeout(() => this.busyLoadingService.hide());
+        this.busyLoadingService.hide();
       }
     }
 
@@ -61,19 +59,23 @@ export class FilterTreeDatabase extends TreeDatabase {
   }
 
   /** return children for a given tree node including the information, if more elements are available on the server */
-  public async getChildren(node: TreeNode, startIndex: number)
-    : Promise<{ nodes: TreeNode[], canLoadMore: boolean }> {
-
-    const entities = await this.getData(false, { ParentKey: node.name, StartIndex: startIndex, parentDisplay: node.item.GetColumn('LongDisplay').GetValue() });
+  public async getChildren(node: TreeNode, startIndex: number): Promise<{ nodes: TreeNode[]; canLoadMore: boolean }> {
+    const entities = await this.getData(false, {
+      ParentKey: node.name,
+      StartIndex: startIndex,
+      parentDisplay: node.item?.GetColumn('LongDisplay').GetValue(),
+    });
 
     const nodes = this.createSortedNodes(entities.entities, node.level + 1);
     return {
-      nodes: entities.entities.map(entity => nodes.find(x => this.getId(x.item) === this.getId(entity))),
-      canLoadMore: entities.canLoadMore
+      nodes: entities.entities
+        .map((entity) => nodes.find((x) => this.getId(x?.item) === this.getId(entity)) ?? new TreeNode())
+        .filter((elem) => elem?.identifier != null),
+      canLoadMore: entities.canLoadMore,
     };
   }
 
-  public getId(entity: IEntity): string {
-    return entity.GetColumn('ObjectKey').GetValue();
+  public getId(entity: IEntity | undefined): string {
+    return entity?.GetColumn('ObjectKey')?.GetValue() ?? '';
   }
 }

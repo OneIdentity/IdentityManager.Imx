@@ -1,23 +1,45 @@
 <div eui-sidesheet-content>
-  <mat-card>
+  <mat-card class="imx-card-sidesheet">
     <form class="imx-form" id="entitlementForm" [formGroup]="form">
-      <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="form.addControl(cdr.column.ColumnName, $event)">
+      <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="form.addControl(cdr?.column?.ColumnName || '', $event)">
       </imx-cdr-editor>
       <ng-container *ngIf="serviceItem">
-        <imx-service-item-tags *ngIf="productTagsSelected"
+        <imx-service-item-tags
+          *ngIf="productTagsSelected"
           [selection]="productTagsSelected"
           [loading]="loadingTags"
-          (controlCreated)="form.addControl('tags', $event)">
+          (controlCreated)="form.addControl('tags', $event)"
+        >
         </imx-service-item-tags>
-        <imx-cdr-editor *ngFor="let cdr of cdrListServiceItem" [cdr]="cdr" (controlCreated)="form.addControl(cdr.column.ColumnName, $event)">
+        <imx-cdr-editor
+          *ngFor="let cdr of cdrListServiceItem"
+          [cdr]="cdr"
+          (controlCreated)="form.addControl(cdr?.column?.ColumnName || '', $event)"
+        >
         </imx-cdr-editor>
       </ng-container>
     </form>
   </mat-card>
 </div>
 <div eui-sidesheet-actions>
-  <button mat-raised-button data-imx-identifier="entitlement-edit-details-button" *ngIf="isEditableEntitlement"
-    type="button" (click)="manageEntitlement()" color="primary">{{ '#LDS#Edit' | translate }}</button>
-  <button mat-raised-button data-imx-identifier="entitlement-edit-button-save"
-    [disabled]="!form.dirty" type="button" (click)="save()" color="primary">{{ '#LDS#Save' | translate }}</button>
+  <button
+    mat-flat-button
+    data-imx-identifier="entitlement-edit-details-button"
+    *ngIf="isEditableEntitlement"
+    type="button"
+    (click)="manageEntitlement()"
+    color="primary"
+  >
+    {{ '#LDS#Manage system role' | translate }}
+  </button>
+  <button
+    mat-flat-button
+    data-imx-identifier="entitlement-edit-button-save"
+    [disabled]="!form.dirty"
+    type="button"
+    (click)="save()"
+    color="primary"
+  >
+    {{ '#LDS#Save' | translate }}
+  </button>
 </div>

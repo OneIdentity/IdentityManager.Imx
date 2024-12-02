@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,10 @@
  *
  */
 
-
 import { HyperviewLayoutVertical } from './hyperview-layout-vertical';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('HyperviewLayoutVertical', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
@@ -40,8 +38,8 @@ describe('HyperviewLayoutVertical', () => {
     const elements = [];
     const middlecenter = {
       position: 'MiddleCenter',
-      element: htmlElement
-    }
+      element: htmlElement,
+    };
     elements.push(middlecenter);
 
     expect(() => {
@@ -62,4 +60,3 @@ describe('HyperviewLayoutVertical', () => {
     }).not.toThrowError();
   });
 });
-

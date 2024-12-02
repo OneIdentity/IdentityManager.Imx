@@ -1,10 +1,9 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
+  @include flex-column-container($height: 100%);
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   background-color: $color-gray-2;
 
   imx-data-table {
@@ -12,112 +11,29 @@
   }
 }
 
-.eui-sidesheet-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-}
-
 h2 {
   margin-bottom: 10px;
 }
 
-.imx-sidesheet-content {
-  flex: 1 1 auto;
-  overflow: auto;
-}
-
 .imx-cases-card {
-  display: flex;
-  flex-direction: column;
+  @include flex-column-container();
   margin: 0px;
   overflow-y: auto;
   flex: 1 1 auto;
 }
-:host ::ng-deep imx-data-table .mat-row .mat-cell {
-  padding: 0 10px;
-  max-width: 100px;
-  div[imxTitle] {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-.imx-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0;
-  padding: 16px 32px;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  background-color: $color-gray-0;
-
-  button {
-    margin-left: 10px;
-  }
-
-  .justify-start {
-    margin-right: auto;
-  }
-}
 
 .eui-sidesheet-actions {
   padding: 16px;
-  .justify-start {
-    margin-right: auto;
-  }
-
-  button:not(:last-of-type):not(.justify-start) {
-    margin-right: 10px;
-  }
 }
 
 imx-data-table {
   flex-grow: 2;
 }
 
-:host ::ng-deep imx-data-table .mat-header-row .mat-header-cell {
-  font-weight: 600;
-  font-size: 14px;
-  padding: 0 10px;
-}
-
-:host ::ng-deep imx-data-table .mat-row .mat-cell {
-  padding: 0 10px;
-  max-width: 100px;
-  div[imxTitle] {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    .button-row {
-      border-top-style: solid;
-      border-top-width: 0px;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-    }
-    div[subtitle] {
-      font-size: smaller;
-      color: $color-gray-40;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-}
-
-.mat-card-title {
-  font-size: large;
-}
-
 .eui-sidesheet-actions {
-  .mat-stroked-button {
+  .mat-mdc-outlined-button {
     align-self: flex-start;
   }
-}
-
-.mat-toolbar {
-  background-color: inherit;
 }
 
 .imx-mat-card-header-line {
@@ -126,27 +42,12 @@ imx-data-table {
   padding: 30px 30px 0 30px;
 }
 
-.mat-toolbar > button {
-  margin-left: 5px;
-}
-
-.mat-toolbar {
-  color: $color-gray-100;
-}
-
 .imx-toolbar-spacer {
   flex: 1 1 auto;
 }
 
 .heading-wrapper {
-  display: flex;
-  flex-direction: column;
-
-  .helper-alert {
-    margin: 0px 0px 30px 0px;
-    align-self: flex-end;
-    width: 100%;
-  }
+  @include flex-column-container();
 
   .imx-helper-title {
     font-size: larger;
@@ -155,17 +56,11 @@ imx-data-table {
 }
 
 .imx-sample-data-info {
+  @include flex-column-container();
   text-align: center;
   margin: 20px 0;
   flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-
-  .eui-icon {
-    font-size: 100px;
-    color: $color-gray-10;
-  }
 
   p {
     margin: 0;
@@ -183,23 +78,21 @@ imx-data-table {
   }
 }
 
+.hidden {
+  display: none !important;
+  height: 0px;
+}
+
+.imx-attestation-tree-container {
+  @include flex-column-container();
+  flex: 1 1 auto;
+}
+
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
 
-    .imx-dialog-actions {
-      background-color: $color-gray-70;
-    }
-
-    .mat-toolbar {
-      color: $color-gray-10;
-    }
-
     .imx-sample-data-info {
-      .eui-icon {
-        color: $color-gray-20;
-      }
-
       p {
         color: $color-gray-10;
       }
@@ -210,13 +103,5 @@ imx-data-table {
 .eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
-
-    .imx-dialog-actions {
-      background-color: $color-gray-90;
-    }
-
-    .mat-toolbar {
-      color: $color-gray-0;
-    }
   }
 }

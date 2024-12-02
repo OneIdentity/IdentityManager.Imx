@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,7 @@ import { IssueItem } from '../service-issues/service-issues.models';
 @Component({
   selector: 'imx-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.scss', '../issue-tiles.scss']
+  styleUrls: ['./notifications.component.scss', '../issue-tiles.scss'],
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
   public get Notifications(): IssueItem[] {
@@ -47,7 +47,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   constructor(
     private domSanitizer: DomSanitizer,
     public notifications: NotificationsService,
-    private appConfigService: AppConfigService) { }
+    private appConfigService: AppConfigService,
+  ) {}
 
   public ngOnInit(): void {
     this.notifications.subscribe(this.appConfigService.Config.NotificationUpdateInterval);

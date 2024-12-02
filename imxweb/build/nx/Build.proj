@@ -1,0 +1,41 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" DefaultTargets="BuildWithNx">
+
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Common.targets"/>
+
+  <PropertyGroup>
+		<ComponentDir>imxweb\build\nx</ComponentDir>
+		<Workspace>$(VI_PROJECTDIR)\imxweb</Workspace>
+    <AssembliesDir>$(VI_PROJECTDIR)\Assemblies</AssembliesDir>
+    <ElementalDir>$(VI_PROJECTDIR)\imxweb\node_modules\@elemental-ui</ElementalDir>
+    <Npm>$(VI_PROJECTDIR)\bin\npm</Npm>
+    <Npx>$(VI_PROJECTDIR)\bin\npx</Npx>
+	</PropertyGroup>
+
+  <!-- Unless set, CI is false -->
+  <Choose>
+    <When Condition="'$(NxCI)' != 'false'">
+      <PropertyGroup>
+        <NxCI>true</NxCI>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <NxCI>false</NxCI>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+	<Target Name="BuildWithNx" Condition="'$(BUILD_WEB)' != 'no'">
+    <!-- Dev can paralellize and uses the default dev config -->
+    <Exec Command='$(Npx) nx run-many -t build -c development' WorkingDirectory="$(Workspace)" Condition="$(NxCI) == false" />
+    <Exec Command='$(Npx) nx run-many -t test --code-coverage --browsers ChromeHeadless --watch=false' WorkingDirectory="$(Workspace)" Condition="$(NxCI) == false" />
+
+    <!-- CI only (NxCI) = True -->
+    <Exec Command='$(Npx) nx run-many -t build -c production --parallel=false' WorkingDirectory="$(Workspace)" Condition="$(NxCI) == true" />
+    <Exec Command='$(Npx) nx run-many -t test --parallel=false --code-coverage --browsers ChromeHeadless --watch=false' WorkingDirectory="$(Workspace)" Condition="$(NxCI) == true"/>
+    <!-- Pack Elemental files -->
+    <Exec Command='$(Npm) pack -pack-destination=$(AssembliesDir)\imx-modules' WorkingDirectory="$(ElementalDir)\core" Condition="$(NxCI) == true"/>
+    <Exec Command='$(Npm) pack -pack-destination=$(AssembliesDir)\imx-modules' WorkingDirectory="$(ElementalDir)\cadence-icon" Condition="$(NxCI) == true" />
+	</Target>
+
+</Project>

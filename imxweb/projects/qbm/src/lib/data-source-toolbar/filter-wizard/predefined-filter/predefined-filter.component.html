@@ -1,35 +1,82 @@
-<ng-container *ngFor="let filter of filters">
-  <mat-card class="mat-elevation-z2" *ngIf="!hiddenFilterSet.has(filter.Name)">
-    <mat-card-content>
-      <h1 *ngIf="filter.Options.length > 1" class="imx-filter-title">{{ filter.Description || filter.Name }}</h1>
-      <mat-checkbox
-        *ngIf="filter.Options.length === 1"
-        [checked]="filter.CurrentValue"
-        (change)="onCheckboxFilterChanged(filter, filter.Options[0], $event)"
-        [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-' + filter.Name + '-' + filter.Options[0].Value"
-      >
-        {{ filter.Options[0].Display }}
-      </mat-checkbox>
-      <ng-container *ngIf="filter.Delimiter && filter.Options.length > 1">
-        <mat-checkbox
-          *ngFor="let fopt of filter.Options"
-          [checked]="filter.CurrentValue?.includes(fopt.Value)"
-          (change)="onCheckboxFilterChanged(filter, fopt, $event)"
-          [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-' + filter.Name + '-' + fopt.Value"
+<imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+<ng-container *ngFor="let filter of filters; index as index">
+  <div [ngClass]="{ hidden: isLoading }">
+    <mat-card class="mat-elevation-z2" *ngIf="!hiddenFilterSet.has(filter.Name ?? '')">
+      <mat-card-content>
+        <!-- Show the label if there is more than one option, or if the only option has a different label than the filter title. -->
+        <mat-label
+          *ngIf="
+            (filter.Options?.length ?? 0) > 1 ||
+            ((filter.Options?.length ?? 0) == 1 && filter.Options && filter.Options[0].Display != filter.Description)
+          "
+          class="imx-filter-title"
+          >{{ filter.Description || filter.Name }}</mat-label
         >
-          {{ fopt.Display }}
-        </mat-checkbox>
-      </ng-container>
-      <mat-radio-group *ngIf="!filter.Delimiter && filter.Options.length > 1" [value]="filter.CurrentValue">
-        <mat-radio-button
-          *ngFor="let foption of filter.Options"
-          [value]="foption.Value"
-          (change)="onRadioFilterChanged(filter, foption)"
-          [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-' + filter.Name + '-' + foption.Value"
-        >
-          <span>{{ foption.Display }}</span>
-        </mat-radio-button>
-      </mat-radio-group>
-    </mat-card-content>
-  </mat-card>
+        <ng-container [ngTemplateOutlet]="optionContent" [ngTemplateOutletContext]="{ $implicit: filter, index: index }"> </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </ng-container>
+
+<!-- template for the option listing -->
+
+<ng-template #optionContent let-filter let-index="index">
+  <mat-checkbox
+    *ngIf="filterTypes[index].type === filterTypeEnum.SingleCheck"
+    [checked]="filter.CurrentValue"
+    (change)="onCheckboxFilterChanged(filter, filter.Options[0], $event)"
+    [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-' + filter.Name + '-' + filter.Options[0].Value"
+  >
+    {{ filter.Options[0].Display }}
+  </mat-checkbox>
+  <ng-container *ngIf="filterTypes[index].type === filterTypeEnum.MultiCheck">
+    <mat-checkbox
+      *ngFor="let fopt of filter.Options"
+      [checked]="filter.CurrentValue?.includes(fopt.Value)"
+      (change)="onCheckboxFilterChanged(filter, fopt, $event)"
+      [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-' + filter.Name + '-' + fopt.Value"
+    >
+      {{ fopt.Display }}
+    </mat-checkbox>
+  </ng-container>
+  <eui-select
+    *ngIf="filterTypes[index].type === filterTypeEnum.SelectCheck"
+    class="imx-filter-title"
+    [multiple]="true"
+    [options]="filterTypes[index].options"
+    [placeholder]="'#LDS#Select one or more items' | translate"
+    [filterFunction]="searchFunction"
+    [feedbackMessages]="feedbackMessages"
+    [inputControl]="filterTypes[index].currentValue"
+    (selectionChange)="onMultiSelectFilterChanged(filter, $event)"
+    (optionsClear)="onClearFilter(filter)"
+    [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-' + filter.Name"
+  ></eui-select>
+
+  <mat-radio-group
+    *ngIf="filterTypes[index].type === filterTypeEnum.MultiRadio"
+    class="imx-filter-radio-group"
+    [value]="filter.CurrentValue"
+  >
+    <mat-radio-button
+      class="imx-filter-radio-button"
+      *ngFor="let foption of filter.Options"
+      [value]="foption.Value"
+      (change)="onRadioFilterChanged(filter, foption)"
+      [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-' + filter.Name + '-' + foption.Value"
+    >
+      <span>{{ foption.Display }}</span>
+    </mat-radio-button>
+  </mat-radio-group>
+  <eui-select
+    *ngIf="filterTypes[index].type === filterTypeEnum.SelectRadio"
+    [options]="filterTypes[index].options"
+    [placeholder]="'#LDS#Select an option' | translate"
+    [filterFunction]="searchFunction"
+    [feedbackMessages]="feedbackMessages"
+    [inputControl]="filterTypes[index].currentValue"
+    (selectionChange)="onSelectFilterChanged(filter, $event)"
+    (optionsClear)="onClearFilter(filter)"
+    [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-' + filter.Name"
+  ></eui-select>
+</ng-template>

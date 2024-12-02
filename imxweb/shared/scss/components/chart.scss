@@ -1,0 +1,63 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+
+.imx-chart {
+  &-container {
+    display: flex;
+
+    &-center {
+      @extend .imx-chart-container;
+      justify-content: center;
+    }
+
+    &-full {
+      width: 100%;
+      height: 100%;
+      margin: auto;
+      overflow: hidden;
+    }
+  }
+
+  &-card {
+    display: flex;
+    flex-grow: 1;
+
+    &-border {
+      @include eui-elevation-1;
+      @extend .imx-chart-card;
+      border: 1px solid $color-gray-10;
+    }
+  }
+
+  &-title {
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  &-paginator {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &-zoom {
+    cursor: crosshair;
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  .imx-chart-card-border {
+    border: 1px solid $color-gray-50;
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .imx-chart-card-border {
+    border: 1px solid $color-gray-70;
+  }
+}

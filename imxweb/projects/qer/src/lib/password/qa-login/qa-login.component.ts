@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,105 +24,148 @@
  *
  */
 
-import { Component, OnInit } from "@angular/core";
-import { CaptchaService, AuthenticationService, imx_SessionService, UserMessageService } from 'qbm';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PasswordResetAuthModel } from 'imx-api-qer';
-import { QerApiService } from "../../qer-api-client.service";
-import { EuiLoadingService } from "@elemental-ui/core";
-import { OverlayRef } from "@angular/cdk/overlay";
+import { EuiLoadingService } from '@elemental-ui/core';
+import { PasswordResetAuthModel } from '@imx-modules/imx-api-qer';
+import { ReCaptchaV3Service } from 'ng-recaptcha-2';
+import { AuthenticationService, CaptchaService, UserMessageService, imx_SessionService } from 'qbm';
+import { Subscription } from 'rxjs';
+import { QerApiService } from '../../qer-api-client.service';
 
+/**
+ * Handles question based authentication In Password Reset Portal
+ */
 @Component({
-	templateUrl: "./qa-login.component.html",
-	styleUrls: ["./qa-login.component.scss"]
+  templateUrl: './qa-login.component.html',
+  styleUrls: ['./qa-login.component.scss'],
 })
-export class QaLoginComponent implements OnInit {
-	constructor(private readonly authService: AuthenticationService,
-		private readonly qerApiService: QerApiService,
-		private readonly session: imx_SessionService,
-		private router: Router,
-		private readonly busyService: EuiLoadingService,
-		private readonly messageSvc: UserMessageService,
-		public readonly captchaSvc: CaptchaService) { }
+export class QaLoginComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
 
-	public ngOnInit(): void {
-	}
+  public userName = '';
 
-	pqa: PasswordResetAuthModel;
+  /**
+   * Questions based on user, which need to be answered.
+   */
+  public pqa: PasswordResetAuthModel | null;
+  public Answers: string[] = [];
 
-	userName = "";
+  constructor(
+    private readonly authService: AuthenticationService,
+    private readonly qerApiService: QerApiService,
+    private readonly session: imx_SessionService,
+    private router: Router,
+    private readonly busyService: EuiLoadingService,
+    private readonly messageSvc: UserMessageService,
+    private readonly recaptchaV3Service: ReCaptchaV3Service,
+    public readonly captchaSvc: CaptchaService,
+  ) {}
 
-	Answers: string[] = [];
+  public ngOnInit(): void {}
 
-	async LoadQuestions(noResetMessage?: boolean): Promise<void> {
+  /**
+   * Checks if the ReCaptcha was successful, if it was, then makes the passcode input visible.
+   * @param noResetMessage If true, then does not reset error message.
+   */
+  public async LoadQuestions(noResetMessage?: boolean): Promise<void> {
+    if (!noResetMessage) {
+      // reset the error message
+      this.messageSvc.subject.next(undefined);
+    }
 
-		if (!noResetMessage) {
-			// reset the error message
-			this.messageSvc.subject.next(undefined);
-		}
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
+    try {
+      if (this.captchaSvc.isReCaptchaV3) {
+        this.subscriptions.push(
+          this.recaptchaV3Service.execute('qaLogin').subscribe(async (token) => {
+            this.pqa = await this.qerApiService.v2Client.passwordreset_passwordquestions_account_post({
+              AccountName: this.userName,
+              Code: token,
+            });
 
-		let overlayRef: OverlayRef;
-		setTimeout(() => overlayRef = this.busyService.show());
-		try {
-			// use response code
-			const resp = this.captchaSvc.Response;
-			this.captchaSvc.Response = "";
+            this.Answers = new Array<string>(this.pqa.Questions?.length || 0).fill('');
+          }),
+        );
+      } else {
+        // use response code
+        const resp = this.captchaSvc.Response;
+        this.captchaSvc.Response = '';
 
-			this.pqa = await this.qerApiService.client.passwordreset_passwordquestions_account_post({
-				AccountName: this.userName,
-				Code: resp
-			});
+        this.pqa = await this.qerApiService.client.passwordreset_passwordquestions_account_post({
+          AccountName: this.userName,
+          Code: resp,
+        });
 
-			this.Answers = new Array<string>(this.pqa.Questions.length).fill("");
-		} catch (e) {
-			throw e;
-		} finally {
-			this.captchaSvc.ReinitCaptcha();
-			setTimeout(() => this.busyService.hide(overlayRef));
-		}
-	}
+        this.Answers = new Array<string>(this.pqa.Questions?.length || 0).fill('');
+      }
+    } catch (e) {
+      throw e;
+    } finally {
+      this.captchaSvc.ReinitCaptcha();
+      this.busyService.hide();
+    }
+  }
 
-	public async Login(): Promise<void> {
-		// reset the error message
-		this.messageSvc.subject.next(undefined);
-		let overlayRef: OverlayRef;
-		setTimeout(() => overlayRef = this.busyService.show());
-		try {
-			const newSession = await this.session.login({
-				__Product: "PasswordReset",
-				Module: "RoleBasedPasswordReset",
-				User: this.userName,
-				PasswordAnswer: this.pqa.Questions.map((q, idx) => q.Uid + "|" + this.Answers[idx]).reduce((x, y) => x + "|" + y)
-			});
+  /**
+   * Creates new session and logs in user in case of a correct answer.
+   */
+  public async Login(): Promise<void> {
+    // reset the error message
+    this.messageSvc.subject.next(undefined);
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
+    try {
+      const newSession = await this.session.login({
+        __Product: 'PasswordReset',
+        Module: 'RoleBasedPasswordReset',
+        User: this.userName,
+        PasswordAnswer: this.pqa?.Questions?.map((q, idx) => q.Uid + '|' + this.Answers[idx]).reduce((x, y) => x + '|' + y) || '',
+      });
 
-			if (newSession) {
-				await this.authService.processLogin(async () => newSession);
-				this.Reset();
-				this.router.navigate(['']);
-			}
-			else {
-				this.LoadQuestions(true);
-			}
-		} catch (e) {
-			// If the login fails, reload questions
-			this.LoadQuestions(true);
-			throw e;
-		} finally {
-			setTimeout(() => this.busyService.hide(overlayRef));
-		}
-	}
+      if (newSession) {
+        await this.authService.processLogin(async () => newSession);
+        this.Reset();
+        this.router.navigate(['']);
+      } else {
+        this.LoadQuestions(true);
+      }
+    } catch (e) {
+      // If the login fails, reload questions
+      this.LoadQuestions(true);
+      throw e;
+    } finally {
+      this.busyService.hide();
+    }
+  }
 
-	trackByFn(index: any, item: any) {
-		return index;
-	}
+  public trackByFn(index: any, item: any) {
+    return index;
+  }
 
-	AllQuestionsAnswered(): boolean {
-		const unanswered = this.Answers ? this.Answers.filter(a => !a).length : 0;
-		return unanswered == 0;
-	}
+  /**
+   * Checks if all the loaded answers were answered by the user.
+   */
+  public AllQuestionsAnswered(): boolean {
+    const unanswered = this.Answers ? this.Answers.filter((a) => !a).length : 0;
+    return unanswered == 0;
+  }
 
-	Reset() {
-		this.pqa = null;
-		this.Answers = [];
-	}
+  /**
+   * Changes the view to ReCaptcha view and deletes loaded questions and answers.
+   */
+  public Reset() {
+    this.pqa = null;
+    this.Answers = [];
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  public LdsKeyCannotLogin =
+    '#LDS#You cannot log in using the secret password questions. You have not set up any or not enough password questions and answers. Log in using a different method.';
 }

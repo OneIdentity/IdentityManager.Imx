@@ -1,0 +1,7 @@
+.eui-sidesheet-content{
+  display: flex;
+  flex-direction: column;
+  .mat-mdc-card{
+    overflow: hidden;
+  }
+}

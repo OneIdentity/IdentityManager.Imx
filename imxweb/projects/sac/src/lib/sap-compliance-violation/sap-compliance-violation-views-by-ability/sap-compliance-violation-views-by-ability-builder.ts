@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { DbObjectKey, EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { DbObjectKey, EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { SapComplianceByAbilityEntity } from './sap-compliance-violation-views-by-ability-entity';
-import { SAPUserFunctionSrcFLD } from 'imx-api-sac';
+import { SAPUserFunctionSrcFLD } from '@imx-modules/imx-api-sac';
 
 export class SapComplianceByAbilityBuilder {
   public readonly entitySchema = SapComplianceByAbilityEntity.GetEntitySchema();

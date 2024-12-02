@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,28 +23,30 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-import { Component, Inject, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
-import { EventType, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
+import { Component, ErrorHandler, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Event, EventType, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import {
   AuthenticationService,
+  ClassloggerService,
+  ConfirmationService,
   IeWarningService,
   ImxTranslationProviderService,
   ISessionState,
   MenuService,
+  Message,
   SplashService,
   SystemInfoService,
+  UserMessageService,
 } from 'qbm';
 
-import { ProjectConfigurationService, UserModelService, SettingsComponent, QerApiService } from 'qer';
+import { ProjectConfigurationService, QerApiService, SettingsComponent, UserModelService } from 'qer';
 
-import { ProfileSettings, QerProjectConfig } from 'imx-api-qer';
-import { ProjectConfig } from 'imx-api-qbm';
 import { MatDialog } from '@angular/material/dialog';
-import { EuiLoadingService, EuiTheme, EuiThemeService, EuiTopNavigationItem } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { APP_BASE_HREF } from '@angular/common';
+import { EuiTheme, EuiThemeService, EuiTopNavigationItem } from '@elemental-ui/core';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
+import { ProfileSettings, QerProjectConfig } from '@imx-modules/imx-api-qer';
 import { getBaseHref, HEADLESS_BASEHREF } from './app.module';
 
 @Component({
@@ -56,12 +58,13 @@ export class AppComponent implements OnInit, OnDestroy {
   public menuItems: EuiTopNavigationItem[];
   public isLoggedIn = false;
   public hideMenu = false;
-  public hideUserMessage = false;
   public showPageContent = true;
+  public message: Message | undefined;
   private routerStatus: EventType;
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
+    private readonly logger: ClassloggerService,
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
     private readonly splash: SplashService,
@@ -75,8 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly themeService: EuiThemeService,
     private readonly errorHandler: ErrorHandler,
     private readonly translationProvider: ImxTranslationProviderService,
-    private readonly translateService: TranslateService,
-    @Inject(APP_BASE_HREF) private baseHref: string
+    private readonly confirmationService: ConfirmationService,
+    private readonly userMessageService: UserMessageService,
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
@@ -89,33 +92,49 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.isLoggedIn = sessionState.IsLoggedIn;
+        this.isLoggedIn = sessionState.IsLoggedIn ?? false;
         if (this.isLoggedIn) {
-          // Close the splash screen that opened in app service initialisation
-          // Needs to close here when running in containers (auth skipped)
-          splash.close();
-
-          const config: QerProjectConfig & ProjectConfig = await projectConfig.getConfig();
-          const features = (await userModelService.getFeatures()).Features;
-          const systemInfo = await systemInfoService.get();
-          const groups = (await userModelService.getGroups()).map((group) => group.Name || '');
-          const isUseProfileLangChecked = (await this.qerClient.v2Client.portal_profile_get()).UseProfileLanguage ?? false;
-          // Set session culture if isUseProfileLangChecked is true, set browser culture otherwise
+          const isUseProfileLangChecked = (await this.qerClient.client.portal_profile_get()).UseProfileLanguage ?? false;
+          // Set session culture if isUseProfileLangChecked is true
           if (isUseProfileLangChecked) {
-            await this.translationProvider.init(sessionState.culture, sessionState.cultureFormat);
-          } else {
-            const browserCulture = this.translateService.getBrowserCultureLang();
-            await this.translationProvider.init(browserCulture);
+            // Use culture if available, if not fetch
+            const culture = sessionState.culture
+              ? sessionState.culture
+              : (await this.qerClient.client.portal_profile_person_get())?.ProfileLanguage;
+            // If culture is found, use it, otherwise fallback to the app default
+            if (culture) {
+              this.logger.debug(this, `ProfileLangChecked is true, culture available: Setting ${culture} as profile language`);
+              await this.translationProvider.reinit(culture, sessionState.cultureFormat ?? culture, this.router);
+            }
           }
 
-          this.menuItems = await menuService.getMenuItems(systemInfo.PreProps, features, true, config, groups);
+          const config: QerProjectConfig & ProjectConfig = await projectConfig.getConfig();
+          const features = (await userModelService.getFeatures()).Features ?? [];
+          const systemInfo = await systemInfoService.get();
+          const groups = (await userModelService.getGroups()).map((group) => group.Name || '');
 
           ieWarningService.showIe11Banner();
 
-          this.applyProfileSettings();
+          await this.applyProfileSettings();
+          this.menuItems = await menuService.getMenuItems(systemInfo.PreProps ?? [], features, true, config, groups);
+          // Close the splash screen that opened in app service initialisation
+          // Needs to close here when running in containers (auth skipped)
+          splash.close();
         }
-      })
+      }),
     );
+
+    this.subscriptions.push(
+      this.userMessageService.subject.subscribe((message) => {
+        this.message = message;
+        if (!!this.message && this.message.type === 'error' && !this.message.target) {
+          this.confirmationService.showErrorMessage({
+            Message: this.message?.text,
+          });
+        }
+      }),
+    );
+
     this.setupRouter();
   }
 
@@ -139,7 +158,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.authentication.update();
+    await this.authentication.update();
   }
 
   public ngOnDestroy(): void {
@@ -167,31 +186,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setupRouter(): void {
-    this.router.events.subscribe((event: RouterEvent) => {
+    this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
-        this.hideUserMessage = true;
         this.routerStatus = event.type;
         if (this.isLoggedIn && event.url === '/') {
           // show the splash screen, when the user logs out!
           this.splash.init({ applicationName: 'One Identity Manager Portal' });
         }
       }
-
-      if (event instanceof NavigationCancel) {
-        this.hideUserMessage = false;
-        this.routerStatus = event.type;
-      }
-
       if (event instanceof NavigationEnd) {
-        this.hideUserMessage = false;
+        this.routerStatus = event.type;
         this.hideMenu = event.url === '/';
         this.showPageContent = true;
-        this.routerStatus = event.type;
-      }
-
-      if (event instanceof NavigationError) {
-        this.hideUserMessage = false;
-        this.routerStatus = event.type;
       }
     });
   }

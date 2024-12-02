@@ -5,17 +5,13 @@
 </div>
 
 <div *ngIf="parameterizedText" class="imx-product-detail" data-imx-identifier="default-request-display-assignment">
-  <imx-parameterized-text [parameterizedText]="parameterizedText"></imx-parameterized-text> 
-  <span *ngIf="additionalText"> 
-    {{'; ' + additionalText}}
-  </span>
+  <imx-parameterized-text [parameterizedText]="parameterizedText" [additionalText]="additionalText"></imx-parameterized-text>
 </div>
 
-<div *ngIf="!personWantsOrg.Assignment.value" class="imx-product-detail">
-  <span>{{'#LDS#Recipient' | translate}}: </span>
-  <span data-imx-identifier="default-request-display-recipient">{{
-    personWantsOrg.DisplayPersonOrdered?.Column?.GetDisplayValue() }}</span>
-  <span *ngIf="additionalText"> 
-    {{'; ' + additionalText}}
+<div *ngIf="!parameterizedText && !personWantsOrg.Assignment.value" class="imx-product-detail-block">
+  <span>{{ '#LDS#Recipient' | translate }}: </span>
+  <span data-imx-identifier="default-request-display-recipient">{{ personWantsOrg.DisplayPersonOrdered?.Column?.GetDisplayValue() }}</span>
+  <span *ngIf="additionalText">
+    {{ '; ' + additionalText }}
   </span>
 </div>

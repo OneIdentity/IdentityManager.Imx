@@ -1,19 +1,26 @@
 <div class="imx-application-content" *ngIf="application; else noneSelected">
   <div class="imx-application-details">
     <div class="imx-application-details-header">
-      <img *ngIf="application.JPegPhoto?.value?.length; else noImage" [src]="getImageUrl(application)" class="imx-application-details-icon" />
+      <img
+        *ngIf="application.JPegPhoto?.value?.length; else noImage"
+        [src]="getImageUrl(application)"
+        class="imx-application-details-image"
+      />
       <ng-template #noImage>
-        <eui-icon size="xl" icon="application" class="imx-application-details-icon"></eui-icon>
+        <eui-icon icon="application" size="42px"></eui-icon>
       </ng-template>
       <div class="imx-application-details-title">
-        <div>{{ application.GetEntity().GetDisplay() }}</div>
-        <imx-info-button *ngIf="selectedTabIndex === 3" [title]="'#LDS#Heading Identities With Access' | translate" [templateRef]="dialogContent"></imx-info-button>  
+        <h3>{{ application.GetEntity().GetDisplay() }}</h3>
+        <imx-info-button
+          *ngIf="selectedTabIndex === 3"
+          [title]="'#LDS#Heading Identities With Access' | translate"
+          [templateRef]="dialogContent"
+        ></imx-info-button>
       </div>
       <div class="imx-application-details-subtitle">{{ application.Description.Column.GetDisplayValue() }}</div>
-      
     </div>
   </div>
-  <mat-tab-group class="imx-tab-group" (selectedTabChange)="onSelectedTabChanged($event)">
+  <mat-tab-group mat-stretch-tabs="false" class="imx-aob" (selectedTabChange)="onSelectedTabChanged($event)">
     <mat-tab label="{{ '#LDS#Details' | translate }}" data-imx-identifier="app-details">
       <ng-template matTabContent>
         <imx-application-details [application]="application"></imx-application-details>
@@ -21,7 +28,7 @@
     </mat-tab>
     <mat-tab label="{{ '#LDS#Info' | translate }}" data-imx-identifier="app-info">
       <ng-template matTabContent>
-        <imx-application-hyperview [uidApplication]="application.UID_AOBApplication.value"></imx-application-hyperview>
+        <imx-object-hyperview [objectType]="hyperviewTableName" [objectUid]="application.UID_AOBApplication.value"> </imx-object-hyperview>
       </ng-template>
     </mat-tab>
     <mat-tab label="{{ '#LDS#KPI' | translate }}" data-imx-identifier="app-kpi">
@@ -43,14 +50,14 @@
 </div>
 
 <ng-template #dialogContent>
-  <p translate>
-    #LDS#Here you can get an overview of identities that have access to at least one application entitlement of this application. Additionally, you can view which application entitlements the respective identities have access to.
+  <p>
+    {{ ldsIdentitiesWithAccessInfoText | translate }}
   </p>
 </ng-template>
 
 <ng-template #noneSelected>
-  <div class="imx-application-content imx-application-content-no-app">
-    <eui-icon size="100px" icon="application"></eui-icon>
+  <div class="imx-application-content imx-application-content-no-app imx-no-results">
+    <eui-icon icon="application"></eui-icon>
     <ng-container *ngIf="totalCount; else noApps">
       <span class="imx-application-content-no-app-text">{{ '#LDS#No Application Selected' | translate }}</span>
       <span class="imx-application-content-no-app-description">{{ '#LDS#Select an application to view its details.' | translate }}</span>
@@ -59,7 +66,14 @@
       <span class="imx-application-content-no-app-text">
         {{ (keywords ? '#LDS#No application found' : '#LDS#No applications available') | translate }}
       </span>
-      <button *ngIf="isAdmin && !isLoading" mat-raised-button color="primary" (click)="createApplication()" class="imx-application-content-create-app" data-imx-identifier="button-create-app">
+      <button
+        *ngIf="isAdmin && !isLoading"
+        mat-flat-button
+        color="primary"
+        (click)="createApplication()"
+        class="imx-application-content-create-app"
+        data-imx-identifier="button-create-app"
+      >
         {{ '#LDS#Create new application' | translate }}
       </button>
     </ng-template>

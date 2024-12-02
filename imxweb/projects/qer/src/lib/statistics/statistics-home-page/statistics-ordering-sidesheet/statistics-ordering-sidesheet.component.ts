@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,13 +28,12 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-import { EuiSidesheetRef, EuiTheme, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef, EuiTheme } from '@elemental-ui/core';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { isEqual } from 'lodash';
-import { ConfirmationService, DataSourceToolbarSettings } from 'qbm';
+import { ConfirmationService, DataSourceToolbarSettings, isMobile } from 'qbm';
 import { Subscription } from 'rxjs';
-import { GenericStatisticEntity, StatisticsDataService, StatisticsToolbarSettings } from '../statistics-data.service';
-import { StatisticsOrderingSidesheetDialogComponent } from './statistics-ordering-sidesheet-dialog/statistics-ordering-sidesheet-dialog.component';
-
+import { GenericStatisticEntity, StatisticsDataService } from '../statistics-data.service';
 
 @Component({
   selector: 'imx-statistics-ordering-sidesheet',
@@ -60,7 +59,7 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
     public dataService: StatisticsDataService,
     public sidesheetRef: EuiSidesheetRef,
     private dialogService: MatDialog,
-    private confirmService: ConfirmationService
+    private confirmService: ConfirmationService,
   ) {}
 
   public get dataHasntChanged(): boolean {
@@ -73,7 +72,7 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public get hasData(): boolean {
-    return this.dstSettings.dataSource.Data.length > 0;
+    return !!this.dstSettings.dataSource?.Data.length;
   }
 
   public get searchHasData(): boolean {
@@ -81,12 +80,18 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
+    return isMobile();
   }
 
   public get theme(): string {
     const bodyClasses = document.body.classList;
-    return bodyClasses.contains(EuiTheme.LIGHT) ? EuiTheme.LIGHT : (bodyClasses.contains(EuiTheme.DARK) ? EuiTheme.DARK : (bodyClasses.contains(EuiTheme.CONTRAST) ? EuiTheme.CONTRAST : ''));
+    return bodyClasses.contains(EuiTheme.LIGHT)
+      ? EuiTheme.LIGHT
+      : bodyClasses.contains(EuiTheme.DARK)
+        ? EuiTheme.DARK
+        : bodyClasses.contains(EuiTheme.CONTRAST)
+          ? EuiTheme.CONTRAST
+          : '';
   }
 
   public ngOnInit(): void {
@@ -95,7 +100,7 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
         if (this.dataHasntChanged || (await this.confirmService.confirmLeaveWithUnsavedChanges())) {
           this.sidesheetRef.close();
         }
-      })
+      }),
     );
     this.dstSettings = {
       dataSource: this.dataService.dataSourceCopy,
@@ -115,11 +120,13 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
   public initalizeData(): void {
     // Determine which sort the data is in, since we clone the data ahead of time
     this.isSortDescending =
-      this.dstSettings.dataSource.totalCount > 1 ? this.dstSettings.dataSource.Data[0].GetEntity().GetDisplay() < this.dstSettings.dataSource.Data[1].GetEntity().GetDisplay() : true;
+      this.dstSettings.dataSource != null && (this.dstSettings.dataSource?.totalCount || 0) > 1
+        ? this.dstSettings.dataSource.Data[0].GetEntity().GetDisplay() < this.dstSettings.dataSource.Data[1].GetEntity().GetDisplay()
+        : true;
 
     // Here we create a new list of favorites and set the associated checkboxes based on if its already a favorite or not
     this.orderStats = Array<GenericStatisticEntity>(this.data.orderStatIds.length);
-    this.dstSettings.dataSource.Data.forEach((entity: GenericStatisticEntity) => {
+    this.dstSettings.dataSource?.Data.forEach((entity: GenericStatisticEntity) => {
       const id = this.dataService.getId(entity);
       const index = this.data.orderStatIds.findIndex((favId) => favId === id);
       if (index !== -1) {
@@ -132,29 +139,20 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
     });
   }
 
-  public async showInfo(): Promise<void> {
-    await this.dialogService
-      .open(StatisticsOrderingSidesheetDialogComponent, {
-        width: '420px',
-      })
-      .afterClosed()
-      .toPromise();
-  }
-
   public closeWithData(): void {
     this.sidesheetRef.close(this.orderStats);
   }
 
-  public onSettingsChanged(settings: StatisticsToolbarSettings): void {
-    this.isSearch = settings.navigationState.search?.length > 0;
-    this.searchStats = this.isSearch ? (settings.dataSource.Data) : [];
+  public onSettingsChanged(settings: DataSourceToolbarSettings): void {
+    this.isSearch = !!settings.navigationState.search?.length;
+    this.searchStats = this.isSearch ? (settings.dataSource?.Data as GenericStatisticEntity[]) : [];
   }
 
-  public toggleStat(stat: GenericStatisticEntity, event: MatCheckboxChange): void {
+  public toggleStat(stat: TypedEntity, event: MatCheckboxChange): void {
     const id = this.dataService.getId(stat);
     this.checkboxes[id] = event.checked;
     if (event.checked) {
-      this.orderStats.push(stat);
+      this.orderStats.push(stat as GenericStatisticEntity);
     } else {
       this.orderStats = this.orderStats.filter((favStat) => this.dataService.getId(favStat) !== id);
     }
@@ -170,7 +168,7 @@ export class StatisticsOrderingSidesheetComponent implements OnInit, OnDestroy {
 
   public toggleSort(): void {
     this.isSortDescending = !this.isSortDescending;
-    this.dstSettings.dataSource.Data.reverse();
+    this.dstSettings.dataSource?.Data.reverse();
     this.searchStats.reverse();
   }
 

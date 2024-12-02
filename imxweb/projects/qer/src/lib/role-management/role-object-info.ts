@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { RoleExtendedDataWrite } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from 'imx-qbm-dbts';
-import { DataSourceToolbarExportMethod } from 'qbm';
+import { RoleExtendedDataWrite } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolbarExportMethod, HelpContextualValues } from 'qbm';
 import { IRoleRestoreHandler } from './restore/restore-handler';
 import { IRoleDataModel } from './role-data-model.interface';
 import { IRoleEntitlements } from './role-entitlements/entitlement-handlers';
@@ -65,16 +65,21 @@ export interface RoleObjectInfo {
   resp?: any;
   admin?: any;
   adminSchema?: EntitySchema;
-  adminHasHierarchy?:boolean;
+  adminHasHierarchy?: boolean;
   respHasHierarchiy?: boolean;
   dataModel?: IRoleDataModel;
-  adminCanCreate?: boolean;
-  respCanCreate?: boolean;
+  adminCanCreate?: () => Promise<boolean>;
+  respCanCreate?: () => Promise<boolean>;
   interactiveResp?: InteractiveEntityType;
   interactiveAdmin?: InteractiveEntityType;
   entitlements?: IRoleEntitlements;
   membership?: IRoleMembershipType;
   canUseRecommendations?: boolean;
   translateKeys?: RoleTranslateKeys;
-  exportMethod?: (navigationState: CollectionLoadParameters, isAdmin: boolean) => DataSourceToolbarExportMethod
+  exportMethod?: (navigationState: CollectionLoadParameters, isAdmin: boolean) => DataSourceToolbarExportMethod;
+
+  /** ID to inject into the HelpContextualService  */
+  respHelpContextId?: HelpContextualValues;
+  /** ID to inject into the HelpContextualService  */
+  adminHelpContextId?: HelpContextualValues;
 }

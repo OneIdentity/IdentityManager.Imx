@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,17 @@
  */
 
 import { FormControl } from '@angular/forms';
-import { PortalPoliciesViolations } from 'imx-api-pol';
+import { PortalPoliciesViolations } from '@imx-modules/imx-api-pol';
 import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 
 export class PolicyViolationExtended extends PortalPoliciesViolations {
-  public formControl = new FormControl<string | undefined>(undefined);
+  public formControl = new FormControl<string | string[]>('', { nonNullable: true });
 
   public mitigatingCdr: ColumnDependentReference;
-  constructor(public editable, readonly original: PortalPoliciesViolations) {
+  constructor(
+    public editable,
+    readonly original: PortalPoliciesViolations,
+  ) {
     super(original.GetEntity());
     if (!editable) {
       this.mitigatingCdr = new BaseReadonlyCdr(original.UID_MitigatingControl.Column);

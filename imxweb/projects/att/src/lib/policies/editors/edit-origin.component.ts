@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
+import { FormArray, FormGroup, UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { ParmOpt } from 'imx-api-att';
+import { ParmOpt } from '@imx-modules/imx-api-att';
 import { ClassloggerService } from 'qbm';
 import { FilterChangedArgument } from './filter-changed-argument.interface';
 import { FilterElementModel } from './filter-element-model';
@@ -36,12 +36,12 @@ import { FilterElementModel } from './filter-element-model';
 @Component({
   templateUrl: './edit-origin.component.html',
   selector: 'imx-edit-origin',
-  styleUrls: ['./edit-origin.component.scss']
+  styleUrls: ['./edit-origin.component.scss'],
 })
 export class EditOriginComponent implements OnInit, OnDestroy {
-
   public candidates: ParmOpt[];
-  public readonly control = new UntypedFormArray([]);
+  public readonly control = new FormArray<UntypedFormControl>([]);
+  public form: FormGroup<{ candidates: FormArray<UntypedFormControl> }> = new FormGroup({ candidates: this.control });
 
   @Input() public filterElementModel: FilterElementModel;
   @Input() public identifier: string;
@@ -52,18 +52,17 @@ export class EditOriginComponent implements OnInit, OnDestroy {
   private selectedParameter: string[];
   private valueChangedSubscription: Subscription;
 
-  constructor(private readonly logger: ClassloggerService) { }
+  constructor(private readonly logger: ClassloggerService) {}
 
   public ngOnInit(): void {
-
     if (this.filterElementModel == null) {
       return;
     }
-    this.candidates = this.filterElementModel.getParameterData(this.filterElementModel?.attestationSubType).Options;
+    this.candidates = this.filterElementModel.getParameterData(this.filterElementModel?.attestationSubType).Options || [];
 
     this.selectedParameter = this.splitStringAndRemoveQuotes(this.filterElementModel?.parameterValue, ',');
 
-    this.candidates.forEach(elem => {
+    this.candidates.forEach((elem) => {
       this.control.push(new UntypedFormControl(this.isSelected(elem)));
       this.logger.trace(this, 'control added for candidate', elem);
     });
@@ -71,8 +70,8 @@ export class EditOriginComponent implements OnInit, OnDestroy {
     this.valueChangedSubscription = this.control.valueChanges.subscribe(() =>
       this.valueChanged.emit({
         ParameterValue: this.buildNewParameterValue(),
-        displays: this.buildDisplay()
-      })
+        displays: this.buildDisplay(),
+      }),
     );
   }
 
@@ -84,7 +83,7 @@ export class EditOriginComponent implements OnInit, OnDestroy {
 
   private buildNewParameterValue(): string {
     const elements = this.control.value;
-    const returnValue = [];
+    const returnValue: string[] = [];
     elements.forEach((element: any, index: number) => {
       if (element) {
         returnValue.push(`'${this.candidates[index].Uid}'`);
@@ -97,7 +96,7 @@ export class EditOriginComponent implements OnInit, OnDestroy {
 
   private buildDisplay(): string[] {
     const elements = this.control.value;
-    const returnValue = [];
+    const returnValue: string[] = [];
     elements.forEach((element: any, index: number) => {
       if (element) {
         returnValue.push(`'${this.candidates[index].Display}'`);
@@ -108,12 +107,11 @@ export class EditOriginComponent implements OnInit, OnDestroy {
   }
 
   private isSelected(option: ParmOpt): boolean {
-    return this.selectedParameter.includes(option.Uid);
+    return this.selectedParameter.includes(option.Uid || '');
   }
 
   private splitStringAndRemoveQuotes(listString: string, separator: string): string[] {
     const splitted = listString.split(separator);
-    return splitted.map(str => str.substring(1, str.length - 1));
+    return splitted.map((str) => str.substring(1, str.length - 1));
   }
-
 }

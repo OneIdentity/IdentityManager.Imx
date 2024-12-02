@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,37 +25,37 @@
  */
 
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
+import { OutstandingComponent } from 'dpr';
 import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
-import { ObjectOverviewComponent } from './object-overview/object-overview.component';
-import { JobsComponent } from './processes/jobs/jobs.component';
-import { JournalComponent } from './journal/journal.component';
-import { UnresolvedRefsComponent } from './unresolved-refs/unresolved-refs.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DataChangesComponent } from './data-changes/data-changes.component';
+import { DbQueueComponent } from './db-queue/db-queue.component';
+import { OutstandingManagerGuardService } from './guards/outstanding-manager-guard.service';
+import { SystemStatusRouteGuardService } from './guards/system-status-route-guard.service';
 import { SystemStatusComponent } from './information/system-status/system-status.component';
-import { WebApplicationsComponent } from './web-applications/web-applications.component';
-import { ServiceAvailabilityComponent } from './service-report/service-availability.component';
-import { ServicesInactiveComponent } from './service-report/services-inactive.component';
+import { JournalComponent } from './journal/journal.component';
+import { ObjectOverviewComponent } from './object-overview/object-overview.component';
 import { FrozenJobsComponent } from './processes/frozen-jobs/frozen-jobs.component';
 import { JobChainsComponent } from './processes/job-chains/job-chains.component';
 import { JobHistoryComponent } from './processes/job-history/job-history.component';
 import { JobPerformanceComponent } from './processes/job-performance/job-performance.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { JobsComponent } from './processes/jobs/jobs.component';
+import { ObjectsByIdComponent } from './processes/objects-by-id/objects-by-id.component';
+import { ServiceAvailabilityComponent } from './service-report/service-availability.component';
+import { ServicesInactiveComponent } from './service-report/services-inactive.component';
 import { SyncInformationComponent } from './sync/sync-information/sync-information.component';
 import { SyncJournalComponent } from './sync/sync-journal/sync-journal.component';
-import { OutstandingComponent } from 'dpr';
-import { SystemStatusRouteGuardService } from './guards/system-status-route-guard.service';
-import { OutstandingManagerGuardService } from './guards/outstanding-manager-guard.service';
-import { ObjectsByIdComponent } from './processes/objects-by-id/objects-by-id.component';
-import { DataChangesComponent } from './data-changes/data-changes.component';
-import { DbQueueComponent } from './db-queue/db-queue.component';
+import { UnresolvedRefsComponent } from './unresolved-refs/unresolved-refs.component';
+import { WebApplicationsComponent } from './web-applications/web-applications.component';
 
 const routes: Routes = [
   {
     path: '',
     component: LoginComponent,
     canActivate: [AuthenticationGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'start',
@@ -182,7 +182,7 @@ const routes: Routes = [
     path: 'DataChanges',
     component: DataChangesComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'DbQueue',
@@ -190,11 +190,11 @@ const routes: Routes = [
     canActivate: [RouteGuardService],
     resolve: [RouteGuardService],
   },
-  { path: '**', redirectTo: 'start' }
+  { path: '**', redirectTo: 'start' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

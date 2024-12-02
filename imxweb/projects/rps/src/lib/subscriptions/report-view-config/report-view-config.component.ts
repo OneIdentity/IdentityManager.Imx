@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,21 @@
  */
 
 import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
-import { FormArray, FormControl, FormGroup, UntypedFormControl, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { BaseCdr, BusyService, ColumnDependentReference, ErrorService } from 'qbm';
+import { BaseCdr, BusyService, calculateSidesheetWidth, ColumnDependentReference, ErrorService } from 'qbm';
+import { ListReportViewerService } from '../../list-report-viewer/list-report-viewer.service';
+import { ListReportViewerSidesheetComponent } from '../list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
 import { ReportSubscription } from '../report-subscription/report-subscription';
 import { ReportSubscriptionService } from '../report-subscription/report-subscription.service';
-import { ListReportViewerSidesheetComponent } from '../list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
-import { ListReportViewerService } from '../../list-report-viewer/list-report-viewer.service';
 
 interface reportForm {
   viewType: FormControl<'view' | 'export'>;
-  reportTable: FormControl<string>;
-  exportType: FormControl<string>
+  reportTable: FormControl<string | undefined>;
+  exportType: FormControl<string | undefined>;
   parameters: FormArray<any>;
 }
 @Component({
@@ -49,12 +49,12 @@ interface reportForm {
 })
 export class ReportViewConfigComponent implements OnDestroy {
   public readonly reportFormGroup = new FormGroup<reportForm>({
-    viewType: new FormControl('view'),
-    reportTable: new FormControl(undefined, Validators.required),
-    exportType: new FormControl(undefined),
-    parameters: new FormArray([]),
+    viewType: new FormControl('view', { nonNullable: true }),
+    reportTable: new FormControl(undefined, { nonNullable: true, validators: Validators.required }),
+    exportType: new FormControl(undefined, { nonNullable: true }),
+    parameters: new FormArray<any>([]),
   });
-  public newSubscription: ReportSubscription;
+  public newSubscription: ReportSubscription | undefined;
   public parameterCdrList: ColumnDependentReference[] = [];
   public formatCdr: ColumnDependentReference;
   public busyService = new BusyService();
@@ -84,26 +84,26 @@ export class ReportViewConfigComponent implements OnDestroy {
     private readonly cdref: ChangeDetectorRef,
     private readonly translate: TranslateService,
     private readonly viewReportService: ListReportViewerService,
-    errorService: ErrorService
+    errorService: ErrorService,
   ) {
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
         this.sidesheetRef.close(false);
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.busyService.busyStateChanged.subscribe((elem) => {
         this.isLoading = elem;
         this.cdref.detectChanges();
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.reportFormGroup.controls.reportTable.valueChanges.subscribe(async (val) => {
         const isBusy = this.busyService.beginBusy();
         try {
-          this.uidReport = val;
+          this.uidReport = val ?? '';
           this.formControls.clear();
 
           // Standard caption is "Format (e-mail attachment)" -> change
@@ -122,17 +122,16 @@ export class ReportViewConfigComponent implements OnDestroy {
             this.formatCdr = new BaseCdr(this.newSubscription.subscription.ExportFormat.Column, format);
             this.parameterCdrList = [...this.newSubscription.getParameterCdr()];
             this.cdref.detectChanges();
-          } else this.newSubscription = null;
+          } else this.newSubscription = undefined;
         } finally {
           isBusy.endBusy();
-          this.reportIsLoaded = this.newSubscription != null;
+          this.reportIsLoaded = !!this.newSubscription;
         }
-      })
+      }),
     );
 
     this.disposable = errorService.setTarget('sidesheet');
   }
-
 
   public ngOnDestroy(): void {
     // sometimes there are problems with usage of disposed components
@@ -147,13 +146,19 @@ export class ReportViewConfigComponent implements OnDestroy {
     if (this.reportFormGroup.controls.viewType.value === 'view' && this.isListReport) {
       await this.viewReportInTable();
     } else {
-      this.reportSubscriptionService.downloadSubsciption(this.newSubscription);
+      if (this.newSubscription) {
+        this.reportSubscriptionService.downloadSubsciption(this.newSubscription);
+      }
     }
   }
 
-  public addFormControl(control: UntypedFormControl): void {
+  public addFormControl(control: AbstractControl): void {
     this.formControls.push(control);
     this.cdref.detectChanges();
+  }
+
+  public addExportControl(control: AbstractControl): void {
+    this.reportFormGroup.controls.exportType = control.value;
   }
 
   private async viewReportInTable(): Promise<void> {
@@ -161,9 +166,9 @@ export class ReportViewConfigComponent implements OnDestroy {
     const data = { dataService: this.viewReportService, subscription: this.newSubscription };
     this.sideSheet.open(ListReportViewerSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Report').toPromise(),
-      subTitle: this.newSubscription.subscription.GetEntity().GetDisplay(),
+      subTitle: this.newSubscription?.subscription.GetEntity().GetDisplay(),
       padding: '0',
-      width: 'max(550px,55%)',
+      width: calculateSidesheetWidth(),
       testId: 'report-view-config-report-viewer',
       data,
     });

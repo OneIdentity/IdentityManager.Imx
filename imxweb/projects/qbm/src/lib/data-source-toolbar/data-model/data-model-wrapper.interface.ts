@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,12 @@
  *
  */
 
-import { DataModel, GroupInfoData } from 'imx-qbm-dbts';
+import { DataModel, GroupInfoData } from '@imx-modules/imx-qbm-dbts';
 import { GroupInfoLoadParameters } from './group-info-load-parameters.interface';
 
 export interface DataModelWrapper {
   dataModel: DataModel;
-  getGroupInfo?: (parameters: GroupInfoLoadParameters) => Promise<GroupInfoData>;
+  getGroupInfo?: (parameters: GroupInfoLoadParameters) => Promise<GroupInfoData | undefined>;
   groupingFilterOptions?: string[];
   groupingExcludedColumns?: string[];
 }

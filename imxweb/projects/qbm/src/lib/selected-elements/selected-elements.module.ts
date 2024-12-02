@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,6 @@ import { SelectedElementsComponent } from './selected-elements.component';
 import { SelectedElementsDialog } from './selected-elements-dialog/selected-elements-dialog.component';
 import { DataTableModule } from '../data-table/data-table.module';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
-
 
 @NgModule({
   declarations: [SelectedElementsComponent, SelectedElementsDialog],

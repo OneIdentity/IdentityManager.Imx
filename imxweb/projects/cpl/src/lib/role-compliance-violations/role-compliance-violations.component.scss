@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -14,13 +14,9 @@
   overflow: hidden;
 }
 
-.imx-tab-body{
+.imx-tab-body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   overflow: auto;
-}
-
-.imx-helper-alert {
-  margin-bottom: 20px;
 }

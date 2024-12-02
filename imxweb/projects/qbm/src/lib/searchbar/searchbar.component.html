@@ -1,26 +1,47 @@
-<div (focusout)="onComponentLostFocus($event)" style="display: flex">
+<div (focusout)="onComponentLostFocus($event)" class="imx-search-component">
   <div #searchbar class="imx-searchbar-control">
-    <mat-card class="imx-searchbar-card">
+    <mat-card [ngClass]="{ 'imx-display-card': !noEntriesVisible }" class="imx-searchbar-card">
       <mat-card-content class="imx-searchbar-card-content">
         <div class="imx-searchbar-table">
-          <a #searchBtn mat-icon-button class="imx-searchbar-tablecellsmall" href="javascript:void(0)"
-            (click)="searchInternal(input.value)" data-imx-identifier="searchbar-button-searchInternal">
-            <eui-icon icon="search" size="21px" [title]="'#LDS#WD_SearchItem' | translate"></eui-icon>
-          </a>
-          <input type="text" class="imx-searchbar-input" [placeholder]="watermark" aria-label="searchbox" #input
-            (keyup)="search(input.value, $event)" matInput [matAutocomplete]="auto" (focus)="onInputFocus()"
-            (focusout)="onInputLostFocus()" data-imx-identifier="searchbar-input-searchText" />
-          <mat-autocomplete #auto="matAutocomplete" class="imx-searchbar-ac" panelWidth="auto"
-            (optionSelected)="handleSelection($event)" [displayWith]="displayItem"
-            data-imx-identifier="searchbar-autocomplete">
+          <div class="imx-search-input">
+            <button
+              #searchBtn
+              mat-icon-button
+              class="imx-button-icon-hover-info imx-searchbar-tablecellsmall"
+              (click)="searchInternal(input.value)"
+              data-imx-identifier="searchbar-button-searchInternal"
+            >
+              <eui-icon icon="search" size="21px" [title]="'#LDS#Search' | translate"></eui-icon>
+            </button>
+            <input
+              type="text"
+              class="imx-input-searchbar"
+              [placeholder]="watermark"
+              aria-label="searchbox"
+              #input
+              (keyup)="search(input.value, $event)"
+              matInput
+              [matAutocomplete]="auto"
+              (focus)="onInputFocus()"
+              (focusout)="onInputLostFocus()"
+              data-imx-identifier="searchbar-input-searchText"
+            />
+            <mat-spinner [diameter]="24" *ngIf="isLoading" class="imx-margin-right-10"></mat-spinner>
+          </div>
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            class="imx-autocomplete-icon"
+            panelWidth="auto"
+            (optionSelected)="handleSelection($event)"
+            [displayWith]="displayItem"
+            data-imx-identifier="searchbar-autocomplete"
+          >
             <mat-option *ngFor="let link of searchResults" [value]="link">
               <ng-template [ngIf]="resultTemplate">
-                <ng-container [ngTemplateOutlet]="resultTemplate" [ngTemplateOutletContext]="{ $implicit: link }">
-                </ng-container>
+                <ng-container [ngTemplateOutlet]="resultTemplate" [ngTemplateOutletContext]="{ $implicit: link }"> </ng-container>
               </ng-template>
               <ng-template [ngIf]="!resultTemplate">
-                <ng-container [ngTemplateOutlet]="DefaultTemplate" [ngTemplateOutletContext]="{ $implicit: link }">
-                </ng-container>
+                <ng-container [ngTemplateOutlet]="DefaultTemplate" [ngTemplateOutletContext]="{ $implicit: link }"> </ng-container>
               </ng-template>
             </mat-option>
           </mat-autocomplete>
@@ -31,12 +52,21 @@
   </div>
   <div class="imx-searchbar-tablefilter">
     <mat-form-field>
-      <mat-select #tableSelect placeholder="{{ '#LDS#Search in' | translate }}" [formControl]="tables"
-        [(value)]="selectedTables" multiple panelClass="imx-searchbar-select" (selectionChange)="selectedTableChanges()"
-        (focus)="onSelectFocus()" (focusout)="onSelectLostFocus()" [id]="filterComponentId"
-        data-imx-identifier="searchbar-select-tablefilter">
+      <mat-select
+        #tableSelect
+        placeholder="{{ '#LDS#Search in' | translate }}"
+        [formControl]="tables"
+        [(value)]="selectedTables"
+        multiple
+        (selectionChange)="selectedTableChanges()"
+        (focus)="onSelectFocus()"
+        (focusout)="onSelectLostFocus()"
+        [id]="filterComponentId"
+        data-imx-identifier="searchbar-select-tablefilter"
+      >
         <mat-option *ngFor="let table of tableList" [value]="searchService.GetTableValue(table)">{{
-          searchService.GetTableDisplay(table) }}</mat-option>
+          searchService.GetTableDisplay(table)
+        }}</mat-option>
       </mat-select>
     </mat-form-field>
   </div>

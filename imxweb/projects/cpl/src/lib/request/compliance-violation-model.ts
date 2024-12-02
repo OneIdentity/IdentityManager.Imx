@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { ComplianceViolation, PortalRules } from 'imx-api-cpl';
+import { ComplianceViolation, PortalRules } from '@imx-modules/imx-api-cpl';
 import { ColumnDependentReference } from 'qbm';
 
 export interface ApplicableRule {

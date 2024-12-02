@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 /**
  * Interface that represents a menu item and the typed entity attached to the correspondig tile.

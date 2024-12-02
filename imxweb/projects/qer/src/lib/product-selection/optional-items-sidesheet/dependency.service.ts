@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalShopServiceitems, ServiceItemHierarchy } from 'imx-api-qer';
-import { EntitySchema, IWriteValue, MultiValue, TypedEntity } from 'imx-qbm-dbts';
+import { PortalShopServiceitems, ServiceItemHierarchy } from '@imx-modules/imx-api-qer';
+import { EntitySchema, IWriteValue, MultiValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../../qer-api-client.service';
 import { ServiceItemHierarchyExtended, ServiceItemTreeWrapper } from '../service-item-order.interface';
 
@@ -35,7 +35,10 @@ import { ServiceItemHierarchyExtended, ServiceItemTreeWrapper } from '../service
   providedIn: 'root',
 })
 export class DependencyService {
-  constructor(private readonly qerClient: QerApiService, private busyService: EuiLoadingService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private busyService: EuiLoadingService,
+  ) {}
 
   public get PortalShopServiceItemsSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalShopServiceitems.GetSchema();
@@ -49,12 +52,12 @@ export class DependencyService {
 
   public countOptional(tree: ServiceItemHierarchy): number {
     let count = 0;
-    if (tree?.Optional.length > 0) {
+    if (!!tree?.Optional?.length) {
       // Count number of optional, and apply this to all children
       count += tree.Optional.length;
       count = tree.Optional.map((childTree) => this.countOptional(childTree)).reduce((a, b) => a + b, count);
     }
-    if (tree?.Mandatory.length > 0) {
+    if (!!tree?.Mandatory?.length) {
       // Apply only to children
       count = tree.Mandatory.map((childTree) => this.countOptional(childTree)).reduce((a, b) => a + b, count);
     }
@@ -63,44 +66,48 @@ export class DependencyService {
 
   public extendTree(
     tree: ServiceItemHierarchy,
-    options?: {
+    options: {
       Recipients?: string[];
       UidRecipients?: string[];
+      UidPersonsValidFor?: string[];
       isMandatory: boolean;
       isChecked: boolean;
       isIndeterminate: boolean;
       parentChecked: boolean;
       parentUid?: string;
-    }
+    },
   ): ServiceItemHierarchyExtended {
     const extendedTree: ServiceItemHierarchyExtended = {
-      Display: tree.Display,
-      UidAccProduct: tree.UidAccProduct,
+      Display: tree.Display || '',
+      UidAccProduct: tree.UidAccProduct || '',
       Mandatory: [],
       Optional: [],
+      UidPersonsValidFor: tree.UidPersonsValidFor,
       ...options,
     };
     const parentUid = tree.UidAccProduct;
-    if (tree?.Mandatory.length > 0) {
+    if (!!tree?.Mandatory?.length) {
       extendedTree.Mandatory = tree.Mandatory.map((childTree) =>
         this.extendTree(childTree, {
           isMandatory: true,
+          UidPersonsValidFor: childTree.UidPersonsValidFor,
           isChecked: true,
           isIndeterminate: !(options.isChecked && options.parentChecked),
           parentUid,
           parentChecked: options.isChecked,
-        })
+        }),
       );
     }
-    if (tree?.Optional.length > 0) {
+    if (!!tree?.Optional?.length) {
       extendedTree.Optional = tree.Optional.map((childTree) =>
         this.extendTree(childTree, {
           isMandatory: false,
+          UidPersonsValidFor: childTree.UidPersonsValidFor,
           isChecked: false,
           isIndeterminate: !(options.isChecked && options.parentChecked),
           parentUid,
           parentChecked: options.isChecked,
-        })
+        }),
       );
     }
     return extendedTree;
@@ -108,7 +115,7 @@ export class DependencyService {
 
   public async checkForOptionalTree(
     serviceItems: PortalShopServiceitems[],
-    recipients: IWriteValue<string>
+    recipients: IWriteValue<string>,
   ): Promise<ServiceItemTreeWrapper> {
     const allTrees: ServiceItemTreeWrapper = {
       trees: [],
@@ -135,10 +142,10 @@ export class DependencyService {
               isIndeterminate: false,
               parentChecked: true,
             });
-            allTrees.trees.push(extendedhierarchy);
+            allTrees?.trees?.push(extendedhierarchy);
             optionalCount += thisCount;
           }
-        })
+        }),
       );
       allTrees.totalOptional = optionalCount;
     } finally {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { Client } from 'imx-api-qbm';
-import { DbObjectKey } from 'imx-qbm-dbts';
+import { Client } from '@imx-modules/imx-api-qbm';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import { ISessionState, DbObjectInfo } from 'qbm';
 import { ImxApiDataMock, ImxApiDtoMock } from '../test-utilities/imx-api-mock.spec';
 
@@ -49,19 +49,19 @@ export class SessionServiceSpy {
   private dummySearchGetResponse: Promise<DbObjectInfo[]> = Promise.resolve([
     { Key: new DbObjectKey('testtable', 'aKey'), Display: 'theDisplay' },
     { Key: new DbObjectKey('testtable', 'anotherKey'), Display: 'anotherDisplay' },
-    { Key: new DbObjectKey('testtable', 'aThirdKey'), Display: 'aThirdDisplay' }
+    { Key: new DbObjectKey('testtable', 'aThirdKey'), Display: 'aThirdDisplay' },
   ]);
 
   private dummyEntityCollectionData = Promise.resolve({
     Display: 'dummyDisplay',
     LongDisplay: 'dummyLongDisplay',
     Keys: ['', '', '', '', '', '', '', '', '', ''],
-    Columns: {}
+    Columns: {},
   });
 
   private historyEvents = [
     { ChangeTime: new Date(2019, 1, 1), IsRemoveEvent: true },
-    { ChangeTime: new Date(2019, 1, 2), IsRemoveEvent: true }
+    { ChangeTime: new Date(2019, 1, 2), IsRemoveEvent: true },
   ];
 
   public dummyTranslationDict: {
@@ -79,11 +79,11 @@ export class SessionServiceSpy {
   public dummyProviderUrl = 'dummyProviderUrl';
   public dummyCaptions = {
     text1_key: 'text1_value',
-    text2_key: 'text2_value'
+    text2_key: 'text2_value',
   } as { [key: string]: string };
 
   public dummyTypedEntityCollection = {
-    totalCount: 10
+    totalCount: 10,
   } as TypedEntityCollectionMock;
 
   public dbQueue = ImxApiDataMock.CreateDbQueue();
@@ -117,14 +117,14 @@ export class SessionServiceSpy {
         call: false,
         push: {},
         sms: false,
-        verify: {}
+        verify: {},
       },
       systemStatusInformation: {
         IsDbSchedulerDisabled: true,
         IsJobServiceDisabled: false,
         IsCompilationRequired: true,
-        IsInMaintenanceMode: true
-      }
+        IsInMaintenanceMode: true,
+      },
     };
     return jasmine.createSpyObj('Client', {
       imx_metadata_table_get: Promise.resolve({ Display: this.dummyMetaTableDisplay }),
@@ -138,7 +138,7 @@ export class SessionServiceSpy {
       opsupport_queue_object_get: Promise.resolve({
         DbQueue: ImxApiDtoMock.CreateEntityDataCollection(this.dbQueue),
         JobQueue: ImxApiDtoMock.CreateEntityDataCollection(this.jobQueue),
-        Unsupported: false
+        Unsupported: false,
       }),
       opsupport_queue_reactivatejob_post: this.dummyEntityCollectionData,
       opsupport_search_get: this.dummySearchGetResponse,
@@ -148,30 +148,32 @@ export class SessionServiceSpy {
       opsupport_starling_verify_get: Promise.resolve(config.starlingApi.verify),
       opsupport_sync_summary_get: Promise.resolve(),
       opsupport_systemstatus_get: Promise.resolve(config.systemStatusInformation),
-      opsupport_systemstatus_post: Promise.resolve(config.systemStatusInformation)
+      opsupport_systemstatus_post: Promise.resolve(config.systemStatusInformation),
     });
   }
 
   private getSessionStateSpy(): jasmine.Spy {
-    return jasmine.createSpy('getSessionState').and.returnValue(Promise.resolve({
-      IsLoggedOut: true,
-      IsLoggedIn: this.currentState.isLoggedIn,
-      Config: this.sessionResponseConfig,
-      SecondaryAuthName: this.dummySecondaryAuthName,
-      UserUid: this.dummyUserUid,
-      Status: {
-        PrimaryAuth: {
-          IsAuthenticated: this.currentState.isLoggedIn
-        }
-      }
-    }));
+    return jasmine.createSpy('getSessionState').and.returnValue(
+      Promise.resolve({
+        IsLoggedOut: true,
+        IsLoggedIn: this.currentState.isLoggedIn,
+        Config: this.sessionResponseConfig,
+        SecondaryAuthName: this.dummySecondaryAuthName,
+        UserUid: this.dummyUserUid,
+        Status: {
+          PrimaryAuth: {
+            IsAuthenticated: this.currentState.isLoggedIn,
+          },
+        },
+      }),
+    );
   }
 
   private getLogoutSpy(): jasmine.Spy {
     return jasmine.createSpy('logout').and.returnValue(
       Promise.resolve({
-        IsLoggedOut: true
-      })
+        IsLoggedOut: true,
+      }),
     );
   }
 
@@ -180,8 +182,8 @@ export class SessionServiceSpy {
       Promise.resolve({
         IsLoggedIn: true,
         Config: this.sessionResponseConfig,
-        Username: this.dummyUserName
-      } as ISessionState)
+        Username: this.dummyUserName,
+      } as ISessionState),
     );
   }
 }

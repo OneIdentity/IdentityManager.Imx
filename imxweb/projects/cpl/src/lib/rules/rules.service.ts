@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,30 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { ComplianceFeatureConfig, PortalRules, V2ApiClientMethodFactory } from 'imx-api-cpl';
-import {  } from 'imx-api-cpl';
-import { CollectionLoadParameters, DataModel, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection, MethodDefinition, MethodDescriptor } from 'imx-qbm-dbts';
+import { ComplianceFeatureConfig, PortalRules, V2ApiClientMethodFactory } from '@imx-modules/imx-api-cpl';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  MethodDefinition,
+  MethodDescriptor,
+} from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, DataSourceToolbarExportMethod } from 'qbm';
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RulesService {
-  private busyIndicator: OverlayRef;
-
   constructor(
     private apiservice: ApiService,
     private busyService: EuiLoadingService,
-    private appConfig: AppConfigService
-  ) { }
+    private appConfig: AppConfigService,
+  ) {}
 
   public get ruleSchema(): EntitySchema {
     return this.apiservice.typedClient.PortalRules.GetSchema();
@@ -53,9 +57,11 @@ export class RulesService {
     return this.apiservice.client.portal_compliance_config_get();
   }
 
-  public async getRules(parameter?: CollectionLoadParameters)
-    : Promise<ExtendedTypedEntityCollection<PortalRules, unknown>> {
-    return this.apiservice.typedClient.PortalRules.Get(parameter);
+  public async getRules(
+    parameter?: CollectionLoadParameters,
+    signal?: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalRules, unknown>> {
+    return this.apiservice.typedClient.PortalRules.Get(parameter, { signal });
   }
 
   public exportRules(parameter: CollectionLoadParameters): DataSourceToolbarExportMethod {
@@ -64,13 +70,13 @@ export class RulesService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_rules_get({...parameter, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_rules_get({ ...parameter, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_rules_get({...parameter, withProperties})
+          method = factory.portal_rules_get({ ...parameter, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
   public async getDataModel(): Promise<DataModel> {
@@ -87,18 +93,12 @@ export class RulesService {
   }
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      this.busyIndicator = this.busyService.show();
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
-
 }

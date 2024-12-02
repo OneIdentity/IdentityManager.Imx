@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,12 @@
  *
  */
 
-import { IWriteValue, MultiValue } from 'imx-qbm-dbts';
+import { IWriteValue, MultiValue } from '@imx-modules/imx-qbm-dbts';
 
 export class RecipientsWrapper {
-  public get uids(): string[] { return MultiValue.FromString(this.recipients?.value).GetValues(); }
+  public get uids(): string[] {
+    return MultiValue.FromString(this.recipients?.value).GetValues();
+  }
 
   constructor(private readonly recipients: IWriteValue<string>) {}
 }

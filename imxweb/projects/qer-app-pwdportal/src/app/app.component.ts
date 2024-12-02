@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,25 @@
  */
 
 import { Component, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
-import { EventType, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
+import { Event, EventType, NavigationEnd, NavigationStart, Router, RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { AppConfigService, AuthenticationService, ISessionState, ImxTranslationProviderService, SplashService } from 'qbm';
 import { MatDialog } from '@angular/material/dialog';
+import { EuiTheme, EuiThemeService } from '@elemental-ui/core';
+import { ProfileSettings } from '@imx-modules/imx-api-qer';
+import {
+  AppConfigService,
+  AuthenticationService,
+  ClassloggerService,
+  ConfirmationService,
+  ImxTranslationProviderService,
+  ISessionState,
+  Message,
+  SplashService,
+  UserMessageService,
+} from 'qbm';
 import { QerApiService, SettingsComponent } from 'qer';
-import { EuiLoadingService, EuiTheme, EuiThemeService } from '@elemental-ui/core';
-import { ProfileSettings } from 'imx-api-qer';
 import { getBaseHref, HEADLESS_BASEHREF } from './app.module';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'imx-root',
@@ -43,12 +52,13 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class AppComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
-  public hideUserMessage = false;
   public showPageContent = true;
+  public message: Message | undefined;
   private routerStatus: EventType;
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
+    private readonly logger: ClassloggerService,
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
     private readonly splash: SplashService,
@@ -58,7 +68,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly themeService: EuiThemeService,
     private readonly errorHandler: ErrorHandler,
     private readonly translationProvider: ImxTranslationProviderService,
-    private readonly translateService: TranslateService
+    private readonly confirmationService: ConfirmationService,
+    private readonly userMessageService: UserMessageService,
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
@@ -71,15 +82,20 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.isLoggedIn = sessionState.IsLoggedIn;
+        this.isLoggedIn = sessionState.IsLoggedIn ?? false;
         if (this.isLoggedIn) {
-          const isUseProfileLangChecked = (await this.qerClient.v2Client.passwordreset_profile_get()).UseProfileLanguage ?? false;
-          // Set session culture if isUseProfileLangChecked is true, set browser culture otherwise
+          const isUseProfileLangChecked = (await this.qerClient.client.passwordreset_profile_get()).UseProfileLanguage ?? false;
+          // Set session culture if isUseProfileLangChecked is true
           if (isUseProfileLangChecked) {
-            await this.translationProvider.init(sessionState.culture, sessionState.cultureFormat);
-          } else {
-            const browserCulture = this.translateService.getBrowserCultureLang();
-            await this.translationProvider.init(browserCulture);
+            // Use culture if available, if not fetch
+            const culture = sessionState.culture
+              ? sessionState.culture
+              : (await this.qerClient.client.passwordreset_profile_person_get())?.ProfileLanguage;
+            // If culture is found, use it, otherwise fallback to the app default
+            if (culture) {
+              this.logger.debug(this, `ProfileLangChecked is true, culture available: Setting ${culture} as profile language`);
+              await this.translationProvider.reinit(culture, sessionState.cultureFormat ?? culture, this.router);
+            }
           }
 
           // Close the splash screen that opened in app service initialisation
@@ -87,14 +103,25 @@ export class AppComponent implements OnInit, OnDestroy {
           this.splash.close();
           this.applyProfileSettings();
         }
-      })
+      }),
+    );
+
+    this.subscriptions.push(
+      this.userMessageService.subject.subscribe((message) => {
+        this.message = message;
+        if (!!this.message && this.message.type === 'error' && !this.message.target) {
+          this.confirmationService.showErrorMessage({
+            Message: this.message?.text,
+          });
+        }
+      }),
     );
 
     this.setupRouter();
   }
 
   public async ngOnInit(): Promise<void> {
-    this.authentication.update();
+    await this.authentication.update();
   }
 
   public ngOnDestroy(): void {
@@ -114,35 +141,23 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setupRouter(): void {
-    this.router.events.subscribe((event: RouterEvent) => {
+    this.router.events.subscribe((event: Event & RouterEvent) => {
       if (event instanceof NavigationStart) {
-        this.hideUserMessage = true;
         this.routerStatus = event.type;
         if (this.isLoggedIn) {
           if (event.url === '/') {
             // show the splash screen, when the user logs out!
             this.splash.init({ applicationName: 'Password Reset Portal' });
-          } else if (event.url === `/${this.config.Config.routeConfig.start}`) {
+          } else if (event.url === `/${this.config.Config.routeConfig?.start}`) {
             // closes the splash-screen, if its displayed between Login and Dashboard
             this.splash.close();
           }
         }
       }
 
-      if (event instanceof NavigationCancel) {
-        this.hideUserMessage = false;
-        this.routerStatus = event.type;
-      }
-
       if (event instanceof NavigationEnd) {
-        this.hideUserMessage = false;
+        this.routerStatus = event.type;
         this.showPageContent = true;
-        this.routerStatus = event.type;
-      }
-
-      if (event instanceof NavigationError) {
-        this.hideUserMessage = false;
-        this.routerStatus = event.type;
       }
     });
   }

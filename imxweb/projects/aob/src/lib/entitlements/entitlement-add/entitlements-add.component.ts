@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,34 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit, Inject } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 
+import { EntitlementSystemRoleInput } from '@imx-modules/imx-api-aob';
 import {
-  DataSourceToolbarSettings,
-  ClassloggerService,
-  HELPER_ALERT_KEY_PREFIX,
-  StorageService,
-  MetadataService,
-  DataSourceToolbarFilter,
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import {
+  calculateSidesheetWidth,
   CdrFactoryService,
+  ClassloggerService,
+  DataViewInitParameters,
+  DataViewSource,
+  HELPER_ALERT_KEY_PREFIX,
+  MetadataService,
+  SettingsService,
+  StorageService,
 } from 'qbm';
-import { CollectionLoadParameters, IClientProperty, EntitySchema, DisplayColumns, TypedEntity, FilterData } from 'imx-qbm-dbts';
-import { EntitlementsService } from '../entitlements.service';
 import { AddEntitlementParameter, EntitlementSourceType, EntitlementsType } from '../entitlements.model';
-import { EntitlementSystemRoleInput } from 'imx-api-aob';
+import { EntitlementsService } from '../entitlements.service';
 import { SystemRoleConfigComponent } from './system-role-config/system-role-config.component';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_addNewEntitlements`;
@@ -54,15 +63,13 @@ const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_addNewEntitlements`;
   selector: 'imx-entitlements-add',
   templateUrl: './entitlements-add.component.html',
   styleUrls: ['./entitlements-add.component.scss'],
+  providers: [DataViewSource],
 })
 export class EntitlementsAddComponent implements OnInit {
   public readonly EntitlementsType = EntitlementsType; // Enables use of this Enum in Angular Templates.
   public readonly DisplayColumns = DisplayColumns; // Enables use of this static class in Angular Templates.
-  public settings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
-  public navigationState: CollectionLoadParameters;
   public displayedColumns: IClientProperty[] = [];
-  public highlightedEntity: TypedEntity;
   public selectedSourceType: EntitlementsType = EntitlementsType.UnsGroup;
   public isSystemRolesEnabled: boolean;
   public entitlementsLabel: string;
@@ -74,8 +81,6 @@ export class EntitlementsAddComponent implements OnInit {
     return !this.storageService.isHelperAlertDismissed(helperAlertKey);
   }
 
-  private filters: DataSourceToolbarFilter[];
-
   constructor(
     public readonly sidesheetRef: EuiSidesheetRef,
     @Inject(EUI_SIDESHEET_DATA) private data: AddEntitlementParameter,
@@ -86,6 +91,8 @@ export class EntitlementsAddComponent implements OnInit {
     private readonly metaData: MetadataService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translateService: TranslateService,
+    public dataSource: DataViewSource,
+    public readonly settingsService: SettingsService,
   ) {
     this.selectedSourceType = data.defaultType;
     this.isSystemRolesEnabled = data.isSystemRolesEnabled;
@@ -97,14 +104,14 @@ export class EntitlementsAddComponent implements OnInit {
     await this.metaData.updateNonExisting(['ESet', 'UNSGroup', 'QERResource', 'RPSReport', 'TSBAccountDef']);
 
     this.entitlementSourceTypes = [
-      { entitlementsType: EntitlementsType.UnsGroup, display: this.metaData.tables.UNSGroup.Display },
-      { entitlementsType: EntitlementsType.Qerresource, display: this.metaData.tables.QERResource.Display },
-      { entitlementsType: EntitlementsType.Rpsreport, display: this.metaData.tables.RPSReport.Display },
-      { entitlementsType: EntitlementsType.Tsbaccountdef, display: this.metaData.tables.TSBAccountDef.Display },
+      { entitlementsType: EntitlementsType.UnsGroup, display: this.metaData.tables.UNSGroup?.Display || '' },
+      { entitlementsType: EntitlementsType.Qerresource, display: this.metaData.tables.QERResource?.Display || '' },
+      { entitlementsType: EntitlementsType.Rpsreport, display: this.metaData.tables.RPSReport?.Display || '' },
+      { entitlementsType: EntitlementsType.Tsbaccountdef, display: this.metaData.tables.TSBAccountDef?.Display || '' },
     ];
 
     if (this.isSystemRolesEnabled) {
-      this.entitlementSourceTypes.unshift({ entitlementsType: EntitlementsType.Eset, display: this.metaData.tables.ESet.Display });
+      this.entitlementSourceTypes.unshift({ entitlementsType: EntitlementsType.Eset, display: this.metaData.tables.ESet?.Display || '' });
     }
 
     await this.useSource(this.selectedSourceType);
@@ -132,10 +139,9 @@ export class EntitlementsAddComponent implements OnInit {
   public async onCreateRole(): Promise<void> {
     const entitlementSystemRoleInput: EntitlementSystemRoleInput = await this.sidesheet
       .open(SystemRoleConfigComponent, {
-        // TODO: make LDS Heading
-        title: await this.translateService.get('#LDS#Create new system role').toPromise(),
+        title: await this.translateService.get('#LDS#Heading Create Empty System Role').toPromise(),
         padding: '0px',
-        width: 'max(500px, 50%)',
+        width: calculateSidesheetWidth(800, 0.5),
         testId: 'create-role-sidesheet',
         data: { uid: this.data.uidApplication, createOnly: true },
       })
@@ -158,7 +164,7 @@ export class EntitlementsAddComponent implements OnInit {
       .open(SystemRoleConfigComponent, {
         title: await this.translateService.get('#LDS#Heading Merge Application Entitlements into System Role').toPromise(),
         padding: '0px',
-        width: 'max(500px, 50%)',
+        width: calculateSidesheetWidth(800, 0.5),
         testId: 'add-to-existing-role-sidesheet',
         data: { uid: this.data.uidApplication, createOnly: false },
       })
@@ -188,77 +194,41 @@ export class EntitlementsAddComponent implements OnInit {
     this.selections = selection;
   }
 
-  public onHighlightedEntityChanged(entity: TypedEntity): void {
-    this.highlightedEntity = entity;
-  }
-
-  public onNavigationStateChanged(newState: CollectionLoadParameters): void {
-    this.navigationState = newState;
-    this.updateCandidates();
-  }
-
-  public onSearch(keywords: string): void {
-    this.logger.debug(this, `Searching for: ${keywords}`);
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    this.updateCandidates();
-  }
-
-  public async onFilterByTree(filters: FilterData[]): Promise<void> {
-    this.navigationState.filter = filters;
-    this.updateCandidates();
-  }
-
   private async useSource(type: EntitlementsType): Promise<void> {
     this.selectedSourceType = type;
     this.entitySchema = this.entitlementsProvider.candidateSchema(type);
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
-    try {
-      this.filters = (await this.entitlementsProvider.getDataModel(type))?.Filters;
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
-    }
 
+    let dataModel: DataModel | undefined = undefined;
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
+    try {
+      dataModel = await this.entitlementsProvider.getDataModel(type);
+    } finally {
+      this.busyService.hide();
+    }
     this.displayedColumns = this.getDisplayedColumnsForEntitlement(this.entitySchema, type);
-    this.navigationState = { StartIndex: 0, PageSize: 25 };
-    this.highlightedEntity = null;
-
-    this.updateCandidates();
-  }
-
-  private async updateCandidates(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
-    try {
-      this.logger.debug(this, 'Get candidates from the server...');
-      const data = await this.entitlementsProvider.getCandidates(this.selectedSourceType, this.navigationState);
-
-      this.settings = {
-        dataSource: data,
-        displayedColumns: this.displayedColumns,
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        filters: this.filters,
-        filterTree:
-          this.selectedSourceType === EntitlementsType.UnsGroup
-            ? {
-                filterMethode: async (parentkey) => {
-                  return this.entitlementsProvider.getEntitlementsFilterTree({
-                    parentkey,
-                  });
-                },
-                multiSelect: false,
-              }
-            : undefined,
-      };
-
-      if (data == null) {
-        this.logger.error(this, 'TypedEntityCollectionData<TypedEntity> is undefined');
-      }
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
-    }
+    this.dataSource.state.set({ PageSize: this.settingsService?.DefaultPageSize, StartIndex: 0 });
+    const dataViewInitParameters: DataViewInitParameters<TypedEntity> = {
+      execute: (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<TypedEntity> | undefined> =>
+        this.entitlementsProvider.getCandidates(this.selectedSourceType, params),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel,
+      selectionChange: (selection: Array<TypedEntity>) => this.onSelectionChanged(selection),
+      filterTree:
+        this.selectedSourceType === EntitlementsType.UnsGroup
+          ? {
+              filterMethode: async (parentkey) => {
+                return this.entitlementsProvider.getEntitlementsFilterTree({
+                  parentkey,
+                });
+              },
+              multiSelect: false,
+            }
+          : undefined,
+    };
+    await this.dataSource.init(dataViewInitParameters);
   }
 
   private getDisplayedColumnsForEntitlement(entitySchema: EntitySchema, type: EntitlementsType): IClientProperty[] {

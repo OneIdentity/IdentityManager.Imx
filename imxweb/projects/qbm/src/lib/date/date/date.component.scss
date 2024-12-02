@@ -2,22 +2,3 @@
   display: flex;
   align-items: center;
 }
-
-mat-form-field {
-  flex-grow: 1;
-
-  [matsuffix] {
-
-    margin-left: 10px; // set margin to infix
-
-    eui-icon {
-      margin-top: unset; // correct margin-top: -16px from _material_fixes.scss
-      display: block;
-    }
-
-    mat-spinner {
-      display: inline-flex;
-      margin-right: 10px;
-    }
-  }
-}

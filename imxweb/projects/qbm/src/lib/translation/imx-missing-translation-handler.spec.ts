@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,27 +27,31 @@
 import { ImxMissingTranslationHandler } from './imx-missing-translation-handler';
 
 describe('imx_MissingTranslationHandler', () => {
-    [
-        {
-            text: 'text',
-            expected: 'text'
-        },
-        {
-            text: '#LDS#text',
-            expected: 'text'
-        },
-        {
-            text: '#LDS##LDS#text',
-            expected: '#LDS#text'
-        },
-        {
-            text: 'text#LDS#',
-            expected: 'text#LDS#'
-        }
-    ].forEach(testcase => it('should provide a handle method', () => {
-        expect(new ImxMissingTranslationHandler().handle({
-            key: testcase.text,
-            translateService: null
-        })).toEqual(testcase.expected);
-    }));
+  [
+    {
+      text: 'text',
+      expected: 'text',
+    },
+    {
+      text: '#LDS#text',
+      expected: 'text',
+    },
+    {
+      text: '#LDS##LDS#text',
+      expected: '#LDS#text',
+    },
+    {
+      text: 'text#LDS#',
+      expected: 'text#LDS#',
+    },
+  ].forEach((testcase) =>
+    it('should provide a handle method', () => {
+      expect(
+        new ImxMissingTranslationHandler().handle({
+          key: testcase.text,
+          translateService: null,
+        }),
+      ).toEqual(testcase.expected);
+    }),
+  );
 });

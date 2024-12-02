@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RoleDetailComponent } from './role-detail.component';
 
@@ -32,11 +32,10 @@ describe('RoleDetailComponent', () => {
   let component: RoleDetailComponent;
   let fixture: ComponentFixture<RoleDetailComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RoleDetailComponent ]
-    })
-    .compileComponents();
+      declarations: [RoleDetailComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

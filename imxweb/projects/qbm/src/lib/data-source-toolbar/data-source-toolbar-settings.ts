@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { TypedEntity, TypedEntityCollectionData, CollectionLoadParameters, EntitySchema, DataModel } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, EntitySchema, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
 import { FilterTreeParameter } from './data-model/filter-tree-parameter';
 import { DataSourceToolbarExportMethod } from './data-source-toolbar-export-method.interface';
@@ -40,7 +40,7 @@ export interface DataSourceToolbarSettings {
    * The datasource of the toolbar.
    * Basically this is a collection of typed entities.
    */
-  dataSource: TypedEntityCollectionData<TypedEntity>;
+  dataSource: TypedEntityCollectionData<TypedEntity> | undefined;
 
   /**
    * Describes which chunk of data is currently loaded.
@@ -103,9 +103,4 @@ export interface DataSourceToolbarSettings {
       }
    */
   exportMethod?: DataSourceToolbarExportMethod;
-
-  /**
-   * List of filtered columns, that can not be edited in the UI.
-   */
-  staticFilterColumns?: string[];
 }

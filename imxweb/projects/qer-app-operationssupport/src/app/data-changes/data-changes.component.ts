@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,48 +24,35 @@
  *
  */
 
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { FormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { EuiBadgeComponent, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import {
+  EuiDatePickerComponent,
+  EuiLoadingService,
+  EuiSelectFeedbackMessages,
+  EuiSelectOption,
+  EuiSidesheetService,
+} from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import moment from 'moment';
 
-import { ChangeType as ChangeTypeEnum, HistoryOperation } from 'imx-api-qbm';
+import { ChangeType as ChangeTypeEnum, HistoryOperation } from '@imx-modules/imx-api-qbm';
+import { BusyService, calculateSidesheetWidth, SettingsService } from 'qbm';
 import { DataChangesSidesheetComponent } from './data-changes-sidesheet/data-changes-sidesheet.component';
 import { DataChangesService } from './data-changes.service';
 
 export interface Column {
   name: string;
   title: string;
-  value: (row: HistoryOperation) => string;
+  value: (row: HistoryOperation) => string | undefined;
 }
 
 export interface SearchType {
   name: string;
   value: string;
 }
-
-export interface ChangeType {
-  name: string;
-  title: string;
-  value: number;
-}
-
-const searchFormValidator: ValidatorFn = (searchForm: UntypedFormGroup) => {
-  if (searchForm.get('backToDateFormControl').enabled && searchForm.get('backFromDateFormControl').enabled) {
-    if (searchForm.get('backToDateFormControl').value && searchForm.get('backFromDateFormControl').value) {
-      let backToDate: Date = searchForm.get('backToDateFormControl').value;
-      let backFromDate: Date = searchForm.get('backFromDateFormControl').value;
-
-      if (backToDate >= backFromDate) return { isValid: false };
-    }
-  }
-
-  return null;
-};
 
 @Component({
   selector: 'imx-data-changes',
@@ -74,134 +61,144 @@ const searchFormValidator: ValidatorFn = (searchForm: UntypedFormGroup) => {
 })
 export class DataChangesComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('fromDateControl') fromDateControl: EuiDatePickerComponent;
+  @ViewChild('toDateControl') toDateControl: EuiDatePickerComponent;
 
-  public paginatorConfigurations = {
-    size: 20,
-    sizeOptions: [20, 50, 100],
-    showFirstLastButtons: false,
-  };
+  public paginatorConfigurations: { size: number; sizeOptions: number[]; showFirstLastButtons: boolean };
   public dataSource: MatTableDataSource<HistoryOperation>;
   public columns: Column[];
   public displayedColumns: string[];
+  public feedbackMessages: EuiSelectFeedbackMessages;
 
-  public searchForm = new UntypedFormGroup(
-    {
-      usernameFormControl: new UntypedFormControl('', [Validators.required]),
-      backToDateFormControl: new UntypedFormControl('', [Validators.required]),
-      backFromDateFormControl: new UntypedFormControl('', [Validators.required]),
-      changeTypeFormControl: new UntypedFormControl('', [Validators.required]),
-    },
-    { validators: searchFormValidator },
-  );
+  public searchForm = new FormGroup({
+    usernameFormControl: new UntypedFormControl('', Validators.required),
+    changeTypeFormControl: new UntypedFormControl(['']),
+    fromDateFormControl: new UntypedFormControl('', { updateOn: 'blur', validators: Validators.required }),
+    toDateFormControl: new UntypedFormControl('', { updateOn: 'blur' }),
+  });
   public selectedSearchType: string;
 
-  public changeTypes: ChangeType[];
+  public busyService: BusyService;
+
+  public changeTypes: EuiSelectOption[];
   public badgeColor = {
     Insert: 'green',
     Update: 'orange',
     Delete: 'red',
   };
 
+  public today: moment.Moment;
+  public yesterday: moment.Moment;
+
   public get changeTypeEnum(): typeof ChangeTypeEnum {
     return ChangeTypeEnum;
   }
 
   public get isEnabledUsername(): boolean {
-    return this.searchForm.get('usernameFormControl').enabled;
+    return this.selectedSearchType === 'UserName';
   }
 
   public get isEnabledChangeType(): boolean {
-    return this.searchForm.get('changeTypeFormControl').enabled;
+    return this.selectedSearchType === 'ChangeType';
   }
-
-  public get isEnabledBackTo(): boolean {
-    return this.searchForm.get('backToDateFormControl').enabled;
-  }
-
-  public get isEnabledBackFrom(): boolean {
-    return this.searchForm.get('backFromDateFormControl').enabled
-  }
-
 
   constructor(
     private translateService: TranslateService,
     private euiLoadingService: EuiLoadingService,
     private sidesheet: EuiSidesheetService,
-    private dataChangesService: DataChangesService
-  ) {}
+    private dataChangesService: DataChangesService,
+    public readonly settings: SettingsService,
+    private readonly changeDetector: ChangeDetectorRef,
+  ) {
+    this.paginatorConfigurations = {
+      size: this.settings.DefaultPageSize,
+      sizeOptions: this.settings.DefaultPageOptions,
+      showFirstLastButtons: true,
+    };
+    this.today = moment();
+    this.yesterday = moment().subtract(1, 'days');
+    this.busyService = new BusyService();
+  }
 
   public async ngOnInit(): Promise<void> {
     this.selectedSearchType = 'UserName';
-    this.changeTypes = this.dataChangesService.changeTypes;
+    this.changeTypes = this.dataChangesService.loadChangeTypes();
     let culture = this.translateService.getBrowserCultureLang();
     this.columns = [
       {
         name: 'ChangeTime',
         title: '#LDS#Operation performed on',
-        value: (row: HistoryOperation) => row.ChangeTime?.toLocaleString(culture),
+        value: (row: HistoryOperation) => new Date(row.ChangeTime)?.toLocaleString(culture),
       },
-      { name: 'ChangeType', title: '#LDS#Type of operation', value: (row: HistoryOperation) => this.dataChangesService.changeTypeString(row.ChangeType) },
+      {
+        name: 'ChangeType',
+        title: '#LDS#Type of operation',
+        value: (row: HistoryOperation) => this.dataChangesService.changeTypeString(row.ChangeType),
+      },
       { name: 'DisplayType', title: '#LDS#Object type', value: (row: HistoryOperation) => row.DisplayType },
       { name: 'ObjectDisplay', title: '#LDS#Object name', value: (row: HistoryOperation) => row.ObjectDisplay },
       { name: 'ProcessId', title: '#LDS#Process ID', value: (row: HistoryOperation) => row.ProcessId },
       { name: 'User', title: '#LDS#Operation performed by', value: (row: HistoryOperation) => row.User },
     ];
     this.displayedColumns = this.columns.map((c) => c.name);
+    this.translateService.onLangChange.subscribe(() => {
+      this.loadFeedbackMessages();
+      this.changeTypes = this.dataChangesService.loadChangeTypes();
+    });
+
+    this.initSearchForm();
     this.manageSearchState();
+    this.updateUserNameControls();
+    this.loadFeedbackMessages();
   }
 
   public searchTypeChange(): void {
     this.dataSource = new MatTableDataSource<HistoryOperation>();
     this.dataSource.paginator = this.paginator;
+    // update validators when changing search type, because only visible elements can be mandatory
+    this.searchForm.controls.usernameFormControl?.setValidators(
+      this.selectedSearchType.toUpperCase() === 'ChangeType'.toUpperCase() ? null : Validators.required,
+    );
+    this.searchForm.controls.toDateFormControl?.setValidators(
+      this.selectedSearchType.toUpperCase() === 'ChangeType'.toUpperCase() ? Validators.required : null,
+    );
+    this.searchForm.controls.changeTypeFormControl?.setValidators(
+      this.selectedSearchType.toUpperCase() === 'UserName'.toUpperCase() ? null : Validators.required,
+    );
     this.manageSearchState();
   }
 
   public manageSearchState(): void {
-    this.searchForm.get('usernameFormControl').reset();
-    this.searchForm.get('backFromDateFormControl').reset();
-    this.searchForm.get('backToDateFormControl').reset();
-    this.searchForm.get('changeTypeFormControl').reset();
-
-    let now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    if (this.selectedSearchType.toUpperCase() === 'UserName'.toUpperCase()) {
-      this.searchForm.get('usernameFormControl').enable();
-      this.searchForm.get('backToDateFormControl').enable();
-      this.searchForm.get('backFromDateFormControl').disable();
-      this.searchForm.get('changeTypeFormControl').disable();
-
-      this.searchForm.get('backToDateFormControl').setValue(moment(new Date(now.getTime() - 24 * 60 * 60 * 1000))); // 24 hours back from now
-    } else if (this.selectedSearchType.toUpperCase() === 'ChangeType'.toUpperCase()) {
-      this.searchForm.get('usernameFormControl').disable();
-      this.searchForm.get('backToDateFormControl').enable();
-      this.searchForm.get('backFromDateFormControl').enable();
-      this.searchForm.get('changeTypeFormControl').enable();
-
-      this.searchForm.get('backToDateFormControl').setValue(moment(new Date(now.getTime() - 24 * 60 * 60 * 1000)));
-      this.searchForm.get('backFromDateFormControl').setValue(moment(now));
+    this.searchForm.controls.usernameFormControl.reset();
+    this.searchForm.controls.changeTypeFormControl.reset();
+    switch (this.selectedSearchType) {
+      case 'UserName':
+        this.updateUserNameControls();
+        break;
+      case 'ChangeType':
+        this.updateChangeTypeControls();
+        break;
     }
   }
 
   public async loadHistoryOperationsData(): Promise<void> {
-    if (this.selectedSearchType.toUpperCase() === 'UserName'.toUpperCase()) await this.loadHistoryOperationsDataByUserName();
-    else if (this.selectedSearchType.toUpperCase() === 'ChangeType'.toUpperCase()) await this.loadHistoryOperationsDataByChangeType();
+    if (this.selectedSearchType === 'UserName') await this.loadHistoryOperationsDataByUserName();
+    else if (this.selectedSearchType === 'ChangeType') await this.loadHistoryOperationsDataByChangeType();
   }
 
   public async loadHistoryOperationsDataByUserName(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.euiLoadingService.show()));
+    const isBusy = this.busyService.beginBusy();
     try {
       this.dataSource = new MatTableDataSource<HistoryOperation>();
       this.dataSource.paginator = this.paginator;
 
-      if (!this.searchForm.get('usernameFormControl').value) {
+      if (!this.searchForm.controls.usernameFormControl.value) {
         return;
       }
 
       const historyOperationsData = await this.dataChangesService.getHistoryOperationsDataByUserName(
-        this.searchForm.get('usernameFormControl').value,
-        { backto: this.searchForm.get('backToDateFormControl').value }
+        this.searchForm.controls.usernameFormControl.value,
+        { backto: this.searchForm.controls.fromDateFormControl.value },
       );
 
       if (historyOperationsData) {
@@ -209,29 +206,27 @@ export class DataChangesComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
       }
     } finally {
-      setTimeout(() => this.euiLoadingService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
   public async loadHistoryOperationsDataByChangeType(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.euiLoadingService.show()));
-
+    const isBusy = this.busyService.beginBusy();
     try {
       this.dataSource = new MatTableDataSource<HistoryOperation>();
       this.dataSource.paginator = this.paginator;
 
       if (
-        !this.searchForm.get('backFromDateFormControl').value ||
-        !this.searchForm.get('backToDateFormControl').value ||
-        !this.searchForm.get('changeTypeFormControl').value
+        !this.searchForm.controls.changeTypeFormControl.value ||
+        !this.searchForm.controls.fromDateFormControl.value ||
+        !this.searchForm.controls.toDateFormControl.value
       ) {
         return;
       }
 
       await this.loadHistoryDataByChangeType();
     } finally {
-      setTimeout(() => this.euiLoadingService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
@@ -239,35 +234,54 @@ export class DataChangesComponent implements OnInit {
     if (row.Columns && row.Columns.length > 0) {
       let changeType = this.dataChangesService.changeTypeString(row.ChangeType);
       let title = this.translateService.instant('#LDS#Heading View Operation Details') + ' (' + changeType + ')';
-      let headerColour = this.badgeColor[ChangeTypeEnum[row.ChangeType]];
+      let headerColour = this.badgeColor[ChangeTypeEnum[row.ChangeType]] ?? 'primary';
 
-      this.sidesheet.open(DataChangesSidesheetComponent,
-        {
-          title: title,
-          subTitle: row.ObjectDisplay,
-          width: 'max(400px, 40%)',
-          data: row,
-          testId: 'data-change-details-sidesheet',
-          headerColour: headerColour
-        }
-      );
+      this.sidesheet.open(DataChangesSidesheetComponent, {
+        title: title,
+        subTitle: row.ObjectDisplay,
+        width: calculateSidesheetWidth(700, 0.4),
+        data: row,
+        testId: 'data-change-details-sidesheet',
+        headerColour,
+      });
     }
   }
 
+  private initSearchForm(): void {
+    this.searchForm.controls.fromDateFormControl.valueChanges.subscribe((val: moment.Moment) => {
+      //if a valid date is set, update min and max date for the other picker
+      if (this.toDateControl && val <= this.searchForm.controls.toDateFormControl.value) {
+        this.toDateControl.min = val;
+        this.toDateControl.max = this.today;
+      }
+      this.changeDetector.detectChanges();
+    });
+
+    this.searchForm.controls.toDateFormControl.valueChanges.subscribe((val: moment.Moment) => {
+      //if a valid date is set, update min and max date for the other picker
+      if (this.fromDateControl && val >= this.searchForm.controls.fromDateFormControl.value) {
+        this.fromDateControl.max = val;
+        this.fromDateControl.min = moment(new Date('1970-01-01Z00:00:00:000'));
+        this.changeDetector.detectChanges();
+      }
+    });
+  }
+
   private async loadHistoryDataByChangeType(): Promise<void> {
-    const backFrom = this.searchForm.get('backFromDateFormControl').value.toDate() as Date;
+    const backFrom = moment(this.searchForm.controls.toDateFormControl.value)
+      .set('hours', 23)
+      .set('minutes', 59)
+      .set('seconds', 59)
+      .toDate();
+    const backTo = moment(this.searchForm.controls.fromDateFormControl.value).toDate();
 
-    backFrom.setHours(23);
-    backFrom.setMinutes(59);
-    backFrom.setSeconds(59);
-
-    const sum = this.searchForm.get('changeTypeFormControl').value.reduce((aggregate, currentValue) => aggregate + currentValue, 0);
+    const sum = this.searchForm.controls.changeTypeFormControl.value.reduce((aggregate, currentValue) => aggregate + currentValue, 0);
     if (sum === 0) {
       return;
     }
 
     const historyOperationsData = await this.dataChangesService.getHistoryOperationsDataByChangeType({
-      backto: this.searchForm.get('backToDateFormControl').value,
+      backto: backTo,
       backfrom: backFrom,
       types: sum,
     });
@@ -276,5 +290,40 @@ export class DataChangesComponent implements OnInit {
       this.dataSource = new MatTableDataSource<HistoryOperation>(historyOperationsData.Events);
       this.dataSource.paginator = this.paginator;
     }
+  }
+
+  private loadFeedbackMessages(): void {
+    this.feedbackMessages = {
+      selected: this.translateService.instant('#LDS#{{value}} selected'),
+      clear: this.translateService.instant('#LDS#Clear selection'),
+      search: this.translateService.instant('#LDS#Search'),
+      plusOther: this.translateService.instant('#LDS#and 1 more'),
+      plusOtherPlural: this.translateService.instant('#LDS#and {{value}} more'),
+      unsupportedCharacter: this.translateService.instant('#LDS#You are using unsupported characters.'),
+      noResults: this.translateService.instant('#LDS#There is no data matching your search.'),
+      clearAll: this.translateService.instant('#LDS#Clear selection'),
+      ok: this.translateService.instant('#LDS#OK'),
+      keyboardOptionsListAria: this.translateService.instant('#LDS#Use the arrow keys to select items.'),
+    };
+  }
+
+  /**
+   * Updates the form, so it fits the requirements for a search by user name, by initializing the values of the date picker and assuring, that the toDateControl will be valid (because it is not used).
+   */
+  private updateUserNameControls() {
+    this.searchForm.controls.toDateFormControl.setValue(this.today);
+    this.searchForm.controls.fromDateFormControl.setValue(this.today);
+    if (this.toDateControl) {
+      this.toDateControl.min = this.today;
+      this.toDateControl.max = this.today;
+    }
+  }
+
+  /**
+   * Updates the form, so it fits the requirements for a search by change type, by initializing the values of the date picker.
+   */
+  private updateChangeTypeControls() {
+    this.searchForm.controls.toDateFormControl.setValue(this.today);
+    this.searchForm.controls.fromDateFormControl.setValue(this.yesterday);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,16 @@
  */
 
 import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ComplianceViolation, ContributingEntitlement, PortalRules } from 'imx-api-cpl';
-import { ICartItemCheck } from 'imx-api-qer';
-import { DbObjectKey, EntityData, EntitySchema, IEntityColumn, ValType } from 'imx-qbm-dbts';
-import { BaseReadonlyCdr, ColumnDependentReference, EntityService, MetadataService, SystemInfoService } from 'qbm';
+import { ComplianceViolation, ContributingEntitlement, PortalRules } from '@imx-modules/imx-api-cpl';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
+import { DbObjectKey, EntityData, EntitySchema, IEntityColumn, ValType } from '@imx-modules/imx-qbm-dbts';
+import { BaseReadonlyCdr, calculateSidesheetWidth, ColumnDependentReference, EntityService, MetadataService, SystemInfoService } from 'qbm';
 import { RequestParameterDataEntity } from 'qer';
-import { ApplicableRule, RuleCdrs } from '../compliance-violation-model';
 import { ItemValidatorService } from '../../item-validator/item-validator.service';
+import { ApplicableRule, RuleCdrs } from '../compliance-violation-model';
 import { ComplianceViolationService } from './compliance-violation.service';
 import { EditMitigatingControlsComponent } from './edit-mitigating-controls/edit-mitigating-controls.component';
 
@@ -74,13 +74,22 @@ export class ComplianceViolationDetailsComponent implements OnInit {
     try {
       this.schema = this.validator.getRulesSchema();
       this.isICartItemCheck(this.data) ? await this.loadCartItemViolations(this.data) : await this.loadRequestViolations(this.pwoId);
-      this.hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes('RISKINDEX');
+      this.hasRiskIndex = !!(await this.systemInfoService.get()).PreProps?.includes('RISKINDEX');
       this.checkHistoryForViolations();
 
       this.mitigatingControlsPerViolation = await this.complianceApi.getMitigatingControlsPerViolation();
     } finally {
       this.loadingService.hide(ref);
     }
+  }
+
+  /**
+   * Check for org type violations, we disable the mitigation control settings for them
+   * @param item
+   * @returns if we can access the EditMitigatingControlsComponent
+   */
+  public canEditMitigationControls(item: ApplicableRule): boolean {
+    return item.violationDetail.ViolationType ? !['Org'].includes(item.violationDetail.ViolationType) : !!item.violationDetail.UidPerson;
   }
 
   public async addMitigationControls(item: ApplicableRule): Promise<void> {
@@ -90,7 +99,7 @@ export class ComplianceViolationDetailsComponent implements OnInit {
         subTitle: item.violationDetail.DisplayRule,
         padding: '0px',
         disableClose: true,
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'compliance-violation-details-mitigating-sidesheet',
         data: {
           uidPerson: item.violationDetail.UidPerson,
@@ -105,15 +114,17 @@ export class ComplianceViolationDetailsComponent implements OnInit {
   }
 
   private getDisplayForSource(item: ContributingEntitlement): string {
-    return this.metaData.tables[DbObjectKey.FromXml(item.ObjectKeyEntitlement).TableName]?.DisplaySingular ?? '';
+    return this.metaData.tables[DbObjectKey.FromXml(item.ObjectKeyEntitlement || '').TableName]?.DisplaySingular ?? '';
   }
 
   private async loadTableNamesForSources(violations: ComplianceViolation[]): Promise<void> {
-    const sourecedRules = violations.filter((elem) => elem.Sources?.length > 0);
+    const sourecedRules = violations.filter((elem) => !!elem.Sources?.length);
 
     if (sourecedRules.length > 0) {
       for (const source of sourecedRules) {
-        await this.metaData.updateNonExisting(source.Sources.map((item) => DbObjectKey.FromXml(item.ObjectKeyEntitlement).TableName));
+        await this.metaData.updateNonExisting(
+          source.Sources?.map((item) => DbObjectKey.FromXml(item.ObjectKeyEntitlement || '').TableName) || [],
+        );
       }
     }
   }
@@ -155,7 +166,7 @@ export class ComplianceViolationDetailsComponent implements OnInit {
     });
   }
 
-  private getDisplayRuleCdr(rule: PortalRules, detail: ComplianceViolation): ColumnDependentReference {
+  private getDisplayRuleCdr(rule: PortalRules | undefined, detail: ComplianceViolation): ColumnDependentReference {
     const column = rule
       ? rule.GetEntity().GetColumn('DisplayRule')
       : this.buildColumn('DisplayRule', this.translate.instant('#LDS#Violated compliance rule'), detail.DisplayRule);
@@ -163,28 +174,28 @@ export class ComplianceViolationDetailsComponent implements OnInit {
     return new BaseReadonlyCdr(column);
   }
 
-  private async buildCdrForViolations(rule: PortalRules, detail: ComplianceViolation): Promise<RuleCdrs> {
-    const tableName = DbObjectKey.FromXml(detail.ObjectKeyElement).TableName;
+  private async buildCdrForViolations(rule: PortalRules | undefined, detail: ComplianceViolation): Promise<RuleCdrs> {
+    const tableName = DbObjectKey.FromXml(detail.ObjectKeyElement || '').TableName;
     await this.metaData.updateNonExisting([tableName]);
-    const displayTitle = this.metaData.tables[tableName]?.DisplaySingular;
+    const displayTitle = this.metaData.tables[tableName]?.DisplaySingular || '';
 
     //Build common elments
     const cdrColumns = [
       this.buildColumn('DisplayElement', displayTitle, detail.DisplayElement),
       rule
         ? rule.GetEntity().GetColumn('Description')
-        : this.buildColumn('Description', this.schema.Columns['Description'].Display, detail.Description),
+        : this.buildColumn('Description', this.schema.Columns['Description'].Display || '', detail.Description),
       this.buildColumn('DisplayPerson', await this.translate.get('#LDS#Identity').toPromise(), detail.DisplayPerson),
       rule
         ? rule.GetEntity().GetColumn('RuleNumber')
-        : this.buildColumn('RuleNumber', this.schema.Columns['RuleNumber'].Display, detail.RuleNumber),
+        : this.buildColumn('RuleNumber', this.schema.Columns['RuleNumber'].Display || '', detail.RuleNumber),
     ];
 
     if (this.hasRiskIndex) {
       cdrColumns.push(
         rule
           ? rule.GetEntity().GetColumn('RiskIndex')
-          : this.buildColumn('RiskIndex', this.schema.Columns['RiskIndex'].Display, detail.RiskIndex, ValType.Double),
+          : this.buildColumn('RiskIndex', this.schema.Columns['RiskIndex'].Display || '', detail.RiskIndex, ValType.Double),
       );
 
       if (
@@ -195,15 +206,20 @@ export class ComplianceViolationDetailsComponent implements OnInit {
       } else {
         if (detail.RiskIndex !== detail.RiskIndexReduced) {
           cdrColumns.push(
-            this.buildColumn('RiskIndexReduced', this.schema.Columns['RiskIndexReduced'].Display, detail.RiskIndexReduced, ValType.Double),
+            this.buildColumn(
+              'RiskIndexReduced',
+              this.schema.Columns['RiskIndexReduced'].Display || '',
+              detail.RiskIndexReduced,
+              ValType.Double,
+            ),
           );
         }
       }
     }
 
     let sources: ColumnDependentReference[] | undefined;
-    if (detail.Sources?.length > 0) {
-      sources = detail.Sources.map(
+    if (!!detail.Sources?.length) {
+      sources = detail.Sources?.map(
         (source, index) => new BaseReadonlyCdr(this.buildColumn(`source ${index}`, this.getDisplayForSource(source), source.Display)),
       );
     }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,7 +40,7 @@ export class XAxisInformation {
   /**
    * Gets the tick configuration for the axis
    */
-  public readonly tickConfiguration: XTickConfiguration;
+  public readonly tickConfiguration: XTickConfiguration | undefined;
 
   public constructor(dataType: 'number' | 'date' | 'string', values: (number | Date | string)[], xTickConfiguration?: XTickConfiguration) {
     this.dataType = dataType;

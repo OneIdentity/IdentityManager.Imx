@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-@import '../../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 :host {
   display: flex;
   flex-direction: column;
@@ -13,46 +13,13 @@
     overflow: hidden;
   }
 
-  div.imx-table-container {
-   @include imx-flex-fill-control-hidden-overflow();
-
-    .imx-requests-table {
-      flex-grow: 1;
-      overflow: auto;
-    }
-  }
-
   .heading-wrapper {
     display: flex;
     margin-bottom: 16px;
 
-    h1 {
+    h2 {
       margin: 6px 0 40px;
     }
-
-    .helper-alert {
-      margin-bottom: 15px;
-    }
-
-    .alert-wrapper {
-      margin: 0 0 0 auto;
-      align-self: flex-end;
-      width: 50%;
-    }
-  }
-
-  ::ng-deep {
-    .imx-data-table-row-highlighted {
-      background-color: inherit;
-    }
-
-    .mat-row:hover {
-      cursor: pointer;
-      background-color: rgba($black-c, 0.2);
-    }
-  }
-  .request-config__action-buttons {
-    @include imx-button-bar();
   }
 }
 
@@ -60,23 +27,6 @@
   :host {
     .heading-wrapper {
       display: block;
-
-      .alert-wrapper {
-        margin: 0 0 20px 0;
-        width: 100%;
-      }
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .request-config {
-      &.request-config--full-page {
-        .request-config__action-buttons {
-          background-color: $color-gray-90;
-        }
-      }
     }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,16 +23,16 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-import { OnDestroy, Component, EventEmitter, ErrorHandler } from '@angular/core';
+import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 
+import { ValType } from '@imx-modules/imx-qbm-dbts';
+import { ServerError } from '../base/server-error';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { CdrEditor, ValueHasChangedEventArg } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
-import { ClassloggerService } from '../classlogger/classlogger.service';
 import { EntityColumnContainer } from './entity-column-container';
-import { ServerError } from '../base/server-error';
-import { ValType } from 'imx-qbm-dbts';
 
 /**
  * A base class for CDR editors, that handles simple dataTypes like string, boolean or integer.
@@ -86,7 +86,10 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-  public constructor(protected readonly logger: ClassloggerService, protected readonly errorHandler?: ErrorHandler) {}
+  public constructor(
+    protected readonly logger: ClassloggerService,
+    protected readonly errorHandler?: ErrorHandler,
+  ) {}
 
   /**
    * Unsubscribes all events, as soon as the component is destroyed.
@@ -121,7 +124,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
         this.subscribers.push(
           cdref.minlengthSubject.subscribe((elem) => {
             this.setControlValue();
-          })
+          }),
         );
       }
 
@@ -132,38 +135,30 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
             return;
           }
 
-          if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
+          if (this.control.value !== this.columnContainer.value) {
             this.logger.trace(
               this,
               `Control (${this.columnContainer.name}) set to new value:`,
               this.columnContainer.value,
-              this.control.value
+              this.control.value,
             );
             this.setControlValue();
           }
           this.valueHasChanged.emit({ value: this.control.value });
-        })
+        }),
       );
 
       this.subscribers.push(
         this.updateRequested.subscribe(() => {
           setTimeout(() => {
             try {
-              if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
-                 this.logger.trace(
-                   this,
-                   `Control (${this.columnContainer.name}) set to new value:`,
-                   this.columnContainer.value,
-                   this.control.value
-                 );
-                this.setControlValue();
-                this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
-              }
+              this.setControlValue();
+              this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
             } finally {
             }
             this.valueHasChanged.emit({ value: this.control.value });
           });
-        })
+        }),
       );
 
       this.logger.trace(this, 'Control initialized');
@@ -213,14 +208,14 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     } catch (e) {
       this.lastError = e;
       this.logger.error(this, e);
-      this.control.updateValueAndValidity({ emitEvent: true });
     } finally {
       this.isBusy = false;
       this.isWriting = false;
-      if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
+      if (!this.lastError && this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
         this.logger.debug(this, 'form control value is set to', this.control.value);
       }
+      this.control.updateValueAndValidity({ emitEvent: false });
     }
 
     this.valueHasChanged.emit({ value, forceEmit: true });

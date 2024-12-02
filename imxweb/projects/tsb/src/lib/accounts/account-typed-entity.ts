@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DisplayColumns, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
+import { DisplayColumns, IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { CdrFactoryService } from 'qbm';
 
 export class AccountTypedEntity extends TypedEntity {

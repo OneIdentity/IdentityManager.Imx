@@ -14,7 +14,8 @@ a {
   padding-left: 1em;
 }
 
-a:hover, a:focus {
+a:hover,
+a:focus {
   text-decoration: none;
   cursor: pointer;
 }
@@ -22,11 +23,17 @@ a:hover, a:focus {
 // Theming
 
 li {
-  > a,a:active,a:focus,a:hover,a:link,visited {
+  > a,
+  a:active,
+  a:focus,
+  a:hover,
+  a:link,
+  visited {
     color: $color-gray-0;
   }
 }
 
-a:hover, a:focus {
+a:hover,
+a:focus {
   background-color: rgba($color: $color-gray-100, $alpha: 0.2);
 }

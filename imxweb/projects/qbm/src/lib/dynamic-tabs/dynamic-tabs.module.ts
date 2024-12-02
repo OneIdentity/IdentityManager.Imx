@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,17 +29,9 @@ import { CommonModule } from '@angular/common';
 
 import { DynamicTabDataProviderDirective } from './dynamic-tab-data-provider.directive';
 
-
-
 @NgModule({
-  declarations: [
-    DynamicTabDataProviderDirective
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [
-    DynamicTabDataProviderDirective
-  ]
+  declarations: [DynamicTabDataProviderDirective],
+  imports: [CommonModule],
+  exports: [DynamicTabDataProviderDirective],
 })
-export class DynamicTabsModule { }
+export class DynamicTabsModule {}

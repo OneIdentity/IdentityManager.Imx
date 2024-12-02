@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,23 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OpsupportQueueFrozenjobs } from 'imx-api-qbm';
+import { OpsupportQueueFrozenjobs } from '@imx-modules/imx-api-qbm';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth, DataSourceToolbarSettings, MessageDialogComponent, SettingsService, SnackBarService } from 'qbm';
 import { QueueJobsService } from '../jobs/queue-jobs.service';
-import { FrozenJobsService, JobQueueParameters } from './frozen-jobs.service';
-import { SnackBarService, MessageDialogComponent, DataSourceToolbarSettings, SettingsService } from 'qbm';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { FrozenJobsService } from './frozen-jobs.service';
 import { SingleFrozenJobComponent } from './single-frozen-job.component';
 
 @Component({
   templateUrl: './frozen-jobs.component.html',
-  styleUrls: ['./frozen-jobs.component.scss']
+  styleUrls: ['./frozen-jobs.component.scss'],
 })
 export class FrozenJobsComponent implements OnInit {
   public queueName = '';
@@ -64,7 +64,7 @@ export class FrozenJobsComponent implements OnInit {
     private busyService: EuiLoadingService,
     private frozenJobs: FrozenJobsService,
     private settingsService: SettingsService,
-    private translator: TranslateService
+    private translator: TranslateService,
   ) {
     this.entitySchemaFrozenJobs = frozenJobs.EntitySchema;
     this.displayedColumns = [
@@ -72,13 +72,13 @@ export class FrozenJobsComponent implements OnInit {
       this.entitySchemaFrozenJobs.Columns.TaskName,
       {
         ColumnName: 'actions',
-        Type: ValType.String
-      }
+        Type: ValType.String,
+      },
     ];
   }
 
   public async ngOnInit(): Promise<void> {
-    this.queueName = this.route.snapshot.paramMap.get('queueName');
+    this.queueName = this.route.snapshot.paramMap.get('queueName') ?? '';
     await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize, queueName: this.queueName });
   }
 
@@ -86,10 +86,9 @@ export class FrozenJobsComponent implements OnInit {
     return this.getData({ StartIndex: 0, search: keywords, queueName: this.queueName });
   }
 
-
   public async reactivate(item: OpsupportQueueFrozenjobs): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       await this.jobService.Post([item.UID_Job.value]);
       this.snackbarService.open({ key: '#LDS#Process "{0}" is retrying.', parameters: [item.JobChainName.value] });
@@ -99,8 +98,8 @@ export class FrozenJobsComponent implements OnInit {
     }
   }
 
-  public onSelectionChanged(jobs: OpsupportQueueFrozenjobs[]): void {
-    this.selectedJobs = jobs;
+  public onSelectionChanged(jobs: TypedEntity[]): void {
+    this.selectedJobs = jobs as OpsupportQueueFrozenjobs[];
   }
 
   public async viewDetails(job: OpsupportQueueFrozenjobs): Promise<void> {
@@ -108,17 +107,21 @@ export class FrozenJobsComponent implements OnInit {
     const opts: EuiSidesheetConfig = {
       title: await this.translator.get('#LDS#Heading View Process Details').toPromise(),
       subTitle: job.JobChainName.Column.GetDisplayValue(),
-      width: 'max(1000px, 80%)',
+      width: calculateSidesheetWidth(1100, 0.7),
       icon: 'reboot',
       testId: 'frozen-jobs-process-details-sidesheet',
       data: {
         UID_Tree: job.UID_Tree.value,
-        load: (startId:string) => {return this.jobService.getTreeData(startId)}
+        load: (startId: string) => {
+          return this.jobService.getTreeData(startId);
+        },
       },
     };
-    this.sideSheet.open(SingleFrozenJobComponent, opts)
+    this.sideSheet
+      .open(SingleFrozenJobComponent, opts)
       // After the sidesheet closes, reload the current data to refresh any changes that might have been made
-      .afterClosed().subscribe(() => this.refresh());
+      .afterClosed()
+      .subscribe(() => this.refresh());
   }
 
   public async showMessage(item: OpsupportQueueFrozenjobs): Promise<void> {
@@ -126,9 +129,9 @@ export class FrozenJobsComponent implements OnInit {
       data: {
         ShowOk: true,
         Title: await this.translator.get('#LDS#Error message').toPromise(),
-        Message: item.ErrorMessages.Column.GetDisplayValue()
+        Message: item.ErrorMessages.Column.GetDisplayValue(),
       },
-      panelClass: 'imx-messageDialog'
+      panelClass: 'imx-messageDialog',
     });
   }
 
@@ -139,7 +142,7 @@ export class FrozenJobsComponent implements OnInit {
   public async reactivateSelected(): Promise<void> {
     if (this.selectedJobs.length > 0) {
       let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      setTimeout(() => (overlayRef = this.busyService.show()));
       try {
         await this.jobService.Post(this.selectedJobs.map((job: OpsupportQueueFrozenjobs) => job.UID_Job.value));
         this.snackbarService.open({ key: '#LDS#{0} processes are retrying.', parameters: [this.selectedJobs.length] });
@@ -155,23 +158,21 @@ export class FrozenJobsComponent implements OnInit {
     await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize, queueName: this.queueName });
   }
 
-  public async getData(navigationState: JobQueueParameters): Promise<void> {
+  public async getData(navigationState: CollectionLoadParameters): Promise<void> {
     this.navigationState = navigationState;
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
-      const journalEntries = await this.frozenJobs.Get(navigationState);
+      const journalEntries = await this.frozenJobs.Get({ ...navigationState, queueName: this.queueName });
       this.jobCount = journalEntries.totalCount;
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: journalEntries,
         entitySchema: this.entitySchemaFrozenJobs,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }

@@ -1,5 +1,5 @@
 <div class="imx-title">
-  <h2 class="imx-filter-header">{{ '#LDS#Heading Objects to be Attested by this Attestation Policy' | translate }}</h2>
+  <h3 class="imx-filter-header">{{ '#LDS#Heading Objects to be Attested by this Attestation Policy' | translate }}</h3>
   <imx-selected-objects
     [isTotal]="true"
     testId="total-objects"
@@ -9,14 +9,30 @@
   >
   </imx-selected-objects>
 </div>
-<eui-alert class="helper-alert" type="warning" condensed="true" [colored]="true" *ngIf="showWarning" [dismissable]="true">
-  <div>{{ '#LDS#This policy affects many objects. Running this policy may take some time and generate notifications to many approvers.' | translate }}</div>
+<eui-alert *ngIf="showWarning" class="imx-margin-vertical-30" type="warning" [condensed]="true" [colored]="true" [dismissable]="true">
+  <div>
+    {{
+      '#LDS#This policy affects many objects. Running this policy may take some time and generate notifications to many approvers.'
+        | translate
+    }}
+  </div>
+</eui-alert>
+<eui-alert *ngIf="isMissing" class="imx-margin-vertical-30" type="warning" [condensed]="true" [colored]="true" [dismissable]="true">
+  <div>
+    {{ mismatch | translate }}
+  </div>
 </eui-alert>
 
-<ng-container *ngIf="isEnabled; else disabledView">
+<ng-container>
   <ng-container *ngIf="parametersReady && filterModel.uidAttestationObject != null; else noPolicy">
-    <span class="imx-radio-group-caption" *ngIf="filterArray.controls.length > 1">{{ '#LDS#How many conditions must be met?' | translate }}</span>
-    <mat-radio-group [formControl]="filterFormGroup.get('concatenationType')" *ngIf="filterArray.controls.length > 1">
+    <span class="imx-radio-group-caption" *ngIf="filterArray.controls.length > 1">{{
+      '#LDS#How many conditions must be met?' | translate
+    }}</span>
+    <mat-radio-group
+      class="imx-radio-group-flex-column imx-margin-top-15"
+      [formControl]="filterFormGroup.controls.concatenationType"
+      *ngIf="filterArray.controls.length > 1"
+    >
       <mat-radio-button [value]="'AND'" data-imx-identifier="policy-editor-radio-and">
         {{ '#LDS#All conditions have to be met.' | translate }}
       </mat-radio-button>
@@ -28,20 +44,21 @@
       <imx-policy-filter-element
         *ngFor="let control of filterArray.controls; let index = index"
         [formGroup]="control"
-        [idForTest]="index"
+        [idForTest]="index.toString()"
         (deleteFilter)="deleteCondition(index)"
         (conditionTypeChanged)="selectedConditionTypeChanged(index, $event)"
         (parameterChanged)="filterParameterChanged(index, $event)"
       ></imx-policy-filter-element>
     </mat-accordion>
-    <mat-error class="imx-small-error" *ngIf="filterArray.errors?.nofilter">
+    <mat-error class="imx-small-error imx-margin-bottom-20" *ngIf="filterArray.errors?.nofilter">
       {{ '#LDS#Add at least one condition.' | translate }}
     </mat-error>
-    <mat-action-row *ngIf="!filterModel.policyFilterData?.IsReadOnly">
+    <mat-action-row class="imx-policy-actions imx-padding-right-0" *ngIf="!filterModel.policyFilterData?.IsReadOnly">
+      <mat-spinner [diameter]="30" *ngIf="isLoading"></mat-spinner>
       <button
         [disabled]="filterModel?.uidAttestationObject == null || filterModel?.uidAttestationObject === ''"
         (click)="addCondition()"
-        mat-raised-button
+        mat-stroked-button
         data-imx-identifier="policy-editor-add-condition"
       >
         {{ (filterArray.controls.length > 0 ? '#LDS#Add another condition' : '#LDS#Add condition') | translate }}
@@ -51,17 +68,7 @@
 </ng-container>
 
 <ng-template #noPolicy>
-  <div *ngIf="filterModel?.policyFilterData?.IsReadOnly">{{ '#LDS#No conditions are specified for this attestation
-        policy.' | translate }}</div>
-</ng-template>
-
-<ng-template #disabledView>
-  <eui-alert class="imx-no-filter-alert" type="info" [colored]="true">
-    <eui-alert-header>
-      <span translate>#LDS#This attestation policy uses sample data.</span>
-    </eui-alert-header>
-    <eui-alert-content>
-      <span translate>#LDS#The sample data will be used for the attestation. To use conditions, remove the sample.</span>
-    </eui-alert-content>
-  </eui-alert>
+  <div *ngIf="filterModel?.policyFilterData?.IsReadOnly">
+    {{ '#LDS#No conditions are specified for this attestation policy.' | translate }}
+  </div>
 </ng-template>

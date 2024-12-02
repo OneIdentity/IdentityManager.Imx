@@ -1,0 +1,20 @@
+@import 'base/variables';
+
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+.imx-autocomplete {
+  &-icon {
+    &.mat-mdc-autocomplete-panel.mat-mdc-autocomplete-visible {
+      min-width: $IMX_SearchBar_Width;
+      margin-left: -35px;
+      margin-top: 11px;
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

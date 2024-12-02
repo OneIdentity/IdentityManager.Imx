@@ -2,9 +2,7 @@
 
 :host {
   eui-alert {
-    margin-bottom: 1em;
     margin-top: 1em;
-    display: block;
   }
 
   .imx-busy {
@@ -18,14 +16,6 @@
     font-size: small;
     font-style: italic;
     margin-bottom: 10px;
-  }
-
-  .imx-step-button,
-  .imx-step-button-save {
-    margin-top: 10px;
-    > *:not(:last-child) {
-      margin-right: 10px;
-    }
   }
 }
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,11 +42,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { AboutService } from '../about/About.service';
+import { QbmSqlWizardService } from '../base/qbm-sqlwizard.service';
+import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
 import { DateModule } from '../date/date.module';
 import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
+import { SideNavigationViewModule } from '../side-navigation-view/side-navigation-view.module';
+import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
+import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.module';
+import { AdminAboutService } from './about/admin-about.service';
 import { AddConfigSidesheetComponent } from './add-config-sidesheet.component';
 import { ApplyConfigSidesheetComponent } from './apply-config-sidesheet.component';
+import { CacheComponent } from './cache.component';
 import { ConfigKeyPathComponent } from './config-key-path.component';
 import { ConfigComponent } from './config.component';
 import { ConfigService } from './config.service';
@@ -57,17 +65,11 @@ import { ListSettingComponent } from './list-setting.component';
 import { LogDetailsSidesheetComponent } from './log-details-sidesheet.component';
 import { LogsComponent } from './logs.component';
 import { PackagesComponent } from './packages.component';
+import { PluginsComponent } from './plugins.component';
 import { SelectValueComponent } from './select-value.component';
 import { StatusComponent } from './status.component';
 import { StatusService } from './status.service';
 import { SwaggerComponent } from './swagger/swagger.component';
-import { CacheComponent } from './cache.component';
-import { PluginsComponent } from './plugins.component';
-import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.module';
-import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
-import { QbmSqlWizardService } from '../base/qbm-sqlwizard.service';
-import { SideNavigationViewModule } from '../side-navigation-view/side-navigation-view.module';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -93,6 +95,7 @@ import { SideNavigationViewModule } from '../side-navigation-view/side-navigatio
     ScrollingModule,
     InfoModalDialogModule,
     SideNavigationViewModule,
+    BusyIndicatorModule,
   ],
   providers: [
     ConfigService,
@@ -100,6 +103,10 @@ import { SideNavigationViewModule } from '../side-navigation-view/side-navigatio
     {
       provide: SqlWizardApiService,
       useClass: QbmSqlWizardService,
+    },
+    {
+      provide: AboutService,
+      useClass: AdminAboutService,
     },
   ],
   declarations: [

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,36 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, DataSourceToolbarModule, DataTableModule, DynamicTabsModule, ExtModule, InfoModalDialogModule, LdsReplaceModule, SelectedElementsModule, RouteGuardService, TileModule, HELP_CONTEXTUAL, HelpContextualModule } from 'qbm';
+import {
+  CdrModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DynamicTabsModule,
+  ExtModule,
+  HelpContextualModule,
+  InfoModalDialogModule,
+  LdsReplaceModule,
+  RouteGuardService,
+  SelectedElementsModule,
+  TileModule,
+} from 'qbm';
 import { BusinessownerAddonTileModule } from '../businessowner-addon-tile/businessowner-addon-tile.module';
-import { MailSubscriptionsComponent } from './mailsubscriptions.component';
-import { MailSubscriptionService } from './mailsubscription.service';
-import { IdentitySelectComponent } from './identity-select/identity-select.component';
-import { PasswordQuestionsComponent } from './password-questions/password-questions.component';
-import { ProfileComponent } from './profile.component';
-import { PasswordQuestionsSidesheetComponent } from './password-questions/password-questions-sidesheet/password-questions-sidesheet.component';
-import { UserModelService } from '../user/user-model.service';
-import { SecurityKeysComponent } from './security-keys/security-keys.component';
-import { SecurityKeysSidesheetComponent } from './security-keys/security-keys-sidesheet/security-keys-sidesheet.component';
 import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
+import { PasswordQuestionsModule } from '../password-questions/password-questions.module';
+import { UserModelService } from '../user/user-model.service';
+import { IdentitySelectComponent } from './identity-select/identity-select.component';
+import { MailSubscriptionService } from './mailsubscription.service';
+import { MailSubscriptionsComponent } from './mailsubscriptions.component';
+import { ProfileComponent } from './profile.component';
+import { SecurityKeysSidesheetComponent } from './security-keys/security-keys-sidesheet/security-keys-sidesheet.component';
+import { SecurityKeysComponent } from './security-keys/security-keys.component';
 
 const routes: Routes = [
   {
@@ -56,47 +67,40 @@ const routes: Routes = [
     component: ProfileComponent,
     canActivate: [RouteGuardService],
     resolve: [RouteGuardService],
-  }
+  },
 ];
 
 @NgModule({
   imports: [
     BusinessownerAddonTileModule,
-    CommonModule,
     CdrModule,
-    TranslateModule,
+    CommonModule,
     DataSourceToolbarModule,
     DataTableModule,
-    ExtModule,
-    FormsModule,
-    ObjectHyperviewModule,
-    RouterModule.forChild(routes),
-    ReactiveFormsModule,
-    TileModule,
-    LdsReplaceModule,
+    DynamicTabsModule,
     EuiCoreModule,
     EuiMaterialModule,
-    DynamicTabsModule,
-    InfoModalDialogModule,
-    SelectedElementsModule,
+    ExtModule,
+    FormsModule,
     HelpContextualModule,
+    InfoModalDialogModule,
+    LdsReplaceModule,
+    ObjectHyperviewModule,
+    PasswordQuestionsModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+    SelectedElementsModule,
+    TileModule,
+    TranslateModule,
   ],
-  providers: [
-    MailSubscriptionService,
-    UserModelService
-  ],
+  providers: [MailSubscriptionService, UserModelService],
   declarations: [
     ProfileComponent,
     MailSubscriptionsComponent,
     IdentitySelectComponent,
     SecurityKeysComponent,
     SecurityKeysSidesheetComponent,
-    PasswordQuestionsComponent,
-    PasswordQuestionsSidesheetComponent,
   ],
-  exports: [
-    ProfileComponent,
-    PasswordQuestionsComponent,
-  ]
+  exports: [ProfileComponent],
 })
-export class ProfileModule { }
+export class ProfileModule {}

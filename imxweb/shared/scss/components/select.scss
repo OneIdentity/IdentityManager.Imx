@@ -1,0 +1,115 @@
+/* Elemental UI */
+eui-select {
+  .mat-mdc-form-field {
+    &-wrapper {
+      padding: 0;
+    }
+  }
+}
+
+/* Angular Material */
+
+.mat-mdc-form-field-infix .mat-mdc-select-trigger {
+  vertical-align: middle;
+
+  .mat-mdc-select-arrow-wrapper {
+    vertical-align: bottom;
+  }
+}
+
+// Until elemental changes the default to use the accent theme, important is needed
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  color: $color-orange-60 !important;
+}
+
+.mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full {
+  background-color: $color-orange-60 !important;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-option {
+  line-height: normal;
+
+  .mat-mdc-option-text {
+    white-space: normal;
+    margin: 5px 16px;
+  }
+}
+
+/* Imx */
+.imx-data-source-filter-menu {
+  .mat-mdc-select .mat-mdc-select-trigger {
+    margin-top: 5px;
+  }
+
+  .mat-mdc-select .mat-mdc-select-value {
+    max-width: none;
+    white-space: normal;
+    .mat-mdc-select-value-text {
+      white-space: normal;
+    }
+  }
+}
+
+.mat-mdc-option.imx-candidate-option {
+  line-height: 1.5em;
+  display: flex;
+  width: 100%;
+  height: 50px;
+
+  .imx-candidate-item {
+    width: 100%;
+
+    .imx-candidate-content {
+      width: 100%;
+      overflow: hidden;
+
+      .imx-candidate-display {
+        font-size: 14px;
+        line-height: 14px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 100vw;
+      }
+
+      .imx-candidate-longdisplay {
+        font-size: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+.imx-export-column--field {
+  width: 100%;
+  margin: 0 10px;
+}
+
+.imx-eui-select-100 {
+  width: 100%;
+}
+
+.imx-eui-select-toolbar {
+  width: 110px;
+}
+
+.imx-container-search {
+  &--hidden {
+    display: none;
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  // Until elemental changes the default to use the accent theme, important is needed
+  .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: $color-orange-40 !important;
+  }
+
+  .mat-primary .mat-pseudo-checkbox-checked.mat-pseudo-checkbox-full {
+    background-color: $color-orange-40 !important;
+  }
+}
+
+/* High-contrast theme */

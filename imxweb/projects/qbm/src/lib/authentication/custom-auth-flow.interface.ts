@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,9 @@
  *
  */
 
-import { Type } from "@angular/core";
+import { Type } from '@angular/core';
 
 export interface CustomAuthFlow {
-
   /** Returns the component type to display for this authentication flow. */
   getEntryComponent(): Type<any>;
-
 }

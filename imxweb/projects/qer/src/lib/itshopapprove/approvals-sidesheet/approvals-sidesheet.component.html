@@ -1,19 +1,18 @@
-<div eui-sidesheet-content>
+<div class="imx-sidesheet-content__overflow">
   <imx-requestinfo [request]="data.pwo" [isApproval]="true">
     <ng-container info>
       <eui-alert
-        *ngIf="data.itShopConfig.ApprovalThreshold !== 0 && hasPeerGroupAnalysis && data.pwo.PeerGroupFactor.value !== -1"
-        class="helper-alert"
+        *ngIf="data.itShopConfig?.ApprovalThreshold !== 0 && hasPeerGroupAnalysis && data.pwo.PeerGroupFactor.value !== -1"
         type="info"
-        condensed="true"
+        [condensed]="true"
         [colored]="true"
         [dismissable]="true"
       >
-        <span *ngIf="data.pwo.PeerGroupFactor.value >= data.itShopConfig.ApprovalThreshold" translate>
-          #LDS#Based on the peer group analysis, it is recommended that you approve this request.
+        <span *ngIf="(data.pwo?.PeerGroupFactor?.value || 0) >= (data.itShopConfig?.ApprovalThreshold || 0)" translate>
+          {{ LdsKeyApprove }}
         </span>
-        <span *ngIf="data.pwo.PeerGroupFactor.value < data.itShopConfig.ApprovalThreshold" translate>
-          #LDS#Based on the peer group analysis, it is recommended that you deny this request.
+        <span *ngIf="(data.pwo?.PeerGroupFactor?.value || 0) < (data.itShopConfig?.ApprovalThreshold || 0)" translate>
+          {{ LdsKeyDeny }}
         </span>
       </eui-alert>
     </ng-container>
@@ -33,8 +32,17 @@
   </button> -->
 
   <ng-container *ngIf="!data.fromInquiry">
-    <button mat-stroked-button data-imx-identifier="approvals-sidesheet-button-approve" (click)="actionService.approve([data.pwo])">{{ '#LDS#Approve' | translate }}</button>
-    <button mat-stroked-button data-imx-identifier="approvals-sidesheet-button-deny" (click)="actionService.deny([data.pwo])">{{ '#LDS#Deny' | translate }}</button>
+    <button
+      mat-flat-button
+      color="primary"
+      data-imx-identifier="approvals-sidesheet-button-approve"
+      (click)="actionService.approve([data.pwo])"
+    >
+      {{ '#LDS#Approve' | translate }}
+    </button>
+    <button mat-flat-button color="warn" data-imx-identifier="approvals-sidesheet-button-deny" (click)="actionService.deny([data.pwo])">
+      {{ '#LDS#Deny' | translate }}
+    </button>
     <button
       mat-stroked-button
       *ngIf="data.pwo.canRerouteDecision(currentUserId)"
@@ -91,38 +99,38 @@
       {{ '#LDS#Escalate approval' | translate }}
     </button>
     <button
-    mat-stroked-button
-    *ngIf="data.pwo.CanAskForHelp.value"
-    data-imx-identifier="approvals-sidesheet-button-ask-for-helpl"
-    title="{{ '#LDS#Sends an inquiry about this request to an identity' | translate }}"
-    (click)="actionService.askForHelp([data.pwo],currentUserId)"
-  >
-    {{ '#LDS#Send inquiry' | translate }}
-  </button>
+      mat-stroked-button
+      *ngIf="data.pwo.CanAskForHelp.value"
+      data-imx-identifier="approvals-sidesheet-button-ask-for-helpl"
+      title="{{ '#LDS#Sends an inquiry about this request to an identity' | translate }}"
+      (click)="actionService.askForHelp([data.pwo], currentUserId)"
+    >
+      {{ '#LDS#Send inquiry' | translate }}
+    </button>
 
-  <button
-    mat-stroked-button
-    *ngIf="data.pwo.IsReserved.value && data.pwo.hasAskedLastQuestion"
-    data-imx-identifier="approvals-sidesheet-button-recall-last-question"
-    title="{{ '#LDS#Withdraws the inquiry about this request' | translate }}"
-    (click)="actionService.recallInquiry([data.pwo])"
-  >
-    {{ '#LDS#Withdraw inquiry' | translate }}
-  </button>
+    <button
+      mat-stroked-button
+      *ngIf="data.pwo.IsReserved.value && data.pwo.hasAskedLastQuestion"
+      data-imx-identifier="approvals-sidesheet-button-recall-last-question"
+      title="{{ '#LDS#Withdraws the inquiry about this request' | translate }}"
+      (click)="actionService.recallInquiry([data.pwo])"
+    >
+      {{ '#LDS#Withdraw inquiry' | translate }}
+    </button>
 
-  <button
-    mat-stroked-button
-    *ngIf="data.pwo.IsReserved.value && (data.pwo.hasAskedLastQuestion || isChiefApprover)"
-    data-imx-identifier="approvals-sidesheet-button-reset-reservation"
-    title="{{ '#LDS#Cancels the reservation for this request' | translate }}"
-    (click)="actionService.resetReservation([data.pwo])"
-  >
-    {{ '#LDS#Cancel reservation' | translate }}
-  </button>
+    <button
+      mat-stroked-button
+      *ngIf="data.pwo.IsReserved.value && (data.pwo.hasAskedLastQuestion || isChiefApprover)"
+      data-imx-identifier="approvals-sidesheet-button-reset-reservation"
+      title="{{ '#LDS#Cancels the reservation for this request' | translate }}"
+      (click)="actionService.resetReservation([data.pwo])"
+    >
+      {{ '#LDS#Cancel reservation' | translate }}
+    </button>
   </ng-container>
 
   <button
-    mat-raised-button
+    mat-flat-button
     *ngIf="data.fromInquiry"
     color="primary"
     data-imx-identifier="approvals-sidesheet-button-escalate-approval"

@@ -6,15 +6,6 @@
   flex-direction: column;
   overflow: hidden;
 
-  .helper-alert {
-    display: flex;
-    margin-bottom: 20px;
-
-    span {
-      display: block;
-    }
-  }
-
   .imx-flex-content {
     display: flex;
     flex-direction: column;
@@ -28,113 +19,23 @@
     overflow: hidden;
   }
 
-  imx-selected-elements {
-    margin-top: 16px;
-    display: block;
-  }
-
-  imx-help-contextual{
+  imx-help-contextual {
     justify-content: end;
   }
-  .eui-sidesheet-content.eui-sidesheet-content--no-padding-top{
+
+  .eui-sidesheet-content.eui-sidesheet-content--no-padding-top {
     padding-top: 0;
   }
+
   .eui-sidesheet-actions {
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-
-    .justify-start {
-      margin-right: auto;
-    }
-
-    button:not(:last-of-type):not(.justify-start) {
-      margin-right: 10px;
-    }
-
     button:disabled:hover {
       cursor: not-allowed;
     }
 
-    .help-icon {
-      font-size: 16px;
+    .imx-icon-info {
       margin-left: 5px;
       cursor: auto;
     }
   }
 
-  ::ng-deep .mat-tab-group {
-    height: 100%;
-
-    .mat-tab-header {
-      padding: 0 32px;
-    }
-
-    .mat-tab-body-wrapper {
-      height: 100%;
-    }
-
-    .mat-tab-body-content {
-      display: flex;
-      flex-direction: column;
-    }
-  }
-}
-
-:host {
-    ::ng-deep .mat-tab-group {
-      .mat-tab-header {
-        background-color: $color-gray-0;
-      }
-    }
-    .eui-sidesheet-actions {
-      .help-icon {
-        color: $color-blue-60;
-      }
-    }
-  }
-
-.eui-dark-theme {
-  :host {
-    .request-config-sidesheet {
-      background-color: $color-gray-80;
-
-      &__action-buttons {
-        background-color: $color-gray-70;
-      }
-
-      .eui-sidesheet-actions {
-        .help-icon {
-          color: $color-blue-40;
-        }
-      }
-    }
-
-    ::ng-deep .mat-tab-header {
-      background-color: $color-gray-80;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .request-config-sidesheet {
-      background-color: $color-gray-100;
-
-      &__action-buttons {
-        background-color: $color-gray-90;
-      }
-    }
-
-    ::ng-deep .mat-tab-header {
-        background-color: $color-gray-100;
-    }
-
-    .eui-sidesheet-actions {
-      .help-icon {
-        color: $color-blue-40;
-      }
-    }
-  }
 }

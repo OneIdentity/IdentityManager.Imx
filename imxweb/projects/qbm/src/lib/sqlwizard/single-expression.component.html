@@ -1,27 +1,32 @@
 <div class="expression">
-    <imx-sqlwizard-simpleexpression class="flex flex-grow" [expr]="expr" *ngIf="expr.isSimple()" (change)="emitChanges()">
-    </imx-sqlwizard-simpleexpression>
-    <imx-sqlwizard-whereclauseexpression class="flex flex-grow" [expr]="expr" *ngIf="!expr.isSimple()" (change)="emitChanges()">
-    </imx-sqlwizard-whereclauseexpression>
-    <div class="remove-btn">
-        <button (click)="removeExpression()" data-imx-identifier="single-expr-button-remove"
-            *ngIf="expr.canRemove()" mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate">
-            <eui-icon icon="close" size="s"></eui-icon>
-        </button>
-    </div>
+  <imx-sqlwizard-simpleexpression class="flex flex-grow" [expr]="expr" *ngIf="expr.isSimple()" (change)="emitChanges()">
+  </imx-sqlwizard-simpleexpression>
+  <imx-sqlwizard-whereclauseexpression class="flex flex-grow" [expr]="expr" *ngIf="!expr.isSimple()" (change)="emitChanges()">
+  </imx-sqlwizard-whereclauseexpression>
+  <div class="remove-btn">
+    <button
+      (click)="removeExpression()"
+      data-imx-identifier="single-expr-button-remove"
+      *ngIf="expr.canRemove()"
+      mat-icon-button
+      [attr.aria-label]="'#LDS#Delete' | translate"
+    >
+      <eui-icon icon="close" size="s"></eui-icon>
+    </button>
+  </div>
 </div>
 
 <mat-list>
-    <ng-container *ngFor="let cexpr of expr.childViews; let first = first; let last = last">
-        <li>
-            <imx-sqlwizard-singleexpression [expr]="cexpr" [viewSettings]="viewSettings" [first]="first" [last]="last" (change)="emitChanges()">
-            </imx-sqlwizard-singleexpression>
+  <ng-container *ngFor="let cexpr of expr.childViews; let first = first; let last = last">
+    <li>
+      <imx-sqlwizard-singleexpression [expr]="cexpr" [viewSettings]="viewSettings" [first]="first" [last]="last" (change)="emitChanges()">
+      </imx-sqlwizard-singleexpression>
 
-            <div class="add-expression-row" *ngIf="last">
-                <button mat-raised-button (click)="addExpression()">
-                    {{'#LDS#Add condition' | translate }}</button>
-            </div>
-        </li>
-    </ng-container>
+      <div class="add-expression-row" *ngIf="last">
+        <button mat-stroked-button (click)="addExpression()">
+          {{ '#LDS#Add condition' | translate }}
+        </button>
+      </div>
+    </li>
+  </ng-container>
 </mat-list>
-

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,7 @@
  *
  */
 
-import { EntitySchema, IClientProperty, ValType } from "imx-qbm-dbts";
-
+import { EntitySchema, IClientProperty, ValType } from '@imx-modules/imx-qbm-dbts';
 
 export interface ClientPropertyMock {
   name: string;
@@ -35,19 +34,15 @@ export interface ClientPropertyMock {
 }
 
 export class EntitySchemaStub implements EntitySchema {
-
-  constructor(
-    properties: ClientPropertyMock[]
-  ) {
+  constructor(properties: ClientPropertyMock[]) {
     properties.forEach(
-      property =>
+      (property) =>
         (this.Columns[property.name] = {
           Type: property.type ? property.type : ValType.String,
           Display: property.Display,
-        })
+        }),
     );
   }
 
   public Columns: { [id: string]: IClientProperty } = {};
-
 }

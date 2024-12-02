@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { AppcontainerService, AppContainer } from '../appcontainer.service';
 @Component({
   selector: 'imx-start',
   templateUrl: './start.component.html',
-  styleUrls: ['./start.component.scss']
+  styleUrls: ['./start.component.scss'],
 })
 export class StartComponent implements OnInit {
   public apps: AppContainer[] = [];
@@ -39,7 +39,7 @@ export class StartComponent implements OnInit {
   /** do not display partial results */
   public loaded: boolean;
 
-  constructor(private appcontainerService: AppcontainerService) { }
+  constructor(private appcontainerService: AppcontainerService) {}
 
   public async ngOnInit(): Promise<void> {
     this.apps = await this.appcontainerService.getAppContainers();

@@ -1,6 +1,6 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 
-:host{
+:host {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -17,33 +17,18 @@
 
 mat-form-field {
   display: flex;
-
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
 }
 
-mat-card {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.imx-billboard-card {
+.imx-card-fill {
   align-self: normal;
 }
 
-.imx-jobqueue-no-data {
+.imx-no-results {
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  .eui-icon {
-    font-size: 100px;
-    color: rgba($black-c, 0.55);
-  }
 
   p {
     margin: 0;

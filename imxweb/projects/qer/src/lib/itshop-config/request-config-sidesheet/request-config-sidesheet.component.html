@@ -1,26 +1,46 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab [label]="'#LDS#Heading Details' | translate">
     <ng-template mat-tab-label>
       <span>{{ '#LDS#Heading Details' | translate }}</span>
     </ng-template>
     <div eui-sidesheet-content [ngClass]="!data.isNew ? 'eui-sidesheet-content--no-padding-top' : ''">
-      <imx-help-contextual [contextId]="detailsContextIds" *ngIf="!data.isNew" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
+      <imx-help-contextual
+        [contextId]="detailsContextIds"
+        *ngIf="!data.isNew"
+        [title]="'#LDS#Information about this tab:'"
+      ></imx-help-contextual>
       <mat-card>
         <form [formGroup]="detailsFormGroup">
           <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
         </form>
       </mat-card>
     </div>
-    <div eui-sidesheet-actions class="request-config-sidesheet__action-buttons">
+    <div eui-sidesheet-actions>
       <span class="justify-start" [matTooltip]="deleteHelperTooltip | translate">
-        <button *ngIf="!data.isNew" [disabled]="requestConfigContainsShelves || requestConfigHasMembers" mat-flat-button color="warn" (click)="delete()">
+        <button
+          *ngIf="!data.isNew"
+          [disabled]="requestConfigContainsShelves || requestConfigHasMembers"
+          mat-flat-button
+          color="warn"
+          (click)="delete()"
+        >
           <eui-icon icon="delete"></eui-icon>
           <span>{{ requestsService.LdsDeleteShop | translate }}</span>
-          <eui-icon *ngIf="requestConfigContainsShelves || requestConfigHasMembers" class="help-icon" icon="help"></eui-icon>
+          <eui-icon
+            *ngIf="requestConfigContainsShelves || requestConfigHasMembers"
+            class="imx-icon-info"
+            icon="help"
+            size="16px"
+          ></eui-icon>
         </button>
       </span>
 
-      <button mat-flat-button color="primary" (click)="saveRequestConfig()" [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="saveRequestConfig()"
+        [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid"
+      >
         <span *ngIf="!data?.isNew" translate>#LDS#Save</span>
         <span *ngIf="data?.isNew" translate>#LDS#Create</span>
       </button>
@@ -31,7 +51,10 @@
     <ng-template mat-tab-label>
       <span>{{ '#LDS#Heading Shelves' | translate }}</span>
     </ng-template>
-    <imx-request-shelves [requestConfigId]="selectedRequestConfigKey" (shelfCountUpdated)="onShelfCountUpdated($event)"></imx-request-shelves>
+    <imx-request-shelves
+      [requestConfigId]="selectedRequestConfigKey"
+      (shelfCountUpdated)="onShelfCountUpdated($event)"
+    ></imx-request-shelves>
   </mat-tab>
 
   <mat-tab *ngIf="!data?.isNew && data?.requestConfig?.UID_CustomerNode?.value">
@@ -39,7 +62,7 @@
       <span>{{ '#LDS#Heading Access' | translate }}</span>
     </ng-template>
     <imx-request-config-members
-      [shopDisplay]="data?.requestConfig?.GetEntity().GetDisplay()"
+      [shopDisplay]="data?.requestConfig?.GetEntity()?.GetDisplay() ?? ''"
       [customerNodeId]="data?.requestConfig?.UID_CustomerNode?.value"
       [requestDynamicGroup]="data?.requestConfig?.UID_DynamicGroup?.value"
       (memberCountUpdated)="onMemberCountUpdated($event)"
@@ -48,7 +71,11 @@
   <mat-tab *ngIf="!data?.isNew" label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
-        <imx-object-hyperview [objectType]="data?.requestConfig?.GetEntity()?.TypeName" [objectUid]="data?.requestConfig?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+        <imx-object-hyperview
+          [objectType]="data?.requestConfig?.GetEntity()?.TypeName"
+          [objectUid]="data?.requestConfig?.GetEntity()?.GetKeys()?.[0]"
+        >
+        </imx-object-hyperview>
       </div>
     </ng-template>
   </mat-tab>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,40 +24,40 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
-import {
-  CollectionLoadParameters,
-  IClientProperty,
-  DisplayColumns,
-  DbObjectKey,
-  EntitySchema,
-  DataModel,
-  FilterData,
-  ValType,
-} from 'imx-qbm-dbts';
-import { ViewConfigData } from 'imx-api-qer';
+import { ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
   EntityWriteDataBulk,
+  PortalRespUnsgroup,
   PortalTargetsystemUnsGroup,
   PortalTargetsystemUnsGroupServiceitem,
   PortalTargetsystemUnsSystem,
-} from 'imx-api-tsb';
+} from '@imx-modules/imx-api-tsb';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DbObjectKey,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import {
   BusyService,
   ClassloggerService,
   DataSourceToolbarFilter,
-  DataSourceToolbarSettings,
-  DataTableComponent,
-  SettingsService,
+  DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
+  HelpContextualValues,
   SideNavigationComponent,
   SnackBarService,
-  DataSourceToolbarViewConfig,
-  HelpContextualValues,
+  calculateSidesheetWidth,
 } from 'qbm';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, SourceDetectiveType, ViewConfigService } from 'qer';
 import { Subscription } from 'rxjs';
@@ -65,7 +65,7 @@ import { Subscription } from 'rxjs';
 import { ContainerTreeDatabaseWrapper } from '../container-list/container-tree-database-wrapper';
 import { DeHelperService } from '../de-helper.service';
 import { GroupSidesheetComponent } from './group-sidesheet/group-sidesheet.component';
-import { GetGroupsOptionalParameters, GroupSidesheetData } from './groups.models';
+import { GroupSidesheetData } from './groups.models';
 import { GroupsService } from './groups.service';
 import { ProductOwnerSidesheetComponent } from './product-owner-sidesheet/product-owner-sidesheet.component';
 
@@ -73,6 +73,7 @@ import { ProductOwnerSidesheetComponent } from './product-owner-sidesheet/produc
   selector: 'imx-data-explorer-groups',
   templateUrl: './groups.component.html',
   styleUrls: ['./groups.component.scss'],
+  providers: [DataViewSource],
 })
 export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavigationComponent {
   @Input() public unsAccountIdFilter: string;
@@ -84,23 +85,12 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
   @Input() public uidPerson = '';
   @Input() public usedInSidesheet = false;
   @Input() public contextId: HelpContextualValues;
-
-  @ViewChild('dataTable', { static: false }) public dataTable: DataTableComponent<PortalTargetsystemUnsGroup>;
-  /**
-   * Settings needed by the DataSourceToolbarComponent
-   */
-
-  public dstSettings: DataSourceToolbarSettings;
-  /**
-   * Page size, start index, search and filtering options etc.
-   */
-  public navigationState: CollectionLoadParameters;
   public filterOptions: DataSourceToolbarFilter[] = [];
   public treeDbWrapper: ContainerTreeDatabaseWrapper;
   public requestableBulkUpdateCtrl = new UntypedFormControl(true);
   public entitySchemaUnsGroup: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
-  public selectedGroupsForUpdate: PortalTargetsystemUnsGroup[] = [];
+  public selectedGroupsForUpdate: Array<PortalTargetsystemUnsGroup | PortalRespUnsgroup> = [];
   public data: any;
 
   public busyService = new BusyService();
@@ -128,12 +118,11 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
     private readonly dataHelper: DeHelperService,
     private readonly translate: TranslateService,
     private readonly snackbar: SnackBarService,
-    settingsService: SettingsService
+    public dataSource: DataViewSource<PortalTargetsystemUnsGroup | PortalRespUnsgroup>,
   ) {
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaUnsGroup = this.groupsService.unsGroupsSchema(this.isAdmin);
-    this.authorityDataDeleted$ = this.dataHelper.authorityDataDeleted.subscribe(() => this.navigate());
+    this.authorityDataDeleted$ = this.dataHelper.authorityDataDeleted.subscribe(() => this.dataSource.updateState());
     this.treeDbWrapper = new ContainerTreeDatabaseWrapper(this.busyService, dataHelper);
   }
 
@@ -152,38 +141,54 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
     if (this.unsAccountIdFilter) {
       this.displayedColumns.push({ ColumnName: 'action', Type: ValType.String });
     }
-
     const isBusy = this.busyService.beginBusy();
 
     try {
       this.filterOptions = await this.groupsService.getFilterOptions(this.isAdmin);
 
+      this.dataSource.itemStatus = this.itemStatus;
       this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
       this.viewConfigPath = this.isAdmin || this.unsAccountIdFilter ? 'targetsystem/uns/group' : 'resp/unsgroup';
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
+      const dataViewInitParameters: DataViewInitParameters<PortalTargetsystemUnsGroup | PortalRespUnsgroup> = {
+        execute:
+          this.isAdmin || this.unsAccountIdFilter // Wenn wir filtern, muss auch der Admin-Endpoint genutzt werden
+            ? (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalTargetsystemUnsGroup>> => {
+                if (this.unsAccountIdFilter) {
+                  params = { ...params, uid_unsaccount: this.unsAccountIdFilter };
+                }
+                return this.groupsService.getGroups(params, signal);
+              }
+            : (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalRespUnsgroup>> =>
+                this.groupsService.getGroupsResp(params, signal),
+        schema: this.entitySchemaUnsGroup,
+        columnsToDisplay: this.displayedColumns,
+        dataModel: this.dataModel,
+        exportFunction:
+          this.isAdmin || this.unsAccountIdFilter
+            ? this.groupsService.exportGroups(this.dataSource.state())
+            : this.groupsService.exportGroupsResp(this.dataSource.state()),
+        viewConfig: this.viewConfig,
+        highlightEntity: (identity: PortalTargetsystemUnsGroup | PortalRespUnsgroup) => {
+          this.onGroupChanged(identity);
+        },
+        filterTree: {
+          filterMethode: async (parentkey) => {
+            return this.groupsService.getFilterTree({
+              parentkey,
+              container: this.dataSource.state().container,
+              system: this.dataSource.state().system,
+              uid_unsaccount: this.unsAccountIdFilter,
+            });
+          },
+          multiSelect: false,
+        },
+        selectionChange: (selection: Array<PortalTargetsystemUnsGroup | PortalRespUnsgroup>) => this.onGroupSelected(selection),
+      };
+      this.dataSource.init(dataViewInitParameters);
     } finally {
       isBusy.endBusy();
     }
-    if (this.applyIssuesFilter && !this.issuesFilterMode) {
-      const ownerFilter = this.filterOptions.find((f) => {
-        return f.Name === 'withowner';
-      });
-
-      if (ownerFilter) {
-        ownerFilter.InitialValue = '0';
-      }
-    }
-
-    if (this.applyIssuesFilter && this.issuesFilterMode === 'requestable') {
-      const requestableFliter = this.filterOptions.find((f) => {
-        return f.Name === 'published';
-      });
-
-      if (requestableFliter) {
-        requestableFliter.InitialValue = '0';
-      }
-    }
-    await this.navigate();
   }
 
   public ngOnDestroy(): void {
@@ -195,13 +200,13 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public get itemsAreNotRequestable(): boolean {
@@ -212,18 +217,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
     return this.selectedGroupsForUpdate.every((elem) => elem.Requestable.value);
   }
 
-  /**
-   * Occurs when the navigation state has changed - e.g. users clicks on the next page button.
-   *
-   */
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.navigationState = newState;
-    }
-    await this.navigate();
-  }
-
-  public async onGroupChanged(group: PortalTargetsystemUnsGroup): Promise<void> {
+  public async onGroupChanged(group: PortalTargetsystemUnsGroup | PortalRespUnsgroup): Promise<void> {
     if (this.unsAccountIdFilter) {
       return;
     }
@@ -232,13 +226,12 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
     this.logger.trace(this, `New group selected`, group);
 
     let data: GroupSidesheetData;
-    let busy: OverlayRef;
-    const isBusy = this.busyService.beginBusy();
+    const hideOverlayRef = this.busyServiceElemental.show();
 
     try {
-      const objKey = DbObjectKey.FromXml(group.XObjectKey.value);
+      const objKey = DbObjectKey.FromXml(group.GetEntity().GetColumn('XObjectKey').GetValue());
 
-      const uidAccProduct = group.UID_AccProduct.value;
+      const uidAccProduct = group.GetEntity().GetColumn('UID_AccProduct').GetValue();
 
       data = {
         uidAccProduct,
@@ -248,31 +241,13 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
         isAdmin: this.isAdmin,
       };
     } finally {
-      isBusy.endBusy();
+      this.busyServiceElemental.hide(hideOverlayRef);
     }
 
     this.viewGroup(data);
   }
 
-  /**
-   * Occurs when user triggers search.
-   *
-   * @param keywords Search keywords.
-   */
-  public async onSearch(keywords: string): Promise<void> {
-    this.logger.debug(this, `Searching for: ${keywords}`);
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    await this.navigate();
-  }
-
-  public async filterByTree(filters: FilterData[]): Promise<void> {
-    this.navigationState.filter = filters;
-    this.navigationState.StartIndex = 0;
-    return this.navigate();
-  }
-
-  public onGroupSelected(selected: PortalTargetsystemUnsGroup[]): void {
+  public onGroupSelected(selected: Array<PortalTargetsystemUnsGroup | PortalRespUnsgroup>): void {
     this.selectedGroupsForUpdate = selected;
   }
 
@@ -292,7 +267,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
       subTitle: item.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
       disableClose: false,
       testId: 'system-entitlement-role-membership-details',
       data,
@@ -334,88 +309,42 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
 
   private async updateOwnerForSelectedGroups(selectedOwner: { uidPerson?: string; uidRole?: string }): Promise<void> {
     let confirmMessage = '';
-    let busy: OverlayRef;
+    if (this.busyServiceElemental.overlayRefs.length === 0) {
+      this.busyServiceElemental.show();
+    }
     try {
-      setTimeout(() => (busy = this.busyServiceElemental.show()));
       confirmMessage = await this.groupsService.updateMultipleOwner(
         this.selectedGroupsForUpdate.map((elem) => elem.UID_AccProduct.value),
-        selectedOwner
+        selectedOwner,
       );
     } finally {
-      setTimeout(() => this.busyServiceElemental.hide(busy));
+      this.busyServiceElemental.hide();
     }
 
     if (confirmMessage) {
       this.snackbar.open({ key: confirmMessage });
     }
-    return this.navigate();
+    return this.dataSource.updateState();
   }
 
   private async updateSelectedGroups(updateData: EntityWriteDataBulk): Promise<void> {
     this.selectedGroupsForUpdate.forEach((group: PortalTargetsystemUnsGroup) => {
       const serviceItemUid = group?.UID_AccProduct.value;
-      if (serviceItemUid?.length) {
+      if (serviceItemUid?.length && updateData.Keys) {
         updateData.Keys.push([serviceItemUid]);
       }
     });
-    let busy: OverlayRef;
+    if (this.busyServiceElemental.overlayRefs.length === 0) {
+      this.busyServiceElemental.show();
+    }
 
     try {
-      setTimeout(() => (busy = this.busyServiceElemental.show()));
       await this.groupsService.bulkUpdateGroupServiceItems(updateData);
-      await this.navigate();
-      this.dataTable.clearSelection();
+      await this.dataSource.updateState();
+      this.dataSource.selection.clear();
       this.requestableBulkUpdateCtrl.setValue(true, { emitEvent: false });
     } finally {
-      setTimeout(() => this.busyServiceElemental.hide(busy));
-    }
-  }
-
-  private async navigate(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-
-    const getParams: GetGroupsOptionalParameters = this.navigationState;
-
-    try {
-      if (this.unsAccountIdFilter) {
-        getParams.uid_unsaccount = this.unsAccountIdFilter;
-      }
-
-      const data =
-        this.isAdmin || this.unsAccountIdFilter // Wenn wir filtern, muss auch der Admin-Endpoint genutzt werden
-          ? await this.groupsService.getGroups(getParams)
-          : await this.groupsService.getGroupsResp(getParams);
-
-      const exportMethod =
-        this.isAdmin || this.unsAccountIdFilter
-          ? this.groupsService.exportGroups(getParams)
-          : this.groupsService.exportGroupsResp(getParams);
-      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
-
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
-        entitySchema: this.entitySchemaUnsGroup,
-        navigationState: this.navigationState,
-        filters: this.filterOptions,
-        filterTree: {
-          filterMethode: async (parentkey) => {
-            return this.groupsService.getFilterTree({
-              parentkey,
-              container: getParams.container,
-              system: getParams.system,
-              uid_unsaccount: getParams.uid_unsaccount,
-            });
-          },
-          multiSelect: false,
-        },
-        dataModel: this.dataModel,
-        viewConfig: this.viewConfig,
-        exportMethod,
-      };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
-    } finally {
-      isBusy.endBusy();
+      this.busyServiceElemental.hide();
     }
   }
 
@@ -424,13 +353,13 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
       title: await this.translate.get('#LDS#Heading Edit System Entitlement').toPromise(),
       subTitle: data.group.GetEntity().GetDisplay(),
       padding: '0px',
-      width: `max(650px, ${this.sidesheetWidth})`,
+      width: calculateSidesheetWidth(1250, 0.7),
       icon: 'usergroup',
       data,
       testId: 'edit-system-entitlement-sidesheet',
       disableClose: true,
     });
     // After the sidesheet closes, reload the current data to refresh any changes that might have been made
-    sidesheetRef.afterClosed().subscribe(() => this.navigate());
+    sidesheetRef.afterClosed().subscribe(() => this.dataSource.updateState());
   }
 }

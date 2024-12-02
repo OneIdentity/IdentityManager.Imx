@@ -1,27 +1,9 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-.imx-info {
-  ::ng-deep .eui-alert {
-    width: auto;
-    margin-bottom: 10px;
-  }
-  ::ng-deep .eui-alert .eui-alert-header {
-    width: 100%;
-  }
-}
-
-.imx-alert-button {
-  align-self: flex-end;
-}
-
-.imx-flex-alert {
-  display: flex;
-  flex-direction: column;
-}
 
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+    .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
       background-color: $color-gray-70;
     }
   }
@@ -30,7 +12,7 @@
 .eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+    .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
       background-color: $color-gray-90;
     }
   }

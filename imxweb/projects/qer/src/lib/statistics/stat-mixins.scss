@@ -1,73 +1,53 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 // Vars that will be used in js
 @mixin Stat-Colors($theme: eui-light-theme) {
   @if $theme == eui-light-theme {
-    --stat-primary:#{$color-blue-60};
-    --stat-primary-darker:#{$color-blue-80};
+    --stat-primary: #{$color-blue-60};
+    --stat-primary-darker: #{$color-blue-80};
 
-    --stat-ok:#{$color-green-60};
-    --stat-ok-darker:#{$color-green-80};
+    --stat-ok: #{$color-green-60};
+    --stat-ok-darker: #{$color-green-80};
 
-    --stat-light-warn:#{$color-green-20};
-    --stat-light-warn-darker:#{$color-green-40};
+    --stat-light-warn: #{$color-green-20};
+    --stat-light-warn-darker: #{$color-green-40};
 
-    --stat-warn:#{$color-yellow-60};
-    --stat-warn-darker:#{$color-yellow-80};
+    --stat-warn: #{$color-yellow-60};
+    --stat-warn-darker: #{$color-yellow-80};
 
-    --stat-severe-warn:#{$color-orange-60};
-    --stat-severe-warn-darker:#{$color-orange-80};
+    --stat-severe-warn: #{$color-orange-60};
+    --stat-severe-warn-darker: #{$color-orange-80};
 
-    --stat-error:#{$color-red-60};
-    --stat-error-darker:#{$color-red-80};
+    --stat-error: #{$color-red-60};
+    --stat-error-darker: #{$color-red-80};
 
-    --stat-light:#{$color-gray-0};
-    --stat-dark:#{$color-gray-100};
+    --stat-light: #{$color-gray-0};
+    --stat-dark: #{$color-gray-100};
   } @else if $theme == eui-dark-theme {
-    --stat-primary:#{$color-blue-40};
-    --stat-primary-darker:#{$color-blue-60};
+    --stat-primary: #{$color-blue-40};
+    --stat-primary-darker: #{$color-blue-60};
 
-    --stat-ok:#{$color-green-40};
-    --stat-ok-darker:#{$color-green-60};
+    --stat-ok: #{$color-green-40};
+    --stat-ok-darker: #{$color-green-60};
 
-    --stat-light-warn:#{$color-green-10};
-    --stat-light-warn-darker:#{$color-green-20};
+    --stat-light-warn: #{$color-green-10};
+    --stat-light-warn-darker: #{$color-green-20};
 
-    --stat-warn:#{$color-yellow-40};
-    --stat-warn-darker:#{$color-yellow-60};
+    --stat-warn: #{$color-yellow-40};
+    --stat-warn-darker: #{$color-yellow-60};
 
-    --stat-severe-warn:#{$color-orange-40};
-    --stat-severe-warn-darker:#{$color-orange-60};
+    --stat-severe-warn: #{$color-orange-40};
+    --stat-severe-warn-darker: #{$color-orange-60};
 
-    --stat-error:#{$color-red-40};
-    --stat-error-darker:#{$color-red-60};
+    --stat-error: #{$color-red-40};
+    --stat-error-darker: #{$color-red-60};
 
-    --stat-light:#{$color-gray-0};
-    --stat-dark:#{$color-gray-100};
+    --stat-light: #{$color-gray-0};
+    --stat-dark: #{$color-gray-100};
   } @else {
-    @error "#{$theme} is not defined in stat-mixins: Stat-Colors"
+    @error "#{$theme} is not defined in stat-mixins: Stat-Colors";
   }
-
-}
-
-@mixin EUI-Elevation-1 {
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-@mixin EUI-Elevation-3 {
-  box-shadow: 0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2);
-}
-
-@mixin Ease-Transition($duration: .4s) {
-  transition: all $duration ease;
-}
-
-@mixin Transform-Enlarge($scale: 1.03) {
-  transform: translate3D(0,-1px,0) scale($scale);
-}
-
-@mixin Transform-Shrink($scale: 0.97) {
-  transform: translate3D(0,-1px,0) scale($scale);
 }
 
 @mixin Point-Stat-Colors($theme: eui-light-theme) {
@@ -100,19 +80,22 @@
     }
   } @else if $theme == eui-dark-theme {
     .is-ok {
-      .colored-icon, h3 {
+      .colored-icon,
+      h3 {
         color: var(--stat-ok);
       }
     }
 
     .is-warn {
-      .colored-icon, h3 {
+      .colored-icon,
+      h3 {
         color: var(--stat-warn);
       }
     }
 
     .is-error {
-      .colored-icon, h3 {
+      .colored-icon,
+      h3 {
         color: var(--stat-error);
       }
     }
@@ -136,7 +119,7 @@
   text-align: center;
   border: 1px solid transparent;
   &:not(.stat-card--disabled) {
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
   }
 
   span {
@@ -145,7 +128,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
 
-    @supports(-webkit-line-clamp: 2) {
+    @supports (-webkit-line-clamp: 2) {
       // If we can use webkit-line-clamp, then we will add an ellipses on line 2
       overflow: hidden;
       text-overflow: ellipsis;
@@ -156,10 +139,12 @@
     }
   }
 
-  &:hover:not(.stat-card--disabled) {
-    @include Ease-Transition;
-    @include Transform-Shrink;
+  &:hover:not(.stat-card--disabled),
+  &:focus:not(.stat-card--disabled) {
+    @include ease-transition;
+    @include transform-shrink;
     cursor: pointer;
+    z-index: 1;
   }
 }
 
@@ -177,7 +162,8 @@
     }
 
     // Only color span title
-    &:hover:not(.stat-card--disabled) {
+    &:hover:not(.stat-card--disabled),
+    &:focus:not(.stat-card--disabled) {
       border: 1px solid $color-gray-30;
 
       span {
@@ -197,7 +183,9 @@
     &.stat-card--disabled {
       border: 1px solid $color-gray-40;
     }
-    &:hover:not(.stat-card--disabled) {
+
+    &:hover:not(.stat-card--disabled),
+    &:focus:not(.stat-card--disabled) {
       border: 1px solid $color-gray-40;
 
       span {
@@ -217,7 +205,9 @@
     &.stat-card--disabled {
       border: 1px solid $color-gray-40;
     }
-    &:hover:not(.stat-card--disabled) {
+
+    &:hover:not(.stat-card--disabled),
+    &:focus:not(.stat-card--disabled) {
       border: 1px solid $color-gray-40;
 
       span {
@@ -240,29 +230,35 @@
 
 @mixin Empty-Card-Theme($theme: light) {
   @if $theme == light {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
 
-    span, p {
+    span,
+    p {
       color: $color-gray-60;
     }
   }
 
   @if $theme == dark {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
-    span, p {
+    span,
+    p {
       color: $color-gray-10;
     }
   }
 
   @if $theme == contrast {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
-    span, p {
+    span,
+    p {
       color: $color-gray-10;
     }
   }
@@ -299,28 +295,34 @@
 
 @mixin Stats-No-Data-Theme($theme: light) {
   @if $theme == light {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
-    span, p {
+    span,
+    p {
       color: $color-gray-60;
     }
   }
 
   @if $theme == dark {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
-    span, p {
+    span,
+    p {
       color: $color-gray-10;
     }
   }
 
   @if $theme == contrast {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
-    span, p {
+    span,
+    p {
       color: $color-gray-10;
     }
   }

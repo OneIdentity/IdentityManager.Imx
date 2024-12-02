@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,12 +27,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { UserConfig, ProjectConfig, QerProjectConfig } from 'imx-api-qer';
-import { UserModelService } from '../../user/user-model.service';
-import { PendingItemsType } from '../../user/pending-items-type.interface';
-import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
+import { SystemInfo } from '@imx-modules/imx-api-qbm';
+import { ProjectConfig, QerProjectConfig, UserConfig } from '@imx-modules/imx-api-qer';
 import { imx_SessionService, SystemInfoService } from 'qbm';
-import { SystemInfo } from 'imx-api-qbm';
+import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
+import { PendingItemsType } from '../../user/pending-items-type.interface';
+import { UserModelService } from '../../user/user-model.service';
 import { DashboardService } from './dashboard.service';
 
 @Component({
@@ -55,11 +55,11 @@ export class StartComponent implements OnInit {
     private readonly systemInfoService: SystemInfoService,
     private readonly sessionService: imx_SessionService,
     private readonly detectRef: ChangeDetectorRef,
-    private readonly projectConfigurationService: ProjectConfigurationService
+    private readonly projectConfigurationService: ProjectConfigurationService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
-    this.dashboardService.busyStateChanged.subscribe(busy => {
+    this.dashboardService.busyStateChanged.subscribe((busy) => {
       this.viewReady = !busy;
       this.detectRef.detectChanges();
     });
@@ -69,7 +69,7 @@ export class StartComponent implements OnInit {
       this.pendingItems = await this.userModelSvc.getPendingItems();
       this.projectConfig = await this.projectConfigurationService.getConfig();
       this.systemInfo = await this.systemInfoService.get();
-      this.userUid = (await this.sessionService.getSessionState()).UserUid;
+      this.userUid = (await this.sessionService.getSessionState()).UserUid || '';
     } finally {
       busy.endBusy();
     }
@@ -80,7 +80,9 @@ export class StartComponent implements OnInit {
   }
 
   public ShowPasswordMgmtTile(): boolean {
-    return this.projectConfig?.PasswordConfig.VI_MyData_MyPassword_Visibility && !!this.projectConfig?.PasswordConfig.PasswordMgmtUrl;
+    return (
+      (this.projectConfig.PasswordConfig?.VI_MyData_MyPassword_Visibility && !!this.projectConfig.PasswordConfig?.PasswordMgmtUrl) ?? false
+    );
   }
 
   public GoToMyPassword(): void {
@@ -88,7 +90,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToPasswordMgmtWeb(): void {
-    this.router.navigate(['/externalRedirect', { externalUrl: this.projectConfig?.PasswordConfig.PasswordMgmtUrl }]);
+    this.router.navigate(['/externalRedirect', { externalUrl: this.projectConfig.PasswordConfig?.PasswordMgmtUrl }]);
   }
 
   public GoToShoppingCart(): void {
@@ -104,7 +106,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToItShopApprovalInquiries(): void {
-    this.router.navigate(['itshop', 'approvals'], {queryParams: {inquiries:true}});
+    this.router.navigate(['itshop', 'approvals'], { queryParams: { inquiries: true } });
   }
 
   public GoToMyProcesses(): void {
@@ -112,7 +114,7 @@ export class StartComponent implements OnInit {
   }
 
   public ShowQpmIntegration(): boolean {
-    return !!this.projectConfig?.PasswordConfig.QpmBaseUrl;
+    return !!this.projectConfig.PasswordConfig?.QpmBaseUrl;
   }
 
   public GoToQpm(): void {
@@ -159,6 +161,6 @@ export class StartComponent implements OnInit {
 
   public ShowNewRequestLink(): boolean {
     // Starting a new request is only allowed when the session has an identity and the ITShop(Requests) feature is enabled
-    return this.userConfig?.IsITShopEnabled && this.userUid && this.systemInfo.PreProps.includes('ITSHOP');
+    return (this.userConfig?.IsITShopEnabled && !!this.userUid?.length && this.systemInfo.PreProps?.includes('ITSHOP')) || false;
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { CollectionLoadParameters, EntitySchema, FilterData, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { OpsupportSyncJournal, OpsupportSyncShell } from 'imx-api-dpr';
+import { OpsupportSyncJournal, OpsupportSyncShell } from '@imx-modules/imx-api-dpr';
+import { CollectionLoadParameters, EntitySchema, FilterData, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { DprApiService } from '../../../dpr-api-client.service';
 
 export interface OpsupportSyncShellParameters extends CollectionLoadParameters {
@@ -49,7 +49,7 @@ export class SyncService {
     return this.dprClient.typedClient.OpsupportSyncJournal.GetSchema();
   }
 
-  constructor(private readonly dprClient: DprApiService) { }
+  constructor(private readonly dprClient: DprApiService) {}
 
   public getSyncShell(parameters: OpsupportSyncShellParameters): Promise<TypedEntityCollectionData<OpsupportSyncShell>> {
     return this.dprClient.typedClient.OpsupportSyncShell.Get(parameters);
@@ -59,9 +59,8 @@ export class SyncService {
     return this.dprClient.typedClient.OpsupportSyncJournal.Get(parameters);
   }
 
-  public async GetDisplayName(uidShell: string, withfrozenjobs: boolean = false): Promise<string> {
-    const syncShellItem = (await this.getSyncShell({ withfrozenjobs })).Data.find(a => a.UID_DPRShell.value === uidShell);
+  public async GetDisplayName(uidShell: string, withfrozenjobs: boolean = false): Promise<string | null> {
+    const syncShellItem = (await this.getSyncShell({ withfrozenjobs })).Data.find((a) => a.UID_DPRShell.value === uidShell);
     return syncShellItem ? syncShellItem.DisplayName.value : null;
   }
-
 }

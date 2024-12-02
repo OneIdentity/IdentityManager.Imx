@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,27 +24,25 @@
  *
  */
 
-import { Component, OnInit, Inject } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, UntypedFormControl } from '@angular/forms';
-import {
-  ColumnDependentReference,
-  BaseCdr,
-  ClassloggerService,
-  SnackBarService,
-  ElementalUiConfigService,
-  TabItem,
-  ExtService,
-  CdrFactoryService,
-} from 'qbm';
-import { DbObjectKey } from 'imx-qbm-dbts';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { AccountSidesheetData } from '../accounts.models';
-import { IdentitiesService, ProjectConfigurationService } from 'qer';
+import { Component, Inject, OnInit } from '@angular/core';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { AccountsService } from '../accounts.service';
-import { EuiDownloadOptions } from '@elemental-ui/core';
-import { AccountsReportsService } from '../accounts-reports.service';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
+import {
+  CdrFactoryService,
+  ClassloggerService,
+  ColumnDependentReference,
+  ElementalUiConfigService,
+  ExtService,
+  SnackBarService,
+  TabItem,
+} from 'qbm';
+import { IdentitiesService, ProjectConfigurationService } from 'qer';
 import { AccountTypedEntity } from '../account-typed-entity';
+import { AccountsReportsService } from '../accounts-reports.service';
+import { AccountSidesheetData } from '../accounts.models';
+import { AccountsService } from '../accounts.service';
 
 @Component({
   selector: 'imx-account-sidesheet',
@@ -54,12 +52,12 @@ import { AccountTypedEntity } from '../account-typed-entity';
 export class AccountSidesheetComponent implements OnInit {
   public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
-  public linkedIdentitiesManager: DbObjectKey;
+  public linkedIdentitiesManager: DbObjectKey | undefined;
   public unsavedSyncChanges = false;
   public initialAccountManagerValue: string;
   public reportDownload: EuiDownloadOptions;
   public neverConnectFormControl = new UntypedFormControl();
-  public parameters: { objecttable: string; objectuid: string };
+  public parameters: { objecttable: string; objectuid: string; display: string };
 
   public dynamicTabs: TabItem[] = [];
 
@@ -76,13 +74,14 @@ export class AccountSidesheetComponent implements OnInit {
     private readonly accountsService: AccountsService,
     private readonly reports: AccountsReportsService,
     private readonly tabService: ExtService,
-    private cdrFactory: CdrFactoryService
+    private cdrFactory: CdrFactoryService,
   ) {
     this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.parameters = {
       objecttable: sidesheetData.unsDbObjectKey?.TableName,
       objectuid: sidesheetData.unsDbObjectKey?.Keys.join(','),
+      display: this.sidesheetData.selectedAccount.GetEntity().GetDisplay(),
     };
 
     this.reportDownload = {
@@ -135,13 +134,13 @@ export class AccountSidesheetComponent implements OnInit {
   }
 
   get accountManagerIsEditable(): boolean {
-    return this.selectedAccount.objectKeyManagerColumn?.GetMetadata().CanEdit();
+    return this.selectedAccount.objectKeyManagerColumn?.GetMetadata().CanEdit() ?? false;
   }
 
   public async syncToIdentityManager(event: MatSlideToggleChange): Promise<void> {
     const objectKeyManagerColumn = this.selectedAccount.objectKeyManagerColumn;
 
-    if (objectKeyManagerColumn != null && event.checked) {
+    if (objectKeyManagerColumn && this.linkedIdentitiesManager && event.checked) {
       await objectKeyManagerColumn.PutValue(this.linkedIdentitiesManager.ToXmlString());
       this.detailsFormGroup.markAsDirty();
       this.unsavedSyncChanges = true;
@@ -149,13 +148,13 @@ export class AccountSidesheetComponent implements OnInit {
   }
 
   private async setup(): Promise<void> {
-    const cols = (await this.configService.getConfig()).OwnershipConfig.EditableFields[this.parameters.objecttable];
+    const cols = (await this.configService.getConfig())?.OwnershipConfig?.EditableFields?.[this.parameters.objecttable] ?? [];
 
     this.cdrList = this.cdrFactory.buildCdrFromColumnList(this.selectedAccount.GetEntity(), cols);
 
     this.dynamicTabs = (
       await this.tabService.getFittingComponents<TabItem>('accountSidesheet', (ext) => ext.inputData.checkVisibility(this.parameters))
-    ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+    ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder! - tab2.sortOrder!);
 
     this.setupIdentityManagerSync();
   }
@@ -168,7 +167,7 @@ export class AccountSidesheetComponent implements OnInit {
     }
   }
 
-  private async getLinkedIdentitiesManager(linkedIdentityId: string, tableName: string): Promise<DbObjectKey> {
+  private async getLinkedIdentitiesManager(linkedIdentityId: string, tableName: string): Promise<DbObjectKey | undefined> {
     const identityData = await this.identitiesService.getPerson(linkedIdentityId);
     if (identityData?.UID_PersonHead.value) {
       const managerAccountData = await this.accountsService.getAccount(
@@ -176,7 +175,7 @@ export class AccountSidesheetComponent implements OnInit {
           TableName: tableName,
           Keys: [identityData.UID_PersonHead.value],
         },
-        'UID_Person'
+        'UID_Person',
       );
 
       if (managerAccountData) {

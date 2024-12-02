@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { ErrorHandler } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
-import { EntityData, FilterType, CompareOperator, CollectionLoadParameters, EntityCollectionData } from 'imx-qbm-dbts';
+import { EntityData, FilterType, CompareOperator, CollectionLoadParameters, EntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { FkContainer } from '../fk-container/fk-container';
 import { SelectContentProvider } from './select-content-provider.interface';
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -54,10 +54,10 @@ export class FkSelectionContainer {
     public placeholder?: string,
     public itemIcon?: string,
     public contentProvider: SelectContentProvider<EntityData> = {
-      display: item => item.Display,
-      key: item => item.Keys[0]
-    }
-  ) { 
+      display: (item) => item.Display,
+      key: (item) => item.Keys[0],
+    },
+  ) {
     this.navigation = { StartIndex: 0, PageSize: this.settingsService.DefaultPageSize };
   }
 
@@ -81,8 +81,11 @@ export class FkSelectionContainer {
     this.navigation.StartIndex = startIndex;
     try {
       this.loading = true;
-      this.logger.trace(this, `Load ${this.navigation.PageSize} new items of column
-      ${this.fkContainer.property.Column.ColumnName} from position ${this.navigation.StartIndex}`);
+      this.logger.trace(
+        this,
+        `Load ${this.navigation.PageSize} new items of column
+      ${this.fkContainer.property.Column.ColumnName} from position ${this.navigation.StartIndex}`,
+      );
       await this.init(this.errorHandler);
     } finally {
       this.loading = false;
@@ -90,14 +93,17 @@ export class FkSelectionContainer {
   }
 
   public async onAutocompleteValueChanged(keywords: string): Promise<void> {
-    this.navigation.filter = keywords === ''
-      ? null
-      : [{
-        ColumnName: this.filterColumn,
-        Type: FilterType.Compare,
-        CompareOp: CompareOperator.Like,
-        Value1: `%${keywords}%`
-      }];
+    this.navigation.filter =
+      keywords === ''
+        ? null
+        : [
+            {
+              ColumnName: this.filterColumn,
+              Type: FilterType.Compare,
+              CompareOp: CompareOperator.Like,
+              Value1: `%${keywords}%`,
+            },
+          ];
     this.getData(0);
   }
 

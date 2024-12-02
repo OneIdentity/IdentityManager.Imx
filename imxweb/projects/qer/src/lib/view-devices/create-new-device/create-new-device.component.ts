@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,26 @@
  *
  */
 
-import { Component, Inject } from "@angular/core";
-import { UntypedFormGroup } from "@angular/forms";
-import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from "@elemental-ui/core";
-import { PortalDevices } from "imx-api-qer";
-import { IEntity, ValueStruct } from "imx-qbm-dbts";
-import { BaseCdr, ColumnDependentReference, SnackBarService } from "qbm";
-import { ViewDevicesService } from "../view-devices.service";
+import { Component, Inject } from '@angular/core';
+import { UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalDevices } from '@imx-modules/imx-api-qer';
+import { IEntity, ValueStruct } from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, ColumnDependentReference, SnackBarService } from 'qbm';
+import { ViewDevicesService } from '../view-devices.service';
 
 @Component({
   selector: 'imx-create-new-device',
   templateUrl: './create-new-device.component.html',
-  styleUrls: ['./create-new-device.component.scss']
+  styleUrls: ['./create-new-device.component.scss'],
 })
 export class CreateNewDeviceComponent {
   public readonly formGroup = new UntypedFormGroup({});
   public cdrList: ColumnDependentReference[] = [];
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: { newDevice: PortalDevices, deviceEntityConfig: string[], deviceModelValueStruct: ValueStruct<string> },
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: { newDevice: PortalDevices; deviceEntityConfig: string[]; deviceModelValueStruct: ValueStruct<string> },
     public viewDevicesService: ViewDevicesService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
@@ -52,14 +53,11 @@ export class CreateNewDeviceComponent {
   }
 
   private createCdrList(entity: IEntity): BaseCdr[] {
-    const cdrList = [];
+    const cdrList: BaseCdr[] = [];
     const columnNames: string[] = this.data.deviceEntityConfig;
-    columnNames?.forEach(async (name) => {
+    columnNames?.forEach((name) => {
       try {
-        if (name === 'UID_HardwareType') {
-          await entity.GetColumn(name).PutValueStruct(this.data.deviceModelValueStruct);
-          cdrList.unshift(new BaseCdr(entity.GetColumn(name), null, true));
-        } else {
+        if (name !== 'UID_HardwareType') {
           cdrList.push(new BaseCdr(entity.GetColumn(name)));
         }
       } catch {}

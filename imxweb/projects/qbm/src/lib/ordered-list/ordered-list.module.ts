@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,31 +24,18 @@
  *
  */
 
-import { DragDropModule } from "@angular/cdk/drag-drop";
-import { CommonModule } from "@angular/common";
-import { NgModule } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { MatSelectModule } from "@angular/material/select";
-import { EuiCoreModule, EuiMaterialModule } from "@elemental-ui/core";
-import { OrderedListComponent } from "./ordered-list.component";
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { OrderedListComponent } from './ordered-list.component';
 
 /** Provides an editor component to edit an ordered list of elements. */
 @NgModule({
-  imports: [
-    CommonModule,
-    DragDropModule,
-    MatSelectModule,
-    FormsModule,
-    EuiCoreModule,
-    EuiMaterialModule,
-  ],
-  declarations: [
-    OrderedListComponent
-  ],
-  exports: [
-    OrderedListComponent
-  ]
+  imports: [CommonModule, DragDropModule, MatSelectModule, FormsModule, EuiCoreModule, EuiMaterialModule],
+  declarations: [OrderedListComponent],
+  exports: [OrderedListComponent],
 })
-export class OrderedListModule {
-
-}
+export class OrderedListModule {}

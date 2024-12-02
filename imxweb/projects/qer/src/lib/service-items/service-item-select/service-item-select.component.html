@@ -1,13 +1,24 @@
-<mat-form-field appearance="outline">
-  <mat-label>{{ columnContainer?.display | translate }}</mat-label>
-  <input matInput type="text" [formControl]="control" [readonly]="true"
+<mat-form-field class="imx-form-field-width-full" appearance="outline">
+  <mat-label>{{ columnContainer?.display ?? '' | translate }}</mat-label>
+  <input
+    matInput
+    type="text"
+    [formControl]="control"
+    [readonly]="true"
     [attr.data-imx-identifier]="imxIdentifier"
-    [required]="columnContainer.isValueRequired">
+    [required]="columnContainer.isValueRequired"
+  />
   <div matSuffix class="imx-suffix-container">
     <mat-spinner diameter="30" *ngIf="loading"></mat-spinner>
     <div class="imx-spacer"></div>
-    <button *ngIf="columnContainer?.canEdit" mat-button color="primary" type="button" (click)="editAssignment()"
-      [attr.data-imx-identifier]="imxIdentifier">
+    <button
+      *ngIf="columnContainer?.canEdit"
+      mat-button
+      color="primary"
+      type="button"
+      (click)="editAssignment()"
+      [attr.data-imx-identifier]="imxIdentifier"
+    >
       {{ control?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Select' | translate) }}
     </button>
   </div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,23 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalTargetsystemUnsGroupmembers } from 'imx-api-tsb';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { PortalTargetsystemUnsGroupmembers } from '@imx-modules/imx-api-tsb';
+import {
+  CollectionLoadParameters,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { GroupsService } from '../../groups.service';
 
 @Component({
   selector: 'imx-child-system-entitlements',
   templateUrl: './child-system-entitlements.component.html',
-  styleUrls: ['./child-system-entitlements.component.scss']
+  styleUrls: ['./child-system-entitlements.component.scss'],
 })
 export class ChildSystemEntitlementsComponent implements OnInit {
   @Input() public groupId: string;
@@ -47,12 +52,11 @@ export class ChildSystemEntitlementsComponent implements OnInit {
   public readonly entitySchemaUnsGroupMemberships: EntitySchema;
 
   private groupDisplayedColumns: IClientProperty[] = [];
-  private dataModel: DataModel;
 
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly settingsService: SettingsService,
-    private readonly groupsService: GroupsService
+    private readonly groupsService: GroupsService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaUnsGroupMemberships = groupsService.UnsGroupMembersSchema;
@@ -65,14 +69,6 @@ export class ChildSystemEntitlementsComponent implements OnInit {
       this.entitySchemaUnsGroupMemberships.Columns.XDateInserted,
     ];
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
-
-    try {
-      this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
-    }
     await this.groupNavigate();
   }
 
@@ -81,8 +77,9 @@ export class ChildSystemEntitlementsComponent implements OnInit {
   }
 
   private async groupNavigate(newState?: CollectionLoadParameters): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
       if (newState) {
@@ -95,12 +92,9 @@ export class ChildSystemEntitlementsComponent implements OnInit {
         dataSource: this.groupsGroupMembershipData,
         entitySchema: this.entitySchemaUnsGroupMemberships,
         navigationState: this.navigationState,
-        dataModel: this.dataModel
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
-
   }
-
 }

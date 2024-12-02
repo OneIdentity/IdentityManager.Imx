@@ -1,0 +1,41 @@
+@import 'base/mixins';
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+form {
+  .mat-mdc-slide-toggle {
+    margin-left: 8px;
+  }
+}
+.escalation-approver-toggle {
+  margin: 0.5em;
+}
+
+.imx-slide-toggle {
+  margin-left: 10px;
+  margin-top: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.imx-tab-group-slider {
+  align-self: center;
+  margin-right: 46px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.imx-flex-toggle-container {
+  margin-bottom: 20px;
+  @include flex-row-container();
+  > * {
+    margin-right: 20px;
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

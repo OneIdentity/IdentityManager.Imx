@@ -4,25 +4,6 @@
   overflow: hidden;
   height: 100%;
 
-  .tab-group-wrapper {
-    display: flex;
-    overflow: auto;
-    flex: 1;
-
-    .mat-tab-group {
-      width: 100%;
-    }
-
-    ::ng-deep .mat-tab-body-content {
-      display: flex;
-      flex-direction: column;
-    }
-
-    ::ng-deep .mat-tab-body-wrapper {
-      flex: 1;
-    }
-  }
-
   .imx-policy-edit-form {
     display: flex;
     flex-direction: column;
@@ -31,14 +12,10 @@
     overflow-x: hidden;
   }
 
-  h2 {
+  h3 {
     font-size: x-large;
     font-weight: 600;
     margin-bottom: 10px;
-  }
-
-  ::ng-deep textarea.mat-input-element {
-    max-height: 300px;
   }
 
   .imx-master-data-cdrs {
@@ -47,8 +24,8 @@
     margin: 2px 10px 2px 2px;
     overflow-x: hidden;
     overflow-y: auto;
-    h2{
-      display:flex;
+    h3 {
+      display: flex;
       align-items: center;
     }
   }
@@ -59,51 +36,12 @@
     overflow: hidden;
   }
 
-  .imx-checkbox-property-list {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .eui-sidesheet-content {
-    display: flex;
-    padding-bottom: 10px;
-  }
-
-  .eui-sidesheet-actions {
-    padding: 16px;
-    margin: 10px 0 0 0;
-    .justify-start {
-      margin-right: auto;
-
-      eui-icon {
-        font-size: 14px;
-        margin-right: 4px;
-      }
-    }
-
-    button:not(:last-of-type):not(.justify-start) {
-      margin-right: 10px;
-    }
-  }
-
   .imx-confirm-content {
     overflow: auto;
     white-space: pre-line;
     word-wrap: break-word;
     max-height: 400px;
     max-width: 600px;
-  }
-
-  .imx-helper-alert {
-    width: 100%;
-
-    ::ng-deep .eui-alert {
-      margin-bottom: 20px;
-    }
-
-    span {
-      display: block;
-    }
   }
 }
 
@@ -120,7 +58,7 @@
     grid-column-end: 3;
   }
 
-  imx-policy-editor{
+  imx-policy-editor {
     margin-right: 5px;
     margin-top: 20px;
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,11 @@
  *
  */
 
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
 import { ConfirmationService } from 'qbm';
-import { MitigatingControlData } from '../request/compliance-violation-details/edit-mitigating-controls/mitigating-controls-request/mitigating-control-data.interface';
+import { ExtendedDeferredOperationsData } from '../request/compliance-violation-details/edit-mitigating-controls/mitigating-controls-request/extended-deferred-operations-data';
 import { RequestMitigatingControls } from '../request/compliance-violation-details/edit-mitigating-controls/mitigating-controls-request/request-mitigating-controls';
 import { PersonMitigatingControls } from '../rules-violations/mitigating-controls-person/person-mitigating-controls';
 
@@ -38,34 +38,50 @@ import { PersonMitigatingControls } from '../rules-violations/mitigating-control
   styleUrls: ['../mitigating-controls-common.scss'],
 })
 export class MitigatingControlContainerComponent {
-  @Input() public mControls: MitigatingControlData[] | PersonMitigatingControls[] = [];
+  @Input() public mControls: Array<RequestMitigatingControls | ExtendedDeferredOperationsData | PersonMitigatingControls> = [];
   @Input() public mitigatingCaption: string;
   @Input() public formArray: FormArray;
   @Input() public options: EuiSelectOption[] = [];
 
-  @Output() public controlDeleted = new EventEmitter<MitigatingControlData | PersonMitigatingControls>();
+  @Output() public controlDeleted = new EventEmitter<RequestMitigatingControls | PersonMitigatingControls>();
   @Output() public controlsRequested = new EventEmitter<void>();
 
-  constructor(private readonly cd: ChangeDetectorRef, private readonly confirmationService: ConfirmationService) {}
+  constructor(
+    private readonly cd: ChangeDetectorRef,
+    private readonly confirmationService: ConfirmationService,
+  ) {}
 
-  public async onSelectionChange(mcontrol: RequestMitigatingControls | PersonMitigatingControls, value: string): Promise<void> {
-    mcontrol.UID_MitigatingControl.value = value;
+  public filter = (option: EuiSelectOption, searchInputValue: string): boolean =>
+    option.value.toString().toUpperCase() === searchInputValue.toUpperCase();
+
+  public async onSelectionChange(
+    mcontrol: RequestMitigatingControls | ExtendedDeferredOperationsData | PersonMitigatingControls,
+    option: EuiSelectOption | EuiSelectOption[],
+  ): Promise<void> {
+    // Multiple is set to false so there is no array of options
+    mcontrol.uidMitigatingControl = (option as EuiSelectOption).value;
     this.formArray.updateValueAndValidity();
     this.cd.detectChanges();
     return;
   }
 
-  public onOpenChange(isopen: boolean, mControl: RequestMitigatingControls | PersonMitigatingControls): void {
+  public onOpenChange(
+    isopen: boolean,
+    mControl: RequestMitigatingControls | ExtendedDeferredOperationsData | PersonMitigatingControls,
+  ): void {
     if (!isopen) {
-      mControl.formControl.updateValueAndValidity({ onlySelf: true });
+      mControl?.formControl.updateValueAndValidity({ onlySelf: true });
     }
   }
 
-  public async onDelete(mControl: RequestMitigatingControls | PersonMitigatingControls | undefined, index: number): Promise<void> {
-    if (mControl.UID_MitigatingControl.value !== '' && !(await this.confirmationService.confirmDelete())) {
+  public async onDelete(
+    mControl: RequestMitigatingControls | ExtendedDeferredOperationsData | PersonMitigatingControls | undefined,
+    index: number,
+  ): Promise<void> {
+    if (mControl?.uidMitigatingControl !== '' && !(await this.confirmationService.confirmDelete())) {
       return;
     }
-    if (mControl.GetEntity().GetKeys() != null) {
+    if (!(mControl instanceof ExtendedDeferredOperationsData) && mControl?.GetEntity().GetKeys() != null) {
       this.controlDeleted.emit(mControl);
     }
     this.mControls.splice(index, 1);

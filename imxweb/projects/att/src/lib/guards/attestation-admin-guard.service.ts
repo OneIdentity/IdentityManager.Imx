@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
@@ -34,14 +34,14 @@ import { PermissionsService } from '../admin/permissions.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AttestionAdminGuardService implements CanActivate, OnDestroy {
+export class AttestionAdminGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly attPermissionService: PermissionsService,
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   public canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): Observable<boolean> {
@@ -49,8 +49,8 @@ export class AttestionAdminGuardService implements CanActivate, OnDestroy {
       this.onSessionResponse = this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (sessionState.IsLoggedIn) {
           const userIsAttestationAdmin = await this.attPermissionService.isAttestationAdmin();
-          if (!userIsAttestationAdmin) {            
-            this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} } );
+          if (!userIsAttestationAdmin) {
+            this.router.navigate([this.appConfig.Config.routeConfig?.start], { queryParams: {} });
           }
           observer.next(userIsAttestationAdmin ? true : false);
           observer.complete();

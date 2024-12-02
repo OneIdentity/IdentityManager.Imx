@@ -1,6 +1,11 @@
 <div *ngIf="data?.fkRelations" class="imx-fk-selector">
   <!-- more than 3 candidate tables -> show combo box -->
-  <mat-select *ngIf="data.fkRelations.length > 3" [(ngModel)]="selectedTable" (selectionChange)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-select-tables">
+  <mat-select
+    *ngIf="data.fkRelations.length > 3"
+    [(ngModel)]="selectedTable"
+    (selectionChange)="tableChanged()"
+    data-imx-identifier="cdr-fkadvancedpicker-select-tables"
+  >
     <mat-option *ngFor="let item of data.fkRelations" [value]="item">
       {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
     </mat-option>
@@ -21,7 +26,7 @@
   <ng-container *ngIf="true">
     <imx-data-source-toolbar
       #dst
-      [settings]="settings"      
+      [settings]="settings"
       [busyService]="busyService"
       (navigationStateChanged)="loadTableData($event)"
       [preSelection]="preselectedEntities"
@@ -44,16 +49,12 @@
         <imx-data-table-generic-column *ngIf="!data.isMultiValue" columnName="Select">
           <ng-template let-item>
             <ng-container *ngIf="!amIDisabled(item)">
-              <mat-radio-button
-                [value]="item"
-                (click)="selectObject(item)"
-                class="imx-radio-button"
-              ></mat-radio-button>
+              <mat-radio-button [value]="item" (click)="selectObject(item)" class="imx-margin-right-10"></mat-radio-button>
             </ng-container>
           </ng-template>
         </imx-data-table-generic-column>
 
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div class="imx-main-display" #mainDisplay [ngClass]="setSelectedClass(item)">{{ item?.GetEntity()?.GetDisplay() }}</div>
           </ng-template>

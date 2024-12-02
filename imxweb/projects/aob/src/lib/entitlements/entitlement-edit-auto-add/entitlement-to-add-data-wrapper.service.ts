@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,31 +26,26 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntitlementData, EntitlementToAddData } from 'imx-api-aob';
-import {
-  EntityColumnData,
-  EntityData,
-  TypedEntityBuilder,
-  TypedEntityCollectionData
-} from 'imx-qbm-dbts';
+import { EntitlementData, EntitlementToAddData } from '@imx-modules/imx-api-aob';
+import { EntityColumnData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { EntitlementToAddTyped } from './entitlement-to-add-typed';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EntitlementToAddDataWrapperService {
-
   public readonly entitySchema = EntitlementToAddTyped.GetEntitySchema();
   private readonly builder = new TypedEntityBuilder(EntitlementToAddTyped);
 
   public buildTypedEntities(data: EntitlementToAddData): TypedEntityCollectionData<EntitlementToAddTyped> {
-    const entities = data.Data.map((element, index) => this.buildEntityData(element, `${index}`));
+    const entities = data.Data?.map((element, index) => this.buildEntityData(element, `${index}`));
     return this.builder.buildReadWriteEntities(
       {
-        TotalCount: entities.length,
-        Entities: entities.sort((a, b) => this.compareElement(a, b))
+        TotalCount: entities?.length || 0,
+        Entities: entities?.sort((a, b) => this.compareElement(a, b)),
       },
-      this.entitySchema);
+      this.entitySchema,
+    );
   }
 
   private buildEntityData(data: EntitlementData, key: string): EntityData {
@@ -60,18 +55,17 @@ export class EntitlementToAddDataWrapperService {
     ret.IsAssignedToOther = { Value: data.IsAssignedToOther, IsReadOnly: true };
     ret.DisplayName = { Value: data.DisplayName, IsReadOnly: true };
     ret.CanonicalName = { Value: data.CanonicalName, IsReadOnly: true };
-    ret.UID_AOBApplicationConflicted =
-    {
+    ret.UID_AOBApplicationConflicted = {
       Value: data.UID_AOBApplicationConflicted,
       IsReadOnly: true,
-      DisplayValue: data.DisplayApplicationConflicted
+      DisplayValue: data.DisplayApplicationConflicted,
     };
     return { Columns: ret, Keys: [key] };
   }
 
   private compareElement(a: EntityData, b: EntityData): number {
-    const val1 = `${(a.Columns.IsAssignedToMe.Value ? 1 : a.Columns.IsAssignedToOther.Value ? 0 : 2)} ${a.Columns.DisplayName.Value}`;
-    const val2 = `${(b.Columns.IsAssignedToMe.Value ? 1 : b.Columns.IsAssignedToOther.Value ? 0 : 2)} ${b.Columns.DisplayName.Value}`;
+    const val1 = `${a.Columns?.IsAssignedToMe.Value ? 1 : a.Columns?.IsAssignedToOther.Value ? 0 : 2} ${a.Columns?.DisplayName.Value}`;
+    const val2 = `${b.Columns?.IsAssignedToMe.Value ? 1 : b.Columns?.IsAssignedToOther.Value ? 0 : 2} ${b.Columns?.DisplayName.Value}`;
     return val1.localeCompare(val2);
   }
 }

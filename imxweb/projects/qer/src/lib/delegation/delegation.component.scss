@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 @mixin stepper-margin {
   margin-top: 16px;
@@ -6,21 +7,10 @@
 }
 
 :host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  @include flex-column-container($height: 100%, $overflow: hidden);
 
   .imx-stepper-content {
     @include stepper-margin();
-  }
-
-  .imx-step-button,
-  .imx-step-button-save {
-    display: flex;
-    > *:not(:last-child) {
-      margin-right: 10px;
-    }
   }
 
   //For hiding components during loading
@@ -34,61 +24,35 @@
   }
 
   .imx-roles-form {
-    display: flex;
-    flex-direction: column;
-    height: 390px;
+    @include flex-column-container($height: 390px);
     border-radius: 5px;
     padding: 5px;
     @include stepper-margin();
   }
 
-  .imx-step-button-save {
-    align-self: flex-end;
-    margin-top: 16px;
-  }
-
   .imx-type-selector {
     @include stepper-margin();
-    > .mat-radio-button {
-      margin-left: 25px;
-    }
   }
 
   .imx-delegatable-elements {
-    overflow: hidden;
     margin-bottom: 10px;
     max-height: 600px;
-    display: flex;
-    flex: 1 1 auto;
-  }
-
-  .imx-delegatable-elements mat-list-option .subtext {
-    font-size: 11px;
-    font-style: italic;
-    margin-bottom: 10px;
-  }
-
-  .imx-delegatable-elements mat-list-option {
-    font-size: smaller;
+    @include flex-row-container-fill();
+    overflow: hidden;
   }
 
   .imx-delegation-stepper {
-    flex: 1 1 auto;
+    @include flex-column-container-fill();
     max-width: 100%;
-    display: flex;
-    flex-direction: column;
     margin: 3px;
-    overflow: hidden;
 
     > :first-child {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
+      @include flex-column-container-fill();
       overflow: auto;
     }
   }
 
-  .imx-delegation-list {
+  .imx-list-container {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
@@ -105,41 +69,6 @@
       > :last-child {
         flex: 1 1 auto;
       }
-
-      ::ng-deep .mat-paginator {
-        box-shadow: none;
-      }
-    }
-
-    .multi-select-formcontrol-eui-search {
-      width: 100%;
-      display: flex;
-
-      .eui-search {
-        width: 100%;
-      }
-
-      ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
-        min-width: 280px;
-        flex: 1;
-        margin-bottom: 10px;
-      }
-    }
-
-    .imx-selected-entitlements {
-      margin: 0;
-      line-height: 36px;
-      font-size: 13.3px;
-      flex: auto;
-
-      ::ng-deep .imx-badge.eui-badge .eui-badge-content {
-        font-size: 13.3px;
-        line-height: 14px;
-      }
-    }
-
-    .imx-badge {
-      background-color: inherit;
     }
   }
 
@@ -148,28 +77,19 @@
   }
 
   .imx-small-error {
-    font-size: small;
-    margin: -25px 0 20px 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
   }
 
   .imx-delegation-success {
     margin: 20px;
-    flex: 1 1 auto;
     width: max-content;
   }
 
-  .imx-alert-content {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-  }
-
   .imx-global-elements {
+    @include flex-column-container-fill();
     padding-left: 1em;
     overflow-y: auto;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
 
     imx-busy-indicator {
       flex: 1 1 auto;
@@ -194,17 +114,13 @@
     margin: 30px 0 0 0;
   }
 
-  .imx-no-delegatable-items {
+  .imx-no-results {
     display: flex;
     margin: 20px 0;
     flex: 1 1 auto;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-
-    .eui-icon {
-      font-size: 100px;
-    }
 
     p {
       margin: 0;
@@ -214,18 +130,13 @@
 
   .imx-additional-informations {
     @include stepper-margin();
-    overflow: auto;
   }
 }
 
 // Theming
 .eui-light-theme {
   :host {
-    .imx-no-delegatable-items {
-      .eui-icon {
-        color: $color-gray-10;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-50;
       }
@@ -234,24 +145,12 @@
     .imx-roles-form {
       border: $color-gray-10 1px solid;
     }
-
-    .imx-delegatable-elements mat-list-option .subtext {
-      color: $color-gray-40;
-    }
   }
 }
 
 .eui-dark-theme {
   :host {
-    .imx-delegatable-elements mat-list-option .subtext {
-      color: $color-gray-20;
-    }
-
-    .imx-no-delegatable-items {
-      .eui-icon {
-        color: $color-gray-20;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-10;
       }
@@ -261,15 +160,7 @@
 
 .eui-contrast-theme {
   :host {
-    .imx-delegatable-elements mat-list-option .subtext {
-      color: $color-gray-0;
-    }
-
-    .imx-no-delegatable-items {
-      .eui-icon {
-        color: $color-gray-10;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-0;
       }

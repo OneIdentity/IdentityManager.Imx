@@ -1,13 +1,14 @@
-<imx-icon-tile data-imx-identifier="kpi-tile"
-*ngIf="isAobOwner"
-[caption]="'#LDS#Heading Application KPI Overview' | translate" 
-[subtitle]="'#LDS#Get an overview of the KPIs for your applications.' |translate"
-[identifier]="'global-kpi'">
-<ng-template #ActionTemplate>
-  <button mat-button color="primary" [attr.data-imx-identifier]="'kpi-tile-button-view'"
-    (click)="goToGlobalKpi()">
-    <span>{{'#LDS#View KPI overview'| translate}}</span>
-    <eui-icon size="m" icon="forward"></eui-icon>
-  </button>
-</ng-template>
+<imx-icon-tile
+  data-imx-identifier="kpi-tile"
+  *ngIf="isAobOwner"
+  [caption]="'#LDS#Heading Application KPI Overview' | translate"
+  [subtitle]="'#LDS#Get an overview of the KPIs for your applications.' | translate"
+  [identifier]="'global-kpi'"
+>
+  <ng-template #ActionTemplate>
+    <button mat-button class="imx-button-uppercase" color="primary" [attr.data-imx-identifier]="'kpi-tile-button-view'" (click)="goToGlobalKpi()">
+      <span>{{ '#LDS#View KPI overview' | translate }}</span>
+      <eui-icon class="imx-margin-left-15" icon="forward"></eui-icon>
+    </button>
+  </ng-template>
 </imx-icon-tile>

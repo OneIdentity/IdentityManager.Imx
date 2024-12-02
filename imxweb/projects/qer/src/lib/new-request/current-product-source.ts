@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { DataSourceToolbarComponent } from "qbm";
-import { SelectedProductSource } from "./new-request-selected-products/selected-product-item.interface";
+import { DataSourceToolbarComponent } from 'qbm';
+import { SelectedProductSource } from './new-request-selected-products/selected-product-item.interface';
 
 export interface CurrentProductSource {
   dst: DataSourceToolbarComponent;

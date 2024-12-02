@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,12 @@
 
 import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { BehaviorSubject, Observable, merge, Subscription } from 'rxjs';
+import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 
-import { TreeNode, TreeNodeInfo } from './tree-node';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { TreeDatabase } from './tree-database';
-import { IEntity } from 'imx-qbm-dbts';
-import * as _ from 'lodash';
+import { TreeNode, TreeNodeInfo } from './tree-node';
 
 /** Datasource for the data-tree */
 export class TreeDatasource {
@@ -49,7 +48,10 @@ export class TreeDatasource {
    */
   private subscriptions: Subscription[] = [];
 
-  constructor(private treeControl: FlatTreeControl<TreeNode>, private dataService: TreeDatabase) {}
+  constructor(
+    private treeControl: FlatTreeControl<TreeNode>,
+    private dataService: TreeDatabase,
+  ) {}
 
   public init(value: TreeNode[]): void {
     this.treeControl.dataNodes = value;
@@ -76,7 +78,7 @@ export class TreeDatasource {
           if (treeDataHasChanged) {
             this.dataChange.next(this.data);
           }
-        })
+        }),
     );
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
@@ -86,7 +88,7 @@ export class TreeDatasource {
   public async handleTreeControl(change: SelectionChange<TreeNode>): Promise<boolean> {
     if (change.added && change.added.length > 0) {
       return (await Promise.all(change.added.filter((node) => node.expandable).map((node) => this.toggleNode(node, true)))).some(
-        (result) => result === true
+        (result) => result === true,
       );
     }
 
@@ -97,10 +99,12 @@ export class TreeDatasource {
             .filter((node) => node.expandable)
             .slice()
             .reverse()
-            .map((node) => this.toggleNode(node, false))
+            .map((node) => this.toggleNode(node, false)),
         )
       ).some((result) => result === true);
     }
+
+    return false;
   }
 
   /** Loads more elements and adds them to the tree */
@@ -108,13 +112,13 @@ export class TreeDatasource {
     node.isLoading = true;
     try {
       const newData = await this.dataService.getData(false, { ParentKey, StartIndex: startIndex });
-      const nodes = this.dataService.createSortedNodes(newData.entities, node.level);
+      const nodes = this.dataService.createSortedNodes(newData?.entities ?? [], node.level);
 
       if (nodes.length === 0) {
         return;
       }
 
-      if (newData.canLoadMore) {
+      if (newData?.canLoadMore) {
         nodes.push(new TreeNode(undefined, ParentKey + 'more', 'more', node.level, false, false, true));
       }
 
@@ -136,7 +140,7 @@ export class TreeDatasource {
   /** add an empty tree node at the top of the tree */
   public addEmpyNodeToTop(): TreeNode {
     if (this.data?.length === 0 || this.data[0].identifier !== 'newObject') {
-      const emptyNode = new TreeNode(null, 'newObject', this.emptyNodeCaption, 0, false);
+      const emptyNode = new TreeNode(undefined, 'newObject', this.emptyNodeCaption, 0, false);
       this.data.splice(0, 0, ...[emptyNode]);
 
       this.dataChange.next(this.data);

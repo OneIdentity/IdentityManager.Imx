@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,25 +27,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { from, Subscription } from 'rxjs';
 
-import { PortalItshopPatternItem, PortalItshopPatternRequestable } from 'imx-api-qer';
+import { PortalItshopPatternItem, PortalItshopPatternRequestable } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
-  CompareOperator,
   DisplayColumns,
   EntitySchema,
-  FilterType,
   IClientProperty,
   IWriteValue,
-} from 'imx-qbm-dbts';
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
 import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, DataSourceWrapper } from 'qbm';
 
 import { PatternItemService } from '../../../pattern-item-list/pattern-item.service';
-import { NewRequestOrchestrationService } from '../../new-request-orchestration.service';
-import { SelectedProductSource } from '../../new-request-selected-products/selected-product-item.interface';
-import { ProductDetailsService } from '../../new-request-product/product-details-sidesheet/product-details.service';
 import { ServiceItemsService } from '../../../service-items/service-items.service';
-import { NewRequestSelectionService } from '../../new-request-selection.service';
 import { CurrentProductSource } from '../../current-product-source';
+import { NewRequestOrchestrationService } from '../../new-request-orchestration.service';
+import { ProductDetailsService } from '../../new-request-product/product-details-sidesheet/product-details.service';
+import { SelectedProductSource } from '../../new-request-selected-products/selected-product-item.interface';
+import { NewRequestSelectionService } from '../../new-request-selection.service';
 
 @Component({
   selector: 'imx-product-bundle-items',
@@ -58,6 +57,10 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
   private readonly myBusyService = new BusyService();
   private busy: Busy;
 
+  private productBundleItemsCount: number = -1;
+  private _selectBundleDisabled = false;
+  private _unselectBundleDisabled = true;
+
   // #endregion
 
   // #region Public
@@ -65,33 +68,47 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
   public DisplayColumns = DisplayColumns;
   public displayedColumns: IClientProperty[];
   public dstWrapper: DataSourceWrapper<PortalItshopPatternItem>;
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public navigationState: CollectionLoadParameters;
   public recipients: IWriteValue<string>;
   public selectedProductBundle: PortalItshopPatternRequestable;
   public entitySchema: EntitySchema;
-  public searchApi = () => {
+
+  public searchApi = (keywords: string) => {
     this.busy = this.myBusyService.beginBusy();
     this.orchestration.abortCall();
 
     let parameters: CollectionLoadParameters = {
-      ...this.orchestration.dstSettingsProductBundles.navigationState,
+      ...(this.orchestration.dstSettingsProductBundles?.navigationState || {}),
+      search: keywords,
     };
 
     return from(
       this.patternItemService.getPatternItemList(this.selectedProductBundle, parameters, {
         signal: this.orchestration.abortController.signal,
-      })
+      }),
     );
   };
+
+  public get selectedBundleSelected(): boolean {
+    return this._selectBundleDisabled && !this.myBusyService.isBusy;
+  }
+
+  public get selectBundleDisabled(): boolean {
+    return this._selectBundleDisabled || this.myBusyService.isBusy;
+  }
+
+  public get unselectBundleDisabled(): boolean {
+    return this._unselectBundleDisabled || this.myBusyService.isBusy;
+  }
   // #endregion
 
   constructor(
     public readonly orchestration: NewRequestOrchestrationService,
     public readonly selectionService: NewRequestSelectionService,
     private readonly patternItemService: PatternItemService,
-    private readonly productDetailsService: ProductDetailsService,
-    private readonly serviceItemsService: ServiceItemsService
+    protected readonly productDetailsService: ProductDetailsService,
+    private readonly serviceItemsService: ServiceItemsService,
   ) {
     this.orchestration.selectedView = SelectedProductSource.ProductBundles;
     this.orchestration.searchApi$.next(this.searchApi);
@@ -105,7 +122,7 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
     this.dstWrapper = new DataSourceWrapper(
       (state, requestOpts) => this.patternItemService.getPatternItemList(this.selectedProductBundle, state, requestOpts),
       this.displayedColumns,
-      this.entitySchema
+      this.entitySchema,
     );
 
     //#region Subscriptions
@@ -130,10 +147,10 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
                 this.orchestration.dstSettingsProductBundles = this.dstSettings;
               }
               this.busy.endBusy(true);
-            })
+            }),
           );
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
@@ -141,7 +158,7 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
         this.navigationState = navigation;
         this.updateDisplayedColumns(this.displayedColumns);
         await this.getData();
-      })
+      }),
     );
 
     this.subscriptions.push(
@@ -152,7 +169,7 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
           await this.getData();
           this.orchestration.preselectBySource(SelectedProductSource.ProductBundles, this.dst);
         }
-      })
+      }),
     );
 
     this.subscriptions.push(this.orchestration.recipients$.subscribe((recipients: IWriteValue<string>) => (this.recipients = recipients)));
@@ -160,7 +177,7 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.selectionService.selectedProducts$.subscribe(() => {
         this.orchestration.preselectBySource(SelectedProductSource.ProductBundles, this.dst);
-      })
+      }),
     );
 
     this.subscriptions.push(this.selectionService.selectedProductsCleared$.subscribe(() => this.dst?.clearSelection()));
@@ -178,6 +195,9 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
   }
 
   public async getData(): Promise<void> {
+    if (!this.orchestration.isLoggedIn) {
+      return;
+    }
     if (!this.selectedProductBundle) {
       this.orchestration.disableSearch = true;
       return;
@@ -187,31 +207,53 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
     try {
       this.orchestration.abortCall();
       this.dstSettings = await this.dstWrapper.getDstSettings(this.navigationState, { signal: this.orchestration.abortController.signal });
+      this.productBundleItemsCount = this.dstSettings?.dataSource?.totalCount || 0;
       this.orchestration.dstSettingsProductBundles = this.dstSettings;
     } finally {
       busy.endBusy();
     }
   }
 
-  public async onRowSelected(item: PortalItshopPatternItem): Promise<void> {
-    const serviceItem = await this.serviceItemsService.getServiceItem(item.UID_AccProduct.value, true);
-    this.productDetailsService.showProductDetails(serviceItem, this.recipients);
+  public async onRowSelected(item: TypedEntity): Promise<void> {
+    const serviceItem =
+      'UID_AccProduct' in item
+        ? await this.serviceItemsService.getServiceItem((item as PortalItshopPatternItem).UID_AccProduct.value, true)
+        : undefined;
+    if (serviceItem != null) {
+      this.productDetailsService.showProductDetails(serviceItem, this.recipients);
+    }
   }
 
-  public onSelectionChanged(items: PortalItshopPatternItem[]): void {
-    this.selectionService.addProducts(items, SelectedProductSource.ProductBundles, false, this.selectedProductBundle);
+  public onSelectionChanged(items: TypedEntity[]): void {
+    const itemsFromCurrentBundle = items.filter(
+      (item) =>
+        item.GetEntity().GetColumn('UID_ShoppingCartPattern').GetValue() === this.selectedProductBundle.UID_ShoppingCartPattern.value,
+    );
+
+    this._selectBundleDisabled = this.productBundleItemsCount === itemsFromCurrentBundle.length;
+    this._unselectBundleDisabled = items.length === 0;
+    this.selectionService.addProducts(
+      items as PortalItshopPatternItem[],
+      SelectedProductSource.ProductBundles,
+      false,
+      this.selectedProductBundle,
+    );
   }
 
   public async onSelectBundle(): Promise<void> {
+    this._selectBundleDisabled = true;
+    this._unselectBundleDisabled = true;
     const busy = this.myBusyService.beginBusy();
 
     try {
       const items = await this.patternItemService.getPatternItemList(this.selectedProductBundle, undefined, undefined, true);
       if (items?.Data) {
+        this.productBundleItemsCount = items?.Data.length;
         this.selectionService.addProducts(items.Data, SelectedProductSource.ProductBundles, true, this.selectedProductBundle);
         this.orchestration.preselectBySource(SelectedProductSource.ProductBundles, this.dst);
       }
     } finally {
+      this._unselectBundleDisabled = false;
       busy.endBusy();
     }
   }
@@ -219,6 +261,8 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
   public async onUnselectBundle(): Promise<void> {
     this.selectionService.addProducts([], SelectedProductSource.ProductBundles, true, this.selectedProductBundle);
     this.orchestration.preselectBySource(SelectedProductSource.ProductBundles, this.dst);
+    this._selectBundleDisabled = false;
+    this._unselectBundleDisabled = true;
   }
 
   private updateDisplayedColumns(displayedColumns: IClientProperty[]): void {

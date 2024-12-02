@@ -1,23 +1,12 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-  ::ng-deep {
-    .mat-form-field-prefix {
-      .mat-spinner,
-      .mat-spinner svg {
-        max-height: 16px;
-        max-width: 16px;
-      }
-      .mat-spinner {
-        margin-right: 10px;
-      }
-    }
-  }
 }
+
 .filters {
   display: flex;
   flex-flow: wrap;
@@ -37,37 +26,6 @@
   flex: 1 1 auto;
   overflow: auto;
   display: flex;
-  mat-spinner {
-    margin: auto;
-  }
-}
-
-.helper-alert {
-  margin-bottom: 1em;
-  display: flex;
-  flex-direction: column;
-
-  span {
-    display: block;
-  }
-}
-
-.imx-button-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-
-  > *:not(:first-child) {
-    margin-left: 5px;
-  }
-
-  .imx-menu-spacer{
-    flex: 1 1 auto;
-  }
-
-  imx-selected-elements {
-    margin-left: 10px;
-  }
 }
 
 .object-type {
@@ -75,18 +33,9 @@
   font-size: smaller;
 }
 
-.bulkmodecheckbox {
-  margin-right: 1em;
-  line-height: 36px;
-}
-
 .imx-justify-start {
   align-self: flex-start;
   flex: 1 1 auto;
-}
-
-mat-spinner {
-  margin: auto;
 }
 
 .first-cell {

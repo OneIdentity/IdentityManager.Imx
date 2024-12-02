@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,47 +24,42 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalAttestationFilterMatchingobjects } from 'imx-api-att';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
+import { PortalAttestationFilterMatchingobjects } from '@imx-modules/imx-api-att';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
-  BusyService,
   ClassloggerService,
   ClientPropertyForTableColumns,
   ConfirmationService,
-  DataSourceToolbarSettings,
+  DataViewInitParameters,
+  DataViewSource,
   LdsReplacePipe,
-  SettingsService,
   SnackBarService,
 } from 'qbm';
 import { PolicyService } from '../policy.service';
 import { AttestationCasesComponentParameter } from './attestation-cases-component-parameter.interface';
-import { AttestationCasesTreeDatabaseService } from './attestation-cases-tree-database.service';
 
 @Component({
   templateUrl: './attestation-cases.component.html',
   styleUrls: ['./attestation-cases.component.scss'],
+  providers: [DataViewSource],
 })
 export class AttestationCasesComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaPolicy: EntitySchema;
   public DisplayColumns = DisplayColumns;
   public isAdmin: boolean;
   public deactivatedChecked = false;
 
-  public selectedItems: PortalAttestationFilterMatchingobjects[] = [];
-  public treeDatabase: AttestationCasesTreeDatabaseService;
+  public selectedItems: (PortalAttestationFilterMatchingobjects | undefined)[] = [];
   public entitySchema = PortalAttestationFilterMatchingobjects.GetEntitySchema();
 
-  private navigationState: CollectionLoadParameters;
   private displayedColumns: ClientPropertyForTableColumns[];
   private threshold = -1;
   public hierarchical: boolean;
-  private busyService = new BusyService();
+  public isLoading = false;
 
   constructor(
     public readonly sidesheetRef: EuiSidesheetRef,
@@ -73,12 +68,11 @@ export class AttestationCasesComponent implements OnInit {
     private readonly busyServiceEui: EuiLoadingService,
     private readonly snackbar: SnackBarService,
     private readonly confirmationService: ConfirmationService,
-    private readonly settingsService: SettingsService,
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    private readonly logger: ClassloggerService
+    private readonly logger: ClassloggerService,
+    public dataSource: DataViewSource<PortalAttestationFilterMatchingobjects>,
   ) {
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0, ParentKey: '' };
     this.entitySchemaPolicy = policyService.AttestationMatchingObjectsSchema;
     this.displayedColumns = [this.entitySchemaPolicy.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
 
@@ -92,124 +86,95 @@ export class AttestationCasesComponent implements OnInit {
   }
 
   public get showWarning() {
-    return this.threshold > 0 && this.threshold < (this.dstSettings?.dataSource?.totalCount ?? 0);
+    return this.threshold > 0 && this.threshold < (this.dataSource.collectionData().totalCount ?? 0);
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyServiceEui.show()));
+    this.showBusyIndicator();
     try {
       this.threshold = await this.policyService.getCasesThreshold();
-      this.hierarchical =
-        (
-          await this.policyService.getObjectsForFilterUntyped(
-            this.data.uidobject,
-            this.data.uidPickCategory,
-            { Elements: this.data.filter, ConcatenationType: this.data.concat },
-            { PageSize: -1 }
-          )
-        ).Hierarchy != null;
-
-      this.treeDatabase = new AttestationCasesTreeDatabaseService(this.policyService, this.settingsService, this.data, this.busyService);
-      await this.treeDatabase.prepare(this.entitySchema, false);
     } finally {
-      setTimeout(async () => {
-        this.busyServiceEui.hide(overlayRef);
-      });
+      this.busyServiceEui.hide();
     }
 
-    return this.hierarchical ? this.navigateTree() : this.navigate();
+    return this.navigate();
   }
 
   public get hasSampleData(): boolean {
     return this.data.uidPickCategory != null && this.data.uidPickCategory !== '';
   }
 
-  public async onNavigationStateChanged(newState: CollectionLoadParameters): Promise<void> {
-    this.navigationState = newState;
-    await this.navigate();
-  }
-
   public onSelectionChanged(items: PortalAttestationFilterMatchingobjects[]): void {
     this.selectedItems = items;
   }
 
-  public async createRun(data: PortalAttestationFilterMatchingobjects[]): Promise<void> {
-    const count = data.length > 0 ? data.length : this.dstSettings?.dataSource.totalCount;
+  public async createRun(data: (PortalAttestationFilterMatchingobjects | undefined)[]): Promise<void> {
+    const count = data.length > 0 ? data.length : this.dataSource.collectionData().totalCount || 0;
 
     if (count <= this.threshold || (await this.confirmCreation())) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.busyServiceEui.show()));
+      this.showBusyIndicator();
 
       try {
         await this.policyService.createAttestationRun(
-          this.data.uidpolicy,
-          data.map((elem) => elem.Key.value)
+          this.data.uidpolicy || '',
+          data.map((elem) => elem?.Key.value ?? ''),
         );
 
         this.logger.trace(
           this,
           'attestation run created for',
           this.data.uidpolicy,
-          data.map((elem) => elem.Key.value)
+          data.map((elem) => elem?.Key.value ?? ''),
         );
 
         this.snackbar.open(
           {
             key: '#LDS#The attestation has been started successfully. It may take some time until the associated attestation cases are created.',
           },
-          '#LDS#Close'
+          '#LDS#Close',
         );
       } finally {
-        setTimeout(async () => {
-          this.busyServiceEui.hide(overlayRef);
-          this.sidesheetRef.close(true);
-        });
+        this.busyServiceEui.hide();
+        this.sidesheetRef.close(true);
       }
     }
   }
 
-  private async navigateTree(): Promise<void> {
-    await this.treeDatabase.prepare(this.entitySchema, true);
-  }
-
   private async navigate(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyServiceEui.show()));
-
-    try {
-      const dataSource = await this.policyService.getObjectsForFilter(
-        this.data.uidobject,
-        this.data.uidPickCategory,
-        { Elements: this.data.filter, ConcatenationType: this.data.concat },
-        this.navigationState
-      );
-
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource,
-        entitySchema: this.entitySchemaPolicy,
-        navigationState: this.navigationState,
-      };
-
-      this.logger.debug(this, 'matching objects table navigated to', this.navigationState);
-    } finally {
-      setTimeout(() => this.busyServiceEui.hide(overlayRef));
-    }
+    const dataViewInitParameters: DataViewInitParameters<PortalAttestationFilterMatchingobjects> = {
+      execute: (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<PortalAttestationFilterMatchingobjects>> =>
+        this.policyService.getObjectsForFilter(
+          this.data.uidobject,
+          this.data.uidPickCategory,
+          { Elements: this.data.filter, ConcatenationType: this.data.concat },
+          params,
+        ),
+      schema: this.entitySchemaPolicy,
+      columnsToDisplay: this.displayedColumns,
+      selectionChange: (selection: PortalAttestationFilterMatchingobjects[]) => this.onSelectionChanged(selection),
+      localSource: true,
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   private async confirmCreation(): Promise<boolean> {
     const message = this.ldsReplace.transform(
       await this.translate
         .get(
-          '#LDS#You have selected more than {0} objects. Attestation of the selected objects may take some time and generate notifications to many approvers. Are you sure you want to start the attestation for the selected objects?'
+          '#LDS#You have selected more than {0} objects. Attestation of the selected objects may take some time and generate notifications to many approvers. Are you sure you want to start the attestation for the selected objects?',
         )
         .toPromise(),
-      this.threshold
+      this.threshold,
     );
     return this.confirmationService.confirm({
       Title: await this.translate.get('#LDS#Heading Many Objects Affected').toPromise(),
       Message: message,
     });
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyServiceEui.overlayRefs.length === 0) {
+      this.busyServiceEui.show();
+    }
   }
 }

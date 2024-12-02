@@ -1,13 +1,9 @@
 {
   "name": "qbm",
-  "version": "9.2.1",
+  "version": "9.3.0",
   "private": true,
-  "dependencies": {
-
-  },
-  "peerDependencies": {
-
-  },
+  "dependencies": {},
+  "peerDependencies": {},
   "bundledDependencies": [
     "imx-api-qbm"
   ]

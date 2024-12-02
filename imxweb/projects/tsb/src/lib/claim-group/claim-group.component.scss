@@ -6,28 +6,19 @@
   overflow: hidden;
 }
 
-mat-radio-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.imx-button-previous {
-  margin-right: 10px;
-}
-
 .imx-owner-assigned {
   display: flex;
   flex-direction: column;
 
-  >*:not(:last-child) {
+  > *:not(:last-child) {
     margin-bottom: 10px;
   }
 
-  >button {
-   align-self: flex-end;
+  > button {
+    align-self: flex-end;
   }
 }
-.imx-system-entitlement-stepper{
+.imx-system-entitlement-stepper {
   flex: 1 1 auto;
   max-width: 100%;
   overflow: auto;

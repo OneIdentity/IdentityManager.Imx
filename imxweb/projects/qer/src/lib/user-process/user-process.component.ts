@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,18 @@
  *
  */
 
-import { OverlayRef } from "@angular/cdk/overlay";
-import { Component, OnInit } from "@angular/core";
-import { EuiLoadingService } from "@elemental-ui/core";
-import { ProcessChain } from "imx-api-qer";
-import { UserProcessService } from "./user-processes.service";
-import { BusyService } from "qbm";
+import { Component, OnInit } from '@angular/core';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { ProcessChain } from '@imx-modules/imx-api-qer';
+import { BusyService } from 'qbm';
+import { UserProcessService } from './user-processes.service';
 
 @Component({
   selector: 'imx-user-process',
   templateUrl: './user-process.component.html',
-  styleUrls: ['./user-process.component.scss']
+  styleUrls: ['./user-process.component.scss'],
 })
 export class UserProcessComponent implements OnInit {
-
   public userProcesses: ProcessChain[] = [];
   public displayedColumns: string[] = [];
   public busyService = new BusyService();
@@ -49,16 +47,16 @@ export class UserProcessComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.euiLoadingService.show());
+    if (this.euiLoadingService.overlayRefs.length === 0) {
+      this.euiLoadingService.show();
+    }
 
     try {
       this.userProcesses = await this.userProcessService.get();
-      this.displayedColumns = ['xDateInserted', 'display', 'processState'  ];
+      this.displayedColumns = ['xDateInserted', 'display', 'processState'];
     } finally {
-      setTimeout(() => this.euiLoadingService.hide(overlayRef));
+      this.euiLoadingService.hide();
       isBusy.endBusy();
     }
   }
-
 }

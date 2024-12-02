@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,35 +24,35 @@
  *
  */
 
-import { Component, OnInit, ErrorHandler, AfterViewInit } from '@angular/core';
+import { AfterViewInit, Component, ErrorHandler, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
-import { DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ReadOnlyEntity, ValType } from 'imx-qbm-dbts';
-import { QueueEntriesData, ShapeData } from 'imx-api-qbm';
+import { EuiSidesheetService } from '@elemental-ui/core';
+import { QueueEntriesData, ShapeData } from '@imx-modules/imx-api-qbm';
+import { DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ReadOnlyEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
+  AuthenticationService,
+  ClassloggerService,
+  ClientPropertyForTableColumns,
+  DataSourceToolbarSettings,
   MetadataService,
   OpsupportDbObjectService,
   ShapeClickArgs,
-  ClassloggerService,
-  DataSourceToolbarSettings,
-  AuthenticationService,
-  ClientPropertyForTableColumns
+  calculateSidesheetWidth,
 } from 'qbm';
+import { FeatureConfigService, ObjectOverviewContainer } from 'qer';
+import { ErrorMessageSidesheetComponent } from '../processes/error-message-sidesheet/error-message-sidesheet.component';
 import { QueueJobsService } from '../processes/jobs/queue-jobs.service';
-import { ObjectOverviewContainer, FeatureConfigService  } from 'qer';
 import { ObjectOverviewService } from './object-overview.service';
 import { PersonDbQueueInfo } from './person-db-queue-info';
 import { PersonJobQueueInfo } from './person-job-queue-info';
-import { ErrorMessageSidesheetComponent } from '../processes/error-message-sidesheet/error-message-sidesheet.component';
-import { EuiSidesheetService } from '@elemental-ui/core';
 
 @Component({
   templateUrl: './object-overview.component.html',
-  styleUrls: ['./object-overview.component.scss']
+  styleUrls: ['./object-overview.component.scss'],
 })
 export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOverviewContainer {
-
   public hyperviewShapes: ShapeData[] = [];
 
   public DisplayColumns = DisplayColumns;
@@ -94,7 +94,6 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
     private featureService: FeatureConfigService,
     authentication: AuthenticationService,
   ) {
-
     this.entitySchemaDbs = PersonDbQueueInfo.GetEntitySchema();
     this.entitySchemaJobs = PersonJobQueueInfo.GetEntitySchema();
 
@@ -105,8 +104,8 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
       {
         ColumnName: 'actions',
         Type: ValType.String,
-        afterAdditionals: true
-      }
+        afterAdditionals: true,
+      },
     ];
 
     this.displayedColumnsDbs = [
@@ -116,7 +115,7 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
       this.entitySchemaDbs.Columns.SortOrder,
     ];
 
-    authentication.onSessionResponse.subscribe(session => this.uidUser = session.UserUid);
+    authentication.onSessionResponse.subscribe((session) => (this.uidUser = session.UserUid ?? ''));
   }
 
   public busy = true;
@@ -127,18 +126,17 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
   public tabIndex = 0;
 
   public async ngOnInit(): Promise<void> {
-
-    this.route.params.subscribe(res => {
-      // reinitialize if params changes 
-      if (this.objectUID !== res.uid) {        
+    this.route.params.subscribe((res) => {
+      // reinitialize if params changes
+      if (this.objectUID !== res.uid) {
         this.init();
         if (this.hasHyperviewParam(res.tab)) {
           this.tabIndex = 3;
         }
-      }      
-    })
+      }
+    });
 
-    this.init();    
+    this.init();
   }
 
   public async ngAfterViewInit(): Promise<void> {
@@ -148,16 +146,16 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
     }
   }
 
-    /**
+  /**
    * Handles the event, when a shape was clicked.
    * @param args the {@link ShapeClickArgs|arguments of the clicked shape}
    */
-    public async onShapeClick(args: ShapeClickArgs): Promise<void> {
-      const objKey = DbObjectKey.FromXml(args.objectKey);
-      if (await this.objectIsSupported(objKey)) {
-        this.router.navigate(['object', objKey.TableName, objKey.Keys[0], 'hyperview']);
-      }
+  public async onShapeClick(args: ShapeClickArgs): Promise<void> {
+    const objKey = DbObjectKey.FromXml(args.objectKey);
+    if (await this.objectIsSupported(objKey)) {
+      this.router.navigate(['object', objKey.TableName, objKey.Keys[0], 'hyperview']);
     }
+  }
 
   // Checks if the item has an ErrorMessage or not
   public hasContent(item: PersonJobQueueInfo): boolean {
@@ -173,19 +171,18 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
   public reactivate(item: PersonJobQueueInfo): void {
     this.jobService
       .Post([item.UID_Job.value])
-      .then((_: any) => this.loadQueue('jobQueue'))
+      .then((_: any) => this.loadQueue())
       .catch((err: any) => this.errorHandler.handleError(err));
   }
 
   // Shows the error message for a JobQueueInfo object
   public async showMessage(item: PersonJobQueueInfo): Promise<void> {
-
-      await this.sidesheet
+    await this.sidesheet
       .open(ErrorMessageSidesheetComponent, {
         title: await this.translationProvider.get('#LDS#Heading View Error Message').toPromise(),
         subTitle: item.GetEntity().GetDisplay(),
         padding: '0',
-        width: 'max(60%,600px)',
+        width: calculateSidesheetWidth(),
         testId: 'error-message-sidesheet',
         data: item.ErrorMessages.Column.GetDisplayValue(),
       })
@@ -202,39 +199,45 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
     this.logger.error(this, 'selection trigged for: ' + ev.objectKey);
   }
 
-  public async loadQueue(updateType: 'both' | 'jobQueue' | 'dbQueue' = 'both'): Promise<void> {
+  public async loadQueue(): Promise<void> {
     const cached = await this.objectIsSupported(this.objectKey);
-    if (this.queuesUnsupported) {
+    if (this.queuesUnsupported || !cached) {
       return;
     }
 
-    if (updateType === 'both' || updateType === 'jobQueue') {
-      const job = cached.JobQueue.map(entityData =>
-        new PersonJobQueueInfo((new ReadOnlyEntity(PersonJobQueueInfo.GetEntitySchema(), entityData))));
+    if (cached.JobQueue) {
+      const job = cached.JobQueue.map(
+        (entityData) => new PersonJobQueueInfo(new ReadOnlyEntity(PersonJobQueueInfo.GetEntitySchema(), entityData)),
+      );
 
       this.jobTotal = job.length;
 
       this.dstSettingsJobs = {
         displayedColumns: this.displayedColumnsJobs,
-        dataSource: { Data: job, totalCount: job.length },
+        dataSource: { Data: job, totalCount: this.jobTotal },
         entitySchema: this.entitySchemaJobs,
-        navigationState: {}
+        navigationState: {},
       };
     }
 
-    if (updateType === 'both' || updateType === 'dbQueue') {
-      const db = cached.DbQueue.map(entityData =>
-        new PersonDbQueueInfo((new ReadOnlyEntity(PersonDbQueueInfo.GetEntitySchema(), entityData))));
+    if (cached.DbQueue) {
+      const db = cached.DbQueue.map(
+        (entityData) => new PersonDbQueueInfo(new ReadOnlyEntity(PersonDbQueueInfo.GetEntitySchema(), entityData)),
+      );
 
       this.dbTotal = db.length;
 
       this.dstSettingsDb = {
         displayedColumns: this.displayedColumnsDbs,
-        dataSource: { Data: db, totalCount: db.length },
+        dataSource: { Data: db, totalCount: this.dbTotal },
         entitySchema: this.entitySchemaDbs,
-        navigationState: {}
+        navigationState: {},
       };
     }
+  }
+
+  public get hideQueueTables(): boolean {
+    return this.jobTotal === 0 && this.dbTotal === 0;
   }
 
   private async init(): Promise<void> {
@@ -243,9 +246,8 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
     try {
       await this.initDataFromPath(this.route);
       const featureConfig = await this.featureService.getFeatureConfig();
-      this.showPassCodeTab = featureConfig.EnableSetPasswords
-        && this.objectKey.TableName.toLowerCase() === this.tablePerson
-        && this.uidUser !== this.objectUID;
+      this.showPassCodeTab =
+        featureConfig.EnableSetPasswords && this.objectKey.TableName.toLowerCase() === this.tablePerson && this.uidUser !== this.objectUID;
       await this.loadQueue();
     } finally {
       this.busy = false;
@@ -255,9 +257,9 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
   /**
    * Check if the given object is supported.
    * @param objKey {@link DbObjectKey} that needs to check.
-   * @returns 
+   * @returns
    */
-  private async objectIsSupported(objKey: DbObjectKey): Promise<QueueEntriesData> {
+  private async objectIsSupported(objKey: DbObjectKey): Promise<QueueEntriesData | undefined> {
     const cached = await this.overviewService.get(objKey);
     this.queuesUnsupported = cached.Unsupported;
 
@@ -273,24 +275,22 @@ export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOve
    * @param param route param to check
    * @returns true, if it's the hyperview-param
    */
-  private hasHyperviewParam(param: string): boolean {
+  private hasHyperviewParam(param: string | null): boolean {
     return param === 'hyperview';
   }
-
 
   // initializes the variables provided by the route
   private async initDataFromPath(route: ActivatedRoute): Promise<void> {
     const snapShotMap = route.snapshot.paramMap;
 
-    this.tablename = snapShotMap.get('table');
-    this.objectUID = snapShotMap.get('uid');
+    this.tablename = snapShotMap.get('table') ?? '';
+    this.objectUID = snapShotMap.get('uid') ?? '';
     this.objectKey = new DbObjectKey(this.tablename, this.objectUID);
 
     const metadata = await this.metadataService.GetTableMetadata(this.tablename);
     this.tableDisplay = metadata.DisplaySingular;
 
     const entity = await this.dbObjectService.Get({ tableName: this.tablename, uid: this.objectUID });
-    this.display = entity.Display;
+    this.display = entity.Display ?? '';
   }
-
 }

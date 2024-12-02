@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,9 @@
  *
  */
 
-import { DisplayPattern, EntitySchema, IClientProperty, IReadValue, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { DisplayPattern, EntitySchema, IClientProperty, IReadValue, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 
 export class EntitlementToAddTyped extends TypedEntity {
-
   public readonly IsAssignedToMe: IReadValue<boolean> = this.GetEntityValue('IsAssignedToMe');
   public readonly IsAssignedToOther: IReadValue<boolean> = this.GetEntityValue('IsAssignedToOther');
   public readonly DisplayName: IReadValue<string> = this.GetEntityValue('DisplayName');
@@ -39,29 +38,29 @@ export class EntitlementToAddTyped extends TypedEntity {
 
     ret.IsAssignedToMe = {
       Type: ValType.Bool,
-      ColumnName: 'IsAssignedToMe'
+      ColumnName: 'IsAssignedToMe',
     };
     ret.IsAssignedToOther = {
       Type: ValType.Bool,
-      ColumnName: 'IsAssignedToOther'
+      ColumnName: 'IsAssignedToOther',
     };
     ret.DisplayName = {
       Type: ValType.String,
-      ColumnName: 'DisplayName'
+      ColumnName: 'DisplayName',
     };
     ret.CanonicalName = {
       Type: ValType.String,
-      ColumnName: 'CanonicalName'
+      ColumnName: 'CanonicalName',
     };
     ret.UID_AOBApplicationConflicted = {
       Type: ValType.String,
-      ColumnName: 'UID_AOBApplicationConflicted'
+      ColumnName: 'UID_AOBApplicationConflicted',
     };
 
     return {
       TypeName: 'EntitlementToAddTyped',
       DisplayPattern: new DisplayPattern('%DisplayName%'),
-      Columns: ret
+      Columns: ret,
     };
   }
 }

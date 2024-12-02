@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,14 @@
  */
 
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { Component, ErrorHandler, Injector, Input, OnInit } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { EuiDownloadDirective } from '@elemental-ui/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, ErrorHandler, Injector, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { HelpdeskConfig, V2ApiClientMethodFactory } from 'imx-api-hds';
-import { MethodDefinition } from 'imx-qbm-dbts';
+import { EuiDownloadDirective, EuiDownloadService } from '@elemental-ui/core';
+import { HelpdeskConfig, V2ApiClientMethodFactory } from '@imx-modules/imx-api-hds';
+import { MethodDefinition } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AppConfigService,
   DataSourceToolbarSettings,
@@ -39,11 +41,9 @@ import {
   ElementalUiConfigService,
   LdsReplacePipe,
 } from 'qbm';
-import { HttpClient } from '@angular/common/http';
-import { CallsAttachmentActionType, CallsAttachmentNode, CallsAttachmentType } from './calls-attachment.model';
-import { CallsAttachmentServiceService } from './calls-attachment-service.service';
 import { CallsAttachmentDialogComponent } from './calls-attachment-dialog/calls-attachment-dialog.component';
-import { TranslateService } from '@ngx-translate/core';
+import { CallsAttachmentServiceService } from './calls-attachment-service.service';
+import { CallsAttachmentActionType, CallsAttachmentNode, CallsAttachmentType } from './calls-attachment.model';
 
 @Component({
   selector: 'imx-calls-attachment',
@@ -55,9 +55,9 @@ export class CallsAttachmentComponent implements OnInit {
   // Set FlatTreeControl node order and node expendable
   public treeControl = new FlatTreeControl<CallsAttachmentNode>(
     (node) => node.level,
-    (node) => node.type === CallsAttachmentType.folder
+    (node) => node.type === CallsAttachmentType.folder,
   );
-  public attachmentTreeData: CallsAttachmentNode = null;
+  public attachmentTreeData: CallsAttachmentNode;
   public selectedNode: CallsAttachmentNode | null = null;
   public showAlert = false;
   public overlayRef: OverlayRef;
@@ -69,7 +69,7 @@ export class CallsAttachmentComponent implements OnInit {
   public callsConfig: HelpdeskConfig;
   public hasMaxAttachmentSize: boolean;
   public convertedMaxAttachmentSize: string;
-  public noResultText = '#LDS#There are no attachments.'
+  public noResultText = '#LDS#There are no attachments.';
   public initialized: boolean;
 
   constructor(
@@ -83,7 +83,8 @@ export class CallsAttachmentComponent implements OnInit {
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly translator: TranslateService,
     private readonly errorHandler: ErrorHandler,
-    private readonly ldsReplace: LdsReplacePipe
+    private readonly ldsReplace: LdsReplacePipe,
+    private readonly downloadService: EuiDownloadService,
   ) {}
 
   // Setup apiControls and dynamicDataSource and get initial attachment tree data
@@ -102,7 +103,7 @@ export class CallsAttachmentComponent implements OnInit {
       },
       getChildren: async (node: CallsAttachmentNode, onlyCheck: boolean = true): Promise<CallsAttachmentNode[]> => {
         try {
-          if (node.children && (node.children.length > 0) && onlyCheck) {
+          if (node.children && node.children.length > 0 && onlyCheck) {
             return node.children;
           }
           node.isLoading = true;
@@ -128,7 +129,7 @@ export class CallsAttachmentComponent implements OnInit {
   }
 
   // Open attachment dialog and call createFolder action
-  public async onAddFolder(node: CallsAttachmentNode) {
+  public async onAddFolder(node: CallsAttachmentNode | null) {
     this.dialog
       .open(CallsAttachmentDialogComponent, {
         data: {
@@ -139,16 +140,18 @@ export class CallsAttachmentComponent implements OnInit {
       .afterClosed()
       .subscribe((dialogResult) => {
         if (!!dialogResult && !!dialogResult.action && !!dialogResult.value) {
-          this.createFolder(dialogResult.value, node);
+          this.createFolder(dialogResult.value, node || undefined);
         }
       });
   }
 
-  public onDeleteItem(node: CallsAttachmentNode) {
-    if (node.type === CallsAttachmentType.file) {
-      this.openDeleteFileDialog(node);
-    } else {
-      this.openDeleteFolderDialog(node);
+  public onDeleteItem(node: CallsAttachmentNode | null) {
+    if (!!node) {
+      if (node.type === CallsAttachmentType.file) {
+        this.openDeleteFileDialog(node);
+      } else {
+        this.openDeleteFolderDialog(node);
+      }
     }
   }
 
@@ -175,10 +178,14 @@ export class CallsAttachmentComponent implements OnInit {
    * @param node Selected node
    */
   public async openDeleteFolderDialog(node: CallsAttachmentNode): Promise<void> {
-    if(!node.children || node.children.length == 0){
+    if (!node.children || node.children.length == 0) {
       const children = await this.attachmentService.getFilesOfDirectory(this.callId, node);
-      if(children.length > 0){
-        this.errorHandler.handleError(this.translator.instant('#LDS#You cannot delete the folder. The folder is not empty. First delete the contents of the folder and try again.'))
+      if (children.length > 0) {
+        this.errorHandler.handleError(
+          this.translator.instant(
+            '#LDS#You cannot delete the folder. The folder is not empty. First delete the contents of the folder and try again.',
+          ),
+        );
         return;
       }
     }
@@ -198,21 +205,29 @@ export class CallsAttachmentComponent implements OnInit {
   }
 
   // Attaching a file inside a folder or at parent level
-  public async attachFile(val) {
-    if(!val){
+  public async attachFile(event: EventTarget | null) {
+    const val = (event as HTMLInputElement)?.files;
+    if (!val) {
       return;
     }
     this.changeLoadingOverlayStatus(true);
     const fileToUpload: File | null = val[0];
-    const fileExtension: string = fileToUpload?.name.split('.').pop();
+    const fileExtension = fileToUpload?.name.split('.').pop();
 
     try {
-      if (fileToUpload && this.callsConfig.AttachmentFileTypes.includes(`.${fileExtension}`)) {
+      if (fileToUpload && this.callsConfig.AttachmentFileTypes?.includes(`.${fileExtension}`)) {
         const obj = { name: fileToUpload?.name, type: CallsAttachmentType.file, path: '', file: fileToUpload };
         const blob = new Blob([fileToUpload], { type: fileToUpload.type });
 
         if (this.hasMaxAttachmentSize && fileToUpload.size > this.callsConfig?.AttachmentMaxSize) {
-          throw new Error(this.ldsReplace.transform(await this.translator.get('#LDS#You cannot upload the file. The file is too big. You can upload files up to {0}.').toPromise(), this.convertedMaxAttachmentSize));
+          throw new Error(
+            this.ldsReplace.transform(
+              await this.translator
+                .get('#LDS#You cannot upload the file. The file is too big. You can upload files up to {0}.')
+                .toPromise(),
+              this.convertedMaxAttachmentSize,
+            ),
+          );
         }
         //when attaching inside a parent
         if (this.selectedNode) {
@@ -224,7 +239,14 @@ export class CallsAttachmentComponent implements OnInit {
           fileToUpload && this.uploadFile(obj.path, blob, this.attachmentTreeData);
         }
       } else {
-        throw new Error(this.ldsReplace.transform(await this.translator.get('#LDS#You cannot upload the file. The maximum number of files has been reached. You can attach a total of {0} files.').toPromise(), this.callsConfig.AttachmentFileTypes.join(", ")));
+        throw new Error(
+          this.ldsReplace.transform(
+            await this.translator
+              .get('#LDS#You cannot upload the file. The maximum number of files has been reached. You can attach a total of {0} files.')
+              .toPromise(),
+            this.callsConfig.AttachmentFileTypes?.join(', '),
+          ),
+        );
       }
     } catch (error) {
       this.errorHandler.handleError(error);
@@ -237,13 +259,19 @@ export class CallsAttachmentComponent implements OnInit {
   public async downloadFile(node: CallsAttachmentNode) {
     const def = new MethodDefinition(new V2ApiClientMethodFactory().portal_calls_attachments_file_get(this.callId, node.path));
 
-    const directive = new EuiDownloadDirective(null /* no element */, this.http, this.overlay, this.injector);
+    const directive = new EuiDownloadDirective(
+      new ElementRef('') /* no element */,
+      this.http,
+      this.overlay,
+      this.injector,
+      this.downloadService,
+    );
     directive.downloadOptions = {
       ...this.elementalUiConfigService.Config.downloadOptions,
       fileMimeType: '',
       url: this.config.BaseUrl + def.path,
       disableElement: false,
-      fileName: node.name
+      fileName: node.name,
     };
 
     directive.onClick();
@@ -251,7 +279,7 @@ export class CallsAttachmentComponent implements OnInit {
 
   public onNodeSelection(node: CallsAttachmentNode) {
     this.attachmentTreeData.isSelected = false;
-    this.updateSelectionState(this.attachmentTreeData.children);
+    this.updateSelectionState(this.attachmentTreeData.children || []);
     if (this.selectedNode == node) {
       this.selectedNode = null;
     } else {
@@ -273,8 +301,8 @@ export class CallsAttachmentComponent implements OnInit {
     return elementFound;
   }
 
-  public hasChild(_: number, node: CallsAttachmentNode): CallsAttachmentNode[] {
-    return node.children;
+  public hasChild(_: number, node: CallsAttachmentNode): boolean {
+    return !!node.children ? node.children?.length > 0 : false;
   }
 
   public onAlertDismissed() {
@@ -289,46 +317,59 @@ export class CallsAttachmentComponent implements OnInit {
 
   // If isLoading return true the progressbar next to the node will shown
   public isLoading(node: CallsAttachmentNode): boolean {
-    return node.isLoading;
+    return !!node.isLoading;
   }
 
   // Only empty folders and files can be deleted
-  public isNodeDeletable(node: CallsAttachmentNode): boolean {
+  public isNodeDeletable(node: CallsAttachmentNode | null): boolean {
     return this.isNodeFolderEmpty(node) || this.isNodeFile(node);
-
   }
 
   // Show information instead of attachment file tree
-  public get showInformation():boolean{
-    return this.attachmentTreeData?.children.length === 0;
+  public get showInformation(): boolean {
+    return this.attachmentTreeData?.children?.length === 0;
   }
 
-  private async uploadFile(path: string, blob: Blob, node: CallsAttachmentNode): Promise<void>{
-    try{
-      await this.attachmentService.uploadFile(this.callId,path, blob);
+  private async uploadFile(path: string, blob: Blob, node: CallsAttachmentNode): Promise<void> {
+    try {
+      await this.attachmentService.uploadFile(this.callId, path, blob);
       await this.apiControls.getChildren(node, false);
       this.expandNode(node);
     } catch {
-      this.errorHandler.handleError(this.translator.instant('#LDS#You cannot upload the file. You do not have permission to upload files.'))
+      this.errorHandler.handleError(
+        this.translator.instant('#LDS#You cannot upload the file. You do not have permission to upload files.'),
+      );
     }
   }
 
   private async byteConverter(byte: number): Promise<string> {
-    if (byte >= 1073741824) return this.ldsReplace.transform(await this.translator.get('#LDS#{0} GB').toPromise(), this.getFlooredFixed(byte / Math.pow(1024,3))); else
-    if (byte >= 1048576) return this.ldsReplace.transform(await this.translator.get('#LDS#{0} MB').toPromise(), this.getFlooredFixed(byte / Math.pow(1024,2))); else
-    if (byte >= 1024) return this.ldsReplace.transform(await this.translator.get('#LDS#{0} kB').toPromise(), this.getFlooredFixed(byte / Math.pow(1024,1))); else
-    return this.ldsReplace.transform(await this.translator.get('#LDS#{0} byte').toPromise(), byte);
+    if (byte >= 1073741824)
+      return this.ldsReplace.transform(
+        await this.translator.get('#LDS#{0} GB').toPromise(),
+        this.getFlooredFixed(byte / Math.pow(1024, 3)),
+      );
+    else if (byte >= 1048576)
+      return this.ldsReplace.transform(
+        await this.translator.get('#LDS#{0} MB').toPromise(),
+        this.getFlooredFixed(byte / Math.pow(1024, 2)),
+      );
+    else if (byte >= 1024)
+      return this.ldsReplace.transform(
+        await this.translator.get('#LDS#{0} kB').toPromise(),
+        this.getFlooredFixed(byte / Math.pow(1024, 1)),
+      );
+    else return this.ldsReplace.transform(await this.translator.get('#LDS#{0} byte').toPromise(), byte);
   }
 
   private getFlooredFixed(value: number, fractionDigits: number = 2): string {
     return (Math.floor(value * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits)).toFixed(fractionDigits);
   }
 
-  private isNodeFolderEmpty(node: CallsAttachmentNode): boolean {
+  private isNodeFolderEmpty(node: CallsAttachmentNode | null): boolean {
     return !!node && node.type === CallsAttachmentType.folder && (!node.children || node.children.length === 0);
   }
 
-  private isNodeFile(node: CallsAttachmentNode): boolean {
+  private isNodeFile(node: CallsAttachmentNode | null): boolean {
     return !!node && node.type === CallsAttachmentType.file;
   }
 
@@ -340,12 +381,14 @@ export class CallsAttachmentComponent implements OnInit {
       if (parent) {
         await this.apiControls.getChildren(parent, false);
         this.expandNode(parent);
-      }else{
-        this.attachmentTreeData.children = this.attachmentTreeData.children.filter((childNode) => childNode.name !== node.name);
+      } else {
+        this.attachmentTreeData.children = this.attachmentTreeData.children?.filter((childNode) => childNode.name !== node.name);
         this.expandNode(this.attachmentTreeData);
       }
     } catch {
-      this.errorHandler.handleError(this.translator.instant('#LDS#You cannot delete the folder. You do not have permission to delete folders.'))
+      this.errorHandler.handleError(
+        this.translator.instant('#LDS#You cannot delete the folder. You do not have permission to delete folders.'),
+      );
     } finally {
       this.changeLoadingOverlayStatus(false);
       this.selectedNode = null;
@@ -353,7 +396,7 @@ export class CallsAttachmentComponent implements OnInit {
   }
 
   private async deleteFile(node: CallsAttachmentNode) {
-    try{
+    try {
       this.changeLoadingOverlayStatus(true);
       await this.attachmentService.deleteFile(this.callId, node.path);
       if (node.parent) {
@@ -361,9 +404,11 @@ export class CallsAttachmentComponent implements OnInit {
         this.expandNode(node.parent);
       }
       this.selectedNode = null;
-    }catch{
-      this.errorHandler.handleError(this.translator.instant('#LDS#You cannot delete the attachment. You do not have permission to delete attachments.'))
-    }finally{
+    } catch {
+      this.errorHandler.handleError(
+        this.translator.instant('#LDS#You cannot delete the attachment. You do not have permission to delete attachments.'),
+      );
+    } finally {
       this.changeLoadingOverlayStatus(false);
     }
   }
@@ -381,22 +426,26 @@ export class CallsAttachmentComponent implements OnInit {
       };
       if (node) {
         if (this.isDuplicateName(val, node.children)) {
-          this.showAlertMessage('#LDS#You cannot create the folder. A folder with the entered name already exists. Enter a different folder name.');
+          this.showAlertMessage(
+            '#LDS#You cannot create the folder. A folder with the entered name already exists. Enter a different folder name.',
+          );
         } else {
           obj.path = node.path + '/' + val;
           obj.level = node.level + 1;
           await this.apiControls.getChildren(node);
           await this.attachmentService.createDirectory(this.callId, obj.path);
-          node.children.unshift(obj);
+          node.children?.unshift(obj);
           this.expandNode(node);
         }
       } else {
         if (this.isDuplicateName(val, this.attachmentTreeData.children)) {
-          this.showAlertMessage('#LDS#You cannot create the folder. A folder with the entered name already exists. Enter a different folder name.');
+          this.showAlertMessage(
+            '#LDS#You cannot create the folder. A folder with the entered name already exists. Enter a different folder name.',
+          );
         } else {
           obj.path = `${val}`;
           await this.attachmentService.createDirectory(this.callId, obj.path);
-          this.attachmentTreeData.children.unshift(obj);
+          this.attachmentTreeData.children?.unshift(obj);
           this.expandNode(this.attachmentTreeData);
         }
       }

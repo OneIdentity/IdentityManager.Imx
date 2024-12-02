@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,13 +40,13 @@ export class DataExplorerViewComponent implements OnInit {
   public componentName = 'data-explorer-view';
   public componentTitle = '#LDS#Heading Data Explorer';
   public contextId = HELP_CONTEXTUAL.DataExplorer;
-  public navItems: SideNavigationExtension[] = [];
+  public navItems: (SideNavigationExtension | undefined)[] = [];
 
   constructor(
     private readonly systemInfoService: SystemInfoService,
     private readonly userModelService: UserModelService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
-    private cdref: ChangeDetectorRef
+    private cdref: ChangeDetectorRef,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -55,9 +55,9 @@ export class DataExplorerViewComponent implements OnInit {
 
   private async loadNavItems(): Promise<void> {
     const systemInfo = await this.systemInfoService.get();
-    const features = (await this.userModelService.getFeatures()).Features;
-    const groups = (await this.userModelService.getGroups()).map((group) => group.Name || '');
-    this.navItems = this.dataExplorerRegistryService.getNavItems(systemInfo.PreProps, features, undefined, groups);
+    const features = (await this.userModelService.getFeatures()).Features || [];
+    const groups = (await this.userModelService.getGroups()).map((group) => group?.Name || '');
+    this.navItems = this.dataExplorerRegistryService.getNavItems(systemInfo.PreProps || [], features, undefined, groups);
     this.cdref.detectChanges();
   }
 }

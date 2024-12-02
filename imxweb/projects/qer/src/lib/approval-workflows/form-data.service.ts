@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EuiSidesheetRef } from '@elemental-ui/core';
-import { DataState } from 'imx-qbm-dbts';
-import { CdrFactoryService, ColumnDependentReference, ConfirmationService } from 'qbm';
+import { DataState } from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, CdrFactoryService, ColumnDependentReference, ConfirmationService } from 'qbm';
 import { ApprovalWorkflowDataService } from './approval-workflow-data.service';
 import { CDRGroups, ColumnConstraints, RequestLevelData, RequestStepData, RequestWorkflowData } from './approval-workflow.interface';
 
@@ -66,7 +66,7 @@ export class FormDataService {
   public async cancelChanges(
     formGroup: FormGroup,
     sidesheetRef: EuiSidesheetRef,
-    requestData: RequestLevelData | RequestWorkflowData
+    requestData: RequestLevelData | RequestWorkflowData,
   ): Promise<void> {
     if (formGroup.pristine) {
       // No need to change any entities
@@ -78,43 +78,39 @@ export class FormDataService {
     }
   }
 
-  public async cancelChangesGrouped(
-    formGroup: FormGroup,
-    sidesheetRef: EuiSidesheetRef,
-    requestData: RequestStepData
-    ): Promise<void> {
-      if (formGroup.pristine) {
-        // No need to change any entities
-        sidesheetRef.close();
-      } else if (await this.confirmation.confirmLeaveWithUnsavedChanges()) {
-        // Need to reload a new entity to work with
-        this.resetStateGrouped(requestData);
-        sidesheetRef.close();
-      }
+  public async cancelChangesGrouped(formGroup: FormGroup, sidesheetRef: EuiSidesheetRef, requestData: RequestStepData): Promise<void> {
+    if (formGroup.pristine) {
+      // No need to change any entities
+      sidesheetRef.close();
+    } else if (await this.confirmation.confirmLeaveWithUnsavedChanges()) {
+      // Need to reload a new entity to work with
+      this.resetStateGrouped(requestData);
+      sidesheetRef.close();
     }
+  }
 
   public getInitialState(requestData: RequestLevelData | RequestWorkflowData): void {
     this.initialState = {};
-    const entity = requestData.Object.GetEntity();
+    const entity = requestData.Object?.GetEntity();
     for (const column of requestData.Data) {
-      this.initialState[column] = entity.GetColumn(column).GetValue();
+      this.initialState[column] = entity?.GetColumn(column).GetValue();
     }
   }
 
   public getInitialStateGrouped(requestData: RequestStepData): void {
     this.initialState = {};
-    const entity = requestData.Object.GetEntity();
+    const entity = requestData.Object?.GetEntity();
     for (const tab of Object.keys(requestData.Data)) {
       for (const column of requestData.Data[tab]) {
-        this.initialState[column] = entity.GetColumn(column).GetValue();
+        this.initialState[column] = entity?.GetColumn(column).GetValue();
       }
     }
   }
 
   public async resetState(requestData: RequestLevelData | RequestWorkflowData): Promise<void> {
     for (const columnName of requestData.Data) {
-      const columnData = requestData.Object.GetEntity().GetColumn(columnName);
-      if (columnData.GetDataState() === DataState.Changed) {
+      const columnData = requestData.Object?.GetEntity().GetColumn(columnName);
+      if (columnData?.GetDataState() === DataState.Changed) {
         await columnData.PutValue(this.initialState[columnName]);
       }
     }
@@ -123,8 +119,8 @@ export class FormDataService {
   public async resetStateGrouped(requestData: RequestStepData): Promise<void> {
     for (const tab of Object.keys(requestData.Data)) {
       for (const columnName of requestData.Data[tab]) {
-        const columnData = requestData.Object.GetEntity().GetColumn(columnName);
-        if (columnData.GetDataState() === DataState.Changed) {
+        const columnData = requestData.Object?.GetEntity().GetColumn(columnName);
+        if (columnData?.GetDataState() && columnData?.GetDataState() === DataState.Changed) {
           await columnData.PutValue(this.initialState[columnName]);
         }
       }
@@ -154,53 +150,76 @@ export class FormDataService {
   public createCdr(
     requestData: RequestLevelData | RequestStepData,
     columnName: string,
-    columnConstraints?: ColumnConstraints
-  ): ColumnDependentReference {
-    const entity = requestData.Object.GetEntity();
+    columnConstraints?: ColumnConstraints,
+  ): ColumnDependentReference | undefined {
+    const entity = requestData.Object?.GetEntity();
+    if (!entity) {
+      return undefined;
+    }
     const cdr = this.cdrService.buildCdr(entity, columnName);
     // Apply constraints
-    if (columnConstraints) {
+    if (columnConstraints && cdr) {
       this.applyConstraints([cdr], [columnName], columnConstraints);
     }
-    return cdr
+    return cdr;
   }
 
-  public createCdrList(
-    requestData: RequestLevelData | RequestWorkflowData,
-    columnConstraints?: ColumnConstraints
-  ): ColumnDependentReference[] {
-    const entity = requestData.Object.GetEntity();
-    const cdrList = this.cdrService.buildCdrFromColumnList(entity, requestData.Data);
+  private createCdrList(requestData: RequestLevelData | RequestWorkflowData, columnConstraints?: ColumnConstraints): BaseCdr[] {
+    const entity = requestData.Object?.GetEntity();
+    if (!entity) {
+      return [];
+    }
+    const cdrList: BaseCdr[] = [];
+    const columnNames: string[] = requestData.Data;
+    columnNames?.forEach((name) => {
+      try {
+        cdrList.push(new BaseCdr(entity.GetColumn(name)));
+      } catch {}
+    });
     // Apply constraints
     if (columnConstraints) {
       this.applyConstraints(cdrList, requestData.Data, columnConstraints);
     }
-    return cdrList
+    return cdrList;
   }
 
-  public createCdrListGrouped(requestData: RequestStepData, columnConstraints?: ColumnConstraints): CDRGroups {
+  private createCdrListGrouped(requestData: RequestStepData, columnConstraints?: ColumnConstraints): CDRGroups {
     const cdrGroups: CDRGroups = {};
-    const entity = requestData.Object.GetEntity();
+    const entity = requestData.Object?.GetEntity();
+    if (!entity) {
+      return {};
+    }
     for (const group of Object.keys(requestData.Data)) {
-      const cdrList = this.cdrService.buildCdrFromColumnList(entity, requestData.Data[group]);
+      const cdrList: BaseCdr[] = [];
+      const columnNames: string[] = requestData.Data[group];
+      columnNames?.forEach((name) => {
+        try {
+          cdrList.push(new BaseCdr(entity.GetColumn(name)));
+        } catch {}
+      });
       if (columnConstraints) {
-        this.applyConstraints(cdrList, requestData.Data[group], columnConstraints)
+        this.applyConstraints(cdrList, requestData.Data[group], columnConstraints);
       }
       cdrGroups[group] = cdrList;
     }
     return cdrGroups;
   }
 
-  public applyConstraints(cdrList: ColumnDependentReference[], columns: string[], constraints: ColumnConstraints): void {
+  public applyConstraints(cdrList: (ColumnDependentReference | undefined)[], columns: string[], constraints: ColumnConstraints): void {
     columns.forEach((columnName: string, index: number) => {
       if (!constraints[columnName]) {
         return;
       }
+
+      const cdr = cdrList?.[index];
+      if (cdr == null) {
+        return;
+      }
       if (constraints[columnName].minLength) {
-        cdrList[index].minLength = constraints[columnName].minLength;
+        cdr.minLength = constraints[columnName].minLength;
       }
       if (constraints[columnName].valueConstraint) {
-        cdrList[index].valueConstraint = constraints[columnName].valueConstraint;
+        cdr.valueConstraint = constraints[columnName].valueConstraint;
       }
     });
   }

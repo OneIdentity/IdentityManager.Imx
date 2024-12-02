@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,9 +30,9 @@ import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { CartItemEditParameter } from './cart-item-edit-parameter.interface';
-import { PortalCartitem } from 'imx-api-qer';
+import { PortalCartitem } from '@imx-modules/imx-api-qer';
 import { CartItemsService } from '../cart-items.service';
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { ConfirmationService, EntityColumnEditorComponent } from 'qbm';
 
 @Component({
@@ -74,7 +74,7 @@ export class CartItemEditComponent implements OnDestroy {
         }
 
         sideSheetRef.close(false);
-      })
+      }),
     );
   }
 
@@ -97,7 +97,7 @@ export class CartItemEditComponent implements OnDestroy {
 
     this.columns = this.mergeColumns(
       (this.data.entityWrapper.parameterCategoryColumns ?? []).map((item) => item.column),
-      defaultColumns
+      defaultColumns,
     );
   }
 

@@ -1,12 +1,12 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline-5">
   {{ '#LDS#Heading Processes and Operations by Process ID' | translate }}
-</h1>
+</h2>
 
-<mat-card>
+<mat-card class="imx-card-fill">
   <div class="imx-procces-action">
-    <eui-search name="searchexample" [placeholder]="'#LDS#Search' | translate" [(searchControl)]="searchControl" width="500px"></eui-search>
+    <eui-search [searchControl]="searchControl" [placeholder]="'#LDS#Search' | translate" width="500px"></eui-search>
 
-    <mat-radio-group [(ngModel)]="selectedType" (change)="typeChanged($event)">
+    <mat-radio-group class="imx-margin-left-15" [(ngModel)]="selectedType" (change)="typeChanged($event)">
       <mat-radio-button
         class="mx-5"
         *ngFor="let processOption of filterOptions"
@@ -36,19 +36,26 @@
         >
         </mat-paginator>
       </div>
-      <div class="imx-change-table-no-results" *ngIf="!dataCollection || dataCollection.totalCount == 0">
+      <div class="imx-no-results" *ngIf="!dataCollection || dataCollection.totalCount == 0">
         <eui-icon icon="table"></eui-icon>
         <p>{{ noDataText | translate }}</p>
       </div>
     </div>
 
-    <imx-jobs-gridview [noData]="noDataText | translate" [withActions]="false" *ngIf="selectedType === 2" [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid" [proccessId]="processId">
+    <imx-jobs-gridview
+      [noData]="noDataText | translate"
+      [withActions]="false"
+      *ngIf="selectedType === 2"
+      [style.display]="isShowGraph ? 'none' : 'flex'"
+      class="imx-job-grid"
+      [proccessId]="processId"
+    >
     </imx-jobs-gridview>
   </ng-container>
 </mat-card>
 
 <ng-template #noId>
-  <div class="imx-change-table-no-results flex-property">
+  <div class="imx-no-results flex-property">
     <eui-icon icon="table"></eui-icon>
     <p [translate]="'#LDS#Enter a process ID.'"></p>
   </div>

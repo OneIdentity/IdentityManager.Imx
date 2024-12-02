@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,27 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRiskFunctions } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
+import { PortalRiskFunctions } from '@imx-modules/imx-api-qer';
 import {
-  BusyService, DataModelWrapper,
-  DataSourceToolbarSettings,
-  DataSourceWrapper,
-  SnackBarService,
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
+  DataViewInitParameters,
+  DataViewSource,
+  HELP_CONTEXTUAL,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL
+  SnackBarService,
+  calculateSidesheetWidth,
 } from 'qbm';
 import { RiskConfigSidesheetComponent } from './risk-config-sidesheet/risk-config-sidesheet.component';
 import { RiskConfigService } from './risk-config.service';
@@ -46,92 +54,86 @@ import { RiskConfigService } from './risk-config.service';
   selector: 'imx-risk-config',
   templateUrl: './risk-config.component.html',
   styleUrls: ['./risk-config.component.scss'],
+  providers: [DataViewSource],
 })
 export class RiskConfigComponent implements OnInit {
-  public dstWrapper: DataSourceWrapper<PortalRiskFunctions>;
-  public dstSettings: DataSourceToolbarSettings;
-  public dataModelWrapper: DataModelWrapper;
   public entitySchema: EntitySchema;
   public recalculatingInProcess = false;
   public DisplayColumns = DisplayColumns;
   public busyService = new BusyService();
+  public displayedColumns: IClientProperty[];
+  public dataModel: DataModel;
 
   constructor(
     private readonly riskConfigService: RiskConfigService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly translate: TranslateService,
     private readonly snackbar: SnackBarService,
-    private readonly helpContextualService: HelpContextualService
+    private readonly helpContextualService: HelpContextualService,
+    public dataSource: DataViewSource<PortalRiskFunctions>,
   ) {
     this.entitySchema = this.riskConfigService.riskFunctionsSchema;
   }
   public async ngOnInit(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      this.dataModelWrapper = {
-        dataModel: await this.riskConfigService.getDataModel(),
-      };
-
-      this.dstWrapper = new DataSourceWrapper(
-        (state) => this.riskConfigService.get(state),
-        [
-          this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-          this.entitySchema.Columns.TargetTable,
-          this.entitySchema.Columns.Description,
-          this.entitySchema.Columns.IsInActive,
-          this.entitySchema.Columns.IsExecuteImmediate,
-          this.entitySchema.Columns.Weight,
-        ],
-        this.entitySchema,
-        this.dataModelWrapper,
-        'risk-config'
-      );
+      this.dataModel = await this.riskConfigService.getDataModel();
+      this.displayedColumns = [
+        this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
+        this.entitySchema.Columns.TargetTable,
+        this.entitySchema.Columns.Description,
+        this.entitySchema.Columns.IsInActive,
+        this.entitySchema.Columns.Weight,
+      ];
     } finally {
       isBusy.endBusy();
     }
 
-    await this.getData();
+    this.getData();
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
-    } finally {
-      isBusy.endBusy();
-    }
+  public getData(): void {
+    const dataViewInitParameters: DataViewInitParameters<PortalRiskFunctions> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalRiskFunctions>> =>
+        this.riskConfigService.get(params, signal),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      highlightEntity: (entity: PortalRiskFunctions) => {
+        this.onHighlightedEntityChanged(entity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public async onHighlightedEntityChanged(riskFunctionSelected: PortalRiskFunctions): Promise<void> {
-    if (riskFunctionSelected) {
-      setTimeout(() => this.riskConfigService.handleOpenLoader());
-      try {
-        const key = riskFunctionSelected.GetEntity().GetKeys().join(',');
-        const extendedEntity = await this.riskConfigService.getPortalRiskEntity(key);
-        this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.ConfigurationRiskEdit);
-        const result = await this.sideSheet
-          .open(RiskConfigSidesheetComponent, {
-            title: await this.translate.get('#LDS#Heading Edit Risk Index Function').toPromise(),
-            subTitle: riskFunctionSelected.GetEntity().GetDisplay(),
-            padding: '0',
-            width: 'max(600px, 60%)',
-            disableClose: true,
-            testId: 'risk-config-sidesheet',
-            data: {
-              riskFunction: extendedEntity.Data[0],
-              extendedData: extendedEntity.extendedData,
-            },
-            headerComponent: HelpContextualComponent
-          })
-          .afterClosed()
-          .toPromise();
+    if (!riskFunctionSelected) {
+      return;
+    }
+    this.riskConfigService.handleOpenLoader();
+    const key = riskFunctionSelected.GetEntity().GetKeys().join(',');
+    const extendedEntity = await this.riskConfigService.getPortalRiskEntity(key);
+    this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.ConfigurationRiskEdit);
+    this.riskConfigService.handleCloseLoader();
+    const result = await this.sideSheet
+      .open(RiskConfigSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading Edit Risk Index Function').toPromise(),
+        subTitle: riskFunctionSelected.GetEntity().GetDisplay(),
+        padding: '0',
+        width: calculateSidesheetWidth(),
+        disableClose: true,
+        testId: 'risk-config-sidesheet',
+        data: {
+          riskFunction: extendedEntity.Data[0],
+          extendedData: extendedEntity.extendedData,
+        },
+        headerComponent: HelpContextualComponent,
+      })
+      .afterClosed()
+      .toPromise();
 
-        if (result) {
-          this.getData();
-        }
-      } finally {
-        setTimeout(() => this.riskConfigService.handleCloseLoader());
-      }
+    if (result) {
+      this.dataSource.updateState();
     }
   }
 
@@ -140,7 +142,7 @@ export class RiskConfigComponent implements OnInit {
     this.snackbar.open({ key: '#LDS#The risk index recalculation has been successfully started.' });
     try {
       await this.riskConfigService.postRiskRecalculate().then(() => {
-        this.getData();
+        this.dataSource.updateState();
       });
     } finally {
       this.recalculatingInProcess = false;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,18 +29,17 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { OpsupportSyncShell } from 'imx-api-dpr';
-import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { OpsupportSyncShell } from '@imx-modules/imx-api-dpr';
+import { EntitySchema, IClientProperty, ValType } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings, ClientPropertyForTableColumns, SettingsService } from 'qbm';
 import { OpsupportSyncShellParameters, SyncService } from '../sync.service';
 
 @Component({
   selector: 'imx-sync-information',
   templateUrl: './sync-information.component.html',
-  styleUrls: ['./sync-information.component.scss']
+  styleUrls: ['./sync-information.component.scss'],
 })
 export class SyncInformationComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaSyncInfo: EntitySchema;
   private navigationState: OpsupportSyncShellParameters;
@@ -50,7 +49,7 @@ export class SyncInformationComponent implements OnInit {
     private dataSource: SyncService,
     private router: Router,
     private busyService: EuiLoadingService,
-    private readonly settings: SettingsService
+    private readonly settings: SettingsService,
   ) {
     this.navigationState = { StartIndex: 0, PageSize: settings.DefaultPageSize };
     this.entitySchemaSyncInfo = dataSource.syncShellSchema;
@@ -64,8 +63,8 @@ export class SyncInformationComponent implements OnInit {
         ColumnName: 'actions',
         Type: ValType.String,
         afterAdditionals: true,
-        untranslatedDisplay: '#LDS#Actions'
-      }
+        untranslatedDisplay: '#LDS#Actions',
+      },
     ];
   }
 
@@ -85,17 +84,15 @@ export class SyncInformationComponent implements OnInit {
     this.navigationState = { ...this.navigationState, ...navigationState };
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
       const applications = await this.dataSource.getSyncShell(navigationState);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: applications,
         entitySchema: this.entitySchemaSyncInfo,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -104,5 +101,4 @@ export class SyncInformationComponent implements OnInit {
   public viewDetails(syncShell: OpsupportSyncShell): void {
     this.router.navigate(['/SyncJournal/' + syncShell.UID_DPRShell.value]);
   }
-
 }

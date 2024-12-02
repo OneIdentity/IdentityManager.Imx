@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { ComponentType } from "@angular/cdk/portal";
-import { InjectionToken } from "@angular/core";
+import { ComponentType } from '@angular/cdk/portal';
+import { InjectionToken } from '@angular/core';
 
 export const CREATE_SHELF_TOKEN: InjectionToken<ComponentType<any>> = new InjectionToken<ComponentType<any>>('CREATE_SHELF_TOKEN');

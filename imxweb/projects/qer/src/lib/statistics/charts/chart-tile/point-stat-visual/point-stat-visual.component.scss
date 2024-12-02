@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @import '../../../stat-mixins.scss';
 
 :host {
@@ -8,8 +8,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
 
-    .icon, .only-status-icon {
+    .icon,
+    .only-status-icon {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -25,8 +27,6 @@
         margin-right: 6px;
       }
     }
-
-
   }
 }
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,49 +24,44 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
-import { QerApiService } from '../qer-api-client.service';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { CollectionLoadParameters, DataModel, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
-import { PortalCandidatesHardwaretype, PortalCandidatesHardwaretypeWrapper, PortalDevices } from 'imx-api-qer';
+import { PortalCandidatesHardwaretype, PortalDevices } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
+import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ViewDevicesService {
-  private busyIndicator: OverlayRef;
-
   constructor(
     private readonly qerClient: QerApiService,
-    private readonly busyService: EuiLoadingService
-    ) {}
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public get devicesSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalDevices.GetSchema();
   }
 
-  public get hardwareTypeSchema(): EntitySchema {
-    return this.qerClient.typedClient.PortalCandidatesHardwaretype.GetSchema();
-  }
-
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => (this.busyIndicator = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if(this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 
-  public async get(parameters: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalDevices, unknown>> {
+  public async get(
+    parameters: CollectionLoadParameters,
+    signal: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalDevices, unknown>> {
     return this.qerClient.typedClient.PortalDevices.Get(parameters);
+  }
+
+  public get hardwareTypeSchema(): EntitySchema {
+    return this.qerClient.typedClient.PortalCandidatesHardwaretype.GetSchema();
   }
 
   public async getDataModel(): Promise<DataModel> {
@@ -85,7 +80,9 @@ export class ViewDevicesService {
     await this.qerClient.client.portal_devices_delete(uid);
   }
 
-  public async getPortalCandidatesHardwaretype(parameters: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalCandidatesHardwaretype, unknown>> {
+  public async getPortalCandidatesHardwaretype(
+    parameters: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalCandidatesHardwaretype, unknown>> {
     return await this.qerClient.typedClient.PortalCandidatesHardwaretype.Get(parameters);
   }
 

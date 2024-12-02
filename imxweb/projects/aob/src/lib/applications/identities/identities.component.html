@@ -1,42 +1,49 @@
 <div class="imx-identities-content">
-
-<imx-data-source-toolbar #dst
-  data-imx-identifier="identity-dst"
-  [options]="['search', 'selectedViewGroup']"
-  [settings]="dstSettings"
-  [busyService]="busyService"
-  [initalView]="selectedView"
-  (search)="onSearch($event)"
-  (viewSelectionChanged)="onViewSelectionChanged($event)"
-  (navigationStateChanged)="onNavigationStateChanged($event)">
-</imx-data-source-toolbar>
-<imx-data-table *ngIf="selectedView === 'table'"
-  data-imx-identifier="identity-data-table"
-  [dst]="dst"
-  [detailViewVisible]="false"
-  mode="manual"
-  (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
-  #dataTable>
-  <imx-data-table-column
-    data-imx-identifier="identity-column-default-display"
-    [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-    data-imx-identifier="identity-data-default"></imx-data-table-column>
-  <imx-data-table-column
-    data-imx-identifier="identity-column-default-email"
-    [entityColumn]="entitySchema?.Columns['DefaultEmailAddress']"
-    data-imx-identifier="identity-data-email"></imx-data-table-column>
-</imx-data-table>
-<imx-data-tiles *ngIf="selectedView === 'cardlist'"
-  data-imx-identifier="identity-tiles"
-  [dst]="dst"
-  height="150px"
-  icon="user"
-  [selectable]="false"
-  (badgeClicked)="onOpenDetails($event)"
-  [actions]="[{ name: 'view', description: '#LDS#Details' | translate }]"
-  [useActionMenu]="false"
-  (actionSelected)="onSelectedTileChanged($event)"
-  [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-  [subtitleObject]="entitySchema?.Columns['DefaultEmailAddress']"></imx-data-tiles>
-<imx-data-source-paginator [dst]="dst" data-imx-identifier="identity-paginator"></imx-data-source-paginator>
+  <imx-data-source-toolbar
+    #dst
+    data-imx-identifier="identity-dst"
+    [options]="['search', 'selectedViewGroup']"
+    [settings]="dstSettings"
+    [busyService]="busyService"
+    [initalView]="selectedView"
+    (search)="onSearch($event)"
+    (viewSelectionChanged)="onViewSelectionChanged($event)"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+  >
+  </imx-data-source-toolbar>
+  <imx-data-table
+    *ngIf="selectedView === 'table'"
+    data-imx-identifier="identity-data-table"
+    [dst]="dst"
+    [detailViewVisible]="false"
+    mode="manual"
+    (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
+    #dataTable
+  >
+    <imx-data-table-column
+      data-imx-identifier="identity-column-default-display"
+      [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
+      data-imx-identifier="identity-data-default"
+    ></imx-data-table-column>
+    <imx-data-table-column
+      data-imx-identifier="identity-column-default-email"
+      [entityColumn]="entitySchema?.Columns?.['DefaultEmailAddress']"
+      data-imx-identifier="identity-data-email"
+    ></imx-data-table-column>
+  </imx-data-table>
+  <imx-data-tiles
+    *ngIf="selectedView === 'cardlist'"
+    data-imx-identifier="identity-tiles"
+    [dst]="dst"
+    height="150px"
+    icon="user"
+    [selectable]="false"
+    (badgeClicked)="onOpenDetails($event?.entity)"
+    [actions]="[{ name: 'view', description: '#LDS#Details' | translate }]"
+    [useActionMenu]="false"
+    (actionSelected)="onSelectedTileChanged($event)"
+    [titleObject]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    [subtitleObject]="entitySchema?.Columns?.['DefaultEmailAddress']"
+  ></imx-data-tiles>
+  <imx-data-source-paginator [dst]="dst" data-imx-identifier="identity-paginator"></imx-data-source-paginator>
 </div>

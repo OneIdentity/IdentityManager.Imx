@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,22 @@
  */
 
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { EuiSidesheetService } from '@elemental-ui/core';
 
-import { EditFkComponent } from './edit-fk.component';
-import { IForeignKeyInfo, IValueMetadata, IEntityColumn, ValueStruct, EntityCollectionData } from 'imx-qbm-dbts';
-import { EntityColumnStub } from '../../testing/entity-column-stub.spec';
-import { clearStylesFromDOM } from '../../testing/clear-styles.spec';
-import { MetadataService } from '../../base/metadata.service';
-import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
-import { CdrModule } from '../cdr.module';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { QbmDefaultMocks } from '../../../default-mocks.spec';
-import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
-import { ViewPropertyComponent } from '../view-property/view-property.component';
 import { ChangeDetectorRef } from '@angular/core';
+import { EntityCollectionData, IEntityColumn, IForeignKeyInfo, IValueMetadata, ValueStruct } from '@imx-modules/imx-qbm-dbts';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MockBuilder, MockRender, MockedComponentFixture } from 'ng-mocks';
+import { QbmDefaultMocks } from '../../../default-mocks.spec';
+import { MetadataService } from '../../base/metadata.service';
+import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
+import { clearStylesFromDOM } from '../../testing/clear-styles.spec';
+import { EntityColumnStub } from '../../testing/entity-column-stub.spec';
+import { CdrModule } from '../cdr.module';
+import { ViewPropertyComponent } from '../view-property/view-property.component';
+import { EditFkComponent } from './edit-fk.component';
 
 function createColumnStub(
   value: ValueStruct<string>,
@@ -108,6 +108,7 @@ describe('EditFkComponent', () => {
       const metadataMinLength = 5;
       const columnStub = new EntityColumnStub<any>('value', 'display', {
         CanEdit: () => !testcase.input.isReadonly,
+        GetDisplay: () => 'display',
         GetMinLength: () => metadataMinLength,
         GetFkRelations: () => [{} as IForeignKeyInfo] as ReadonlyArray<IForeignKeyInfo>,
         GetLimitedValues: () => undefined,
@@ -183,7 +184,7 @@ describe('EditFkComponent', () => {
           expect(component.control.value).toEqual(testcase.valueStructs[0]);
           expect(component.columnContainer.value).toEqual(testcase.valueStructs[0].DataValue);
         } else {
-          expect(component.columnContainer.displayValue).toBeUndefined();
+          expect(component.columnContainer.displayValue).toEqual('');
           expect(component.control.value).toBeUndefined();
           expect(component.columnContainer.value).toBeUndefined();
         }
@@ -226,7 +227,7 @@ describe('EditFkComponent', () => {
 
     await component.removeAssignment();
 
-    expect(component.columnContainer.displayValue).toBeUndefined();
+    expect(component.columnContainer.displayValue).toEqual('');
     expect(component.control.value).toBeUndefined();
     expect(component.columnContainer.value).toBeUndefined();
   });
@@ -296,7 +297,6 @@ describe('EditFkComponent', () => {
 
     expect(component.candidates[0].DataValue).toEqual(candidateCollection.Entities[0].Columns.XObjectKey.Value);
     expect(component.candidates[0].DisplayValue).toEqual(candidateCollection.Entities[0].Display);
-    expect(component.hasCandidatesOrIsLoading).toEqual(true);
   });
 
   [

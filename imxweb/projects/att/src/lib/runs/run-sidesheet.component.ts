@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,28 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { EuiDownloadOptions } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { CompareOperator, FilterType, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalAttestationRun, PortalAttestationRunApprovers, RunStatisticsConfig } from 'imx-api-att';
-import { SnackBarService } from 'qbm';
+import { PortalAttestationRun, PortalAttestationRunApprovers, RunStatisticsConfig } from '@imx-modules/imx-api-att';
+import { CompareOperator, FilterType, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth, SnackBarService } from 'qbm';
 
-import { RunsService } from './runs.service';
+import { HelperAlertContent } from 'qer';
+import { AttestationActionService } from '../attestation-action/attestation-action.service';
+import { AttestationCaseLoadParameters } from '../attestation-history/attestation-case-load-parameters.interface';
+import { AttestationHistoryActionService } from '../attestation-history/attestation-history-action.service';
+import { AttestationParameters } from './attestation/attestation.component';
 import { percentage } from './helpers';
 import { RunExtendComponent } from './run-extend/run-extend.component';
-import { AttestationActionService } from '../attestation-action/attestation-action.service';
-import { AttestationHistoryActionService } from '../attestation-history/attestation-history-action.service';
-import { AttestationCaseLoadParameters } from '../attestation-history/attestation-case-load-parameters.interface';
-import { HelperAlertContent } from 'qer';
+import { RunsService } from './runs.service';
 
 @Component({
   templateUrl: './run-sidesheet.component.html',
-  styleUrls: ['./run-sidesheet.component.scss']
+  styleUrls: ['./run-sidesheet.component.scss'],
 })
 export class RunSidesheetComponent {
   public readonly run: PortalAttestationRun;
@@ -57,6 +56,10 @@ export class RunSidesheetComponent {
 
   public approvers: TypedEntityCollectionData<PortalAttestationRunApprovers>;
   public readonly attestationParameters: AttestationCaseLoadParameters;
+  public readonly attestationFilterParam: AttestationParameters = {
+    objecttable: '',
+    objectuid: '',
+  };
   public readonly pendingAttestations: HelperAlertContent = { loading: false };
 
   private readonly subscriptions: Subscription[] = [];
@@ -73,21 +76,23 @@ export class RunSidesheetComponent {
     if (this.attestationRunConfig) {
       if (this.run.ForecastProgress.value <= this.attestationRunConfig.LimitBad) {
         return {
-          message: '#LDS#This attestation run is categorized bad because the progress on the due date is estimated to be no more than {0}%.',
-          limit: percentage(this.attestationRunConfig.LimitBad)
+          message:
+            '#LDS#This attestation run is categorized bad because the progress on the due date is estimated to be no more than {0}%.',
+          limit: percentage(this.attestationRunConfig.LimitBad),
         };
       }
 
       if (this.run.ForecastProgress.value <= this.attestationRunConfig.LimitGood) {
         return {
-          message: '#LDS#This attestation run is categorized as mediocre because the progress on the due date is estimated to be no more than {0}%.',
-          limit: percentage(this.attestationRunConfig.LimitGood)
+          message:
+            '#LDS#This attestation run is categorized as mediocre because the progress on the due date is estimated to be no more than {0}%.',
+          limit: percentage(this.attestationRunConfig.LimitGood),
         };
       }
 
       return {
         message: '#LDS#This attestation run is categorized as good because the progress on the due date is estimated to be more than {0}%.',
-        limit: percentage(this.attestationRunConfig.LimitGood)
+        limit: percentage(this.attestationRunConfig.LimitGood),
       };
     }
 
@@ -95,12 +100,13 @@ export class RunSidesheetComponent {
   }
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: {
-      run: PortalAttestationRun,
-      attestationRunConfig: RunStatisticsConfig,
-      canSeeAttestationPolicies: boolean,
-      threshold: number,
-      completed: boolean
+    @Inject(EUI_SIDESHEET_DATA)
+    public readonly data: {
+      run: PortalAttestationRun;
+      attestationRunConfig: RunStatisticsConfig;
+      canSeeAttestationPolicies: boolean;
+      threshold: number;
+      completed: boolean;
     },
     public readonly runsService: RunsService,
     private readonly snackBarService: SnackBarService,
@@ -109,66 +115,67 @@ export class RunSidesheetComponent {
     private readonly busyService: EuiLoadingService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly action: AttestationActionService,
-    attestationAction: AttestationHistoryActionService
+    attestationAction: AttestationHistoryActionService,
   ) {
     this.run = this.data.run;
     this.attestationRunConfig = this.data.attestationRunConfig;
     this.threshold = data.threshold;
-    this.subscriptions.push(
-      attestationAction.applied?.subscribe(() => this.updatePendingAttestations())
-    );
+    this.subscriptions.push(attestationAction.applied?.subscribe(() => this.updatePendingAttestations()));
 
     this.reportDownload = runsService.getReportDownloadOptions(this.run);
     this.attestationParameters = {
-      filter: [{
-        CompareOp: CompareOperator.Equal,
-        Type: FilterType.Compare,
-        ColumnName: 'UID_AttestationRun',
-        Value1: this.run.GetEntity().GetKeys()[0]
-      },{
-        CompareOp: CompareOperator.Equal,
-        Type: FilterType.Compare,
-        ColumnName: 'UID_AttestationPolicy',
-        Value1: this.run.UID_AttestationPolicy.value
-      }]
+      filter: [
+        {
+          CompareOp: CompareOperator.Equal,
+          Type: FilterType.Compare,
+          ColumnName: 'UID_AttestationRun',
+          Value1: this.run.GetEntity().GetKeys()[0],
+        },
+        {
+          CompareOp: CompareOperator.Equal,
+          Type: FilterType.Compare,
+          ColumnName: 'UID_AttestationPolicy',
+          Value1: this.run.UID_AttestationPolicy.value,
+        },
+      ],
     };
+    this.attestationFilterParam.filter = this.attestationParameters?.filter;
   }
 
   public async extendAttestationRun(): Promise<void> {
     const data = {
       ProlongateUntil: this.run.DueDate.value,
-      reason: this.action.createCdrReason({ display: '#LDS#Reason', mandatory: true })
+      reason: this.action.createCdrReason({ display: '#LDS#Reason', mandatory: true }),
     };
 
-    const result = await this.sideSheet.open(
-      RunExtendComponent,
-      {
+    const result = await this.sideSheet
+      .open(RunExtendComponent, {
         title: await this.translate.get('#LDS#Heading Extend Attestation Run').toPromise(),
         subTitle: this.run.GetEntity().GetDisplay(),
         padding: '0px',
-        width: '600px',
+        width: calculateSidesheetWidth(600, 0.4),
         testId: 'attestationruns-extendrun-sidesheet',
-        data
-      }
-    ).afterClosed().toPromise();
+        data,
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      this.showBusyIndicator();
 
-      let success: boolean;
+      let success = false;
 
       try {
         await this.runsService.extendRun(this.run, {
           ProlongateUntil: data.ProlongateUntil,
-          Reason: data.reason.column.GetValue()
+          Reason: data.reason.column.GetValue(),
         });
         success = true;
       } finally {
         if (success) {
           this.snackBarService.open({ key: '#LDS#The attestation run has been successfully extended.' });
         }
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
         this.sideSheetRef.close(true);
       }
     }
@@ -176,22 +183,20 @@ export class RunSidesheetComponent {
 
   public async onTabChange(event: MatTabChangeEvent): Promise<void> {
     if (event.index === 1) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      this.showBusyIndicator();
 
       try {
         this.approvers = await this.runsService.getApprovers(this.run);
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
       }
     }
     if (event.index === 2) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      this.showBusyIndicator();
       try {
         this.updatePendingAttestations();
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
       }
     }
   }
@@ -206,22 +211,26 @@ export class RunSidesheetComponent {
     const total = this.run.ClosedCases.value + this.run.PendingCases.value;
 
     if (total === 0) {
-      this.pendingAttestations.infoItems = [
-        { description: '#LDS#There are currently no attestation cases for this attestation run.' }
-      ];
+      this.pendingAttestations.infoItems = [{ description: '#LDS#There are currently no attestation cases for this attestation run.' }];
     } else {
       const statistics = {
         pendingTotal: this.run.PendingCases.value,
-        pendingForUser: await this.runsService.getNumberOfPendingForLoggedInUser(this.attestationParameters)
+        pendingForUser: await this.runsService.getNumberOfPendingForLoggedInUser(this.attestationParameters),
       };
 
       this.pendingAttestations.infoItems = [
         { description: '#LDS#Here you can get an overview of all attestation cases in this attestation run.' },
         { description: '#LDS#Pending attestation cases: {0}', value: statistics.pendingTotal },
-        { description: '#LDS#Pending attestation cases you can approve or deny: {0}', value: statistics.pendingForUser }
+        { description: '#LDS#Pending attestation cases you can approve or deny: {0}', value: statistics.pendingForUser },
       ];
     }
 
     this.pendingAttestations.loading = false;
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

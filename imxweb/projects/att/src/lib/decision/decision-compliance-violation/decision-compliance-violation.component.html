@@ -1,95 +1,103 @@
 <div class="heading-wrapper">
-  <div class="alert-wrapper">
-    <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="false">
-      <span>
-        {{'#LDS#Here you can get an overview of all rule violations of this attestation case.' | translate }}
-      </span>
-    </eui-alert>
-  </div>
+  <eui-alert class="imx-alert-start-100" type="info" [condensed]="true" [colored]="true" [dismissable]="false">
+    <span>
+      {{ '#LDS#Here you can get an overview of all rule violations of this attestation case.' | translate }}
+    </span>
+  </eui-alert>
 </div>
-<mat-accordion multi="true" *ngIf="complianceViolations.length > 1" class="imx-accordion" data-imx-identifier="decision-compliance-violation-accordion">
-    <mat-expansion-panel  *ngFor="let complianceViolation of complianceViolations; let isFirst = first" [expanded]="isFirst"
-    [attr.data-imx-identifier]="'decision-policy-violation-expansion-panel-'+complianceViolation.DisplayObject">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span>{{complianceViolation.DisplayRule}}</span>
-          <eui-badge *ngIf="complianceViolation.IsExceptionAllowed">
-            {{'#LDS#Exception allowed' | translate}}
-          </eui-badge>
-          <eui-badge color="orange" *ngIf="!complianceViolation.IsExceptionAllowed">
-            {{'#LDS#Exception forbidden' | translate}}
-          </eui-badge>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <div class="imx-container">
-        <div class="imx-person-container" *ngIf="!complianceViolation.IsNoEffectivePerson">
-          <div class="imx-label">{{'#LDS#Affected identity' | translate}}</div>
-          <div>{{complianceViolation.DisplayPerson}}</div>
-        </div>
-        <div class="imx-entitlement-container" *ngIf="complianceViolation.ContributingEntitlements.length > 0">
-          <div class="imx-label">{{'#LDS#Contributing entitlements' | translate}}</div>
-          <div class="imx-entitlement" *ngFor="let entitlement of complianceViolation.ContributingEntitlements">
-            <div>{{entitlement?.Display}}</div>
-            <div class="imx-entitlement-subtitle">{{entitlement?.Type}}</div>
-            <div class="imx-source" *ngIf="entitlement?.Sources">
-              <div class="imx-label">{{'#LDS#Related SAP entitlements' | translate}}</div>
-              <ul class="imx-source-list" *ngIf="entitlement.Sources.length > 0">
-                <li class="imx-source-item" *ngFor="let source of entitlement?.Sources">
-                  <div>{{source?.Display}}</div>
-                  <div class="imx-source-subtitle">{{source?.Type}}</div>
-                </li>
-              </ul>
-              <span class="imx-source-not-set" *ngIf="entitlement.Sources.length == 0">{{'#LDS#Not set' | translate}}</span>
-            </div>
+<mat-accordion
+  multi="true"
+  *ngIf="complianceViolations.length > 1"
+  class="imx-accordion"
+  data-imx-identifier="decision-compliance-violation-accordion"
+>
+  <mat-expansion-panel
+    *ngFor="let complianceViolation of complianceViolations; let isFirst = first"
+    class="imx-expansion-panel-violation"
+    [expanded]="isFirst"
+    [attr.data-imx-identifier]="'decision-policy-violation-expansion-panel-' + complianceViolation.DisplayRule"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <span>{{ complianceViolation.DisplayRule }}</span>
+        <eui-badge class="imx-padding-left-10" *ngIf="complianceViolation.IsExceptionAllowed">
+          {{ '#LDS#Exception allowed' | translate }}
+        </eui-badge>
+        <eui-badge class="imx-padding-left-10" color="orange" *ngIf="!complianceViolation.IsExceptionAllowed">
+          {{ '#LDS#Exception forbidden' | translate }}
+        </eui-badge>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="imx-container">
+      <div class="imx-person-container" *ngIf="!complianceViolation.IsNoEffectivePerson">
+        <div class="imx-label">{{ '#LDS#Affected identity' | translate }}</div>
+        <div>{{ complianceViolation.DisplayPerson }}</div>
+      </div>
+      <div class="imx-entitlement-container" *ngIf="!!complianceViolation.ContributingEntitlements?.length">
+        <div class="imx-label">{{ '#LDS#Contributing entitlements' | translate }}</div>
+        <div class="imx-entitlement" *ngFor="let entitlement of complianceViolation.ContributingEntitlements">
+          <div>{{ entitlement?.Display }}</div>
+          <div class="imx-entitlement-subtitle">{{ entitlement?.Type }}</div>
+          <div class="imx-source" *ngIf="entitlement?.Sources">
+            <div class="imx-label">{{ '#LDS#Related SAP entitlements' | translate }}</div>
+            <ul class="imx-source-list" *ngIf="!!entitlement.Sources?.length">
+              <li class="imx-source-item" *ngFor="let source of entitlement?.Sources">
+                <div>{{ source?.Display }}</div>
+                <div class="imx-source-subtitle">{{ source?.Type }}</div>
+              </li>
+            </ul>
+            <span class="imx-source-not-set" *ngIf="entitlement.Sources?.length == 0">{{ '#LDS#Not set' | translate }}</span>
           </div>
         </div>
-        <div class="imx-risk-reduction-container" *ngIf="mitigatingControlsPerViolation && complianceViolation.MitigatingControls.length > 0; else noMitigatingControls">
-          <div class="imx-label">{{ '#LDS#The following mitigating controls are available for the rule violation:' | translate }}</div>
-          <ul class="imx-risk-reduction">
-            <li class="imx-risk-reduction-item" *ngFor="let control of complianceViolation.MitigatingControls">
-              {{control.Display}}
-            </li>
-          </ul>
-        </div>
       </div>
-    </mat-expansion-panel>
+      <div
+        class="imx-risk-reduction-container"
+        *ngIf="mitigatingControlsPerViolation && !!complianceViolation.MitigatingControls?.length; else noMitigatingControls"
+      >
+        <div class="imx-label">{{ '#LDS#The following mitigating controls are available for the rule violation:' | translate }}</div>
+        <ul class="imx-risk-reduction">
+          <li class="imx-risk-reduction-item" *ngFor="let control of complianceViolation.MitigatingControls">
+            {{ control.Display }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </mat-expansion-panel>
 </mat-accordion>
 <ng-container *ngIf="complianceViolations.length === 1">
   <ng-content *ngTemplateOutlet="singleView; context: { $implicit: complianceViolations[0] }"></ng-content>
 </ng-container>
 
-
-
 <ng-template #singleView let-complianceViolation>
-<mat-card data-imx-identifier="decision-compliance-violation-mat-card">
-  <mat-card-title>
-      <span>{{complianceViolation.DisplayRule}}</span>
-      <eui-badge *ngIf="complianceViolation.IsExceptionAllowed">
-        {{'#LDS#Exception allowed' | translate}}
+  <mat-card data-imx-identifier="decision-compliance-violation-mat-card">
+    <mat-card-title>
+      <span>{{ complianceViolation.DisplayRule }}</span>
+      <eui-badge class="imx-padding-left-10" *ngIf="complianceViolation.IsExceptionAllowed">
+        {{ '#LDS#Exception allowed' | translate }}
       </eui-badge>
-      <eui-badge color="orange" *ngIf="!complianceViolation.IsExceptionAllowed">
-        {{'#LDS#Exception forbidden' | translate}}
+      <eui-badge class="imx-padding-left-10" color="orange" *ngIf="!complianceViolation.IsExceptionAllowed">
+        {{ '#LDS#Exception forbidden' | translate }}
       </eui-badge>
-  </mat-card-title>
-  <ng-container *ngIf="mitigatingControlsPerViolation;">
-    <div class="mat-expansion-panel-content">
-      <div class="imx-label">{{'#LDS#Affected object' | translate}}</div>
-      <div>{{complianceViolation.DisplayObject}}</div>
-    </div>
-    <div class="imx-risk-reduction-container" *ngIf="complianceViolation.MitigatingControls.length > 0; else noMitigatingControls">
-      <div class="imx-label">{{ '#LDS#The following mitigating controls are available for the rule violation:' | translate }}</div>
-      <ul class="imx-risk-reduction">
-        <li class="imx-risk-reduction-item" *ngFor="let control of complianceViolation.MitigatingControls">
-          {{control.Display}}
-        </li>
-      </ul>
-    </div>
-  </ng-container>
-</mat-card>
+    </mat-card-title>
+    <ng-container *ngIf="mitigatingControlsPerViolation">
+      <div class="mat-expansion-panel-content">
+        <div class="imx-label">{{ '#LDS#Affected object' | translate }}</div>
+        <div>{{ complianceViolation.DisplayObject }}</div>
+      </div>
+      <div class="imx-risk-reduction-container" *ngIf="complianceViolation.MitigatingControls.length > 0; else noMitigatingControls">
+        <div class="imx-label">{{ '#LDS#The following mitigating controls are available for the rule violation:' | translate }}</div>
+        <ul class="imx-risk-reduction">
+          <li class="imx-risk-reduction-item" *ngFor="let control of complianceViolation.MitigatingControls">
+            {{ control.Display }}
+          </li>
+        </ul>
+      </div>
+    </ng-container>
+  </mat-card>
 </ng-template>
 
 <ng-template #noMitigatingControls>
-  <eui-alert class="imx-top-alert" [condensed]="true" [colored]="true" type="warning">
-    {{'#LDS#There are currently no mitigating controls assigned to the rule violation.' |translate}}
+  <eui-alert [condensed]="true" [colored]="true" type="warning">
+    {{ '#LDS#There are currently no mitigating controls assigned to the rule violation.' | translate }}
   </eui-alert>
 </ng-template>

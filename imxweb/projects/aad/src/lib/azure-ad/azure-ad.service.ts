@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import {
@@ -32,17 +31,18 @@ import {
   PortalTargetsystemAadgroupSubsku,
   PortalTargetsystemAaduserDeniedserviceplans,
   PortalTargetsystemAaduserSubsku,
-} from 'imx-api-aad';
-import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
+} from '@imx-modules/imx-api-aad';
+import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ApiService } from '../api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AzureAdService {
-  private busyIndicator: OverlayRef;
-
-  constructor(private readonly aadApiClient: ApiService, private readonly busyService: EuiLoadingService) { }
+  constructor(
+    private readonly aadApiClient: ApiService,
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public get aadUserSchema(): EntitySchema {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserSubsku.GetSchema();
@@ -62,28 +62,28 @@ export class AzureAdService {
 
   public async getAadUserSubscriptions(
     uidAadUser: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemAaduserSubsku>> {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserSubsku.Get(uidAadUser, navigationState);
   }
 
   public async getAadUserDeniedPlans(
     uidAadUser: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemAaduserDeniedserviceplans>> {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserDeniedserviceplans.Get(uidAadUser, navigationState);
   }
 
   public async getAadGroupDeniedPlans(
     uidAadGroup: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemAadgroupDeniedserviceplans>> {
     return this.aadApiClient.typedClient.PortalTargetsystemAadgroupDeniedserviceplans.Get(uidAadGroup, navigationState);
   }
 
   public async getAadGroupSubscriptions(
     uidAadGroup: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemAadgroupSubsku>> {
     return this.aadApiClient.typedClient.PortalTargetsystemAadgroupSubsku.Get(uidAadGroup, navigationState);
   }
@@ -92,37 +92,37 @@ export class AzureAdService {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserSubsku.createEntity({
       Columns: {
         UID_AADUser: {
-          Value: uidAaduser
-        }
-      }
+          Value: uidAaduser,
+        },
+      },
     });
   }
   public generateAadUserDeniedPlanEntity(uidAaduser: string): PortalTargetsystemAaduserDeniedserviceplans {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserDeniedserviceplans.createEntity({
       Columns: {
         UID_AADUser: {
-          Value: uidAaduser
-        }
-      }
+          Value: uidAaduser,
+        },
+      },
     });
   }
 
   public createAadUserSubscription(
     uidAadUser: string,
-    aadUserSubscription: PortalTargetsystemAaduserSubsku
+    aadUserSubscription: PortalTargetsystemAaduserSubsku,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemAaduserSubsku>> {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserSubsku.Post(uidAadUser, aadUserSubscription);
   }
 
   public createAadUserDeniedPlan(
     uidAadUser: string,
-    aadUserDeniedPlan: PortalTargetsystemAaduserDeniedserviceplans
+    aadUserDeniedPlan: PortalTargetsystemAaduserDeniedserviceplans,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemAaduserDeniedserviceplans>> {
     return this.aadApiClient.typedClient.PortalTargetsystemAaduserDeniedserviceplans.Post(uidAadUser, aadUserDeniedPlan);
   }
 
   public async removeAadUserSubscriptions(uidAadUser: string, userSubscriptions: PortalTargetsystemAaduserSubsku[]): Promise<any> {
-    const promises = [];
+    const promises: Promise<any>[] = [];
     userSubscriptions.forEach((userSub) => {
       const key = userSub.GetEntity().GetKeys().join();
       promises.push(this.aadApiClient.client.portal_targetsystem_aaduser_subsku_delete(uidAadUser, key));
@@ -131,7 +131,7 @@ export class AzureAdService {
   }
 
   public async removeAadUserDeniedPlans(uidAadUser: string, userDeniedPlans: PortalTargetsystemAaduserDeniedserviceplans[]): Promise<any> {
-    const promises = [];
+    const promises: Promise<any>[] = [];
     userDeniedPlans.forEach((deniedPlan) => {
       const deniedPlanValue = deniedPlan.UID_AADDeniedServicePlan.value;
       promises.push(this.aadApiClient.client.portal_targetsystem_aaduser_deniedserviceplans_delete(uidAadUser, deniedPlanValue));
@@ -140,17 +140,10 @@ export class AzureAdService {
   }
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      this.busyIndicator = this.busyService.show();
-    }
+    this.busyService.show();
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 }

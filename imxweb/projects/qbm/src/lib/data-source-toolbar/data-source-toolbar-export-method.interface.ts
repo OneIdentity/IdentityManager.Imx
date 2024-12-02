@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,11 @@
  *
  */
 
-import { DataModelProperty, MethodDefinition } from 'imx-qbm-dbts';
-
+import { DataModelProperty, MethodDefinition } from '@imx-modules/imx-qbm-dbts';
 
 export interface DataSourceToolbarExportMethod {
   // This will define an api method that the dst can then call to make a download to the client
   getMethod: (withProperties: string, PageSize?: number) => MethodDefinition<any>;
   // inititalColumns will set the initial export columns, if not present then we will try to figure it out from the displayed columns
-  initialColumns?: string[]
+  initialColumns?: string[];
 }

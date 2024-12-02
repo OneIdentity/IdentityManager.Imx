@@ -1,50 +1,67 @@
-
-<mat-card class="data-explorer">
-  <div class="data-explorer-card-header">
-    <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Heading Devices</span>
+<mat-card class="imx-card-fill">
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Heading Devices</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
-  <div class="imx-table-container">
-    <mat-card>
-      <imx-data-source-toolbar
-        #dst
-        [options]="['search', 'settings', 'filter']"
-        [settings]="dstSettings"
-        [busyService]="busyService"
-      (search)="getData({ search: $event })"
-        (navigationStateChanged)="getData($event)"
-        data-imx-identifier="view-devices-dst"
-      >
-      </imx-data-source-toolbar>
-      <imx-data-table
-        #dataTable
-        [dst]="dst"
-        class="imx-pickcategory-table"
-        [detailViewVisible]="false"
-        mode="manual"
-        [showSelectedItemsMenu]="false"
-        data-imx-identifier="view-devices-datatable"
-        (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
-      >
-        <imx-data-table-column data-imx-identifier="view-devices-table-column-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-      </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_HardwareType"></imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_PersonOwner"></imx-data-table-column>
-      </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="view-devices-paginator" [dst]="dst"> </imx-data-source-paginator>
-    </mat-card>
-  </div>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME" *ngIf="entitySchema">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+        <div>
+          {{ item?.GetEntity()?.GetDisplay() }}
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema?.Columns?.UID_HardwareType?.ColumnName">
+      <ng-container>
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.UID_HardwareType?.Display }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>
+          {{ item.UID_HardwareType.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema?.Columns?.UID_PersonOwner?.ColumnName">
+      <ng-container>
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.UID_PersonOwner?.Display }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>
+          {{ item.UID_PersonOwner?.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
-<div class="imx-button-bar">
-  <span class="imx-spacer"></span>
-  <button mat-raised-button color="primary" [matMenuTriggerFor]="menu" class="imx-create-device-button" data-imx-identifier="button-create-device">
+<div class="imx-button-bar-transparent">
+  <button
+    mat-flat-button
+    class="imx-button-icon-14"
+    color="primary"
+    [matMenuTriggerFor]="menu"
+    class="imx-create-device-button"
+    data-imx-identifier="button-create-device"
+  >
     <eui-icon icon="add"></eui-icon>
     {{ '#LDS#Create device' | translate }}
   </button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item *ngFor="let hardwareType of deviceModelValueStruct; let i = index" (click)="createNewDevice(hardwareType.DataValue, i)">
+    <button
+      mat-menu-item
+      *ngFor="let hardwareType of deviceModelValueStruct; let i = index"
+      (click)="createNewDevice(hardwareType.DataValue, i)"
+    >
       {{ hardwareType.DisplayValue }}
     </button>
   </mat-menu>

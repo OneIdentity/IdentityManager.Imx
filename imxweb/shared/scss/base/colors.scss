@@ -1,0 +1,46 @@
+.imx {
+  &-white {
+    color: $color-gray-0;
+  }
+
+  &-black {
+    color: $color-gray-100;
+  }
+
+  &-info {
+    color: $color-blue-60;
+  }
+
+  &-new {
+    color: $color-green-60;
+  }
+
+  &-warning {
+    color: $color-orange-60;
+  }
+
+  &-error {
+    color: $color-red-60;
+  }
+}
+
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx {
+    &-info {
+      color: $color-blue-40;
+    }
+
+    &-new {
+      color: $color-green-40;
+    }
+
+    &-warning {
+      color: $color-orange-40;
+    }
+
+    &-error {
+      color: $color-red-40;
+    }
+  }
+}

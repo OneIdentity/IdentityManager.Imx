@@ -1,9 +1,15 @@
-<mat-form-field appearance="outline">
+<mat-form-field class="imx-form-field-width-full imx-form-field-matsuffix" appearance="outline">
   <mat-label>{{ display | translate }}</mat-label>
-  <input matInput [readonly]="isReadonly" [formControl]="shadowText"  (focusout)="focusout()"
-    [attr.data-imx-identifier]="'date-input-' + imxIdentifierSuffix" [required]="isValueRequired">
+  <input
+    matInput
+    [readonly]="isReadonly"
+    [formControl]="shadowText"
+    (focusout)="focusout()"
+    [attr.data-imx-identifier]="'date-input-' + imxIdentifierSuffix"
+    [required]="isValueRequired"
+  />
   <div matSuffix>
-    <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+    <mat-spinner diameter="30" class="imx-spinner-inline-flex imx-margin-right-10" *ngIf="isLoading"></mat-spinner>
     <button #dateButton (click)="toggleDatePickerOpen($event)" cdkOverlayOrigin #triggerDate="cdkOverlayOrigin"
       mat-icon-button type="button" class="mat-focus-indicator mat-icon-button mat-button-base"
       aria-haspopup="dialog" aria-label="Open calendar"
@@ -12,9 +18,15 @@
     </button>
 
     <span cdkOverlayOrigin #triggerTime="cdkOverlayOrigin">
-      <button *ngIf="withTime" (click)="toggleTimePickerOpen($event)"
-        mat-icon-button type="button" class="mat-focus-indicator mat-icon-button mat-button-base" #timeButton
-        [class.mat-datepicker-toggle-active]="isTimePickerOpen">
+      <button
+        *ngIf="withTime"
+        (click)="toggleTimePickerOpen($event)"
+        mat-icon-button
+        type="button"
+        class="mat-focus-indicator mat-icon-button mat-button-base"
+        #timeButton
+        [class.mat-datepicker-toggle-active]="isTimePickerOpen"
+      >
         <eui-icon size="m" icon="clock" [aria-hidden]="false" [attr.aria-label]="'#LDS#Edit time' | translate"></eui-icon>
       </button>
     </span>
@@ -29,9 +41,14 @@
       (overlayOutsideClick)="isDatePickerOpen = false"
     >
       <imx-calendar
-        [control]="shadowDate" [min]="min" [max]="max"
-        (close)="isDatePickerOpen=false"
-        cdkTrapFocus [cdkTrapFocus]="true" [cdkTrapFocusAutoCapture]="true">
+        [control]="shadowDate"
+        [min]="min"
+        [max]="max"
+        (close)="isDatePickerOpen = false"
+        cdkTrapFocus
+        [cdkTrapFocus]="true"
+        [cdkTrapFocusAutoCapture]="true"
+      >
       </imx-calendar>
     </ng-template>
 
@@ -44,12 +61,15 @@
       [cdkConnectedOverlayBackdropClass]="'mat-overlay-transparent-backdrop'"
       (overlayOutsideClick)="handleTimePickerOutsideClick($event)"
     >
-        <imx-time-picker
-          class="mat-datepicker-content" [control]="shadowTime" (close)="isTimePickerOpen=false"
-          cdkTrapFocus [cdkTrapFocus]="true" [cdkTrapFocusAutoCapture]="true">
-        </imx-time-picker>
+      <imx-time-picker
+        [control]="shadowTime"
+        (close)="isTimePickerOpen = false"
+        cdkTrapFocus
+        [cdkTrapFocus]="true"
+        [cdkTrapFocusAutoCapture]="true"
+      >
+      </imx-time-picker>
     </ng-template>
-
   </div>
   <mat-error *ngIf="shadowText.invalid">
     {{ validationErrorKey | translate }}

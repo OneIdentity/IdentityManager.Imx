@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -10,10 +10,6 @@
     margin-left: 1em;
   }
 
-  .helper-alert ::ng-deep > div {
-    margin-bottom: 20px;
-  }
-
   .imx-source-card {
     display: flex;
     flex-direction: column;
@@ -22,16 +18,12 @@
     margin: 3px;
   }
 
-  .imx-no-data-div {
+  .imx-no-results {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     align-items: center;
     justify-content: center;
-
-    .eui-icon {
-      font-size: 100px;
-    }
 
     p {
       margin: 0;
@@ -41,11 +33,7 @@
 }
 
 :host {
-  .imx-no-data-div {
-    .eui-icon {
-      color: $color-gray-10;
-    }
-
+  .imx-no-results {
     p {
       color: $color-gray-50;
     }
@@ -54,11 +42,7 @@
 
 .eui-dark-theme {
   :host {
-    .imx-no-data-div {
-      .eui-icon {
-        color: $color-gray-20;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-10;
       }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,23 +33,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    EuiCoreModule,
-    EuiMaterialModule,
-    TranslateModule
-  ],
-  providers: [
-    OrgChartService
-  ],
-  declarations: [
-    OrgChartComponent,
-    IdentityComponent
-  ],
-  exports: [
-    OrgChartComponent,
-    IdentityComponent
-  ]
+  imports: [CommonModule, EuiCoreModule, EuiMaterialModule, TranslateModule],
+  providers: [OrgChartService],
+  declarations: [OrgChartComponent, IdentityComponent],
+  exports: [OrgChartComponent, IdentityComponent],
 })
-export class OrgChartModule {
-}
+export class OrgChartModule {}

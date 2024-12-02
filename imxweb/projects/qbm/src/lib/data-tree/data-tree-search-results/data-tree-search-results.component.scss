@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
@@ -15,15 +15,9 @@
 .imx-search-results {
   flex: 1 1 auto;
   overflow-y: auto;
+
   ::ng-deep.mat-pseudo-checkbox {
     display: none !important;
-  }
-  ::ng-deep.mat-list-option {
-    height: auto;
-  }
-
-  ::ng-deep.mat-list-item {
-    height: auto;
   }
 }
 
@@ -34,12 +28,6 @@
 .imx-search-results-multi {
   flex: 1 1 auto;
   overflow-y: auto;
-  ::ng-deep.mat-list-option {
-    background-color: transparent;
-  }
-  ::ng-deep.mat-list-option:hover {
-    background-color: $asher-gray;
-  }
 }
 
 .imx-candidate-option {
@@ -104,8 +92,7 @@
   flex: 1 1 auto;
   text-align: left;
   min-width: 0;
-
-  > ::ng-deep .mat-button-wrapper {
+  > ::ng-deep .mdc-button__label {
     color: $black;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -131,9 +118,8 @@
   background-color: $asher-gray;
 }
 
-.eui-dark-theme{
-  :host{
-
+.eui-dark-theme {
+  :host {
     .imx-background-highlight {
       background-color: $color-gray-60;
     }
@@ -154,27 +140,20 @@
       background-color: $color-gray-60;
     }
 
-    .imx-search-results-multi {
-      ::ng-deep.mat-list-option:hover {
-        background-color: $color-gray-60;
-      }
-    }
-
     .imx-search-result-item {
-      > ::ng-deep .mat-button-wrapper {
+      > ::ng-deep .mdc-button__label {
         color: $color-gray-2;
       }
     }
 
-    .imx-search-result-item:hover{
+    .imx-search-result-item:hover {
       background-color: $color-gray-60;
     }
   }
 }
 
-.eui-contrast-theme{
-  :host{
-
+.eui-contrast-theme {
+  :host {
     .imx-background-highlight {
       background-color: $color-gray-80;
     }
@@ -195,19 +174,13 @@
       background-color: $color-gray-80;
     }
 
-    .imx-search-results-multi {
-      ::ng-deep.mat-list-option:hover {
-        background-color: $color-gray-80;
-      }
-    }
-
     .imx-search-result-item {
-      > ::ng-deep .mat-button-wrapper {
+      > ::ng-deep .mdc-button__label {
         color: $color-gray-0;
       }
     }
 
-    .imx-search-result-item:hover{
+    .imx-search-result-item:hover {
       background-color: $color-gray-80;
     }
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,23 @@
  *
  */
 
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
-import { SqlViewSettings } from './SqlNodeView';
-import { LogOp as _logOp, SqlExpression } from 'imx-qbm-dbts';
-import { SqlWizardApiService } from './sqlwizard-api.service';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  QueryList,
+  SimpleChanges,
+  ViewChildren,
+} from '@angular/core';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
+import { SqlExpression, LogOp as _logOp } from '@imx-modules/imx-qbm-dbts';
+import { SqlViewSettings } from './SqlNodeView';
+import { SqlWizardApiService } from './sqlwizard-api.service';
 
 @Component({
   templateUrl: './sqlwizard.component.html',
@@ -47,7 +59,7 @@ export class SqlWizardComponent implements OnInit, OnChanges, AfterViewInit {
       svc = this.apiSvc;
     }
 
-    return svc.implemented;
+    return svc.implemented ?? false;
   }
 
   @Input() public tableName: string;
@@ -69,14 +81,14 @@ export class SqlWizardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    setTimeout( () => {
+    setTimeout(() => {
       this.expressionList.changes.subscribe(() => {
         if (this.newExpressionAdded) {
           this.expressionList?.last?.nativeElement.scrollIntoView(true);
         }
 
         this.newExpressionAdded = false;
-      })
+      });
     });
   }
 
@@ -108,7 +120,9 @@ export class SqlWizardComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   public onOperatorChanged(event: MatButtonToggleChange): void {
-    (event.value as string).toLowerCase() === 'and' ? (this.expression.LogOperator = this.LogOp.AND) : (this.expression.LogOperator = this.LogOp.OR);
+    (event.value as string).toLowerCase() === 'and'
+      ? (this.expression.LogOperator = this.LogOp.AND)
+      : (this.expression.LogOperator = this.LogOp.OR);
     this.change.emit();
   }
 

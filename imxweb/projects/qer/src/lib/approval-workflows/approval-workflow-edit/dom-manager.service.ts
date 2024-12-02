@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { ApplicationRef, ComponentFactoryResolver, ComponentRef, EmbeddedViewRef, Injectable, Injector } from '@angular/core';
 import { Collection, EdgeCollection, EdgeSingular, NodeCollection, NodeSingular, Position } from 'cytoscape';
 import { ContainerDomComponent } from './container-dom/container-dom.component';
-import { NodeDomComponent } from './node-dom/node-dom.component';
 import { EdgeDomComponent } from './edge-dom/edge-dom.component';
+import { NodeDomComponent } from './node-dom/node-dom.component';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +43,7 @@ export class DomManagerService {
     private componentFactoryResolver: ComponentFactoryResolver,
     private appRef: ApplicationRef,
     private injector: Injector,
-    ) {}
+  ) {}
 
   public createDomContainer(id: string, cls: string): void {
     // Create Angular factory for lifecycle hooks
@@ -54,12 +54,12 @@ export class DomManagerService {
     // Append under cytoscape
     const domContainer = (this.domContainer.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
     domContainer.className = cls;
-    document.getElementById(id).appendChild(domContainer);
+    document.getElementById(id)?.appendChild(domContainer);
   }
 
   public appendNodeComponentRelative(node: NodeSingular, cls: string, isDraw: boolean): void {
     const parentNode = node.parent().first();
-    let nodeBefore: NodeSingular;
+    let nodeBefore: NodeSingular = parentNode;
     if (parentNode.children().length > 1) {
       // There are other children, find the one with the previous sublevel
       const previousSublevel = node.data('subLevelNumber') - 1;
@@ -77,7 +77,7 @@ export class DomManagerService {
     this.appendNodeComponentToBody(node, cls, isDraw, siblingDom);
   }
 
-  public appendNodeComponentToBody(node: NodeSingular, cls: string, isDraw: boolean, siblingDom: ChildNode = null): void {
+  public appendNodeComponentToBody(node: NodeSingular, cls: string, isDraw: boolean, siblingDom: ChildNode | null = null): void {
     if (this.idToRefDict[node.id()]) {
       // Remove from dom, this preserves tab order
       this.removeElementComponentFromBody(node);
@@ -117,7 +117,7 @@ export class DomManagerService {
     if (node.isParent()) {
       // Compound nodes have weird sizing, so we accumulate all children
       const children = node.children();
-      children.forEach(child => {
+      children.forEach((child) => {
         width = Math.max(width, child.renderedOuterWidth());
         height += child.renderedOuterHeight() + paddingHeight;
       });
@@ -157,7 +157,7 @@ export class DomManagerService {
     this.appendEdgeComponentToBody(edge, cls, siblingDom);
   }
 
-  public appendEdgeComponentToBody(edge: EdgeSingular, cls: string, siblingDom: ChildNode = null): void {
+  public appendEdgeComponentToBody(edge: EdgeSingular, cls: string, siblingDom: ChildNode | null = null): void {
     if (this.idToRefDict[edge.id()]) {
       // Remove from dom, this preserved tab order
       this.removeElementComponentFromBody(edge);
@@ -257,7 +257,6 @@ export class DomManagerService {
         edgeRef.location.nativeElement.style.visibility = 'initial';
       }
     }
-
   }
 
   public isColliding(node: NodeSingular, edge: EdgeSingular): boolean {
@@ -267,10 +266,7 @@ export class DomManagerService {
     if (Number.isNaN(midpoint.x) || Number.isNaN(midpoint.y)) {
       return true;
     }
-    return (
-      (boundingBox.x1 < midpoint.x && boundingBox.x2 > midpoint.x) &&
-      (boundingBox.y1 < midpoint.y && boundingBox.y2 > midpoint.y)
-     );
+    return boundingBox.x1 < midpoint.x && boundingBox.x2 > midpoint.x && boundingBox.y1 < midpoint.y && boundingBox.y2 > midpoint.y;
   }
 
   public toggleOnDomElements(classList: string[]): void {

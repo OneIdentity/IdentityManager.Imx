@@ -4,8 +4,9 @@
   <span *ngIf="selectedCategory == null" class="imx-request-label-value" translate>#LDS#Root category (all products)</span>
 </div>
 <imx-data-source-toolbar
-  *ngIf="selectedView === SelectedProductSource.AllProducts && !disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="selectedView === SelectedProductSource.AllProducts && !disableSearch && !!orchestration.dstSettingsAllProducts"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-allproducts"
   [settings]="orchestration.dstSettingsAllProducts"
   [searchBoxText]="searchBoxText | translate"
@@ -18,8 +19,9 @@
   (navigationStateChanged)="onNavigationChanged($event)"
 ></imx-data-source-toolbar>
 <imx-data-source-toolbar
-  *ngIf="selectedView === SelectedProductSource.PeerGroupProducts && !disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="selectedView === SelectedProductSource.PeerGroupProducts && !disableSearch && !!orchestration.dstSettingsPeerGroupProducts"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-peergroupproducts"
   [settings]="orchestration.dstSettingsPeerGroupProducts"
   [searchBoxText]="searchBoxText | translate"
@@ -31,8 +33,9 @@
   (navigationStateChanged)="onNavigationChanged($event)"
 ></imx-data-source-toolbar>
 <imx-data-source-toolbar
-  *ngIf="selectedView === SelectedProductSource.PeerGroupOrgs && !disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="selectedView === SelectedProductSource.PeerGroupOrgs && !disableSearch && !!orchestration.dstSettingsPeerGroupOrgs"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-peergrouporgs"
   [settings]="orchestration.dstSettingsPeerGroupOrgs"
   [searchBoxText]="searchBoxText | translate"
@@ -44,8 +47,9 @@
   (navigationStateChanged)="onNavigationChanged($event)"
 ></imx-data-source-toolbar>
 <imx-data-source-toolbar
-  *ngIf="selectedView === SelectedProductSource.ReferenceUserProducts && !disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="selectedView === SelectedProductSource.ReferenceUserProducts && !disableSearch && !!orchestration.dstSettingsReferenceUserProducts"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-referenceuserproducts"
   [settings]="orchestration.dstSettingsReferenceUserProducts"
   [searchBoxText]="searchBoxText | translate"
@@ -57,8 +61,9 @@
   (navigationStateChanged)="onNavigationChanged($event)"
 ></imx-data-source-toolbar>
 <imx-data-source-toolbar
-  *ngIf="selectedView === SelectedProductSource.ReferenceUserOrgs && !disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="selectedView === SelectedProductSource.ReferenceUserOrgs && !disableSearch && !!orchestration.dstSettingsReferenceUserOrgs"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-referenceuserorgs"
   [settings]="orchestration.dstSettingsReferenceUserOrgs"
   [searchBoxText]="searchBoxText | translate"
@@ -70,8 +75,9 @@
   (navigationStateChanged)="onNavigationChanged($event)"
 ></imx-data-source-toolbar>
 <imx-data-source-toolbar
-  *ngIf="selectedView === SelectedProductSource.ProductBundles && !disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="selectedView === SelectedProductSource.ProductBundles && !disableSearch && !!orchestration.dstSettingsProductBundles"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-productbundles"
   [settings]="orchestration.dstSettingsProductBundles"
   [searchBoxText]="searchBoxText | translate"
@@ -83,8 +89,9 @@
   (navigationStateChanged)="onNavigationChanged($event)"
 ></imx-data-source-toolbar>
 <imx-data-source-toolbar
-  *ngIf="disableSearch"
-  imxElementVisibility (elementVisibile)="onVisibility($event)"
+  *ngIf="disableSearch && !!orchestration.dstSettingsProductBundles"
+  imxElementVisibility
+  (elementVisibile)="onVisibility($event)"
   data-imx-identifier="dst-productbundles"
   [settings]="orchestration.dstSettingsProductBundles"
   [searchBoxText]="searchBoxText | translate"

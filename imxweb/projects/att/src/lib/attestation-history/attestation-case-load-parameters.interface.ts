@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { CollectionLoadParameters, FilterData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, FilterData } from '@imx-modules/imx-qbm-dbts';
 
 export interface AttestationCaseLoadParameters extends CollectionLoadParameters {
   by?: string;
@@ -37,5 +37,5 @@ export interface AttestationCaseLoadParameters extends CollectionLoadParameters 
   attestationtype?: string;
   type?: string;
   risk?: string;
-  uid_persondecision?:string;
+  uid_persondecision?: string;
 }

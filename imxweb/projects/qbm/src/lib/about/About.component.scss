@@ -1,5 +1,5 @@
-@import "variables.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
 ::ng-deep {
   .imx-AboutPanel {
@@ -42,7 +42,7 @@
   .imx-productNameVersion {
     padding: 15px 0;
     margin: 30px 20px;
-    border: solid $VI_Common_Color_Gray;
+    border: solid $color-gray-60;
     border-width: 1px 0;
     text-align: center;
   }
@@ -61,88 +61,68 @@
     /* avoid scrollbars caused by the rotating image going out of the box */
     overflow: hidden;
   }
-
-  ::ng-deep .mat-tab-label {
-    background-color: $white;
-  }
-
-  .paragraphLargeMargin {
-    margin-bottom: 40px;
-  }
-
-  .mat-dialog-content {
-    max-height: initial;
-  }
-
-  .imx-legalNotice-Header {
-    margin-top: 10px;
-    margin-bottom: 6px;
-    font-family: $baseFontFamily;
-  }
-
-  .imx-legalNotice {
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-    flex-direction: column;
-  }
-
-  .imx-legalNotice-Header > span {
-    font-size: 1em;
-    font-weight: bolder;
-  }
-
-  .imx-legalNotice-Content > span {
-    font-size: 1em;
-    font-family: $baseFontFamily;
-    margin-right: 4px;
-  }
-
-  .imx-contact > div > div {
-    padding-top: 5px;
-  }
-
-  .imx-contact-Header {
-    margin-top: 10px;
-    padding-top: 15px;
-    padding-bottom: 20px;
-    font-family: $baseFontFamily;
-  }
-
-  .imx-contact-Header > span {
-    font-size: 1.6em;
-  }
-
-  button {
-    margin-bottom: 20px;
-    margin-right: 10px;
-  }
-
-  .mat-card {
-    box-shadow: none;
-  }
-
-  imx-data-source-toolbar {
-    display: none;
-  }
-
-  .imx-about-tabs {
-    height: 100%;
-  }
 }
 
-.eui-dark-theme {
-  :host {
-    ::ng-deep .mat-tab-label {
-      background-color: $color-gray-80;
-    }
-  }
+.paragraphLargeMargin {
+  margin-bottom: 40px;
 }
 
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-tab-label {
-      background-color: $color-gray-100;
-    }
-  }
+.mat-mdc-dialog-content {
+  max-height: initial;
+}
+
+.imx-legalNotice-Header {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-family: $IMX_Base_FontFamily;
+}
+
+.imx-legalNotice {
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.imx-legalNotice-Header > span {
+  font-size: 1em;
+  font-weight: bolder;
+}
+
+.imx-legalNotice-Content > span {
+  font-size: 1em;
+  font-family: $IMX_Base_FontFamily;
+  margin-right: 4px;
+}
+
+.imx-contact > div > div {
+  padding-top: 5px;
+}
+
+.imx-contact-Header {
+  margin-top: 10px;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  font-family: $IMX_Base_FontFamily;
+}
+
+.imx-contact-Header > span {
+  font-size: 1.6em;
+}
+
+button {
+  margin-bottom: 20px;
+  margin-right: 10px;
+}
+
+.mat-mdc-card {
+  box-shadow: none;
+}
+
+imx-data-source-toolbar {
+  display: none;
+}
+
+.imx-about-tabs {
+  height: 100%;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,6 +27,11 @@
 import { AuthPropDataProvider } from '../session/auth-prop-data-provider.interface';
 import { CustomAuthFlow } from './custom-auth-flow.interface';
 
+export enum PreAuthStateType {
+  PreAuth = 1,
+  Auth = 2,
+  Captcha = 3,
+}
 export interface AuthConfigProvider {
   name: string;
   display: string;
@@ -34,4 +39,6 @@ export interface AuthConfigProvider {
   customAuthFlow?: CustomAuthFlow;
   externalLogoutUrl?: string;
   authProps?: AuthPropDataProvider[];
+  preAuthProps?: AuthPropDataProvider[];
+  preAuthState?: PreAuthStateType;
 }

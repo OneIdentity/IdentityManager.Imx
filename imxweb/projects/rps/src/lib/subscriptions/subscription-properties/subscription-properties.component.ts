@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,18 @@
  */
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormGroup } from '@angular/forms';
 
-import { IClientProperty } from 'imx-qbm-dbts';
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { ColumnDependentReference } from 'qbm';
 import { ReportSubscription } from '../report-subscription/report-subscription';
 
 @Component({
   selector: 'imx-subscription-properties',
   templateUrl: './subscription-properties.component.html',
-  styleUrls: ['./subscription-properties.component.scss']
+  styleUrls: ['./subscription-properties.component.scss'],
 })
 export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
-
   public cdrList: ColumnDependentReference[] = [];
   public parameterCdrList: ColumnDependentReference[] = [];
   public readonly subscriptionPropertiesFormArray = new UntypedFormArray([]);
@@ -58,7 +57,6 @@ export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
   }
 
   public ngOnChanges(): void {
-
     this.subscriptionPropertiesFormArray.clear();
     this.cdrList = this.subscription == null ? [] : this.subscription.getCdrs(this.displayedColumns);
 
@@ -75,7 +73,7 @@ export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
     }
   }
 
-  public addFormControl(array: UntypedFormArray, control: UntypedFormControl): void {
+  public addFormControl(array: UntypedFormArray, control: AbstractControl): void {
     setTimeout(() => {
       array.push(control);
     });

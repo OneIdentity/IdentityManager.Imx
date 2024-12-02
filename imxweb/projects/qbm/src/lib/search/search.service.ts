@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,14 @@
  *
  */
 
-import { Injectable, ErrorHandler } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { OpsupportSearchIndexedtables, SearchResultObject } from 'imx-api-qbm';
-import { TypedEntityCollectionData, DbObjectKey } from 'imx-qbm-dbts';
-import { imx_SessionService } from '../session/imx-session.service';
+import { OpsupportSearchIndexedtables, SearchResultObject } from '@imx-modules/imx-api-qbm';
+import { DbObjectKey, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { imx_ISearchService } from '../searchbar/iSearchService';
+import { imx_SessionService } from '../session/imx-session.service';
 import { DbObjectInfo } from './db-object-info';
-
-
 
 @Injectable()
 export class imx_QBM_SearchService implements imx_ISearchService {
@@ -43,19 +41,22 @@ export class imx_QBM_SearchService implements imx_ISearchService {
 
   constructor(
     private session: imx_SessionService,
-    private errorHandler: ErrorHandler) {
-  }
+    private errorHandler: ErrorHandler,
+  ) {}
 
   public async search(term: string, tables: string): Promise<DbObjectInfo[]> {
-    if (term === '') { return []; }
+    if (term === '') {
+      return [];
+    }
     try {
       const result = await this.session.Client.opsupport_search_get({ term: term, tables: tables });
       if (result) {
-        return result.filter((sro: SearchResultObject) => sro.Key != null)
-                     .map((sro: SearchResultObject) => ({
-                        Key: DbObjectKey.FromXml(sro.Key),
-                        Display: sro.Display
-                      }));
+        return result
+          .filter((sro: SearchResultObject) => sro.Key != null)
+          .map((sro: SearchResultObject) => ({
+            Key: sro.Key ? DbObjectKey.FromXml(sro.Key) : undefined,
+            Display: sro.Display ?? '',
+          }));
       }
     } catch (error) {
       this.errorHandler.handleError(error);
@@ -66,14 +67,15 @@ export class imx_QBM_SearchService implements imx_ISearchService {
 
   public async getIndexedTables(): Promise<OpsupportSearchIndexedtables[]> {
     return this.session.TypedClient.OpsupportSearchIndexedtables.Get(this.defaultOptions)
-      .then(
-        (response: TypedEntityCollectionData<OpsupportSearchIndexedtables>) => {
-          return response.Data.sort((t1, t2) => t1.DisplayNameSingular.value > t2.DisplayNameSingular.value ? 1 : -1
-          );
-        }).catch((error: any): OpsupportSearchIndexedtables[] => {
-          this.errorHandler.handleError(error);
-          return [];
-        });
+      .then((response: TypedEntityCollectionData<OpsupportSearchIndexedtables>) => {
+        return response.Data.sort((t1, t2) =>
+          t1.DisplayName.Column.GetDisplayValue().localeCompare(t2.DisplayName.Column.GetDisplayValue()),
+        );
+      })
+      .catch((error: any): OpsupportSearchIndexedtables[] => {
+        this.errorHandler.handleError(error);
+        return [];
+      });
   }
 
   public GetTableDisplay(table: OpsupportSearchIndexedtables): string {

@@ -1,10 +1,10 @@
-@import "variables.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
 :host {
   display: block;
   width: auto;
-  height: $Imx_Identity_PhotoSize;
+  height: $IMX_Identity_PhotoSize;
   position: relative;
   background-color: white;
 }
@@ -14,8 +14,8 @@
 }
 
 .identity-photo {
-  width: $Imx_Identity_PhotoSize;
-  height: $Imx_Identity_PhotoSize;
+  width: $IMX_Identity_PhotoSize;
+  height: $IMX_Identity_PhotoSize;
   border-radius: 50%;
   border: solid 1px gray;
   background-color: lightgray;

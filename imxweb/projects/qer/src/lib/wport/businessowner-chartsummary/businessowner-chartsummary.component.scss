@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import "../../../../../qbm/src/lib/tile/tile-variables.scss";
+@import 'base/variables';
 
 :host {
   display: flex;
@@ -58,7 +58,7 @@
   line-height: 40px;
 }
 
-.imx-generic-tile-caption h1 {
+.imx-generic-tile-caption h3 {
   font-size: 1.15em;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -67,13 +67,12 @@
   flex: 1 1 auto;
 }
 
-.imx-generic-tile-caption h1 > :last-child {
+.imx-generic-tile-caption h3 > :last-child {
   margin-left: 1ex;
 }
 
-.mat-button {
-  text-transform: uppercase;
-  margin-right: -16px;
+.mat-mdc-button {
+  padding-right: 0;
 }
 
 .imx-generic-tile-caption h4 {
@@ -104,25 +103,25 @@
 }
 
 :host > .imx-create-identity-tile {
-  ::ng-deep .mat-card {
+  ::ng-deep .mat-mdc-card {
     height: 140px;
     display: flex;
-    width: $tile-width;
-    min-width: $tile-width;
+    width: $IMX_Tile_Width;
+    min-width: $IMX_Tile_Width;
     flex-direction: column;
     cursor: auto;
     padding: 25px;
     padding-bottom: 10px;
   }
 
-  .mat-card-title {
+  .mat-mdc-card-title {
     font-size: 1.15em;
     font-weight: 600;
     display: flex;
     cursor: auto;
   }
-  
-  .mat-card-subtitle {
+
+  .mat-mdc-card-subtitle {
     flex: 1;
     font-size: small;
     text-align: left;
@@ -130,14 +129,14 @@
     overflow-x: hidden;
     margin-bottom: 0;
   }
-  
-  .mat-card-actions {
+
+  .mat-mdc-card-actions {
     margin-left: 0;
     margin-right: 0;
     display: flex;
   }
 
-  .mat-card-actions:last-child {
+  .mat-mdc-card-actions:last-child {
     margin-bottom: 0;
     margin-left: -16px;
     margin-top: -10px;
@@ -155,7 +154,7 @@
     background-color: $color-gray-10;
   }
 
-  .imx-generic-tile-caption h1 > :last-child {
+  .imx-generic-tile-caption h3 > :last-child {
     color: $color-gray-40;
   }
 
@@ -163,12 +162,10 @@
     color: $color-gray-40;
   }
 
-  .mat-card-subtitle {
+  .mat-mdc-card-subtitle {
     color: $color-gray-40;
   }
-  
 }
-
 
 .eui-dark-theme {
   :host {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,45 +27,48 @@
 import { ChangeDetectorRef, Component, HostListener, Input, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { isMobile } from '../base/sidesheet-helper';
 import { ClassloggerService } from '../classlogger/classlogger.service';
+import { HelpContextualValues } from '../help-contextual/help-contextual.service';
 import { SideNavigationExtension, SideNavigationItem } from './side-navigation-view-interfaces';
 
 @Component({
   selector: 'imx-side-navigation-view',
   templateUrl: './side-navigation-view.component.html',
-  styleUrls: ['./side-navigation-view.component.scss'],
 })
 export class SideNavigationViewComponent implements OnDestroy {
   @Input() public baseUrl = '';
   @Input() public isAdmin = false;
   @Input() public componentName = '';
   @Input() public componentTitle = '';
-  @Input() public contextId:string;
-  _navItems: SideNavigationExtension[] = [];
-  get navItems(): SideNavigationExtension[] {
+  @Input() public contextId: HelpContextualValues;
+  _navItems: (SideNavigationExtension | undefined)[] = [];
+  get navItems(): (SideNavigationExtension | undefined)[] {
     return this._navItems;
   }
-  @Input() set navItems(value: SideNavigationExtension[]) {
+  @Input() set navItems(value: (SideNavigationExtension | undefined)[]) {
     this._navItems = value;
     if (value.length > 0) {
       this.setupNavItems();
       this.handleRouteParam();
     }
   }
-  get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
-  }
   public navigationItems: SideNavigationItem[] = [];
   public selectedPage: string = '';
   public mobileSideNavExpanded = false;
   public showBackdrop = false;
-  public contentMargin = this.isMobile ? '58px' : '230px';
+  public contentMargin = isMobile() ? '58px' : '230px';
 
   @ViewChild('sideNavContent', { read: ViewContainerRef }) protected sideNavContentRef: ViewContainerRef;
 
   protected routerEvents$: Subscription;
 
-  constructor(private readonly logger: ClassloggerService, private readonly router: Router, private readonly route: ActivatedRoute, private cdref: ChangeDetectorRef) {
+  constructor(
+    private readonly logger: ClassloggerService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private cdref: ChangeDetectorRef,
+  ) {
     this.routerEvents$ = this.router.events.subscribe(async (val) => {
       if (this.navItems.length > 0 && val instanceof NavigationEnd) {
         this.handleRouteParam();
@@ -75,7 +78,7 @@ export class SideNavigationViewComponent implements OnDestroy {
 
   @HostListener('window:resize')
   public onResize(): void {
-    this.showBackdrop = this.isMobile && this.mobileSideNavExpanded;
+    this.showBackdrop = isMobile() && this.mobileSideNavExpanded;
     setTimeout(() => this.setContentMargin(), 50);
   }
 
@@ -87,12 +90,12 @@ export class SideNavigationViewComponent implements OnDestroy {
 
   public toggleMobileExpand(): void {
     this.mobileSideNavExpanded = !this.mobileSideNavExpanded;
-    const showBackdrop = this.isMobile && this.mobileSideNavExpanded;
+    const showBackdrop = isMobile() && this.mobileSideNavExpanded;
     setTimeout(
       () => {
         this.showBackdrop = showBackdrop;
       },
-      showBackdrop ? 0 : 500
+      showBackdrop ? 0 : 500,
     );
   }
 
@@ -103,7 +106,7 @@ export class SideNavigationViewComponent implements OnDestroy {
       return;
     } else {
       this.router.navigate([this.baseUrl, page]);
-      if (this.isMobile) {
+      if (isMobile()) {
         this.toggleMobileExpand();
       }
     }
@@ -112,21 +115,21 @@ export class SideNavigationViewComponent implements OnDestroy {
   private async setupNavItems(): Promise<void> {
     this.navigationItems = [];
     for (const item of this.navItems) {
-      if (!item) {
+      if (item == null) {
         continue;
       }
 
       const navItem = {
         name: item.name,
         translationKey: item.caption,
-        icon: item.icon,
+        icon: item.icon ?? '',
       };
       this.navigationItems.push(navItem);
     }
   }
 
   private setContentMargin(): void {
-    this.contentMargin = !this.isMobile ? '230px' : '58px';
+    this.contentMargin = !isMobile() ? '230px' : '58px';
   }
 
   private loadComponent(): void {
@@ -151,31 +154,33 @@ export class SideNavigationViewComponent implements OnDestroy {
     this.cdref.detectChanges();
     this.sideNavContentRef.clear();
     const selectedPageItem = selectedItem;
-    const component = this.sideNavContentRef.createComponent(selectedPageItem.instance);
-    component.instance.data = selectedPageItem.data;
-    component.instance.isAdmin = this.isAdmin;
-    if(!!selectedPageItem.contextId){
-      component.instance.contextId = selectedPageItem.contextId;
+    if (selectedPageItem.instance) {
+      const component = this.sideNavContentRef.createComponent(selectedPageItem.instance);
+      component.instance.data = selectedPageItem.data;
+      component.instance.isAdmin = this.isAdmin;
+      if (!!selectedPageItem.contextId) {
+        component.instance.contextId = selectedPageItem.contextId;
+      }
     }
   }
 
   private handleRouteParam(): void {
     const tab = this.route.snapshot.paramMap.get('tab');
     if (!tab) {
-      this.router.navigate([this.navItems[0].name], { relativeTo: this.route });
+      this.router.navigate([this.navItems[0]?.name], { relativeTo: this.route });
     } else {
-      this.selectedPage = tab ? tab : this.navItems[0].name;
+      this.selectedPage = tab ? tab : this.navItems[0]?.name || '';
       this.loadComponent();
     }
   }
 
-  private getItem(name: string, list: SideNavigationExtension[]): SideNavigationExtension {
+  private getItem(name: string, list: (SideNavigationExtension | undefined)[]): SideNavigationExtension | null {
     if (list == null) {
       return null;
     }
 
     for (var item of list) {
-      if (item.name === name) {
+      if (item?.name === name) {
         return item;
       }
     }

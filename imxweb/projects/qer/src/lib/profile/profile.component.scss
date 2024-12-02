@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 :host {
   display: flex;
   flex-direction: column;
@@ -12,63 +12,12 @@
   }
 }
 
-.mat-tab-group {
-  height: 100%;
-  overflow: hidden;
-
-  ::ng-deep .mat-tab-body-wrapper {
-    flex: 1 1 auto;
-  }
-
-  ::ng-deep .mat-tab-body-content {
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mat-card {
-   @include imx-flex-fill-control-hidden-overflow();
-
-    .mat-card-content {
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    .mat-card-content.profile-hyperview {
-      overflow-y: hidden;
-      padding: 0 1em;
-    }
-    
-    .mat-card-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-
-  .no-grow {
-    flex-grow: 0;
-  }
-}
-
-.mat-radio-button {
-  margin-right: 2em;
-}
-
 .imx-mail-info {
   margin-top: 20px;
 }
 
-.imx-helper-alert {
-  display: block;
-  margin-bottom: 1em;
-}
-
 imx-ext {
   height: 100%;
-}
-
-.imx-button-bar {
-  @include imx-button-bar();
 }
 
 :host {
@@ -86,7 +35,7 @@ imx-ext {
 }
 
 .eui-contrast-theme {
-   :host {
+  :host {
     .imx-mail-description {
       color: $color-gray-0;
     }

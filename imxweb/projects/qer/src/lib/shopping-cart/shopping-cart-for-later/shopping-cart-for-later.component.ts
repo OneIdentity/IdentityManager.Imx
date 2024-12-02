@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,18 @@
  *
  */
 
-import { Component, AfterViewInit } from '@angular/core';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { EuiLoadingService } from '@elemental-ui/core';
 
+import { PortalCartitem } from '@imx-modules/imx-api-qer';
 import { ClassloggerService, ConfirmationService } from 'qbm';
-import { PortalCartitem } from 'imx-api-qer';
 import { CartItemsService } from '../cart-items.service';
 import { ShoppingCart } from '../shopping-cart';
 
 @Component({
   styleUrls: ['./shopping-cart-for-later.component.scss'],
-  templateUrl: './shopping-cart-for-later.component.html'
+  templateUrl: './shopping-cart-for-later.component.html',
 })
 export class ShoppingCartForLaterComponent implements AfterViewInit {
   public shoppingCart: ShoppingCart;
@@ -46,7 +46,8 @@ export class ShoppingCartForLaterComponent implements AfterViewInit {
     private readonly busyService: EuiLoadingService,
     private readonly cartItemService: CartItemsService,
     private readonly logger: ClassloggerService,
-    private readonly router: Router) { }
+    private readonly router: Router,
+  ) {}
 
   public async ngAfterViewInit(): Promise<void> {
     return this.updateShoppingCart();
@@ -61,18 +62,22 @@ export class ShoppingCartForLaterComponent implements AfterViewInit {
   }
 
   public async clearForLaterList(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Saved for Later List',
-      Message: '#LDS#Are you sure you want to delete all products from your Saved for Later list?',
-      identifier: 'shoppingcart-for-later-delete'
-    })) {
-      setTimeout(() => this.busyService.show());
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Delete Saved for Later List',
+        Message: '#LDS#Are you sure you want to delete all products from your Saved for Later list?',
+        identifier: 'shoppingcart-for-later-delete',
+      })
+    ) {
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
 
       try {
-        await this.cartItemService.removeItems(this.shoppingCart.getItems(item => item.UID_ShoppingCartItemParent.value === ''));
+        await this.cartItemService.removeItems(this.shoppingCart.getItems((item) => item.UID_ShoppingCartItemParent.value === '') || []);
         this.logger.debug(this, 'The "for later list" is cleared');
       } finally {
-        setTimeout(() => this.busyService.hide());
+        this.busyService.hide();
         this.router.navigate(['/shoppingcart/']);
       }
     }
@@ -83,13 +88,15 @@ export class ShoppingCartForLaterComponent implements AfterViewInit {
   }
 
   private async updateShoppingCart(): Promise<void> {
-    setTimeout(() => this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
       this.shoppingCart = new ShoppingCart(await this.cartItemService.getItemsForCart());
       this.logger.debug(this, 'The "for later list" loaded');
     } finally {
-      setTimeout(() => this.busyService.hide());
+      this.busyService.hide();
     }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,11 @@
  *
  */
 
-import { NgModule, InjectionToken } from '@angular/core';
-import { Routes, RouterModule, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { InjectionToken, NgModule } from '@angular/core';
+import { ActivatedRouteSnapshot, Router, RouterModule, Routes } from '@angular/router';
 
 import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
-import {
-  PasswordQueryComponent,
-  StartComponent
-} from 'qer';
+import { PasswordQueryComponent, StartComponent } from 'qer';
 
 const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
 
@@ -55,19 +52,19 @@ const routes: Routes = [
     canActivate: [RouteGuardService],
     resolve: {
       url: externalUrlProvider,
-    }
+    },
   },
   {
     path: 'passwordquestions',
     component: PasswordQueryComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: 'dashboard' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot([], { useHash: true })],
   exports: [RouterModule],
   providers: [
     {
@@ -77,17 +74,14 @@ const routes: Routes = [
         if (externalUrl && externalUrl.toLocaleLowerCase() !== 'undefined') {
           window.open(externalUrl, '_self');
         }
-      }
+      },
     },
   ],
-
 })
 export class AppRoutingModule {
-  constructor(
-    private readonly router: Router) {
-
+  constructor(private readonly router: Router) {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.push(route);
     });
     this.router.resetConfig(config);

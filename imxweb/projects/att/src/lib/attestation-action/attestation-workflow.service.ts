@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,17 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalAttestationWorkflow } from 'imx-api-att';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { PortalAttestationWorkflow } from '@imx-modules/imx-api-att';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AttestationWorkflowService {
-  constructor(private attApi: ApiService) { }
+  constructor(private attApi: ApiService) {}
 
-  public async get(attestationCaseKey: string): Promise<{  } & TypedEntityCollectionData<PortalAttestationWorkflow>> {
+  public async get(attestationCaseKey: string): Promise<{} & TypedEntityCollectionData<PortalAttestationWorkflow>> {
     return this.attApi.typedClient.PortalAttestationWorkflow.Get(attestationCaseKey);
   }
 }

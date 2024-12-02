@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,9 +34,7 @@ describe('FileSelectorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        LoggerTestingModule
-      ]
+      imports: [LoggerTestingModule],
     });
     service = TestBed.inject(FileSelectorService);
   });
@@ -48,7 +46,7 @@ describe('FileSelectorService', () => {
   it('emitFiles publishes file format error if file types mismatch', () => {
     // Arrange
     let fileFormatErrorIsSet;
-    const fs = service.fileFormatError.subscribe(() => fileFormatErrorIsSet = true);
+    const fs = service.fileFormatError.subscribe(() => (fileFormatErrorIsSet = true));
 
     const files = [new Blob([], { type: 'some file type' }) as File];
 
@@ -57,9 +55,9 @@ describe('FileSelectorService', () => {
       {
         length: files.length,
         item: (index) => files[index],
-        0: files[0]
+        0: files[0],
       },
-      'some other file type'
+      'some other file type',
     );
 
     // Assert

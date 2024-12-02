@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,15 @@
 
 import { Injectable } from '@angular/core';
 import { QerApiService } from '../qer-api-client.service';
-import { ProcessChain } from 'imx-api-qer';
+import { ProcessChain } from '@imx-modules/imx-api-qer';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserProcessService {
-
-  constructor(
-    private readonly qerApiService: QerApiService,
-    ) {}
+  constructor(private readonly qerApiService: QerApiService) {}
 
   public async get(): Promise<ProcessChain[]> {
     return this.qerApiService.v2Client.portal_userprocess_get();
   }
-
 }
-

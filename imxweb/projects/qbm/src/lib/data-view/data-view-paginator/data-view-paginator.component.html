@@ -1,0 +1,13 @@
+<ng-container *ngIf="!!dataSource?.totalCount()">
+  <mat-paginator
+    #paginator
+    [length]="totalCount()"
+    [pageSize]="pageSize()"
+    [pageIndex]="pageIndex()"
+    [pageSizeOptions]="dataSource?.pageSizeOptions"
+    [hidePageSize]="hidePageSize()"
+    (page)="onStateChanged($event)"
+    [showFirstLastButtons]="true"
+  >
+  </mat-paginator>
+</ng-container>

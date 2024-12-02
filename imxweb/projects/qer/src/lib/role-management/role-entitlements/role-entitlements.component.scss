@@ -22,57 +22,9 @@
       flex: 1 1 auto;
     }
   }
-
-  .eui-sidesheet-actions {
-    > :not(:last-child) {
-      margin-right: 12px;
-    }
-
-    .imx-menu-spacer {
-      flex: 1 1 auto;
-    }
-
-    imx-selected-elements {
-      margin-left: 10px;
-    }
-
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
 }
 
 .imx-subtext {
   color: $color-gray-40;
   font-size: smaller;
-}
-
-:host {
-  .coloredIcon {
-    color: $color-blue-60;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    .imx-action-buttons {
-      background-color: $color-gray-70;
-    }
-    .coloredIcon {
-      color: $color-blue-40;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-action-buttons {
-      background-color: $color-gray-90;
-    }
-
-    .coloredIcon {
-      color: $color-blue-40;
-    }
-  }
 }

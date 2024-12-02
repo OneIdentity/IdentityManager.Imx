@@ -1,23 +1,39 @@
-<mat-card class="imx-service-category-content">
-  <form [formGroup]="form" id="form" (ngSubmit)="save()">
-    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
-      (controlCreated)="addFormControl(cdr.column.ColumnName, $event)"
-      [attr.data-imx-identifier]="'edit-service-category-property-' + cdr.column.ColumnName">
-    </imx-cdr-editor>
-    <imx-service-item-select [data]="serviceItemData" (controlCreated)="addFormControl('serviceitems', $event)"></imx-service-item-select>
-  </form>
-</mat-card>
+<div eui-sidesheet-content>
+  <mat-card class="imx-card-sidesheet">
+    <form [formGroup]="form" id="form" (ngSubmit)="save()">
+      <imx-cdr-editor
+        *ngFor="let cdr of cdrList"
+        [cdr]="cdr"
+        (controlCreated)="addFormControl(cdr?.column?.ColumnName ?? '', $event)"
+        [attr.data-imx-identifier]="'edit-service-category-property-' + cdr.column.ColumnName"
+      >
+      </imx-cdr-editor>
+      <imx-service-item-select [data]="serviceItemData" (controlCreated)="addFormControl('serviceitems', $event)"></imx-service-item-select>
+    </form>
+  </mat-card>
+</div>
 
-<mat-card eui-sidesheet-actions class="imx-action">
-  <span class="justify-start">
-    <button mat-stroked-button color="warn" *ngIf="canDelete" (click)="delete()"
-      data-imx-identifier="edit-service-category-button-delete">
-      <eui-icon icon="delete"></eui-icon>
-      {{ '#LDS#Delete service category' | translate }}
-    </button>
-  </span>
-  <button mat-raised-button [disabled]="form.pristine || form.invalid" type="submit" (click)="ieSave()" form="form"
-    color="primary" data-imx-identifier="edit-service-category-button-save">
+<div eui-sidesheet-actions>
+  <button
+    class="justify-start"
+    mat-stroked-button
+    color="warn"
+    *ngIf="canDelete"
+    (click)="delete()"
+    data-imx-identifier="edit-service-category-button-delete"
+  >
+    <eui-icon icon="delete"></eui-icon>
+    {{ '#LDS#Delete service category' | translate }}
+  </button>
+  <button
+    mat-flat-button
+    [disabled]="form.pristine || form.invalid"
+    type="submit"
+    (click)="ieSave()"
+    form="form"
+    color="primary"
+    data-imx-identifier="edit-service-category-button-save"
+  >
     {{ '#LDS#Save' | translate }}
   </button>
-</mat-card>
+</div>

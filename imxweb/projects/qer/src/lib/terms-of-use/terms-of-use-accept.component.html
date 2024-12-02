@@ -1,6 +1,6 @@
 <div eui-sidesheet-content>
   <div class="heading-wrapper">
-    <eui-alert class="helper-alert" type="warning" condensed="true" [dismissable]="true">
+    <eui-alert type="warning" [condensed]="true" [dismissable]="true">
       {{ (this.data.acceptCartItems ? ldsAcceptCartItemsInfoText : ldsAcceptApprovalItemsInfoText) | translate }}
     </eui-alert>
   </div>
@@ -8,7 +8,12 @@
   <mat-card>
     <ng-container *ngIf="withoutAuthenticaton">
       <form [formGroup]="termsOfUseFormGroup" data-imx-identifier="terms-of-use-accept-without-auth-form">
-        <imx-terms-of-use-list [items]="items" [itemsHeading]="ldsItemsHeading" [formGroup]="termsOfUseFormGroup"></imx-terms-of-use-list>
+        <imx-terms-of-use-list
+          [termsOfUseItems]="items"
+          [productItems]="productItems"
+          [itemsHeading]="ldsItemsHeading"
+          [formGroup]="termsOfUseFormGroup"
+        ></imx-terms-of-use-list>
       </form>
     </ng-container>
     <ng-container>
@@ -38,14 +43,20 @@
         </mat-step>
         <mat-step [stepControl]="termsOfUseFormGroup" label="{{ '#LDS#Accept terms of use' | translate }}">
           <form [formGroup]="termsOfUseFormGroup" data-imx-identifier="terms-of-use-accept-with-auth-form">
-            <imx-terms-of-use-list [items]="items" [itemsHeading]="ldsItemsHeading" [formGroup]="termsOfUseFormGroup"> </imx-terms-of-use-list>
+            <imx-terms-of-use-list
+              [termsOfUseItems]="items"
+              [productItems]="productItems"
+              [itemsHeading]="ldsItemsHeading"
+              [formGroup]="termsOfUseFormGroup"
+            >
+            </imx-terms-of-use-list>
           </form>
         </mat-step>
       </mat-stepper>
     </ng-container>
   </mat-card>
 </div>
-<div eui-sidesheet-actions >
+<div eui-sidesheet-actions class="imx-sidesheet-actions__buttons-margin imx-padding-16">
   <button mat-stroked-button data-imx-identifier="terms-of-use-accept-button-decline" (click)="cancel()">
     {{ '#LDS#Cancel' | translate }}
   </button>

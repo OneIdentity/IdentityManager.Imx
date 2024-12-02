@@ -1,0 +1,61 @@
+<mat-accordion multi="true">
+  <mat-expansion-panel [expanded]="true" class="imx-expansion-panel-page">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ '#LDS# Most active resources' | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="imx-table-container">
+      <p>
+        {{
+          '#LDS#The following list shows the {0} most active governed resources which you are responsible for. Activity is aggregated for the last {1} days.'
+            | translate
+            | ldsReplace: topCountResource : interval
+        }}
+      </p>
+      <mat-card class="imx-card-fill">
+        <imx-data-source-toolbar #dstResource [settings]="dstSettingsResource"> </imx-data-source-toolbar>
+        <imx-data-table [dst]="dstResource" [detailViewVisible]="false" mode="manual">
+          <imx-data-table-column [entityColumn]="entitySchemaResource.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+            <ng-template let-item>
+              <div>{{ item.GetEntity().GetDisplay() }}</div>
+              <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
+            </ng-template>
+          </imx-data-table-column>
+          <imx-data-table-column [entityColumn]="entitySchemaResource.Columns.CountActivities"></imx-data-table-column>
+        </imx-data-table>
+      </mat-card>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel class="imx-expansion-panel-page">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ '#LDS# Most active users' | translate }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="imx-table-container">
+      <p>
+        {{
+          '#LDS#The following list shows the {0} most active users on resources which you are responsible for. Activity is aggregated for the last {1} days.'
+            | translate
+            | ldsReplace: topCountTrustee : interval
+        }}
+      </p>
+      <mat-card class="imx-card-fill">
+        <imx-data-source-toolbar #dstTrustee [settings]="dstSettingsTrustee"> </imx-data-source-toolbar>
+        <imx-data-table [dst]="dstTrustee" [detailViewVisible]="false" mode="manual">
+          <imx-data-table-column [entityColumn]="entitySchemaTrustee.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+            <ng-template let-item>
+              <div>{{ item.GetEntity().GetDisplay() }}</div>
+              <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
+            </ng-template>
+          </imx-data-table-column>
+          <imx-data-table-column [entityColumn]="entitySchemaTrustee.Columns.CountActivities"></imx-data-table-column>
+        </imx-data-table>
+      </mat-card>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

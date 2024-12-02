@@ -1,12 +1,12 @@
 <div class="dialog-container">
-  <h2 mat-dialog-title [innerHtml]="dialogHeading" translate></h2>
+  <h2 mat-dialog-title translate>{{ dialogHeading }}</h2>
   <mat-dialog-content>
     <ng-container *ngFor="let detail of dialogDetails">
-      <div>{{detail | translate}}</div>
+      <div translate class="imx-margin-bottom-5">{{ detail }}</div>
     </ng-container>
     <div class="dialog-content__links">
       <ng-container *ngFor="let link of data.Links">
-        <a [href]="getHelpLink(link)" target="_blank" [innerHtml]="link.Title" translate></a>
+        <a [href]="getHelpLink(link)" target="_blank" translate>{{ link.Title }}</a>
       </ng-container>
     </div>
   </mat-dialog-content>

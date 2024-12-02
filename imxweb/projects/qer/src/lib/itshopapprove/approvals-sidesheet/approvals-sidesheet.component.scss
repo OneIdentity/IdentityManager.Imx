@@ -1,40 +1,5 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
-.eui-sidesheet-content {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
-  padding: 0px;
-}
-
-.imx-helper-alert {
-  width: 100%;
-  ::ng-deep .eui-alert {
-    margin-bottom: 20px;
-  }
-}
+@import 'base/mixins';
 
 .eui-sidesheet-actions {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  > * {
-    margin-left: 10px;
-  }
-}
-
-.eui-dark-theme {
-    .imx-button-bar{
-      background-color: $color-gray-70;
-      color: $color-gray-2;
-    }
-}
-
-.eui-contrast-theme {
-  .imx-button-bar{
-    background-color: $color-gray-90;
-    color: $color-gray-0;
-  }
+  @include eui-sidesheet-actions__mixin_01($flex-wrap: wrap, $margin-left: 10px, $padding: 16px 20px);
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { Component, Inject } from "@angular/core";
-import { EUI_SIDESHEET_DATA } from "@elemental-ui/core";
-import { SourceDetectiveType } from "./sourcedetective-type.enum";
+import { Component, Inject } from '@angular/core';
+import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { SourceDetectiveType } from './sourcedetective-type.enum';
 
 export interface SourceDetectiveSidesheetData {
   UID: string;
@@ -37,11 +37,8 @@ export interface SourceDetectiveSidesheetData {
 
 @Component({
   styleUrls: ['./sourcedetective-sidesheet.component.scss'],
-  templateUrl: './sourcedetective-sidesheet.component.html'
+  templateUrl: './sourcedetective-sidesheet.component.html',
 })
 export class SourceDetectiveSidesheetComponent {
-
-  constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: SourceDetectiveSidesheetData
-  ) { }
+  constructor(@Inject(EUI_SIDESHEET_DATA) public data: SourceDetectiveSidesheetData) {}
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,17 @@
 
 import { Injectable } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { HeatmapData, HeatmapDto } from '@imx-modules/imx-api-qer';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { HierarchyNode } from 'd3-hierarchy';
 import { ScaleLinear, scaleLinear } from 'd3-scale';
-import { LdsReplacePipe } from 'qbm';
-import { HeatmapData, HeatmapDto } from 'imx-api-qer';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { Block, BlockState, ClassState, StateThresholds, AdditionalEntityProperties, ColorValues, StateProperties } from '../block-properties.interface';
-import { BlockDetailSidesheetComponent } from '../block-detail-sidesheet/block-detail-sidesheet.component';
-import { HeatmapDataExtended } from '../heatmap-data-extended';
-import { HeatmapDataTyped } from '../heatmap-data-typed';
+import { LdsReplacePipe, calculateSidesheetWidth } from 'qbm';
 import { HeatmapInfoTyped } from '../../statistics-home-page/heatmap-info-typed';
 import { StatisticsConstantsService } from '../../statistics-home-page/statistics-constants.service';
+import { BlockDetailSidesheetComponent } from '../block-detail-sidesheet/block-detail-sidesheet.component';
+import { AdditionalEntityProperties, Block, ColorValues, StateProperties, StateThresholds } from '../block-properties.interface';
+import { HeatmapDataExtended } from '../heatmap-data-extended';
+import { HeatmapDataTyped } from '../heatmap-data-typed';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +50,7 @@ export class HeatmapSidesheetService {
   constructor(
     private constantService: StatisticsConstantsService,
     private sidesheetService: EuiSidesheetService,
-    private replacePipe: LdsReplacePipe
+    private replacePipe: LdsReplacePipe,
   ) {
     this.colorValues = this.constantService.colorValues;
   }
@@ -73,34 +73,34 @@ export class HeatmapSidesheetService {
         state: 'Error',
         stateDisplay: this.constantService.errorStatusText,
         color: this.colorValues.Error,
-      }
+      },
     };
     this.stateThresholds.warn = {
-      value: warnThreshold === 0 ? errorThreshold/2 : warnThreshold,
+      value: warnThreshold === 0 ? errorThreshold / 2 : warnThreshold,
       properties: {
         class: 'block-warn',
         state: 'Moderate',
         stateDisplay: this.constantService.warningStatusText,
         color: this.colorValues.Warn,
-      }
+      },
     };
     this.stateThresholds.severeWarn = {
-      value: (this.stateThresholds.error.value + this.stateThresholds.warn.value) / 2,
+      value: ((this.stateThresholds.error.value ?? 0) + (this.stateThresholds.warn.value ?? 0)) / 2,
       properties: {
         class: 'block-severe-warn',
         state: 'Severe',
         stateDisplay: this.constantService.severeWarningStatusText,
         color: this.colorValues.SevereWarn,
-      }
+      },
     };
     this.stateThresholds.lightWarn = {
-      value: warnThreshold === 0 ? 0 : this.stateThresholds.warn.value / 2,
+      value: warnThreshold === 0 ? 0 : (this.stateThresholds.warn.value ?? 0) / 2,
       properties: {
         class: 'block-light-warn',
         state: 'Light',
         stateDisplay: this.constantService.lightWarningStatusText,
         color: this.colorValues.LightWarn,
-      }
+      },
     };
     this.stateThresholds.ok = {
       properties: {
@@ -108,7 +108,7 @@ export class HeatmapSidesheetService {
         state: 'Ok',
         stateDisplay: this.constantService.okStatusText,
         color: this.colorValues.Ok,
-      }
+      },
     };
   }
 
@@ -125,7 +125,7 @@ export class HeatmapSidesheetService {
     params: {
       minValue: number;
       maxValue: number;
-    }
+    },
   ): TypedEntityCollectionData<HeatmapDataTyped> {
     // Need to set a color map
     let colorMap: ScaleLinear<string, string>;
@@ -162,9 +162,9 @@ export class HeatmapSidesheetService {
     const historyValues = data.History ?? [];
     const historyColors = this.getHistoryColors(historyValues);
     return {
-      state: stateProperties.state,
-      stateDisplay: stateProperties.stateDisplay,
-      class: stateProperties.class,
+      state: stateProperties?.state,
+      stateDisplay: stateProperties?.stateDisplay,
+      class: stateProperties?.class,
       backgroundColor,
       color,
       ancestors,
@@ -177,21 +177,21 @@ export class HeatmapSidesheetService {
   public getHistoryProperties(
     item: HierarchyNode<HeatmapDataExtended>,
     colorMap: ScaleLinear<string, string>,
-    textMap: (value: number) => string
+    textMap: (value: number) => string,
   ): AdditionalEntityProperties {
     const data = item.data;
     const stateProperties = this.getStateProperties(data.Value);
     const ancestors = this.getAncestors(item);
     const tooltip = this.getHistoryTooltip(data, ancestors);
-    const backgroundColor = colorMap(data.CurrentHistory);
-    const color = textMap(data.CurrentHistory);
+    const backgroundColor = colorMap(data.CurrentHistory ?? 0);
+    const color = textMap(data.CurrentHistory ?? 0);
     // It is possible that these values do not exist, so we set defaults for them as empty arrays
     const historyValues = data.History ?? [];
     const historyColors = data.History ? this.getHistoryColors(data.History) : [];
     return {
-      state: stateProperties.state,
-      stateDisplay: stateProperties.stateDisplay,
-      class: stateProperties.class,
+      state: stateProperties?.state,
+      stateDisplay: stateProperties?.stateDisplay,
+      class: stateProperties?.class,
       backgroundColor,
       color,
       ancestors,
@@ -201,24 +201,24 @@ export class HeatmapSidesheetService {
     };
   }
 
-  public getStateProperties(value: number): StateProperties {
+  public getStateProperties(value: number): StateProperties | undefined {
     const negateThresholds: boolean = this.heatmapInfo.GetEntity().GetColumn('NegateThresholds').GetValue();
     if (negateThresholds) {
       // We work topdown from error
       switch (true) {
-        case value <= this.stateThresholds.error.value:
-          return this.stateThresholds.error.properties;
+        case value <= (this.stateThresholds.error?.value ?? 0):
+          return this.stateThresholds.error?.properties;
 
-        case value <= this.stateThresholds.severeWarn.value:
-          return this.stateThresholds.severeWarn.properties;
+        case value <= (this.stateThresholds.severeWarn?.value ?? 0):
+          return this.stateThresholds.severeWarn?.properties;
 
-        case value <= this.stateThresholds.warn.value:
-          return this.stateThresholds.warn.properties;
+        case value <= (this.stateThresholds.warn?.value ?? 0):
+          return this.stateThresholds.warn?.properties;
 
-        case value <= this.stateThresholds.lightWarn.value:
-            return this.stateThresholds.lightWarn.properties;
+        case value <= (this.stateThresholds.lightWarn?.value ?? 0):
+          return this.stateThresholds.lightWarn?.properties;
         default:
-          return this.stateThresholds.ok.properties;
+          return this.stateThresholds.ok?.properties;
       }
     }
     switch (true) {
@@ -226,20 +226,20 @@ export class HeatmapSidesheetService {
       case this.stateThresholds.error?.value === 0 && value > 0:
         return this.stateThresholds.error.properties;
 
-      case this.stateThresholds.error.value === 0 || value === 0 || value < this.stateThresholds.lightWarn.value:
-        return this.stateThresholds.ok.properties;
+      case this.stateThresholds.error?.value === 0 || value === 0 || value < (this.stateThresholds.lightWarn?.value ?? 0):
+        return this.stateThresholds.ok?.properties;
 
-      case value < this.stateThresholds.warn.value:
-        return this.stateThresholds.lightWarn.properties;
+      case value < (this.stateThresholds.warn?.value ?? 0):
+        return this.stateThresholds.lightWarn?.properties;
 
-      case value < this.stateThresholds.severeWarn.value:
-        return this.stateThresholds.warn.properties;
+      case value < (this.stateThresholds.severeWarn?.value ?? 0):
+        return this.stateThresholds.warn?.properties;
 
-      case value < this.stateThresholds.error.value:
-        return this.stateThresholds.severeWarn.properties;
+      case value < (this.stateThresholds.error?.value ?? 0):
+        return this.stateThresholds.severeWarn?.properties;
 
       default:
-        return this.stateThresholds.error.properties;
+        return this.stateThresholds.error?.properties;
     }
   }
 
@@ -255,33 +255,35 @@ export class HeatmapSidesheetService {
   }
 
   public getTooltip(item: HeatmapData, ancestors: string): string {
-    const tooltip = this.heatmapProperties.Tooltip.slice();
-    if (tooltip.includes('{2}')) {
+    const tooltip = this.heatmapProperties.Tooltip?.slice();
+    if (tooltip?.includes('{2}')) {
       //  This is a ternary tooltip, expect {2 - Name}: {0 - Size} - {1 - Value} format
       return this.replacePipe.transform(tooltip, item.ValueZ.toString(), item.Value.toString(), ancestors);
     }
     //  This is a binary tooltip, expect {1 - Name}: {0 - value} format
-    return this.replacePipe.transform(tooltip, item.Value.toString(), ancestors);
+    return this.replacePipe.transform(tooltip ?? '', item.Value.toString(), ancestors);
   }
 
   public getHistoryColors(history?: number[]): string[] {
-    return history?.map((value) => {
-      const stateProperties = this.getStateProperties(value);
-      return stateProperties.color;
-    });
+    return (
+      history?.map((value) => {
+        const stateProperties = this.getStateProperties(value);
+        return stateProperties?.color ?? '';
+      }) ?? []
+    );
   }
 
   public getHistoryTooltip(item: HeatmapDataExtended, ancestors: string): string {
-    const value = item.CurrentHistory;
-    const change = Math.abs(value).toLocaleString(undefined, {maximumFractionDigits: 2});
+    const value = item.CurrentHistory ?? 0;
+    const change = Math.abs(value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
     const incOrDec = value > 0 ? this.constantService.increasedText : this.constantService.decreasedText;
-    const tooltip = this.heatmapProperties.TooltipChange.slice();
-    if (tooltip.includes('{3}')) {
+    const tooltip = this.heatmapProperties?.TooltipChange?.slice();
+    if (tooltip?.includes('{3}')) {
       // This is a quaternary tooltip, expect {2 - Name} {0 - Size}, {3 - Direction} by {1 - Change}
       return this.replacePipe.transform(tooltip, item.ValueZ.toString(), change, ancestors, incOrDec);
     }
     // Otherwise this is a ternary tooltip, expect {1 - Name}, {2 - Direction} by {0 - Change}
-    return this.replacePipe.transform(tooltip, change, ancestors,incOrDec);
+    return this.replacePipe.transform(tooltip ?? '', change, ancestors, incOrDec);
   }
 
   public async openBlockDetails(block: Block): Promise<void> {
@@ -290,7 +292,7 @@ export class HeatmapSidesheetService {
         title: block.name,
         subTitle: this.heatmapInfo.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(50%, 700px)',
+        width: calculateSidesheetWidth(800, 0.5),
         testId: 'statistics-heatmap-block-details-sidesheet',
         data: {
           block,

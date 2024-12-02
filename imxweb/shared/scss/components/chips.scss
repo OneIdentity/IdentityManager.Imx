@@ -1,0 +1,58 @@
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-chip {
+  &-value {
+    max-width: 200px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &-icon {
+    flex: 0 0 30px;
+  }
+}
+.mdc-evolution-chip-set__chips {
+  align-items: center;
+}
+
+/* Imx */
+.imx-chip {
+  &-info {
+    &.mat-mdc-chip.mat-mdc-standard-chip {
+      background-color: $color-blue-60;
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .mat-mdc-chip {
+    border: 1px solid $color-gray-0;
+
+    span.tag-name {
+      color: $color-gray-0;
+    }
+  }
+}
+
+/* Dark + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx-chip {
+    &-info {
+      &.mat-mdc-chip.mat-mdc-standard-chip {
+        background-color: $color-blue-40;
+
+        span.tag-name,
+        .eui-icon.remove,
+        .imx-icon-chip-remove {
+          color: $color-gray-80;
+        }
+      }
+    }
+  }
+}

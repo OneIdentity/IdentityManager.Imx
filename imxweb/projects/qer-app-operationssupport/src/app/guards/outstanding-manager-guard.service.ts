@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
@@ -34,14 +34,14 @@ import { PermissionsService } from '../permissions/permissions.service';
 @Injectable({
   providedIn: 'root',
 })
-export class OutstandingManagerGuardService implements CanActivate, OnDestroy {
+export class OutstandingManagerGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly permissionService: PermissionsService,
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   public canActivate(): Observable<boolean> {
@@ -49,8 +49,8 @@ export class OutstandingManagerGuardService implements CanActivate, OnDestroy {
       this.onSessionResponse = this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (sessionState.IsLoggedIn) {
           const userIsOutstandingManager = await this.permissionService.isOutstandingManager();
-          if (!userIsOutstandingManager) {            
-            this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} } );
+          if (!userIsOutstandingManager) {
+            this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
           }
           observer.next(userIsOutstandingManager ? true : false);
           observer.complete();

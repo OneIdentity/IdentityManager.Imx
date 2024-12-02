@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,21 @@
 
 import { Injectable } from '@angular/core';
 import { Route, Router } from '@angular/router';
-import { RoleExtendedDataWrite } from 'imx-api-qer';
+import { RoleExtendedDataWrite } from '@imx-modules/imx-api-qer';
 
-import { PortalAdminRoleEset, PortalPersonRolemembershipsEset, PortalRespEset, V2ApiClientMethodFactory } from 'imx-api-rms';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
+import { PortalAdminRoleEset, PortalPersonRolemembershipsEset, PortalRespEset, V2ApiClientMethodFactory } from '@imx-modules/imx-api-rms';
 import {
+  CollectionLoadParameters,
+  EntityCollectionData,
   EntitySchema,
   ExtendedTypedEntityCollection,
+  MethodDefinition,
+  MethodDescriptor,
   TypedEntity,
   WriteExtTypedEntity,
-  CollectionLoadParameters,
-  MethodDescriptor,
-  EntityCollectionData,
-  MethodDefinition,
-} from 'imx-qbm-dbts';
-import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService, HELP_CONTEXTUAL } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { HELP_CONTEXTUAL, ImxTranslationProviderService, MenuService, imx_SessionService } from 'qbm';
 import {
   DataExplorerRegistryService,
   IdentityRoleMembershipsService,
@@ -54,13 +55,6 @@ import { EsetDataModel } from './eset-data-model';
 import { EsetEntitlements } from './eset-entitlements';
 import { EsetMembership } from './eset-membership';
 import { RmsApiService } from './rms-api-client.service';
-import { ProjectConfig } from 'imx-api-qbm';
-
-export interface test {
-  GetSchema(): EntitySchema;
-  Get_byid(id: string): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>>;
-  Get(): Promise<ExtendedTypedEntityCollection<PortalAdminRoleEset, unknown>>;
-}
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -71,26 +65,25 @@ export class InitService {
     private readonly api: RmsApiService,
     private readonly session: imx_SessionService,
     private readonly translator: ImxTranslationProviderService,
-    private readonly dynamicMethodSvc: DynamicMethodService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly menuService: MenuService,
     private readonly roleService: RoleService,
     private readonly identityRoleMembershipService: IdentityRoleMembershipsService,
-    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService
+    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
   ) {}
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
     // wrapper class for interactive methods
-    // tslint:disable-next-line: max-classes-per-file
+    // eslint-disable-next-line max-classes-per-file
     class ApiWrapper {
       constructor(
         private getByIdApi: {
           GetSchema(): EntitySchema;
           Get_byid(id: string): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>>;
           Get?(): Promise<ExtendedTypedEntityCollection<PortalAdminRoleEset, unknown>>;
-        }
+        },
       ) {}
 
       public async Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
@@ -136,15 +129,20 @@ export class InitService {
             search: parameter.search,
             risk: parameter.risk,
             esettype: parameter.esettype,
+            withProperties: parameter.withProperties,
           }),
       },
       adminSchema: this.api.typedClient.PortalAdminRoleEset.GetSchema(),
       dataModel: new EsetDataModel(this.api),
-      respCanCreate: false,
-      adminCanCreate: true,
+      adminCanCreate: async () => {
+        return (await this.api.client.portal_roles_config_systemroles_get()).EnableNewESet;
+      },
+      respCanCreate: async () => {
+        return (await this.api.client.portal_roles_config_systemroles_get()).EnableNewESet;
+      },
       interactiveResp: new ApiWrapper(this.api.typedClient.PortalRespEsetInteractive),
       interactiveAdmin: new ApiWrapper(this.api.typedClient.PortalAdminRoleEsetInteractive),
-      entitlements: new EsetEntitlements(this.api, this.dynamicMethodSvc, this.translator),
+      entitlements: new EsetEntitlements(this.api, this.translator),
       membership: new EsetMembership(this.api, this.session, this.translator),
       canUseRecommendations: true,
       exportMethod: (navigationState: CollectionLoadParameters, isAdmin: boolean) => {
@@ -171,6 +169,8 @@ export class InitService {
         editHeading: '#LDS#Heading Edit System Role',
         createSnackbar: '#LDS#The system role has been successfully created.',
       },
+      adminHelpContextId: HELP_CONTEXTUAL.DataExplorerSystemRolesRoleEntitlements,
+      respHelpContextId: HELP_CONTEXTUAL.MyResponsibilitiesSystemRolesRoleEntitlements,
     });
 
     this.identityRoleMembershipService.addTarget({
@@ -190,8 +190,8 @@ export class InitService {
 
     this.dataExplorerRegistryService.registerFactory(
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
-          return;
+        if (isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
+          return undefined;
         }
         return {
           instance: RolesOverviewComponent,
@@ -204,7 +204,7 @@ export class InitService {
           name: 'systemroles',
           caption: '#LDS#Menu Entry System roles',
         };
-      }
+      },
     );
 
     this.myResponsibilitiesRegistryService.registerFactory((preProps: string[], features: string[]) => ({
@@ -223,7 +223,7 @@ export class InitService {
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
       if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
-        return null;
+        return undefined;
       }
       return {
         id: 'ROOT_Data',

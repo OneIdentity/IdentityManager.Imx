@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,28 +26,24 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalShopServiceitemsEntitlements } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalShopServiceitemsEntitlements } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../../../qer-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductDetailsService {
-
-  constructor(
-    private readonly qerapiService: QerApiService
-  ) { }
-
+  constructor(private readonly qerapiService: QerApiService) {}
 
   public get productEntitlementSchema(): EntitySchema {
     return this.qerapiService.typedClient.PortalShopServiceitemsEntitlements.GetSchema();
   }
 
-  public async getRoleEntitlements(uidAccProduct: string, parameter?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalShopServiceitemsEntitlements, unknown>> {
+  public async getRoleEntitlements(
+    uidAccProduct: string,
+    parameter?: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalShopServiceitemsEntitlements, unknown>> {
     return this.qerapiService.typedClient.PortalShopServiceitemsEntitlements.Get(uidAccProduct, parameter);
   }
-
-
 }

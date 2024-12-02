@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,10 +28,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   templateUrl: './businessowner-addon-tile.component.html',
-  selector: 'imx-businessowner-addon-tile'
+  selector: 'imx-businessowner-addon-tile',
 })
 export class BusinessOwnerAddOnTileComponent {
-
   @Input() public squareText: string;
   @Input() public description: string;
   @Input() public actionText = '#LDS#View';

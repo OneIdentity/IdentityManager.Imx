@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,11 +26,12 @@
 
 import { Component } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
+import { MatSliderDragEvent } from '@angular/material/slider';
 import { EditorBase } from '../editor-base';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing risk index columns.
- * 
+ *
  * To change the value, it uses an Angular Material slider, that ranges between 0 and 1.
  * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content.
  */
@@ -43,12 +44,7 @@ export class EditRiskIndexComponent extends EditorBase<number> {
   /**
    * The form control associated with the editor.
    */
-  public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });
-  
-  /**
-   * @ignore Only used in template.
-   */
-  public sliderFocused = false;
+  public readonly control = new UntypedFormControl(undefined, { updateOn: 'submit' });
 
   /**
    * Converts a number value to a string in the current language.
@@ -57,5 +53,10 @@ export class EditRiskIndexComponent extends EditorBase<number> {
    */
   public formatLabel(value: number): string {
     return value.toLocaleString();
+  }
+
+  onDragEnd($event: MatSliderDragEvent): void {
+    this.control.setValue($event.value);
+    this.control.markAsDirty();
   }
 }

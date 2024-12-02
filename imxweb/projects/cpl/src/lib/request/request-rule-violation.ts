@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { EntityData } from 'imx-qbm-dbts';
+import { EntityData } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings, IExtension } from 'qbm';
 import { ItshopRequest } from 'qer';
 import { Subject } from 'rxjs';
@@ -41,11 +41,11 @@ export class RequestRuleViolation implements IExtension {
     this.dstSettings = dstSettings;
 
     if (this.dstSettings?.extendedData) {
-      for (let i = 0; i < this.dstSettings.dataSource.Data.length; i++) {
-        const item = this.dstSettings.dataSource.Data[i] as ItshopRequest;
-        item.complianceRuleViolation = item.pwoData.WorkflowHistory.Entities.filter((wh: EntityData) =>
-          wh.Columns['UID_ComplianceRule']?.Value?.length > 0
-        ).length > 0;
+      for (let i = 0; i < (this.dstSettings.dataSource?.Data.length || 0); i++) {
+        const item = this.dstSettings.dataSource?.Data[i] as ItshopRequest;
+        item.complianceRuleViolation = !!item.pwoData.WorkflowHistory?.Entities?.filter(
+          (wh: EntityData) => wh.Columns?.['UID_ComplianceRule']?.Value?.length > 0,
+        ).length;
       }
     }
 

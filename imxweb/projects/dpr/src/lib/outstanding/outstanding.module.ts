@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { DataSourceToolbarModule, DataTableModule, SelectedElementsModule, LdsReplaceModule } from 'qbm';
+import { BusyIndicatorModule, DataSourceToolbarModule, DataTableModule, LdsReplaceModule, SelectedElementsModule } from 'qbm';
 import { DependenciesComponent } from './dependencies.component';
 import { OutstandingComponent } from './outstanding.component';
 import { OutstandingService } from './outstanding.service';
@@ -50,15 +50,9 @@ import { SelectedItemsComponent } from './selected-items/selected-items.componen
     TranslateModule,
     SelectedElementsModule,
     LdsReplaceModule,
+    BusyIndicatorModule,
   ],
-  providers: [
-    OutstandingService
-  ],
-  declarations: [
-    OutstandingComponent,
-    DependenciesComponent,
-    SelectedItemsComponent
-  ]
+  providers: [OutstandingService],
+  declarations: [OutstandingComponent, DependenciesComponent, SelectedItemsComponent],
 })
-export class OutstandingModule {
-}
+export class OutstandingModule {}

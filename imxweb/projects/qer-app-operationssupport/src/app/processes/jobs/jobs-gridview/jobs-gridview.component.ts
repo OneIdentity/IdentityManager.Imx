@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,32 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 
-import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
-import { OpsupportQueueJobsParameters, QueueJobsService } from '../queue-jobs.service';
-import { SnackBarService, TextContainer, DataSourceToolbarSettings, DataSourceToolbarFilter, SettingsService, ClientPropertyForTableColumns } from 'qbm';
-import { CollectionLoadParameters, CompareOperator, DataModel, EntitySchema, FilterType, ValType } from 'imx-qbm-dbts';
-import { SingleFrozenJobComponent } from '../../frozen-jobs/single-frozen-job.component';
+import { OpsupportQueueJobs, ReactivateJobMode } from '@imx-modules/imx-api-qbm';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  DataModel,
+  EntitySchema,
+  FilterType,
+  TypedEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-
+import {
+  calculateSidesheetWidth,
+  ClientPropertyForTableColumns,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  SettingsService,
+  SnackBarService,
+  TextContainer,
+} from 'qbm';
+import { SingleFrozenJobComponent } from '../../frozen-jobs/single-frozen-job.component';
+import { OpsupportQueueJobsParameters, QueueJobsService } from '../queue-jobs.service';
 
 @Component({
   selector: 'imx-jobs-gridview',
@@ -68,7 +83,7 @@ export class JobsGridviewComponent implements OnInit {
     private busyService: EuiLoadingService,
     private readonly translator: TranslateService,
     private jobService: QueueJobsService,
-    settings: SettingsService
+    settings: SettingsService,
   ) {
     this.entitySchemaJobs = jobService.EntitySchema;
     this.displayedColumns = [
@@ -140,15 +155,16 @@ export class JobsGridviewComponent implements OnInit {
     return this.selectedJobs.length > 0;
   }
 
-  public async viewDetails(job: OpsupportQueueJobs): Promise<void> {
+  public async viewDetails(job: TypedEntity): Promise<void> {
     const opts: EuiSidesheetConfig = {
       title: await this.translator.get('#LDS#Heading Process Overview').toPromise(),
-      subTitle: job.JobChainName.Column.GetDisplayValue() + ' ' + job.XDateInserted.Column.GetDisplayValue(),
-      width: 'max(1000px, 80%)',
+      subTitle:
+        job.GetEntity().GetColumn('JobChainName').GetDisplayValue() + ' ' + job.GetEntity().GetColumn('XDateInserted').GetDisplayValue(),
+      width: calculateSidesheetWidth(1200, 0.7),
       icon: 'reboot',
       testId: 'job-details-sidesheet',
       data: {
-        UID_Tree: job.UID_Tree.value,
+        UID_Tree: job.GetEntity().GetColumn('UID_Tree').GetValue(),
         load: (startId: string) => {
           return this.jobService.getTreeData(startId);
         },
@@ -180,8 +196,8 @@ export class JobsGridviewComponent implements OnInit {
     this.retryJobs(this.selectedJobs, mode, { key: '#LDS#Your changes are being processed.', parameters: [this.selectedJobs.length] });
   }
 
-  public onSelectionChanged(jobs: OpsupportQueueJobs[]): void {
-    this.selectedJobs = jobs;
+  public onSelectionChanged(jobs: TypedEntity[]): void {
+    this.selectedJobs = jobs as OpsupportQueueJobs[];
   }
 
   public refresh(): void {
@@ -232,7 +248,7 @@ export class JobsGridviewComponent implements OnInit {
     try {
       await this.jobService.Retry(
         mode,
-        jobs.map((job: OpsupportQueueJobs) => job.UID_Job.value)
+        jobs.map((job: OpsupportQueueJobs) => job.UID_Job.value),
       );
       success = true;
     } finally {

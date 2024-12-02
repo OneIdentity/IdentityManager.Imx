@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 :host {
   max-width: 1200px;
 }
@@ -32,13 +32,3 @@
 .no-issue-detected {
   max-width: 350px;
 }
-
-.imx-spinner{
-  display: inline-block;
-}
-
-.mat-button {
-  color: $iris-blue;
-  font-weight: 600;
-}
-

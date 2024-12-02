@@ -1,12 +1,10 @@
-.dialog-content__links{
+.dialog-content__links {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.mat-dialog-actions{
-  justify-content: end;
-}
-.mat-dialog-content{
+
+.mat-mdc-dialog-content{
   max-width: 50vw;
 }

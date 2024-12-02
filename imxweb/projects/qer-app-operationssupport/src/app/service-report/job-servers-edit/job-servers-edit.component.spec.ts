@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,11 +29,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobServersEditComponent } from './job-servers-edit.component';
 import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { of } from 'rxjs';
-import { OpsupportJobservers } from 'imx-api-qbm';
+import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
 import { JobServersService } from '../job-servers.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { SnackBarService } from '../../../../../qbm/src/lib/snackbar/snack-bar.service';
 import { ConfirmationService } from 'qbm';
+import { TranslateModule } from '@ngx-translate/core';
 describe('JobServersEditComponent', () => {
   let component: JobServersEditComponent;
   let fixture: ComponentFixture<JobServersEditComponent>;
@@ -48,14 +49,14 @@ describe('JobServersEditComponent', () => {
     open: jasmine.createSpy('open'),
     dismiss: jasmine.createSpy('dismiss'),
   };
-   let confirm = true;
-   const mockConfirmationService = {
-     confirm: jasmine.createSpy('confirm').and.callFake(() => Promise.resolve(confirm)),
-   };
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm').and.callFake(() => Promise.resolve(confirm)),
+  };
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JobServersEditComponent],
-      imports: [MatSnackBarModule],
+      imports: [MatSnackBarModule, TranslateModule.forRoot()],
       providers: [
         {
           provide: MatSnackBar,

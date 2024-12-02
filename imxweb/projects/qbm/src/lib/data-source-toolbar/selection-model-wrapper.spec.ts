@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,18 @@
  *
  */
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { SelectionModelWrapper } from './selection-model-wrapper';
 
 describe('SelectionModelWrapper select-deselect', () => {
-  const createSomeTypedEntity = (keys = ['']) => ({
-    GetEntity: () => ({
-      GetKeys: () => keys
-    })
-  }) as TypedEntity;
+  const createSomeTypedEntity = (keys = ['']) =>
+    ({
+      GetEntity: () => ({
+        GetKeys: () => keys,
+      }),
+    }) as TypedEntity;
 
-  const getKey = entity => entity.GetEntity().GetKeys().join();
+  const getKey = (entity) => entity.GetEntity().GetKeys().join();
 
   it('should select an item', () => {
     const selection = new SelectionModelWrapper();
@@ -45,7 +46,7 @@ describe('SelectionModelWrapper select-deselect', () => {
 
     selection.checked(entity);
 
-    expect(selection.selected.map(e => getKey(e))).toContain(getKey(entity));
+    expect(selection.selected.map((e) => getKey(e))).toContain(getKey(entity));
   });
 
   it('should deselect an item', () => {
@@ -59,6 +60,6 @@ describe('SelectionModelWrapper select-deselect', () => {
 
     selection.unChecked(entity);
 
-    expect(selection.selected.map(e => getKey(e))).not.toContain(getKey(entity));
+    expect(selection.selected.map((e) => getKey(e))).not.toContain(getKey(entity));
   });
 });

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -45,18 +45,18 @@ describe('StatisticsForObjectsComponent', () => {
       .mock(StatisticsChartHandlerService)
       .mock(StatisticsConstantsService)
       .mock(EuiSidesheetService)
-      .beforeCompileComponents(testBed => {
+      .beforeCompileComponents((testBed) => {
         testBed.configureTestingModule({
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
-        })
-      })
-    });
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        });
+      });
+  });
 
   beforeEach(() => {
     fixture = MockRender(StatisticsForObjectsComponent);
     component = fixture.point.componentInstance;
     fixture.detectChanges();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

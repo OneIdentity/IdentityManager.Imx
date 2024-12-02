@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-
+@import 'base/mixins';
 
 .column-selector {
   flex-grow: 1;
@@ -24,10 +24,6 @@ li {
   flex-grow: 1;
   flex-shrink: 1;
   align-items: center;
-
-  .mat-slide-toggle {
-    margin-top: 10px;
-  }
 }
 
 .expression {
@@ -64,20 +60,21 @@ li {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  .mat-error {
+  gap: 10px;
+  .mat-mdc-form-field-error {
     width: 100%;
     font-size: 75%;
   }
 }
 
 .expression-container {
-  transition: all .6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px $color-gray-20 solid;
   border-radius: 5px;
   display: flex;
 
   .expression-container-header {
-    transition: all .6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
     width: 30px;
     display: flex;
     justify-content: center;
@@ -124,23 +121,18 @@ li {
   flex: 1 1 auto;
 }
 
-mat-radio-button {
-  margin-right: 1em;
+.imx-remove-all {
+  @include align-button-content($color-red-60);
+}
+
+.imx-btn-color-default {
+  @include align-button-content($color-blue-60);
 }
 
 /* undo Elemental UI fix */
-::ng-deep .mat-form-field-wrapper,
-::ng-deep mat-form-field.ng-untouched .mat-form-field-wrapper,
-::ng-deep mat-form-field.ng-valid .mat-form-field-wrapper {
+::ng-deep mat-form-field.ng-untouched .mat-mdc-form-field-wrapper,
+::ng-deep mat-form-field.ng-valid .mat-mdc-form-field-wrapper {
   padding-bottom: 0;
-}
-
-::ng-deep .mat-form-field-infix .mat-select-trigger {
-  vertical-align: middle;
-
-  .mat-select-arrow-wrapper {
-    vertical-align: bottom;
-  }
 }
 
 imx-sqlwizard-singlevalue {
@@ -194,6 +186,14 @@ imx-sqlwizard-singlevalue {
     .selected-logical-op {
       color: $color-blue-40;
     }
+
+    .imx-remove-all {
+      @include align-button-content($color-red-40);
+    }
+
+    .imx-btn-color-default {
+      @include align-button-content($color-blue-40);
+    }
   }
 }
 
@@ -214,6 +214,14 @@ imx-sqlwizard-singlevalue {
 
     .selected-logical-op {
       color: $color-blue-60;
+    }
+
+    .imx-remove-all {
+      @include align-button-content($color-red-40);
+    }
+
+    .imx-btn-color-default {
+      @include align-button-content($color-blue-40);
     }
   }
 }

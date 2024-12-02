@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { Component, Input, ErrorHandler, OnChanges, SimpleChanges, OnInit, Output, EventEmitter } from '@angular/core';
-import { UntypedFormGroup, AbstractControl } from '@angular/forms';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, ErrorHandler, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalEntitlement, PortalEntitlementServiceitem } from 'imx-api-aob';
-import { CdrFactoryService, ClassloggerService, ColumnDependentReference } from 'qbm';
-import { DbObjectKey, TypedEntity } from 'imx-qbm-dbts';
-import { ServiceItemTagsService } from 'qer';
 import { Router } from '@angular/router';
+import { PortalEntitlement, PortalEntitlementServiceitem } from '@imx-modules/imx-api-aob';
+import { DbObjectKey, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { CdrFactoryService, ClassloggerService, ColumnDependentReference } from 'qbm';
+import { ServiceItemTagsService } from 'qer';
+import { AobPermissionsService } from '../../permissions/aob-permissions.service';
 
 /**
  * A component that provides a form for viewing and editing entitlements/roles.
@@ -41,7 +41,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'imx-entitlement-edit',
   templateUrl: './entitlement-edit.component.html',
-  styleUrls: ['./entitlement-edit.component.scss']
+  styleUrls: ['./entitlement-edit.component.scss'],
 })
 export class EntitlementEditComponent implements OnChanges, OnInit {
   public readonly form = new UntypedFormGroup({});
@@ -49,9 +49,10 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
   public productTagsInitial: string[] = [];
   public productTagsSelected: string[];
   public loadingTags: boolean;
-  
-  public cdrList: ColumnDependentReference[] = [];
-  public cdrListServiceItem: ColumnDependentReference[] = [];
+
+  public cdrList: (ColumnDependentReference | undefined)[] = [];
+  public cdrListServiceItem: (ColumnDependentReference | undefined)[] = [];
+  public isEditableEntitlement: boolean;
 
   @Input() public entitlement: PortalEntitlement;
   @Input() public serviceItem: PortalEntitlementServiceitem;
@@ -65,31 +66,30 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
     private readonly router: Router,
     private readonly errorHandler: ErrorHandler,
     private readonly cdrFactoryService: CdrFactoryService,
-    private readonly busyService: EuiLoadingService
-  ) { }
+    private readonly permissions: AobPermissionsService,
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
     this.controlCreated.emit(this.form);
 
-    const entitlementColumns = [
-      'Ident_AOBEntitlement', 
-      'Description', 
-      'ObjectKeyAdditionalApprover'
-    ];    
+    const entitlementColumns = ['Ident_AOBEntitlement', 'Description', 'ObjectKeyAdditionalApprover'];
     this.cdrList = this.cdrFactoryService.buildCdrFromColumnList(this.entitlement.GetEntity(), entitlementColumns);
-        
+
     if (this.serviceItem) {
       const serviceIemColumns = [
-        'UID_OrgRuler', 
-        'UID_PWODecisionMethod', 
-        'UID_QERTermsOfUse', 
-        'UID_AccProductParamCategory', 
+        'UID_OrgRuler',
+        'UID_PWODecisionMethod',
+        'UID_QERTermsOfUse',
+        'UID_AccProductParamCategory',
         'UID_AccProductGroup',
-        'ProductURL', 
-        'IsApproveRequiresMfa'
+        'ProductURL',
+        'IsApproveRequiresMfa',
       ];
       this.cdrListServiceItem = this.cdrFactoryService.buildCdrFromColumnList(this.serviceItem.GetEntity(), serviceIemColumns);
     }
+
+    this.isEditableEntitlement = await this.editableEntitlement();
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -117,8 +117,9 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
   private async initTags(entitlement: PortalEntitlement): Promise<void> {
     this.loadingTags = true;
 
-    this.productTagsInitial = (await this.tagProvider.getTags(entitlement.UID_AccProduct.value))
-      .Data.map(elem => elem.Ident_DialogTag.value);
+    this.productTagsInitial = (await this.tagProvider.getTags(entitlement.UID_AccProduct.value)).Data.map(
+      (elem) => elem.Ident_DialogTag.value,
+    );
     this.productTagsSelected = this.productTagsInitial.slice();
 
     this.loadingTags = false;
@@ -127,8 +128,9 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
   private async tryCommit(typedEntities: TypedEntity[]): Promise<boolean> {
     let success = false;
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
       for (const typedEntity of typedEntities) {
@@ -148,7 +150,7 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
 
     return success;
@@ -157,26 +159,23 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
   private async saveTags(): Promise<void> {
     const changeSet = this.getTagsChangeSet();
 
-    return this.tagProvider.updateTags(
-      this.entitlement.UID_AccProduct.value,
-      changeSet.add,
-      changeSet.remove
-    );
+    return this.tagProvider.updateTags(this.entitlement.UID_AccProduct.value, changeSet.add, changeSet.remove);
   }
 
-  private getTagsChangeSet(): { add: string[], remove: string[] } {
+  private getTagsChangeSet(): { add: string[]; remove: string[] } {
     this.logger.trace(this, 'save tags initial', this.productTagsInitial);
     this.logger.trace(this, 'save tags selected', this.productTagsSelected);
 
     return {
-      add: this.productTagsSelected.filter(elem => this.productTagsInitial.indexOf(elem) < 0),
-      remove: this.productTagsInitial.filter(elem => this.productTagsSelected.indexOf(elem) < 0)
+      add: this.productTagsSelected.filter((elem) => this.productTagsInitial.indexOf(elem) < 0),
+      remove: this.productTagsInitial.filter((elem) => this.productTagsSelected.indexOf(elem) < 0),
     };
   }
 
-  public get isEditableEntitlement() {
-    // TODO: only if IsOwnerOrAdmin is set
-    return DbObjectKey.FromXml(this.entitlement.ObjectKeyElement.value).TableName == "ESet";
+  public async editableEntitlement(): Promise<boolean> {
+    return (await this.permissions.isAobApplicationOwnerOrAdmin())
+      ? DbObjectKey.FromXml(this.entitlement.ObjectKeyElement.value).TableName == 'ESet'
+      : false;
   }
 
   public manageEntitlement() {

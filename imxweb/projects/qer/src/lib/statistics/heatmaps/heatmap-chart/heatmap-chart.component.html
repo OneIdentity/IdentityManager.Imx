@@ -1,4 +1,4 @@
-<eui-scroll class="scroll-pad" *ngIf="isCurrent" [options]="{ alwaysShowTracks: true }">
+<eui-scroll class="imx-scroll-pad" *ngIf="isCurrent" [options]="{ alwaysShowTracks: true }">
   <div class="grid-wrapper">
     <div
       *ngFor="let block of blocks"
@@ -17,7 +17,7 @@
   </div>
 </eui-scroll>
 
-<eui-scroll class="scroll-pad" *ngIf="!isCurrent" [options]="{ alwaysShowTracks: true }">
+<eui-scroll class="imx-scroll-pad" *ngIf="!isCurrent" [options]="{ alwaysShowTracks: true }">
   <div class="grid-wrapper">
     <div
       *ngFor="let block of blocks"

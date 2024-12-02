@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { NotificationRegistryService } from 'qer';
 
 import { ExtService, MenuItem, MenuService } from 'qbm';
@@ -38,7 +38,7 @@ export class InitService {
     private readonly extService: ExtService,
     private readonly menuService: MenuService,
     private readonly notificationService: NotificationRegistryService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {
     this.setupMenu();
   }
@@ -52,13 +52,13 @@ export class InitService {
     this.notificationService.registerRedirectNotificationHandler({
       id: 'OpenQERPolicyHasObject',
       message: '#LDS#There are new policy violations for which you can grant or deny exceptions.',
-      route: 'compliance/policyviolations/approve'
+      route: 'compliance/policyviolations/approve',
     });
   }
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);
@@ -66,28 +66,37 @@ export class InitService {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
-      if (!preProps.includes('COMPLIANCE') || (!isQERPolicyAdmin(features) && !isQERPolicyOwner(features))) {
-        return null;
+      if (!preProps.includes('QERPOLICY')) return undefined;
+
+      const ispolicyadmin = isQERPolicyAdmin(features);
+      const ispolicyowner = isQERPolicyOwner(features);
+
+      if (!ispolicyadmin && !ispolicyowner) return undefined;
+
+      const items: MenuItem[] = [];
+      if (ispolicyadmin || ispolicyowner) {
+        items.push({
+          id: 'POL_Policies',
+          route: 'compliance/policies',
+          title: '#LDS#Menu Entry Company policies',
+          sorting: '20-10',
+        });
+      }
+
+      if (ispolicyadmin) {
+        items.push({
+          id: 'POL_policy-violations',
+          route: 'compliance/policyviolations',
+          title: '#LDS#Menu Entry Policy violations',
+          sorting: '20-10',
+        });
       }
 
       const menu: MenuItem = {
         id: 'ROOT_Compliance',
         title: '#LDS#Compliance',
         sorting: '25',
-        items: [
-          {
-            id: 'POL_Policies',
-            route: 'compliance/policies',
-            title: '#LDS#Menu Entry Company policies',
-            sorting: '20-10',
-          },
-          {
-            id: 'POL_policy-violations',
-            route: 'compliance/policyviolations',
-            title: '#LDS#Menu Entry Policy violations',
-            sorting: '20-10',
-          }
-        ]
+        items: items,
       };
 
       return menu;

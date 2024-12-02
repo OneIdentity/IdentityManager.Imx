@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 .imx-report-table {
   display: flex;
   margin-top: 10px;
@@ -16,12 +16,6 @@ imx-property-viewer {
 
 .imx-wizard-info {
   margin: 30px 0;
-}
-
-.imx-step-button {
-  > :first-child {
-    margin-right: 10px;
-  }
 }
 
 @media only screen and (max-width: 1024px) {

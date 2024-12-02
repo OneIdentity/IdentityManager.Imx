@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,13 @@
  */
 
 import { Injectable } from '@angular/core';
-import { isEqual, uniqWith } from 'lodash';
 import {
   CartPatternItemDataRead,
   PortalItshopPatternItem,
   PortalItshopPatternRequestable,
   PortalShopServiceitems,
   portal_itshop_pattern_get_args,
-} from 'imx-api-qer';
+} from '@imx-modules/imx-api-qer';
 import {
   ApiRequestOptions,
   CollectionLoadParameters,
@@ -43,7 +42,8 @@ import {
   FilterData,
   FilterType,
   ValueStruct,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
+import { isEqual, uniqWith } from 'lodash';
 import { QerApiService } from '../qer-api-client.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { RequestableProduct } from '../shopping-cart/requestable-product.interface';
@@ -54,8 +54,8 @@ import { RequestableProduct } from '../shopping-cart/requestable-product.interfa
 export class PatternItemService {
   constructor(
     private readonly qerClient: QerApiService,
-    private readonly serviceItemsProvider: ServiceItemsService
-    ) {}
+    private readonly serviceItemsProvider: ServiceItemsService,
+  ) {}
 
   public get PortalShopPatternRequestableSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalItshopPatternRequestable.GetSchema();
@@ -69,7 +69,7 @@ export class PatternItemService {
     parameters: CollectionLoadParameters & {
       UID_Persons?: string;
     },
-    requestOpts?: ApiRequestOptions
+    requestOpts?: ApiRequestOptions,
   ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternRequestable, unknown>> {
     return this.qerClient.typedClient.PortalItshopPatternRequestable.Get(parameters, requestOpts);
   }
@@ -77,16 +77,18 @@ export class PatternItemService {
   public async getServiceItemEntities(
     patternRequestable: PortalItshopPatternRequestable,
     options: portal_itshop_pattern_get_args = {},
-    requestOpts?: ApiRequestOptions
+    requestOpts?: ApiRequestOptions,
   ): Promise<EntityData[]> {
-    return (await this.qerClient.v2Client.portal_itshop_pattern_get(patternRequestable.UID_ShoppingCartPattern.value, options, requestOpts))
-      .Entities;
+    return (
+      (await this.qerClient.v2Client.portal_itshop_pattern_get(patternRequestable.UID_ShoppingCartPattern.value, options, requestOpts))
+        .Entities || []
+    );
   }
 
-  public async getServiceItems(patternRequestable: PortalItshopPatternRequestable): Promise<PortalShopServiceitems[]> {
+  public async getServiceItems(patternRequestable: PortalItshopPatternRequestable): Promise<(PortalShopServiceitems | undefined)[]> {
     const serviceItemsEntites = await this.getServiceItemEntities(patternRequestable);
     const serviceItems = await Promise.all(
-      serviceItemsEntites.map((entity) => this.serviceItemsProvider.getServiceItem(entity.Columns.UID_AccProduct.Value, true))
+      serviceItemsEntites.map((entity) => this.serviceItemsProvider.getServiceItem(entity.Columns?.UID_AccProduct.Value, true)),
     );
     return serviceItems.filter((item) => item !== null);
   }
@@ -99,19 +101,18 @@ export class PatternItemService {
     requestOpts?: ApiRequestOptions,
     getAllItems?: boolean,
   ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternItem, CartPatternItemDataRead>> {
-
     var shoppingCartPatternFilter = {
       ColumnName: 'UID_ShoppingCartPattern',
       Type: FilterType.Compare,
       CompareOp: CompareOperator.Equal,
       Value1: patternRequestable.UID_ShoppingCartPattern.value,
-    }
-    
-    const index = this.findFilterIndex(parameters.filter, 'UID_ShoppingCartPattern');
-    if (index >= 0) {
+    };
+
+    const index = this.findFilterIndex(parameters.filter || [], 'UID_ShoppingCartPattern');
+    if (index >= 0 && parameters.filter) {
       parameters.filter[index] = shoppingCartPatternFilter;
     } else {
-      if(!parameters.filter){
+      if (!parameters.filter) {
         parameters.filter = [];
       }
       parameters.filter.push(shoppingCartPatternFilter);
@@ -123,16 +124,16 @@ export class PatternItemService {
       let getAllItemsParams: CollectionLoadParameters = {
         ...params,
         ...{
-          PageSize: -1
+          PageSize: -1,
         },
-      }; 
+      };
       const totalCount = (await this.qerClient.typedClient.PortalItshopPatternItem.Get(getAllItemsParams, requestOpts)).totalCount;
       params = {
         ...params,
         ...{
-          PageSize: totalCount
+          PageSize: totalCount,
         },
-      }; 
+      };
     }
     return await this.qerClient.typedClient.PortalItshopPatternItem.Get(params, requestOpts);
   }
@@ -141,13 +142,16 @@ export class PatternItemService {
     patternRequestables: PortalItshopPatternRequestable[],
     recipients: ValueStruct<string>[],
     uidITShopOrg?: string,
-    onlySelected?: boolean
+    onlySelected?: boolean,
   ): Promise<RequestableProduct[]> {
     const serviceItemEntities = await Promise.all(
-      patternRequestables.map(async (patternRequestable) => this.getServiceItemEntities(patternRequestable))
+      patternRequestables.map(async (patternRequestable) => this.getServiceItemEntities(patternRequestable)),
     );
     // make flat list without duplicates
-    const serviceItemsEntitesFlat = uniqWith(serviceItemEntities.reduce((a, b) => a.concat(b), []), isEqual);
+    const serviceItemsEntitesFlat = uniqWith(
+      serviceItemEntities.reduce((a, b) => a.concat(b), []),
+      isEqual,
+    );
     let allItems: RequestableProduct[];
     allItems = serviceItemsEntitesFlat
       .map((serviceItem) =>
@@ -157,7 +161,7 @@ export class PatternItemService {
           UidAccProduct: serviceItem?.Columns?.UID_AccProduct.Value,
           Display: serviceItem.Display,
           DisplayRecipient: recipient.DisplayValue,
-        }))
+        })),
       )
       .reduce((a, b) => a.concat(b), []);
 
@@ -166,7 +170,7 @@ export class PatternItemService {
       const selectedItemsWithDuplicates = allItems.filter((itemAll) => {
         return patternRequestables.some((item) => {
           const isSelected = itemAll.UidAccProduct === item.GetEntity().GetColumn('UID_AccProduct').GetValue();
-          // store the pattern item uid to load saved request params 
+          // store the pattern item uid to load saved request params
           itemAll.UidPatternItem = item.GetEntity().GetKeys()[0];
           return isSelected;
         });
@@ -177,7 +181,6 @@ export class PatternItemService {
     return onlySelected ? selectedItems : allItems;
   }
 
-  
   /**
    * @ignore Used internally
    * Attempts to find an existing filter matching the given column name.
@@ -189,6 +192,6 @@ export class PatternItemService {
       return -1;
     }
 
-    return filter.map(f => f.ColumnName).indexOf(filterName);
+    return filter.map((f) => f.ColumnName).indexOf(filterName);
   }
 }

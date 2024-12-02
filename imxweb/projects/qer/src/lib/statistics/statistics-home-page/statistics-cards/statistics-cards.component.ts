@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+import { calculateSidesheetWidth, LdsReplacePipe } from 'qbm';
 import { Subscription } from 'rxjs';
-import { LdsReplacePipe } from 'qbm';
 import { StatisticsConstantsService } from '../statistics-constants.service';
 import { GenericStatisticEntity, GenericStatisticNode, StatisticsDataService } from '../statistics-data.service';
-import { TranslateService } from '@ngx-translate/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { StatisticsOrderingSidesheetComponent } from '../statistics-ordering-sidesheet/statistics-ordering-sidesheet.component';
 
 @Component({
@@ -54,7 +54,7 @@ export class StatisticsCardsComponent implements OnInit, OnDestroy {
     private replacePipe: LdsReplacePipe,
     private translateService: TranslateService,
     private sidesheetService: EuiSidesheetService,
-    private loadingService: EuiLoadingService
+    private loadingService: EuiLoadingService,
   ) {}
 
   public get showAncestors(): boolean {
@@ -70,11 +70,11 @@ export class StatisticsCardsComponent implements OnInit, OnDestroy {
   }
 
   public get isOrg(): boolean {
-    return this.selectedNode && this.selectedNode.leafName === this.dataService.orgName;
+    return this.selectedNode && this.selectedNode.leafId === this.dataService.orgAreaId;
   }
 
   public get isGrouped(): boolean {
-    return this.selectedNode && this.selectedNode.leafName === this.dataService.groupedName;
+    return this.selectedNode && this.selectedNode.leafId === this.dataService.groupedAreaId;
   }
 
   public get searchHasData(): boolean {
@@ -85,29 +85,28 @@ export class StatisticsCardsComponent implements OnInit, OnDestroy {
     this.subscriptions$.push(
       this.dataService.selectedNodeAncestors$.subscribe((nodeAncestors) => {
         // Scroll to top of grid, and observe new selection
-        this.cardsWrapper?.nativeElement?.children[0]?.scrollIntoView({ behavior: 'auto', block: "start" });
+        this.cardsWrapper?.nativeElement?.children[0]?.scrollIntoView({ behavior: 'auto', block: 'start' });
         this.selectedNodeAncestors = nodeAncestors;
         this.selectedNode = nodeAncestors[nodeAncestors.length - 1];
-      })
+      }),
     );
     this.subscriptions$.push(
       this.dataService.searchStats$.subscribe((stats) => {
         // Scroll to top of grid, and observe search
-        this.cardsWrapper?.nativeElement?.children[0]?.scrollIntoView({ behavior: 'auto', block: "start" });
+        this.cardsWrapper?.nativeElement?.children[0]?.scrollIntoView({ behavior: 'auto', block: 'start' });
         this.searchStats = stats;
-      })
+      }),
     );
     this.subscriptions$.push(
       this.dataService.isSearch$.subscribe((isSearch) => {
         this.isSearch = isSearch;
-      })
+      }),
     );
   }
 
-
-  public getnStatsText(n: number): string {
+  public getnStatsText(n: number | undefined): string {
     const rawString = this.constantService.nStatsText.slice();
-    return this.replacePipe.transform(rawString, n.toString());
+    return this.replacePipe.transform(rawString, n?.toString() || '0');
   }
 
   public selectArea(node: GenericStatisticNode): void {
@@ -121,14 +120,14 @@ export class StatisticsCardsComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.subscriptions$.forEach((sub) => sub.unsubscribe());
   }
-  // TODO: Add translations
+  // TODO 454155: Add translations
   public async openOrgSideSheet(): Promise<void> {
     const response: GenericStatisticEntity[] | null = await this.sidesheetService
       .open(StatisticsOrderingSidesheetComponent, {
         title: await this.translateService.get('???Manage shared statistics???').toPromise(),
         icon: 'network',
         padding: '0px',
-        width: 'max(768px, 70%)',
+        width: calculateSidesheetWidth(1100, 0.7),
         disableClose: true,
         testId: 'statistics-organizational-sidesheet',
         data: {

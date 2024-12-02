@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,16 +31,17 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ReportButtonComponent } from './report-button.component';
+import { ReportButtonMailComponent } from './report-button-mail.component';
 import { ParameterSidesheetComponent } from './parameter-sidesheet/parameter-sidesheet.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
-import { CdrModule} from 'qbm';
+import { CdrModule } from 'qbm';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [ReportButtonComponent, ParameterSidesheetComponent],
+  declarations: [ReportButtonComponent, ReportButtonMailComponent, ParameterSidesheetComponent],
   imports: [
     CommonModule,
     CdrModule,
@@ -50,8 +51,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatCardModule,
     EuiCoreModule,
     TranslateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-  exports: [ReportButtonComponent]
+  exports: [ReportButtonComponent],
 })
-export class ReportButtonModule { }
+export class ReportButtonModule {}

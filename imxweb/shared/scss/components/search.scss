@@ -1,0 +1,19 @@
+/* Elemental UI */
+
+.eui-search {
+  width: 100%;
+
+  &.mat-mdc-form-field.mat-mdc-form-field-appearance-outline {
+    min-width: 280px;
+    flex: 1;
+  }
+}
+
+/* Angular Material */
+
+/* Imx */
+
+.imx-multi-select {
+  width: 100%;
+  display: flex;
+}

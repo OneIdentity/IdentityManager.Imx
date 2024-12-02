@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,25 @@
  *
  */
 
-import { ExceptionData } from 'imx-api-qbm';
+import { ExceptionData } from '@imx-modules/imx-api-qbm';
 import { ServerError } from './server-error';
 
 export class ServerExceptionError extends ServerError {
-    constructor(private readonly dataItems: ExceptionData[]) {
-        super(ServerExceptionError.parse(dataItems));
+  constructor(private readonly dataItems: ExceptionData[]) {
+    super(ServerExceptionError.parse(dataItems));
 
-        this.messageUserFriendly = ServerExceptionError.parse(this.dataItems, true);
+    this.messageUserFriendly = ServerExceptionError.parse(this.dataItems, true);
+  }
+
+  private static parse(dataItems: ExceptionData[], userFriendly: boolean = false): string {
+    if (dataItems && dataItems.length > 0) {
+      if (userFriendly) {
+        return dataItems.map((item) => `${item.Message}${item.Number ? ` [${item.Number}]` : ''}`).join(', ');
+      }
+
+      return JSON.stringify(dataItems);
     }
 
-    private static parse(dataItems: ExceptionData[], userFriendly: boolean = false): string {
-        if (dataItems && dataItems.length > 0) {
-            if (userFriendly) {
-                return dataItems.map(item => `${item.Message}${item.Number ? ` [${item.Number}]` : ''}`).join(', ');
-            }
-
-            return JSON.stringify(dataItems);
-        }
-
-        return 'Unknown error';
-    }
+    return 'Unknown error';
+  }
 }

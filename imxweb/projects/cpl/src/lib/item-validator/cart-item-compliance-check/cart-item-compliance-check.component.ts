@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,8 @@ import { Component } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ICartItemCheck } from 'imx-api-qer';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
+import { calculateSidesheetWidth } from 'qbm';
 import { ComplianceViolationDetailsComponent } from '../../request/compliance-violation-details/compliance-violation-details.component';
 
 @Component({
@@ -40,18 +41,17 @@ export class CartItemComplianceCheckComponent {
   public check: ICartItemCheck;
 
   constructor(
-    private readonly sidesheetService: EuiSidesheetService, 
-    private readonly translateService: TranslateService
+    private readonly sidesheetService: EuiSidesheetService,
+    private readonly translateService: TranslateService,
   ) {}
 
   public async onOpenDetails(): Promise<void> {
     this.sidesheetService.open(ComplianceViolationDetailsComponent, {
       title: await this.translateService.get('#LDS#Heading View Rule Violation Details').toPromise(),
-      width: 'max(550px,50%)',
+      width: calculateSidesheetWidth(800, 0.5),
       padding: '0px',
       data: this.check,
       testId: 'cart-item-compliance-violation-details',
     });
   }
 }
-

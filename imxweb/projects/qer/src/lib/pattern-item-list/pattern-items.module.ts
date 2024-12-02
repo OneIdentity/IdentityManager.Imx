@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -45,12 +45,8 @@ import { LdsReplaceModule, DataTableModule, DataSourceToolbarModule, DataTilesMo
 import { PatternItemListComponent } from './pattern-item-list.component';
 
 @NgModule({
-  declarations: [
-    PatternItemListComponent,
-  ],
-  exports: [
-    PatternItemListComponent,
-  ],
+  declarations: [PatternItemListComponent],
+  exports: [PatternItemListComponent],
   imports: [
     CommonModule,
     DataSourceToolbarModule,
@@ -73,7 +69,7 @@ import { PatternItemListComponent } from './pattern-item-list.component';
     MatFormFieldModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class PatternItemsModule { }
+export class PatternItemsModule {}

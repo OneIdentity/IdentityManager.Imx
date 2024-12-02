@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { EventEmitter } from '@angular/core';
 
-import { PortalSubscription } from 'imx-api-rps';
-import { IFkCandidateProvider, IClientProperty, IEntityColumn, ParameterData } from 'imx-qbm-dbts';
+import { PortalSubscription } from '@imx-modules/imx-api-rps';
+import { IClientProperty, IEntityColumn, IFkCandidateProvider, ParameterData } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference, ImxTranslationProviderService } from 'qbm';
 import { ParameterDataService } from 'qer';
 
@@ -40,6 +40,8 @@ export class ReportSubscription {
 
   private parameterColumns: IEntityColumn[] = [];
 
+  public parameterNames: string[];
+
   public startWriteData = new EventEmitter<string>();
   public endWriteData = new EventEmitter<void>();
 
@@ -47,18 +49,19 @@ export class ReportSubscription {
     public subscription: PortalSubscription,
     translationService: ImxTranslationProviderService,
     private getFkProviderItem: (cartItem: PortalSubscription, parameter: ParameterData) => IFkCandidateProvider,
-    parameterDataService: ParameterDataService
+    parameterDataService: ParameterDataService,
   ) {
     this.reportEntityWrapper = new ReportParameterWrapper(
       translationService,
       parameterDataService.logger,
-      this.subscription?.extendedDataRead?.length ? this.subscription.extendedDataRead[0] : null,
+      this.subscription?.extendedDataRead?.length ? this.subscription.extendedDataRead[0] : [],
       (parameterData) => this.getFkProviderItem(this.subscription, parameterData),
-      this.subscription
+      this.subscription,
     );
     this.hasParameter = this.subscription?.extendedDataRead?.[0]?.length > 0;
 
     this.parameterColumns = this.hasParameter ? this.reportEntityWrapper.columns : [];
+    this.parameterNames = this.parameterColumns.map((elem) => elem.ColumnName);
 
     this.reportEntityWrapper.startWriteData.subscribe((elem) => this.startWriteData.emit(elem));
     this.reportEntityWrapper.endWriteData.subscribe(() => this.endWriteData.emit());
@@ -78,13 +81,21 @@ export class ReportSubscription {
             this.subscription.ExportFormat.Column,
             this.subscription.AddtlSubscribers.Column,
           ]
-        : properties.map((prop) => this.subscription.GetEntity().GetColumn(prop.ColumnName));
+        : properties.map((prop) => this.subscription.GetEntity().GetColumn(prop.ColumnName ?? ''));
 
     return columns.map((col) => new BaseCdr(col));
   }
 
-  public getParameterCdr(): ColumnDependentReference[] {
-    return this.parameterColumns.map((col) => new BaseCdr(col));
+  public getParameterCdr(hiddenColumns: string[] = []): ColumnDependentReference[] {
+    return this.parameterColumns.filter(elem=> hiddenColumns.indexOf(elem.ColumnName) === -1).map((col) => new BaseCdr(col));
+  }
+
+  public async fillColumnsWithPreset(presetParameter: { [key: string]: string }): Promise<void> {
+    Object.entries(presetParameter).forEach(async ([key, value]) => {
+      const test = this.parameterColumns.find((elem) => elem.ColumnName === key);
+      await test?.PutValue(value);
+
+    });
   }
 
   public getParameterDictionary(): { [key: string]: any } {
@@ -104,7 +115,7 @@ export class ReportSubscription {
     ].concat(this.parameterColumns);
   }
 
-  public async submit(reload:boolean = false): Promise<void> {
+  public async submit(reload: boolean = false): Promise<void> {
     this.subscription.extendedData = [this.parameterColumns.map((col) => ({ Name: col.ColumnName, Value: col.GetValue() }))];
 
     return this.subscription.GetEntity().Commit(reload);

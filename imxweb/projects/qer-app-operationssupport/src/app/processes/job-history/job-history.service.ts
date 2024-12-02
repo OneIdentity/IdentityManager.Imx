@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { OpsupportQueueJobhistory } from 'imx-api-qbm';
-import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { OpsupportQueueJobhistory } from '@imx-modules/imx-api-qbm';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 
 import { imx_SessionService } from 'qbm';
 
@@ -40,8 +40,8 @@ export class JobHistoryService {
     return this.session.TypedClient.OpsupportQueueJobhistory.GetSchema();
   }
 
-  public async get(parameters: CollectionLoadParameters):Promise<ExtendedTypedEntityCollection<OpsupportQueueJobhistory, unknown>> {
-    return  this.session.TypedClient.OpsupportQueueJobhistory.Get(parameters);
+  public async get(parameters: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<OpsupportQueueJobhistory, unknown>> {
+    return this.session.TypedClient.OpsupportQueueJobhistory.Get(parameters);
   }
 
   public async getDataModel(): Promise<DataModel> {

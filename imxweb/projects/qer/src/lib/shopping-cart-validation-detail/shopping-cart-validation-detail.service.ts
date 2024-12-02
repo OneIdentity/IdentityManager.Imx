@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { ComponentFactoryResolver, Injectable, Type } from '@angular/core';
 import { DetailsContainer } from './details-container.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ShoppingCartValidationDetailService {
   private viewerList: DetailsContainer[] = [];
@@ -37,12 +37,12 @@ export class ShoppingCartValidationDetailService {
     return this.viewerList;
   }
 
-  constructor(private readonly componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private readonly componentFactoryResolver: ComponentFactoryResolver) {}
 
   public register(viewer: Type<any>, id: string): void {
     const detail: DetailsContainer = {
       id,
-      factory: this.componentFactoryResolver.resolveComponentFactory(viewer)
+      factory: this.componentFactoryResolver.resolveComponentFactory(viewer),
     };
     this.viewerList.push(detail);
   }

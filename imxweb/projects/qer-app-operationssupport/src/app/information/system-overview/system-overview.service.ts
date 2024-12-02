@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { OpsupportSystemoverview } from 'imx-api-qbm';
+import { OpsupportSystemoverview } from '@imx-modules/imx-api-qbm';
 import { imx_SessionService } from 'qbm';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
 @Injectable()
 export class SystemOverviewService {

@@ -1,29 +1,15 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/variables';
+@import 'base/mixins';
 
-$SearchBarWidth: 535px;
-$SearchBarHeight: 45px;
 :host {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  height: 100%;
-  mat-card {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    overflow:hidden;
-  }
+  @include flex-column-container-fill();
 }
 .imx-searchbar-card {
-  max-width: $SearchBarWidth;
-  width: $SearchBarWidth;
+  max-width: $IMX_SearchBar_Width;
+  width: $IMX_SearchBar_Width;
   padding: 0px 10px;
   display: inline-block;
-}
-
-.mat-paginator {
-  box-shadow: none;
-  margin-bottom: 6px;
 }
 
 .imx-procces-action{
@@ -32,46 +18,25 @@ $SearchBarHeight: 45px;
   margin-bottom: 20px;
 }
 
-.mat-card .imx-searchbar-input {
-  border: 0 solid transparent;
-  font-size: 1.2em;
-  margin-bottom: 0;
-  width: 450px;
-  height: $SearchBarHeight;
-  box-sizing: border-box;
-  flex-grow: 0;
-  flex-shrink: 0;
-  /* use flex-basis, because of flex shorthand with calc()s doesn't work in IE */
-  flex-basis: calc(100% - 52px);
-}
-.mat-card .imx-searchbar-input::placeholder {
-  font-style: italic;
-}
-.imx-searchbar-input::-ms-clear {
-  /* hide input-clear button (the 'X') in > IE 10 */
-  display: none;
-  width: 0;
-  height: 0;
-}
-.mat-radio-button{
+.mat-mdc-radio-button {
   margin-left: 15px;
 }
 
-.flex-property{
+.flex-property {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   overflow: auto;
 }
-.imx_MatTableRow{
+.imx_MatTableRow {
   cursor: pointer;
 }
-.imx_MatTableHeaderRow{
+.imx_MatTableHeaderRow {
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-.imx-change-table-no-results {
+.imx-no-results {
   text-align: center;
   margin: 20px 0;
   flex: 1 1 auto;
@@ -79,10 +44,7 @@ $SearchBarHeight: 45px;
   flex-direction: column;
   justify-content: center;
   background-color: $color-gray-0;
-  .eui-icon {
-    font-size: 100px;
-    color: $color-gray-10;
-  }
+
   p {
     margin: 0;
     font-size: 18px;
@@ -91,12 +53,10 @@ $SearchBarHeight: 45px;
 }
 
 .eui-dark-theme {
-  :host{
-    .imx-change-table-no-results {
+  :host {
+    .imx-no-results {
       background-color: $color-gray-70;
-      eui-icon {
-        color: $color-gray-20;
-      }
+
       p {
         color: $color-gray-10;
       }

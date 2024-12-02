@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DSTViewConfig } from "./data-source-toolbar-view-config.interface";
+import { DSTViewConfig } from './data-source-toolbar-view-config.interface';
 
 /**
  * Looks up if the config is set to be default
@@ -41,5 +41,5 @@ export function isConfigDefault(config: DSTViewConfig): boolean {
  * @returns whether the config should be used
  */
 export function isDefaultId(config: DSTViewConfig): boolean {
-  return config?.Id == 'Default'
+  return config?.Id == 'Default';
 }

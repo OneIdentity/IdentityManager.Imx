@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,30 +26,41 @@
 
 import { Injectable } from '@angular/core';
 
-import { ExtendedTypedEntityCollection, EntitySchema, DataModel, MethodDescriptor, EntityCollectionData, MethodDefinition, ApiRequestOptions } from 'imx-qbm-dbts';
 import {
-  PortalItshopApproveRequests,
-  OtherApproverInput,
-  DirectDecisionInput,
   DecisionInput,
-  PwoExtendedData,
-  RecallDecisionInput,
-  ReasonInput,
   DenyDecisionInput,
+  DirectDecisionInput,
+  OtherApproverInput,
+  PortalItshopApproveRequests,
+  PwoExtendedData,
   PwoQueryInput,
+  ReasonInput,
+  RecallDecisionInput,
   V2ApiClientMethodFactory,
-} from 'imx-api-qer';
-import { Approval } from './approval';
-import { QerApiService } from '../qer-api-client.service';
-import { ApprovalsLoadParameters } from './approvals-load-parameters';
-import { ItshopRequestService } from '../itshop/itshop-request.service';
+} from '@imx-modules/imx-api-qer';
+import {
+  ApiRequestOptions,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  MethodDefinition,
+  MethodDescriptor,
+} from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarExportMethod } from 'qbm';
+import { ItshopRequestService } from '../itshop/itshop-request.service';
+import { QerApiService } from '../qer-api-client.service';
+import { Approval } from './approval';
+import { ApprovalsLoadParameters } from './approvals-load-parameters';
 
 @Injectable()
 export class ApprovalsService {
   public abortController = new AbortController();
 
-  constructor(private readonly apiService: QerApiService, private readonly itshopRequest: ItshopRequestService) {}
+  constructor(
+    private readonly apiService: QerApiService,
+    private readonly itshopRequest: ItshopRequestService,
+  ) {}
 
   public get PortalItshopApproveRequestsSchema(): EntitySchema {
     return this.apiService.typedClient.PortalItshopApproveRequests.GetSchema();
@@ -70,21 +81,27 @@ export class ApprovalsService {
 
   public async get(
     parameters: ApprovalsLoadParameters,
-    requestOpts?: ApiRequestOptions
-  ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData>> {
-    const collection = await this.apiService.typedClient.PortalItshopApproveRequests.Get({
-      Escalation: this.isChiefApproval,
-      ...parameters,
-    },requestOpts);
+    requestOpts?: ApiRequestOptions,
+  ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> {
+    const collection = await this.apiService.typedClient.PortalItshopApproveRequests.Get(
+      {
+        Escalation: this.isChiefApproval,
+        ...parameters,
+      },
+      requestOpts,
+    );
 
-    return collection == null ? undefined: {
-      tableName: collection.tableName,
-      totalCount: collection.totalCount,
-      Data: collection.Data.map((element, index) =>
-        this.itshopRequest.createRequestApprovalItem(element, { ...collection.extendedData, ...{ index } })
-      ),
-      extendedData: collection.extendedData,
-    };
+    return collection == null
+      ? undefined
+      : {
+          tableName: collection.tableName,
+          totalCount: collection.totalCount,
+          Data: collection.Data.map((element, index) => {
+            const parameter = collection.extendedData ? { ...collection.extendedData, ...{ index } } : undefined;
+            return this.itshopRequest.createRequestApprovalItem(element, parameter);
+          }),
+          extendedData: collection.extendedData,
+        };
   }
 
   public exportApprovalRequests(parameters: ApprovalsLoadParameters): DataSourceToolbarExportMethod {
@@ -106,8 +123,8 @@ export class ApprovalsService {
     };
   }
 
-  public async getApprovalDataModel(): Promise<DataModel> {
-    return this.apiService.client.portal_itshop_approve_requests_datamodel_get(undefined);
+  public async getApprovalDataModel(signal?: AbortSignal): Promise<DataModel> {
+    return this.apiService.client.portal_itshop_approve_requests_datamodel_get(undefined, { signal });
   }
 
   public async recallDecision(pwo: PortalItshopApproveRequests, approver: RecallDecisionInput): Promise<any> {

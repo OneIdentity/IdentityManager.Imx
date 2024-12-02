@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,21 +26,18 @@
 
 import { Injectable } from '@angular/core';
 
-import { ListReportDefinitionRead, PortalReports, PortalReportsEditInteractive } from 'imx-api-rps';
-import { CollectionLoadParameters, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { ListReportDefinitionRead, PortalReports, PortalReportsEdit, PortalReportsEditInteractive } from '@imx-modules/imx-api-rps';
+import { CollectionLoadParameters, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 
 import { RpsApiService } from '../rps-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EditReportService {
+  constructor(private readonly api: RpsApiService) {}
 
-  constructor(
-    private readonly api: RpsApiService,
-  ) { }
-
-  public reportSchema = PortalReportsEditInteractive.GetEntitySchema();
+  public reportSchema = PortalReportsEdit.GetEntitySchema();
 
   public async getReport(id: string): Promise<ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>> {
     return await this.api.typedClient.PortalReportsEditInteractive.Get_byid(id);
@@ -50,14 +47,18 @@ export class EditReportService {
     return this.api.typedClient.PortalReportsEditInteractive.Get();
   }
 
-  public async getReportsOwnedByUser(navigationState?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
-    return this.api.typedClient.PortalReports.Get({ owned: true, ...navigationState });
+  public async getReportsOwnedByUser(
+    navigationState?: CollectionLoadParameters,
+    signal?: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
+    return this.api.typedClient.PortalReports.Get({ owned: true, ...navigationState }, { signal });
   }
 
-  public async getAllReports(navigationState?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
-    return this.api.typedClient.PortalReports.Get(navigationState);
+  public async getAllReports(
+    navigationState?: CollectionLoadParameters,
+    signal?: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
+    return this.api.typedClient.PortalReports.Get(navigationState, { signal });
   }
 
   public async deleteReport(report: PortalReports) {

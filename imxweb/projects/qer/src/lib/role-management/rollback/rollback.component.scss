@@ -1,9 +1,5 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-eui-alert {
-  margin-bottom: 1em;
-  display: block;
-}
 
 .item {
   flex-grow: 1;
@@ -17,14 +13,6 @@ eui-alert {
   margin-bottom: 10px;
 }
 
-.imx-step-button,
-.imx-step-button-save {
-  margin-top: 10px;
-  > *:not(:last-child) {
-    margin-right: 10px;
-  }
-}
-
 .imx-step-data-table {
   display: flex;
   flex-direction: column;
@@ -32,29 +20,14 @@ eui-alert {
   margin-bottom: 45px;
 }
 
-.imx-stepper-card{
+.imx-stepper-card {
   height: 100%;
 }
 
-.imx-top-alert {
-  display: block;
-  margin: 1em 0;
+.eui-dark-theme {
+  background-color: $color-gray-70;
 }
 
-.eui-dark-theme{
-  :host{
-    background-color: $color-gray-70;
-    .mat-input-element, ::ng-deep .eui-alert .eui-alert-header{
-      color: $color-blue-40;
-    }
-  }
-}
-
-.eui-contrast-theme{
-  :host{
-    background-color: $color-gray-90;
-    .mat-input-element, ::ng-deep .eui-alert .eui-alert-header{
-      color: $color-blue-40;
-    }
-  }
+.eui-contrast-theme {
+  background-color: $color-gray-90;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
+import { Event, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { AuthenticationService, ISessionState, SplashService } from 'qbm';
@@ -33,7 +33,7 @@ import { AuthenticationService, ISessionState, SplashService } from 'qbm';
 @Component({
   selector: 'imx-root',
   styleUrls: ['./app.component.scss'],
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
@@ -49,23 +49,22 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState
           this.splash.close();
-        }else {
+        } else {
           if (sessionState.IsLoggedOut) {
             this.showPageContent = false;
           }
         }
 
-        this.isLoggedIn = sessionState.IsLoggedIn;
+        this.isLoggedIn = sessionState.IsLoggedIn ?? false;
         if (this.isLoggedIn) {
           // Close the splash screen that opened in app service initialisation
           // Needs to close here when session is already logged in.
           this.splash.close();
         }
-      })
+      }),
     );
 
     this.setupRouter();
@@ -79,11 +78,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   private setupRouter(): void {
-    this.router.events.subscribe(((event: RouterEvent) => {
+    this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
         this.hideUserMessage = true;
         if (this.isLoggedIn && event.url === '/') {
@@ -104,6 +103,6 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationError) {
         this.hideUserMessage = false;
       }
-    }));
+    });
   }
 }

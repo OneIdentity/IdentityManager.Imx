@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,22 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { EntityService } from './entity.service';
+import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
+import { DataTableModule } from '../data-table/data-table.module';
+import { FkAdvancedPickerModule } from '../fk-advanced-picker/fk-advanced-picker.module';
 import { EntitySelectComponent } from './entity-select/entity-select.component';
+import { EntityService } from './entity.service';
+import { FkTableSelectComponent } from './fk-table-select/fk-table-select.component';
+import { TypedEntityCandidateSidesheetComponent } from './typed-entity-candidate-sidesheet/typed-entity-candidate-sidesheet.component';
 import { TypedEntitySelectComponent } from './typed-entity-select/typed-entity-select.component';
 import { TypedEntitySelectorComponent } from './typed-entity-select/typed-entity-selector/typed-entity-selector.component';
-import { FkAdvancedPickerModule } from '../fk-advanced-picker/fk-advanced-picker.module';
-import { FkTableSelectComponent } from './fk-table-select/fk-table-select.component';
-import { DataTableModule } from '../data-table/data-table.module';
-import { TypedEntityCandidateSidesheetComponent } from './typed-entity-candidate-sidesheet/typed-entity-candidate-sidesheet.component';
-import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
+import { SelectedElementsModule } from '../selected-elements/selected-elements.module';
 
 @NgModule({
   declarations: [
@@ -46,12 +47,9 @@ import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-tool
     TypedEntitySelectComponent,
     TypedEntitySelectorComponent,
     FkTableSelectComponent,
-    TypedEntityCandidateSidesheetComponent
+    TypedEntityCandidateSidesheetComponent,
   ],
-  exports: [
-    EntitySelectComponent,
-    TypedEntitySelectComponent
-  ],
+  exports: [EntitySelectComponent, TypedEntitySelectComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -61,11 +59,9 @@ import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-tool
     ReactiveFormsModule,
     TranslateModule,
     DataTableModule,
-    DataSourceToolbarModule
-
+    DataSourceToolbarModule,
+    SelectedElementsModule
   ],
-  providers: [
-    EntityService
-  ]
+  providers: [EntityService],
 })
-export class EntityModule { }
+export class EntityModule {}

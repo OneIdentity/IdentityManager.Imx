@@ -1,40 +1,55 @@
 <div eui-sidesheet-content>
-
-  <eui-alert *ngIf="isRecApprove" class="helper-alert" type="success" condensed="true" [colored]="true">
-    {{'#LDS#Based on an analysis of currently available data, it is recommended that you approve this request.'| translate}}
+  <eui-alert *ngIf="isRecApprove" type="success" [condensed]="true" [colored]="true">
+    {{
+      (data?.informationTexts?.approve != null
+        ? data?.informationTexts?.approve || ''
+        : '#LDS#Based on an analysis of currently available data, it is recommended that you approve this request.'
+      ) | translate
+    }}
   </eui-alert>
 
-  <eui-alert *ngIf="isRecReject" class="helper-alert" type="error" condensed="true" [colored]="true">
-    {{'#LDS#Based on an analysis of currently available data, it is recommended that you deny this request.'| translate}}
+  <eui-alert *ngIf="isRecReject" type="error" [condensed]="true" [colored]="true">
+    {{
+      (data?.informationTexts?.reject != null
+        ? data?.informationTexts?.reject || ''
+        : '#LDS#Based on an analysis of currently available data, it is recommended that you deny this request.'
+      ) | translate
+    }}
   </eui-alert>
 
-  <eui-alert *ngIf="isNoRec" class="helper-alert" type="info" condensed="true" [colored]="true">
-    {{'#LDS#Based on an analysis of currently available data, no definitive recommendation can be made for this request.'| translate}}
+  <eui-alert *ngIf="isNoRec" type="info" [condensed]="true" [colored]="true">
+    {{
+      (data?.informationTexts?.noRecord != null
+        ? data?.informationTexts?.noRecord || ''
+        : '#LDS#Based on an analysis of currently available data, no definitive recommendation can be made for this request.'
+      ) | translate
+    }}
   </eui-alert>
 
   <div class="recommendation-items" *ngIf="recommendationItems">
-    <p>{{'#LDS#The following factors were considered in this recommendation.' | translate}}</p>
+    <p>{{ '#LDS#The following factors were considered in this recommendation.' | translate }}</p>
     <mat-card *ngFor="let item of recommendationItems" class="recommendation-item">
       <mat-card-header>
         <div mat-card-avatar>
-          <eui-icon *ngIf="!item?.Weight || item?.Weight == 0" class="imx-icon-ok" icon="setdefault" size="25px"></eui-icon>
-          <eui-icon *ngIf="item?.Weight && item?.Weight > 0" class="imx-icon-warning" icon="warning" size="25px"></eui-icon>
+          <eui-icon *ngIf="!item?.Weight || item?.Weight == 0" class="imx-icon-new" icon="setdefault" size="25px"></eui-icon>
+          <eui-icon *ngIf="!!item?.Weight" class="imx-icon-warning" icon="warning" size="25px"></eui-icon>
         </div>
         <mat-card-title>
-          {{item.Display}}
+          {{ item.Display }}
         </mat-card-title>
         <mat-card-subtitle *ngIf="item?.Detail">
-          {{item.Detail}}
+          {{ item.Detail }}
         </mat-card-subtitle>
       </mat-card-header>
     </mat-card>
   </div>
 </div>
 
-<div eui-sidesheet-actions >
-  <button mat-stroked-button data-imx-identifier="approval-recommendation-button-approve" (click)="onApprove()">{{'#LDS#Approve' | translate}}</button>
-  <button mat-stroked-button data-imx-identifier="approval-recommendation-button-approve" (click)="onDeny()">{{'#LDS#Deny' | translate}}</button>
+<div eui-sidesheet-actions>
+  <button mat-stroked-button data-imx-identifier="approval-recommendation-button-approve" (click)="onApprove()">
+    {{ '#LDS#Approve' | translate }}
+  </button>
+  <button mat-stroked-button data-imx-identifier="approval-recommendation-button-approve" (click)="onDeny()">
+    {{ '#LDS#Deny' | translate }}
+  </button>
 </div>
-
-
-

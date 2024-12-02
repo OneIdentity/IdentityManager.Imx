@@ -3,7 +3,7 @@ $theme_font_family: 'Source Sans Pro, "Helvetica Neue", sans-serif' !default;
 @use 'sass:math';
 @use '@angular/material' as mat;
 @use '@elemental-ui/core/src/styles/theming/theme' as theme;
-@use '../shared/scss/theme' as imx-theme;
+@use '../shared/scss/base/theme' as imx-theme;
 
 @import '@elemental-ui/core/src/styles/functions/to_number';
 
@@ -19,28 +19,28 @@ $theme_font_family: 'Source Sans Pro, "Helvetica Neue", sans-serif' !default;
 @import '@elemental-ui/core/src/styles/clickables';
 @import '@elemental-ui/core/src/styles/common';
 
-$custom-typography: mat.define-typography-config(
+$custom-typography: mat.m2-define-typography-config(
   $font-family: $theme_font_family,
-  $button: mat.define-typography-level(14px, 14px, 400),
+  $button: mat.m2-define-typography-level(14px, 14px, 400),
 );
-@include mat.core($custom-typography);
+@include mat.core();
 
 // Define the custom theme.
-$primary: mat.define-palette($gunmetal-palette);
-$accent: mat.define-palette($corbin-orange-palette);
-$warn: mat.define-palette($phoenix-red-palette);
+$primary: mat.m2-define-palette($corbin-orange-palette);
+$accent: mat.m2-define-palette($gunmetal-palette);
+$warn: mat.m2-define-palette($phoenix-red-palette);
 
-$theme: mat.define-light-theme(
+$theme: mat.m2-define-light-theme(
   (
     color: (
       primary: $primary,
       accent: $accent,
       warn: $warn,
     ),
+    typography: $custom-typography
   )
 );
 // Rename the $theme-name variable to your theme's name. (e.g.space-theme)
 $theme-name: 'custom-theme';
-
 @include theme.theme($theme-name, $theme);
 @include imx-theme.theme($theme-name, $theme);

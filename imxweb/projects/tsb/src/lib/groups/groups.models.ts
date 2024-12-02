@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
-import { PortalTargetsystemUnsGroupServiceitem } from 'imx-api-tsb';
-import { GroupTypedEntity } from './group-typed-entity';
+import { PortalTargetsystemUnsGroupServiceitem } from '@imx-modules/imx-api-tsb';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
 import { DbObjectKeyBase } from '../target-system/db-object-key-wrapper.interface';
+import { GroupTypedEntity } from './group-typed-entity';
 
 export interface GetGroupsOptionalParameters extends CollectionLoadParameters {
   uid_unsaccount?: string;
@@ -46,8 +46,8 @@ export interface GroupSidesheetData {
 }
 
 export interface GroupsFilterTreeParameters {
-  container: string;
-  system: string;
-  uid_unsaccount: string;
-  parentkey:string;
+  container: string | undefined;
+  system: string | undefined;
+  uid_unsaccount: string | undefined;
+  parentkey: string;
 }

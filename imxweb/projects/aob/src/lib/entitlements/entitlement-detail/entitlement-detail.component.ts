@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,17 @@
 
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { ConfirmationService, SnackBarService } from 'qbm';
-import { TypedEntity } from 'imx-qbm-dbts';
 import { EntitlementWrapper } from '../entitlement-wrapper.interface';
 
 @Component({
   selector: 'imx-entitlement-detail',
   templateUrl: './entitlement-detail.component.html',
-  styleUrls: ['./entitlement-detail.component.scss']
+  styleUrls: ['./entitlement-detail.component.scss'],
 })
 export class EntitlementDetailComponent implements OnDestroy {
   public readonly form = new UntypedFormGroup({});
@@ -47,35 +47,37 @@ export class EntitlementDetailComponent implements OnDestroy {
     @Inject(EUI_SIDESHEET_DATA) public readonly data: EntitlementWrapper,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
-      const entitlementHasChanges = this.entityHasChanges(this.data.entitlement);
-      const serviceItemHasChanges = this.entityHasChanges(this.data.serviceItem);
-      const hasChanges = entitlementHasChanges || serviceItemHasChanges || !this.form.pristine;
+    this.subscriptions.push(
+      this.sidesheetRef.closeClicked().subscribe(async () => {
+        const entitlementHasChanges = this.entityHasChanges(this.data.entitlement);
+        const serviceItemHasChanges = this.entityHasChanges(this.data?.serviceItem);
+        const hasChanges = entitlementHasChanges || serviceItemHasChanges || !this.form.pristine;
 
-      if (hasChanges && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
-        return;
-      }
+        if (hasChanges && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
+          return;
+        }
 
-      if (entitlementHasChanges) {
-        await this.data.entitlement.GetEntity().DiscardChanges();
-      }
+        if (entitlementHasChanges) {
+          await this.data.entitlement?.GetEntity().DiscardChanges();
+        }
 
-      if (serviceItemHasChanges) {
-        await this.data.serviceItem.GetEntity().DiscardChanges();
-      }
+        if (serviceItemHasChanges) {
+          await this.data?.serviceItem?.GetEntity().DiscardChanges();
+        }
 
-      if (hasChanges) {
-        this.snackbar.open({ key: '#LDS#The changes were discarded.' });
-      }
+        if (hasChanges) {
+          this.snackbar.open({ key: '#LDS#The changes were discarded.' });
+        }
 
-      this.sidesheetRef.close(false);
-    }));
+        this.sidesheetRef.close(false);
+      }),
+    );
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public afterSave(success: boolean): void {
@@ -86,7 +88,7 @@ export class EntitlementDetailComponent implements OnDestroy {
     this.sidesheetRef.close(true);
   }
 
-  private entityHasChanges(entity: TypedEntity): boolean {
-    return entity != null && entity.GetEntity().GetDiffData()?.Data?.length > 0;
+  private entityHasChanges(entity: TypedEntity | undefined): boolean {
+    return entity != null && !!entity?.GetEntity().GetDiffData()?.Data?.length;
   }
 }

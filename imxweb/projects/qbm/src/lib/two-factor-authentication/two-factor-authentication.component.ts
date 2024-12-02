@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,36 +24,40 @@
  *
  */
 
-import { ComponentFactoryResolver, Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit, ViewChild } from '@angular/core';
 
-import { TwoFactorAuthenticationService } from './two-factor-authentication.service';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { ExtDirective } from '../ext/ext.directive';
 import { imx_SessionService } from '../session/imx-session.service';
 import { ISessionState } from '../session/session-state';
+import { TwoFactorAuthenticationService } from './two-factor-authentication.service';
 
 @Component({
   selector: 'imx-2fahost',
-  template: `
-    <ng-template imxExtd></ng-template>
-  `
+  template: ` <ng-template imxExtd></ng-template> `,
 })
 export class TwoFactorAuthenticationComponent implements OnInit {
   @ViewChild(ExtDirective, { static: true }) public directive: ExtDirective;
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
+    private classlogger: ClassloggerService,
     private twoFactorAuthService: TwoFactorAuthenticationService,
-    private sessionService: imx_SessionService
+    private sessionService: imx_SessionService,
   ) {}
 
   public ngOnInit(): void {
     this.sessionService.getSessionState().then((sessionState: ISessionState) => {
-      const selectedProvider = this.twoFactorAuthService.Registry[sessionState.SecondaryAuthName];
-      if (selectedProvider) {
-        this.directive.viewContainerRef.clear();
-        this.directive.viewContainerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(selectedProvider));
+      if (sessionState.SecondaryAuthName) {
+        const selectedProvider = this.twoFactorAuthService.Registry[sessionState.SecondaryAuthName];
+        if (selectedProvider) {
+          this.directive.viewContainerRef.clear();
+          this.directive.viewContainerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(selectedProvider));
+        } else {
+          this.classlogger.warn(this, 'No provider selected');
+        }
       } else {
-        // TODO log
+        this.classlogger.warn(this, 'No secondary auth name found');
       }
     });
   }

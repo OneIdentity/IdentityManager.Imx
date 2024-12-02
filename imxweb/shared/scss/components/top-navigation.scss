@@ -1,0 +1,25 @@
+/* Elemental UI */
+
+@media only screen and (max-width: 768px) {
+  .eui-top-navigation-mobile {
+    .eui-top-navigation-mobile-footer {
+      .mat-mdc-button {
+        &.imx-masthead--icon-button {
+          width: 100%;
+
+          .mat-mdc-button-wrapper span {
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Angular Material */
+
+/* Imx */
+
+/* Dark theme */
+
+/* High-contrast theme */

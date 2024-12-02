@@ -1,8 +1,0 @@
-{
-  "name": "o3t",
-  "version": "9.2.1",
-  "private": true,
-  "bundledDependencies": [
-    "imx-api-o3t"
-  ]
-}

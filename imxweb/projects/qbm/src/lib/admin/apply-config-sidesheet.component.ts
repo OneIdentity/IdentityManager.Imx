@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,19 @@
  *
  */
 
-import { Component } from "@angular/core";
-import { EuiSidesheetRef } from "@elemental-ui/core";
-import { ConfigService } from "./config.service";
+import { Component } from '@angular/core';
+import { EuiSidesheetRef } from '@elemental-ui/core';
+import { ConfigService } from './config.service';
 
 @Component({
   templateUrl: './apply-config-sidesheet.component.html',
-  styleUrls: ['./apply-config-sidesheet.component.scss']
+  styleUrls: ['./apply-config-sidesheet.component.scss'],
 })
 export class ApplyConfigSidesheetComponent {
-
-  constructor(private readonly configSvc: ConfigService,
+  constructor(
+    private readonly configSvc: ConfigService,
     private readonly sideSheetRef: EuiSidesheetRef,
-  ) { 
+  ) {
     this.isGlobal = !configSvc.supportsLocalCustomization;
   }
 
@@ -51,13 +51,15 @@ export class ApplyConfigSidesheetComponent {
     this.sideSheetRef.close();
   }
 
-  public LdsApplyLocally = '#LDS#Use this setting if you want to try configuration changes only on this server. The changes are reset when you restart the server.';
+  public LdsApplyLocally =
+    '#LDS#Use this setting if you want to try configuration changes only on this server. The changes are reset when you restart the server.';
 
-  public LdsApplyGlobally = '#LDS#Use this setting if you want to apply the configuration changes globally. The changes are stored in the global configuration file and distributed to all API servers.';
+  public LdsApplyGlobally =
+    '#LDS#Use this setting if you want to apply the configuration changes globally. The changes are stored in the global configuration file and distributed to all API servers.';
 
   public LdsApplyLocallyNotPossible = '#LDS#This option has been disabled by your administrator.';
 
-  public get pendingChanges(): string[][] {
+  public get pendingChanges(): (string | undefined)[][] {
     return this.configSvc.getPendingChanges();
   }
 }

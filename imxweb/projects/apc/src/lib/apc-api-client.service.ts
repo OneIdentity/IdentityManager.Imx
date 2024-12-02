@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,11 @@
  */
 
 import { Injectable } from '@angular/core';
-import { V2Client, TypedClient } from 'imx-api-apc';
+import { V2Client, TypedClient } from '@imx-modules/imx-api-apc';
 import { AppConfigService, ClassloggerService, ImxTranslationProviderService } from 'qbm';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApcApiService {
   private tc: TypedClient;
@@ -45,7 +45,8 @@ export class ApcApiService {
   constructor(
     config: AppConfigService,
     private readonly logger: ClassloggerService,
-    private readonly translationProvider: ImxTranslationProviderService) {
+    private readonly translationProvider: ImxTranslationProviderService,
+  ) {
     try {
       // Use schema loaded by QBM client
       const schemaProvider = config.client;

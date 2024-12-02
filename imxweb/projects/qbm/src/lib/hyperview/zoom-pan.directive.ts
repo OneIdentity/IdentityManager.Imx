@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,10 @@ export class ZoomPanDirective {
   private relativePosition = { x: 0, y: 0 };
   //mousemove should work only after the element is clicked
   private mouseDown = false;
-  constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
+  constructor(
+    private elementRef: ElementRef,
+    private renderer: Renderer2,
+  ) {}
 
   @HostListener('wheel', ['$event'])
   private scaling(event: WheelEvent) {

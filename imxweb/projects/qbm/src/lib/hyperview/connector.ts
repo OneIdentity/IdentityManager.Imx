@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,10 +28,13 @@
  * The connector class
  */
 export class Connector {
-    public isHidden: boolean;
-    public data: string;
+  public isHidden: boolean;
+  public data: string;
 
-    constructor(public readonly element1: HTMLElement, public readonly element2: HTMLElement) {
-        this.isHidden = false;
-    }
+  constructor(
+    public readonly element1: HTMLElement,
+    public readonly element2: HTMLElement,
+  ) {
+    this.isHidden = false;
+  }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,25 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { EuiCoreModule } from '@elemental-ui/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, DataSourceToolbarModule, DataTableModule, HelpContextualModule, ExtModule } from 'qbm';
-import { StatisticsModule, ObjectHyperviewModule } from 'qer';
-import { RulesComponent } from './rules.component';
-import { RulesSidesheetComponent } from './rules-sidesheet/rules-sidesheet.component';
-import { MitigatingControlsRulesComponent } from './mitigating-controls-rules/mitigating-controls-rules.component';
-import { ViolationsPerRuleComponent } from './rules-sidesheet/violations-per-rule/violations-per-rule.component';
+import { MatTableModule } from '@angular/material/table';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DataViewModule, ExtModule, HelpContextualModule } from 'qbm';
+import { ObjectHyperviewModule, StatisticsModule } from 'qer';
 import { RulesViolationsModule } from '../rules-violations/rules-violations.module';
+import { MitigatingControlsRulesComponent } from './mitigating-controls-rules/mitigating-controls-rules.component';
+import { RulesSidesheetComponent } from './rules-sidesheet/rules-sidesheet.component';
+import { ViolationsPerRuleComponent } from './rules-sidesheet/violations-per-rule/violations-per-rule.component';
+import { RulesComponent } from './rules.component';
 
 @NgModule({
-  declarations: [
-    RulesComponent,
-    RulesSidesheetComponent,
-    MitigatingControlsRulesComponent,
-    ViolationsPerRuleComponent,
-  ],
+  declarations: [RulesComponent, RulesSidesheetComponent, MitigatingControlsRulesComponent, ViolationsPerRuleComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -61,7 +57,9 @@ import { RulesViolationsModule } from '../rules-violations/rules-violations.modu
     ObjectHyperviewModule,
     HelpContextualModule,
     ExtModule,
-    RulesViolationsModule
+    RulesViolationsModule,
+    DataViewModule,
+    MatTableModule,
   ],
 })
 export class RulesModule {}

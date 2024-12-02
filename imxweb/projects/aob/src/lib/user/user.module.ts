@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,16 +32,8 @@ import { UserComponent } from './user.component';
 import { UserModule } from 'qer';
 
 @NgModule({
-  declarations: [
-    UserComponent
-  ],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    UserModule
-  ],
-  exports: [
-    UserComponent
-  ],
+  declarations: [UserComponent],
+  imports: [CommonModule, MatIconModule, UserModule],
+  exports: [UserComponent],
 })
-export class AobUserModule { }
+export class AobUserModule {}

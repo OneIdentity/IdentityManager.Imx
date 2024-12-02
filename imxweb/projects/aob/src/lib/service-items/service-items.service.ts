@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,24 +26,29 @@
 
 import { Injectable } from '@angular/core';
 
+import { PortalEntitlement, PortalEntitlementServiceitem } from '@imx-modules/imx-api-aob';
+import { CollectionLoadParameters, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { ApiClientService } from 'qbm';
-import { PortalEntitlement, PortalEntitlementServiceitem } from 'imx-api-aob';
-import { CollectionLoadParameters, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { AobApiService } from '../aob-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ServiceItemsService {
-  constructor(private readonly aobClient: AobApiService, private readonly apiProvider: ApiClientService) { }
+  constructor(
+    private readonly aobClient: AobApiService,
+    private readonly apiProvider: ApiClientService,
+  ) {}
 
   public async get(
     entitlement: PortalEntitlement,
-    parameters: CollectionLoadParameters = { }
-  ): Promise<TypedEntityCollectionData<PortalEntitlementServiceitem>> {
-    return this.apiProvider.request(() => this.aobClient.typedClient.PortalEntitlementServiceitem.Get({
-      ...{ uid_aobentitlement: entitlement.UID_AOBEntitlement.value },
-      ...parameters
-    }));
+    parameters: CollectionLoadParameters = {},
+  ): Promise<ExtendedTypedEntityCollection<PortalEntitlementServiceitem, unknown> | undefined> {
+    return this.apiProvider.request(() =>
+      this.aobClient.typedClient.PortalEntitlementServiceitem.Get({
+        ...{ uid_aobentitlement: entitlement.UID_AOBEntitlement.value },
+        ...parameters,
+      }),
+    );
   }
 }

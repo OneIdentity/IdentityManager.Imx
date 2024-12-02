@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalItshopPeergroupMemberships } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, ValType, ValueStruct } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DataSourceToolbarComponent, DataSourceWrapper } from 'qbm';
+import { PortalItshopPeergroupMemberships } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DisplayColumns, TypedEntity, ValType, ValueStruct } from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolbarComponent, DataSourceToolbarSettings, DataSourceWrapper } from 'qbm';
 import { ItshopService } from '../../itshop/itshop.service';
 import { RecipientsWrapper } from '../recipients-wrapper';
 
 @Component({
   selector: 'imx-role-memberships',
   templateUrl: './role-memberships.component.html',
-  styleUrls: ['./role-memberships.component.scss']
+  styleUrls: ['./role-memberships.component.scss'],
 })
 export class RoleMembershipsComponent implements OnChanges {
   @Input() public recipients: RecipientsWrapper;
@@ -48,9 +47,9 @@ export class RoleMembershipsComponent implements OnChanges {
   @Output() public selectionChanged = new EventEmitter<PortalItshopPeergroupMemberships[]>();
   @Output() public addItemToCart = new EventEmitter<PortalItshopPeergroupMemberships>();
 
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public isLoading = false;
-  public noDataText = "#LDS#No data";
+  public noDataText = '#LDS#No data';
 
   public readonly dstWrapper: DataSourceWrapper<PortalItshopPeergroupMemberships>;
 
@@ -60,18 +59,21 @@ export class RoleMembershipsComponent implements OnChanges {
 
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
-  constructor(private readonly itshop: ItshopService, private readonly busy: EuiLoadingService) {
+  constructor(
+    private readonly itshop: ItshopService,
+    private readonly busy: EuiLoadingService,
+  ) {
     const entitySchema = this.itshop.PortalItshopPeergroupMembershipsSchema;
 
     this.dstWrapper = new DataSourceWrapper(
-      state => this.itshop.getPeerGroupMemberships({
-        ...(this.referenceUser ?
-            { UID_PersonReference: this.referenceUser.DataValue }
-            : { UID_PersonPeerGroup: this.personPeerGroupUid }
-          ),
-        ...{ UID_Person: this.recipients ? this.recipients.uids.join(',') : undefined },
-        ...state
-      }),
+      (state) =>
+        this.itshop.getPeerGroupMemberships({
+          ...(this.referenceUser
+            ? { UID_PersonReference: this.referenceUser.DataValue }
+            : { UID_PersonPeerGroup: this.personPeerGroupUid }),
+          ...{ UID_Person: this.recipients ? this.recipients.uids.join(',') : undefined },
+          ...state,
+        }),
       [
         entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         entitySchema.Columns.FullPath,
@@ -79,16 +81,14 @@ export class RoleMembershipsComponent implements OnChanges {
           ColumnName: 'addCartButton',
           Type: ValType.String,
           afterAdditionals: true,
-          untranslatedDisplay: '#LDS#Add to cart'
-      }
+          untranslatedDisplay: '#LDS#Add to cart',
+        },
       ],
       entitySchema,
       undefined,
-      'product-selection-role-membership'
+      'product-selection-role-membership',
     );
   }
-
-
 
   public async ngOnChanges(change: SimpleChanges): Promise<void> {
     if (change.referenceUser || change.personPeerGroupUid) {
@@ -98,20 +98,19 @@ export class RoleMembershipsComponent implements OnChanges {
   }
 
   public async getData(newState?: CollectionLoadParameters): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => {
-      overlayRef = this.busy.show();
-      this.isLoading = true;
-    });
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
+    this.isLoading = true;
 
     try {
       this.dstSettings = await this.dstWrapper.getDstSettings(newState);
-      this.dstWrapper.extendedData?.PeerGroupSize === 0 ? this.noDataText = '#LDS#Peer group is empty' : this.noDataText = '#LDS#No data';
+      this.dstWrapper.extendedData?.PeerGroupSize === 0
+        ? (this.noDataText = '#LDS#Peer group is empty')
+        : (this.noDataText = '#LDS#No data');
     } finally {
-      setTimeout(() => {
-        this.busy.hide(overlayRef);
-        this.isLoading = false;
-      });
+      this.busy.hide();
+      this.isLoading = false;
     }
   }
 
@@ -125,5 +124,13 @@ export class RoleMembershipsComponent implements OnChanges {
 
   public deselectAll(): void {
     this.dst?.clearSelection();
+  }
+
+  public onSelectionChanged(entities: TypedEntity[]) {
+    this.selectionChanged.emit(entities as PortalItshopPeergroupMemberships[]);
+  }
+
+  public onActionSelected(entity: TypedEntity | undefined) {
+    this.addItemToCart.emit(entity as PortalItshopPeergroupMemberships);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,21 +28,21 @@ import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Globals } from 'imx-qbm-dbts';
+import { TypedClient } from '@imx-modules/imx-api-qbm';
+import { Globals } from '@imx-modules/imx-qbm-dbts';
 import {
   AppConfigService,
   AuthenticationService,
-  imx_SessionService,
+  ISessionState,
   ImxTranslationProviderService,
   SplashService,
   SystemInfoService,
-  ISessionState
+  imx_SessionService,
 } from 'qbm';
 import { environment } from '../environments/environment';
-import { TypedClient } from 'imx-api-qbm';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppService {
   constructor(
@@ -54,19 +54,22 @@ export class AppService {
     private readonly title: Title,
     private readonly authentication: AuthenticationService,
     private readonly splash: SplashService,
-  ) { }
+  ) {}
 
   public async init(): Promise<void> {
     this.showSplash();
     await this.config.init(environment.clientUrl);
-
-    this.translateService.addLangs(this.config.Config.Translation.Langs);
-    const browserCulture = this.translateService.getBrowserCultureLang();
+    if (this.config.Config.Translation?.Langs) {
+      this.translateService.addLangs(this.config.Config.Translation.Langs);
+    }
+    const browserCulture = this.translateService.getBrowserCultureLang() as string;
     this.translateService.setDefaultLang(browserCulture);
     await this.translateService.use(browserCulture).toPromise();
 
     // If the session defines another culture, update the translation provider
-    this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) => this.translationProvider.init(sessionState?.culture, sessionState?.cultureFormat));
+    this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) =>
+      this.translationProvider.init(sessionState?.culture, sessionState?.cultureFormat),
+    );
 
     this.translateService.onLangChange.subscribe(() => {
       this.setTitle();

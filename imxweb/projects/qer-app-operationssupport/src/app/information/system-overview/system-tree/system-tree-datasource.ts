@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { SystemTreeDatabase } from './system-tree-database';
@@ -51,22 +51,27 @@ export class SystemTreeDataSource {
    */
   private subscriptions: Subscription[] = [];
 
-  constructor(private treeControl: FlatTreeControl<SystemTreeNode>, private database: SystemTreeDatabase) { }
+  constructor(
+    private treeControl: FlatTreeControl<SystemTreeNode>,
+    private database: SystemTreeDatabase,
+  ) {}
 
   /**
    * @ignore Used internally.
    * Unsubscribes all listeners.
    */
   public disconnect(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public connect(collectionViewer: CollectionViewer): Observable<SystemTreeNode[]> {
-    this.subscriptions.push(this.treeControl.expansionModel.changed.subscribe(change => {
-      if ((change as SelectionChange<SystemTreeNode>).added || (change as SelectionChange<SystemTreeNode>).removed) {
-        this.handleTreeControl(change as SelectionChange<SystemTreeNode>);
-      }
-    }));
+    this.subscriptions.push(
+      this.treeControl.expansionModel.changed.subscribe((change) => {
+        if ((change as SelectionChange<SystemTreeNode>).added || (change as SelectionChange<SystemTreeNode>).removed) {
+          this.handleTreeControl(change as SelectionChange<SystemTreeNode>);
+        }
+      }),
+    );
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
   }
@@ -74,13 +79,13 @@ export class SystemTreeDataSource {
   /** Handle expand/collapse behaviors */
   public handleTreeControl(change: SelectionChange<SystemTreeNode>): void {
     if (change.added && change.added.length > 0) {
-      change.added.forEach(node => this.toggleNode(node, true));
+      change.added.forEach((node) => this.toggleNode(node, true));
     }
     if (change.removed && change.removed.length > 0) {
       change.removed
         .slice()
         .reverse()
-        .forEach(node => this.toggleNode(node, false));
+        .forEach((node) => this.toggleNode(node, false));
     }
   }
 
@@ -96,12 +101,13 @@ export class SystemTreeDataSource {
     }
 
     if (expand) {
-      const nodes = children.map(name => new SystemTreeNode(name, null, node.level + 1, this.database.isExpandable(name.Element.value)));
+      const nodes = children.map(
+        (name) => new SystemTreeNode(name, undefined, node.level + 1, this.database.isExpandable(name.Element.value)),
+      );
       this.data.splice(index + 1, 0, ...nodes);
     } else {
       let count = 0;
-      // tslint:disable-next-line: no-empty
-      for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) { }
+      for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++, count++) {}
       this.data.splice(index + 1, count);
     }
 

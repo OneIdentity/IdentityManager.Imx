@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,21 +35,9 @@ import { DataSourceToolbarModule, DataTableModule } from 'qbm';
 import { WebApplicationsComponent } from './web-applications.component';
 import { WebApplicationsService } from './web-applications.service';
 
-
-
 @NgModule({
-  declarations: [
-    WebApplicationsComponent
-  ],
-  imports: [
-    CommonModule,
-    DataTableModule,
-    DataSourceToolbarModule,
-    EuiCoreModule,
-    MatTooltipModule,
-    MatButtonModule,
-    TranslateModule
-  ],
-  providers: [WebApplicationsService]
+  declarations: [WebApplicationsComponent],
+  imports: [CommonModule, DataTableModule, DataSourceToolbarModule, EuiCoreModule, MatTooltipModule, MatButtonModule, TranslateModule],
+  providers: [WebApplicationsService],
 })
-export class WebApplicationsModule { }
+export class WebApplicationsModule {}

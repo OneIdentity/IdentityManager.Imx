@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,8 +28,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, EntitySchema } from 'imx-qbm-dbts';
-import { DataModelWrapper, DataSourceToolbarSettings, DataSourceWrapper, DataTableGroupedData } from 'qbm';
+import { CollectionLoadParameters, EntitySchema, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth, DataModelWrapper, DataSourceToolbarSettings, DataSourceWrapper, DataTableGroupedData } from 'qbm';
 import { RulesViolationsApproval } from '../../../rules-violations/rules-violations-approval';
 import { RulesViolationsDetailsComponent } from '../../../rules-violations/rules-violations-details/rules-violations-details.component';
 import { RulesViolationsService } from '../../../rules-violations/rules-violations.service';
@@ -42,7 +42,7 @@ import { RulesViolationsService } from '../../../rules-violations/rules-violatio
 export class ViolationsPerRuleComponent implements OnInit {
   public dataModelWrapper: DataModelWrapper;
   public dstWrapper: DataSourceWrapper<RulesViolationsApproval>;
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public groupedData: { [key: string]: DataTableGroupedData } = {};
 
   public entitySchema: EntitySchema;
@@ -52,7 +52,7 @@ export class ViolationsPerRuleComponent implements OnInit {
   constructor(
     private readonly rulesViolationsService: RulesViolationsService,
     private readonly translate: TranslateService,
-    private readonly sidesheet: EuiSidesheetService
+    private readonly sidesheet: EuiSidesheetService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -74,7 +74,7 @@ export class ViolationsPerRuleComponent implements OnInit {
         this.entitySchema.Columns.RiskIndexReduced,
       ],
       this.entitySchema,
-      this.dataModelWrapper
+      this.dataModelWrapper,
     );
 
     await this.getData();
@@ -90,11 +90,11 @@ export class ViolationsPerRuleComponent implements OnInit {
       const groupedData = this.groupedData[groupKey];
       groupedData.data = await this.rulesViolationsService.getRulesViolationsApprove(groupedData.navigationState);
       groupedData.settings = {
-        displayedColumns: this.dstSettings.displayedColumns,
-        dataModel: this.dstSettings.dataModel,
+        displayedColumns: this.dstSettings?.displayedColumns,
+        dataModel: this.dstSettings?.dataModel,
         dataSource: groupedData.data,
-        entitySchema: this.dstSettings.entitySchema,
-        navigationState: groupedData.navigationState,
+        entitySchema: this.entitySchema,
+        navigationState: groupedData.navigationState || {},
       };
     } finally {
       this.rulesViolationsService.handleCloseLoader();
@@ -105,7 +105,8 @@ export class ViolationsPerRuleComponent implements OnInit {
    * Opens rules-violations-details sidesheet, where you can manage the selected rule.
    * @param rule The selected rule from the Rule Violations list
    */
-  public async showRulesViolationsDetail(rule: RulesViolationsApproval) {
+  public async showRulesViolationsDetail(entity: TypedEntity) {
+    const rule = entity as RulesViolationsApproval;
     const complianceRule = await this.rulesViolationsService.getComplianceRuleByUId(rule);
     const config = await this.rulesViolationsService.featureConfig();
     await this.sidesheet
@@ -113,7 +114,7 @@ export class ViolationsPerRuleComponent implements OnInit {
         title: await this.translate.get('#LDS#Heading View Rule Violation Details').toPromise(),
         subTitle: rule.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(1000px, 70%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'rules-violations-informations-sidesheet',
         data: {
           selectedRulesViolation: rule,

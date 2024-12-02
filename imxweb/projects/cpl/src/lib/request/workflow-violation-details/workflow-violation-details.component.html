@@ -7,24 +7,24 @@
     <mat-expansion-panel *ngFor="let item of violations">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{ item?.Columns['UID_ComplianceRule']?.DisplayValue }}
+          {{ item?.Columns?.['UID_ComplianceRule']?.DisplayValue }}
         </mat-panel-title>
         <mat-panel-description>
-          {{ item?.Columns['DateHead']?.DisplayValue }}
+          {{ item?.Columns?.['DateHead']?.DisplayValue }}
         </mat-panel-description>
       </mat-expansion-panel-header>
 
-      <ng-container *ngIf="item?.Columns['UID_PersonRelated']?.Value">
+      <ng-container *ngIf="item?.Columns?.['UID_PersonRelated']?.Value">
         <div class="imx-label">{{ '#LDS#Affected identity' | translate }}</div>
         <p class="imx-description imx-value">
-          {{ item?.Columns['UID_PersonRelated']?.DisplayValue }}
+          {{ item?.Columns?.['UID_PersonRelated']?.DisplayValue }}
         </p>
       </ng-container>
 
-      <ng-container *ngIf="item?.Columns['UID_PWODecisionRule']?.Value">
+      <ng-container *ngIf="item?.Columns?.['UID_PWODecisionRule']?.Value">
         <div class="imx-label">{{ '#LDS#Approval procedure' | translate }}</div>
         <p class="imx-description imx-value">
-          {{ item?.Columns['UID_PWODecisionRule']?.DisplayValue }}
+          {{ item?.Columns?.['UID_PWODecisionRule']?.DisplayValue }}
         </p>
       </ng-container>
     </mat-expansion-panel>

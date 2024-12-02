@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { IEntity } from 'imx-qbm-dbts';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 
 export interface TreeNodeInfo {
   item?: IEntity;
@@ -34,27 +34,41 @@ export interface TreeNodeInfo {
   expandable?: boolean;
   isLoading?: boolean;
   isLoadMoreNode?: boolean;
+  isSelectable?: boolean;
   display?: string;
+  nodes?: TreeNodeInfo[];
 }
 
 /** Class representing a single node in the DataTree with expandable and level information */
 export class TreeNode implements TreeNodeInfo {
   /** the display of the bounded item of the node */
   public get display(): string {
-    return this.item != null ? this.item.GetDisplay() : this.name;
+    return (this.item != null ? this.item.GetDisplay() : this.name) ?? '';
   }
 
   constructor(
-    public item: IEntity,
-    public readonly identifier: string,
+    public item?: IEntity,
+    public readonly identifier?: string,
     public readonly name?: string,
     public readonly level: number = 1,
     public expandable: boolean = false,
     public isLoading: boolean = false,
-    public isLoadMoreNode: boolean = false
+    public isLoadMoreNode: boolean = false,
+    public isSelectable: boolean = true,
+    public nodes: TreeNodeInfo[] = [],
   ) {}
 
   public static createNodeFromInfo(info: TreeNodeInfo) {
-    return new TreeNode(info.item, info.identifier,info.name,info.level,info.expandable,info.isLoading,info.isLoadMoreNode);
+    return new TreeNode(
+      info.item,
+      info.identifier,
+      info.name,
+      info.level,
+      info.expandable,
+      info.isLoading,
+      info.isLoadMoreNode,
+      info.isSelectable,
+      info.nodes,
+    );
   }
 }

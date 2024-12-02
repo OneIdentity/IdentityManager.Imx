@@ -6,15 +6,11 @@
   flex-direction: column;
   justify-content: space-between;
 
-  .imx-helper-alert {
-    margin: 0px 0 20px auto;
-    width: 100%;
-  }
-
   .control-container {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
     overflow: auto;
   }
 
@@ -29,34 +25,16 @@
       width: 100%;
       margin-right: 15px;
     }
-
-    eui-icon {
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
   }
 
-  .imx-no-mitigating-controls {
+  .imx-no-results {
     text-align: center;
-    margin: 20px 0;
-
-    .eui-icon {
-      font-size: 100px;
-      color: rgba($black-c, 0.55);
-    }
+    margin: auto;
 
     p {
       margin: 0;
       font-size: 18px;
       color: $black-9;
     }
-  }
-
-  .button-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
   }
 }

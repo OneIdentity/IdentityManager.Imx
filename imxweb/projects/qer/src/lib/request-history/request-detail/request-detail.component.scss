@@ -8,12 +8,6 @@
   height: 100%;
 }
 
-.eui-sidesheet-actions {
-  button:not(:last-of-type) {
-    margin-right: 10px;
-  }
-}
-
 .eui-dark-theme {
   :host {
     .imx-request-detail {
@@ -26,10 +20,6 @@
   :host {
     .imx-request-detail {
       background-color: $color-gray-100;
-    }
-    .imx-button-bar{
-      color: $color-gray-2;
-      background-color: $color-gray-90;
     }
   }
 }

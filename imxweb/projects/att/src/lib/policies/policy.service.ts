@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,14 +29,14 @@ import { EuiDownloadOptions } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
-  V2ApiClientMethodFactory,
   ParmData,
   PolicyFilter,
   PolicyStartInput,
   PortalAttestationFilterMatchingobjects,
   PortalAttestationPolicyEdit,
   PortalAttestationPolicyEditInteractive,
-} from 'imx-api-att';
+  V2ApiClientMethodFactory,
+} from '@imx-modules/imx-api-att';
 import {
   CollectionLoadParameters,
   CompareOperator,
@@ -50,7 +50,7 @@ import {
   MethodDefinition,
   MethodDescriptor,
   TypedEntityBuilder,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, DataSourceToolbarExportMethod, ElementalUiConfigService } from 'qbm';
 import { ApiService } from '../api.service';
 import { AttestationPolicy } from './policy-list/attestation-policy';
@@ -68,7 +68,7 @@ export class PolicyService {
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly translator: TranslateService,
     private readonly config: AppConfigService,
-    private readonly logger: ClassloggerService
+    private readonly logger: ClassloggerService,
   ) {}
 
   public get AttestationMatchingObjectsSchema(): EntitySchema {
@@ -83,8 +83,11 @@ export class PolicyService {
     return this.api.typedClient.PortalAttestationPolicyEditInteractive.GetSchema();
   }
 
-  public async getPolicies(parameters: PolicyLoadParameters): Promise<ExtendedTypedEntityCollection<AttestationPolicy, {}>> {
-    const collection = await this.api.typedClient.PortalAttestationPolicy.Get(parameters);
+  public async getPolicies(
+    parameters: PolicyLoadParameters,
+    signal?: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<AttestationPolicy, {}>> {
+    const collection = await this.api.typedClient.PortalAttestationPolicy.Get(parameters, { signal });
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
@@ -121,7 +124,7 @@ export class PolicyService {
   }
 
   public async getParmData(uidAttestationObject: string): Promise<ParmData[]> {
-    return uidAttestationObject ? (await this.api.client.portal_attestation_filter_model_get(uidAttestationObject)).ParmData : [];
+    return uidAttestationObject ? (await this.api.client.portal_attestation_filter_model_get(uidAttestationObject)).ParmData || [] : [];
   }
 
   public async getFilterCandidates(parameters: CollectionLoadParameters, uidAttestationParm: string): Promise<EntityCollectionData> {
@@ -136,13 +139,13 @@ export class PolicyService {
     uidAttestatation: string,
     uidPickCategory: string,
     policyfilter: PolicyFilter,
-    parameters: CollectionLoadParameters
+    parameters: CollectionLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<PortalAttestationFilterMatchingobjects, {}>> {
     const data = await this.getObjectsForFilterUntyped(uidAttestatation, uidPickCategory, policyfilter, parameters);
 
     return new TypedEntityBuilder(PortalAttestationFilterMatchingobjects).buildReadWriteEntities(
       data,
-      PortalAttestationFilterMatchingobjects.GetEntitySchema()
+      PortalAttestationFilterMatchingobjects.GetEntitySchema(),
     );
   }
 
@@ -150,7 +153,7 @@ export class PolicyService {
     uidAttestatation: string,
     uidPickCategory: string,
     policyfilter: PolicyFilter,
-    parameters: CollectionLoadParameters
+    parameters: CollectionLoadParameters,
   ): Promise<EntityCollectionData> {
     return this.api.client.portal_attestation_filter_matchingobjects_get(uidAttestatation, {
       uidpickcategory: uidPickCategory,
@@ -240,7 +243,7 @@ export class PolicyService {
   private async copyPropertiesFrom(
     entity: PortalAttestationPolicyEdit,
     reference: PortalAttestationPolicyEdit,
-    filter: PolicyFilter
+    filter?: PolicyFilter,
   ): Promise<boolean> {
     let uidPickCategorySkipped = false;
     for (const key in this.api.typedClient.PortalAttestationPolicyEditInteractive.GetSchema().Columns) {

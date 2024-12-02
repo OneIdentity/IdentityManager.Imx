@@ -55,21 +55,14 @@
   hyphens: auto;
 }
 
-
-.mat-card{
- .mat-divider-horizontal {
-  position: inherit;
- }
-}
-
-.imx-accordion .mat-expansion-panel-header-title{
+.imx-accordion .mat-expansion-panel-header-title {
   flex-basis: 70%;
 }
 .imx-accordion .mat-expansion-panel-header-description {
   flex-basis: 30%;
 }
 
-.imx-accordion .mat-expansion-panel-header-title{
+.imx-accordion .mat-expansion-panel-header-title {
   font-weight: bold;
 }
 
@@ -79,14 +72,9 @@
   color: $black-9;
 }
 
-.imx-no-data {
+.imx-no-results {
   text-align: center;
   margin: 20px 0;
-
-  .eui-icon {
-    font-size: 100px;
-    color: rgba($black-c, 0.55);
-  }
 
   p {
     margin: 0;

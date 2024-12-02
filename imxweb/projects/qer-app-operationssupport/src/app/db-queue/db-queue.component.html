@@ -1,6 +1,6 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline-5">
   {{ '#LDS#Heading DBQueue' | translate }}
-</h1>
+</h2>
 <div class="imx-table-container">
   <imx-data-source-toolbar
     [alwaysVisible]="true"
@@ -10,21 +10,22 @@
     [options]="['search']"
     (navigationStateChanged)="getData($event)"
   >
-  <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
-
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column columnLabel="{{'#LDS#DBQueue task' | translate}}" [entityColumn]="entitySchema?.Columns.UID_Task"> </imx-data-table-column>
-    <imx-data-table-column columnLabel="{{'#LDS#In processing' | translate}}" [entityColumn]="entitySchema?.Columns.CountProcessing"> </imx-data-table-column>
-    <imx-data-table-column columnLabel="{{'#LDS#To be processed' | translate}}" [entityColumn]="entitySchema?.Columns.CountWaiting"> </imx-data-table-column>
-     </imx-data-table>
+  <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+    <imx-data-table-column columnLabel="{{ '#LDS#DBQueue task' | translate }}" [entityColumn]="entitySchema.Columns.UID_Task">
+    </imx-data-table-column>
+    <imx-data-table-column columnLabel="{{ '#LDS#In processing' | translate }}" [entityColumn]="entitySchema.Columns.CountProcessing">
+    </imx-data-table-column>
+    <imx-data-table-column columnLabel="{{ '#LDS#To be processed' | translate }}" [entityColumn]="entitySchema.Columns.CountWaiting">
+    </imx-data-table-column>
+  </imx-data-table>
   <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button data-imx-identifier="db-queue-efresh-button" mat-stroked-button color="primary" class="imx-refresh-button" (click)="getData({})">
+  <button mat-stroked-button color="primary" class="imx-button-icon" data-imx-identifier="db-queue-efresh-button" (click)="getData({})">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>
 </ng-template>
-

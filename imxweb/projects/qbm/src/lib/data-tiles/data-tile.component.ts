@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { Component, Input, EventEmitter, Output, TemplateRef, ViewChild, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatMenuTrigger } from '@angular/material/menu';
 
-import { TypedEntity, IClientProperty } from 'imx-qbm-dbts';
+import { IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
-import { DataTileBadge } from '../data-source-toolbar/data-tile-badge.interface';
-import { DataTileMenuItem } from './data-tile-menu-item.interface';
-import { Base64ImageService } from '../images/base64-image.service';
 import { SafeUrl } from '@angular/platform-browser';
 import { DataSourceItemStatus } from '../data-source-toolbar/data-source-item-status.interface';
+import { DataTileBadge } from '../data-source-toolbar/data-tile-badge.interface';
+import { Base64ImageService } from '../images/base64-image.service';
+import { DataTileMenuItem } from './data-tile-menu-item.interface';
 
 /**
  * A single tile component used internally by the tiles components.
@@ -43,28 +43,26 @@ import { DataSourceItemStatus } from '../data-source-toolbar/data-source-item-st
 @Component({
   selector: 'imx-data-tile',
   templateUrl: './data-tile.component.html',
-  styleUrls: ['./data-tile.component.scss']
+  styleUrls: ['./data-tile.component.scss'],
 })
 export class DataTileComponent implements OnInit {
   /**
    * If present the badges will be shown in the upper right corner. Can be used e.g. to show different states.
    */
-  public get badges(): DataTileBadge[] {
-    return this.status?.getBadges ?
-      this.status.getBadges(this.typedEntity) : undefined;
+  public get badges(): DataTileBadge[] | undefined {
+    return this.status?.getBadges ? this.status.getBadges(this.typedEntity) : undefined;
   }
 
   public get enabled(): boolean {
-    return this.status?.enabled ?
-      this.status.enabled(this.typedEntity) : true;
+    return this.status?.enabled ? this.status.enabled(this.typedEntity) : true;
   }
 
   public get hasImage(): boolean {
-    return (this.image || this.status?.getImagePath || this.fallbackIcon) ? true : false;
+    return this.image || this.status?.getImagePath || this.fallbackIcon ? true : false;
   }
 
   public get filteredActions(): DataTileMenuItem[] {
-    return this.enabled ? this.actions : this.actions.filter(elem => elem.useOnDisabledTile);
+    return this.enabled ? this.actions : this.actions.filter((elem) => elem.useOnDisabledTile);
   }
 
   public isLoadingImage: boolean;
@@ -101,7 +99,6 @@ export class DataTileComponent implements OnInit {
    */
   @Input() public additionalSubtitleObjects: IClientProperty[] = [];
 
-
   /**
    * The property of the typed entity that will be used as the subtitle of the tile.
    */
@@ -130,22 +127,22 @@ export class DataTileComponent implements OnInit {
   @Input() public actions: DataTileMenuItem[];
 
   /**
-  * The width of the tile.
-  */
+   * The width of the tile.
+   */
   @Input() public width = '340px';
 
   /**
-  * The height of the tile.
-  */
+   * The height of the tile.
+   */
   @Input() public height = '140px';
 
   @Input() public useActionMenu = true;
 
   /**
-  * Status of this item. If the property enabled is true, the item is selectable.
-  */
+   * Status of this item. If the property enabled is true, the item is selectable.
+   */
   @Input() public status: DataSourceItemStatus = {
-    enabled: __ => true
+    enabled: (__) => true,
   };
 
   /**
@@ -163,7 +160,7 @@ export class DataTileComponent implements OnInit {
   @Output() public selected = new EventEmitter();
 
   // TODO: Check Upgrade
-  @Output() public badgeClicked = new EventEmitter<{ entity: TypedEntity, badge: DataTileBadge }>();
+  @Output() public badgeClicked = new EventEmitter<{ entity: TypedEntity; badge: DataTileBadge }>();
 
   /**
    * A icon button that indicates if the tile is selected.
@@ -177,17 +174,15 @@ export class DataTileComponent implements OnInit {
    */
   @ViewChild(MatMenuTrigger) public menuTrigger: MatMenuTrigger;
 
-  constructor(private readonly base64ImageService: Base64ImageService) { }
+  constructor(private readonly base64ImageService: Base64ImageService) {}
 
   public async ngOnInit(): Promise<void> {
     if (this.status?.getImagePath) {
       this.isLoadingImage = true;
       this.imageUrl = await this.status.getImagePath(this.typedEntity);
-      this.isLoadingImage  = false;      
+      this.isLoadingImage = false;
     } else if (this.image?.ColumnName) {
-      this.imageUrl = this.base64ImageService.addBase64Prefix(
-        this.typedEntity.GetEntity().GetColumn(this.image.ColumnName).GetValue()
-      );
+      this.imageUrl = this.base64ImageService.addBase64Prefix(this.typedEntity.GetEntity().GetColumn(this.image.ColumnName).GetValue());
     }
   }
 
@@ -195,14 +190,19 @@ export class DataTileComponent implements OnInit {
    * Used by the template to show the title or subtitle.
    * @ignore Used internally in components template.
    */
-  public getTitleDisplayValue(colName: string): string {
-    return this.typedEntity.GetEntity().GetColumn(colName).GetDisplayValue();
+  public getTitleDisplayValue(colName: string | undefined): string {
+    return colName ? this.typedEntity.GetEntity().GetColumn(colName).GetDisplayValue() : '';
   }
 
-
   public getAdditionalColumnText(): string {
-    return this.additionalSubtitleObjects.map(elem =>
-      this.typedEntity.GetEntity().GetColumn(elem.ColumnName).GetDisplayValue()).join('; ');
+    return this.additionalSubtitleObjects
+      .map((elem) =>
+        this.typedEntity
+          .GetEntity()
+          .GetColumn(elem.ColumnName ?? '')
+          .GetDisplayValue(),
+      )
+      .join('; ');
   }
 
   public getDefaultTypeNameImage() {
@@ -222,7 +222,7 @@ export class DataTileComponent implements OnInit {
       this.isSelected = !this.isSelected;
       this.selectionChanged.emit(this.typedEntity);
       //tile selection
-      if(!this.isSelected){
+      if (!this.isSelected) {
         this.selected.emit(this.isSelected);
       }
     }

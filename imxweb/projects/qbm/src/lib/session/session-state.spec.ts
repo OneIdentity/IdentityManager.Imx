@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,11 @@
  *
  */
 
-import { AuthPropType } from 'imx-api-qbm';
+import { AuthPropType } from '@imx-modules/imx-api-qbm';
 import { SessionState } from './session-state';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('SessionState ', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
@@ -41,14 +40,14 @@ describe('SessionState ', () => {
           IsAuthenticated: true,
           Display: 'display',
           Uid: 'uid',
-          AuthTime: undefined
+          AuthTime: undefined,
         },
         SecondaryAuth: {
           IsAuthenticated: true,
           IsEnabled: false,
-          Name: 'Starling'
-        }
-      }
+          Name: 'Starling',
+        },
+      },
     };
     const sessionState = new SessionState(sessionResponse);
 
@@ -62,14 +61,14 @@ describe('SessionState ', () => {
           IsAuthenticated: true,
           Display: 'display',
           Uid: 'uid',
-          AuthTime: undefined
+          AuthTime: undefined,
         },
         SecondaryAuth: {
           IsAuthenticated: true,
           IsEnabled: false,
-          Name: 'Starling'
-        }
-      }
+          Name: 'Starling',
+        },
+      },
     };
     const sessionState = new SessionState(sessionResponse);
 
@@ -79,45 +78,45 @@ describe('SessionState ', () => {
   [
     {
       AuthProps: undefined,
-      expectedIsOAuth: undefined
+      expectedIsOAuth: undefined,
     },
     {
       AuthProps: [],
-      expectedIsOAuth: undefined
+      expectedIsOAuth: undefined,
     },
     {
       AuthProps: [
         {
           Type: AuthPropType.Password,
-          IsMandatory: undefined
-        }
+          IsMandatory: undefined,
+        },
       ],
-      expectedIsOAuth: undefined
+      expectedIsOAuth: undefined,
     },
     {
       AuthProps: [
         {
           Type: AuthPropType.OAuth2Code,
-          IsMandatory: undefined
-        }
+          IsMandatory: undefined,
+        },
       ],
-      expectedIsOAuth: true
-    }
-  ].forEach(testcase =>
+      expectedIsOAuth: true,
+    },
+  ].forEach((testcase) =>
     it('maps config', () => {
       const sessionResponse = {
         Config: [
           {
             Name: 'config1',
             Display: 'display1',
-            AuthProps: testcase.AuthProps
-          }
-        ]
+            AuthProps: testcase.AuthProps,
+          },
+        ],
       };
       const sessionState = new SessionState(sessionResponse);
 
       expect(sessionState.configurationProviders.length).toEqual(sessionResponse.Config.length);
       expect(sessionState.configurationProviders[0].isOAuth2).toEqual(testcase.expectedIsOAuth);
-    })
+    }),
   );
 });

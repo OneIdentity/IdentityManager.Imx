@@ -1,32 +1,14 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 
 :host {
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  eui-icon {
-    font-size: 14px;
-    margin-right: 4px;
-  }
 }
 
-.not-matched-badge {
-  margin-left: 1em;
-}
-
-.helper-alert {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.mat-card {
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-
+.mat-mdc-card {
   imx-data-table {
     height: 100%;
   }

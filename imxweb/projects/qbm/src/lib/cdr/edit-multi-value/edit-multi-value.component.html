@@ -1,16 +1,18 @@
-<mat-form-field appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
-  <mat-label>{{ columnContainer?.display | translate }}</mat-label>
-  <textarea matInput cdkTextareaAutosize [readonly]="!columnContainer?.canEdit" [formControl]="control" [attr.data-imx-identifier]="'cdr-edit-multi-value-textarea-'+ columnContainer?.name" [required]="columnContainer.isValueRequired"></textarea>
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
+  <mat-label>{{ columnContainer.display | translate }}</mat-label>
+  <textarea
+    matInput
+    cdkTextareaAutosize
+    [readonly]="!columnContainer?.canEdit"
+    [formControl]="control"
+    [attr.data-imx-identifier]="'cdr-edit-multi-value-textarea-' + columnContainer?.name"
+    [required]="columnContainer.isValueRequired"
+  ></textarea>
   <mat-error *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>
 
 <ng-template #isReadonly>
-  <imx-view-property
-    [columnContainer]="columnContainer"
-    defaultValue="#LDS#Not set"
-  >
-  </imx-view-property>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
 </ng-template>
-

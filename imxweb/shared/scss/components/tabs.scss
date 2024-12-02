@@ -1,0 +1,262 @@
+@import 'base/mixins';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+/* Elemental UI */
+
+/* Angular Material */
+
+.mat-mdc-tab-group {
+  flex-grow: 1;
+  overflow: auto;
+  height: 100%;
+  .mat-mdc-tab-header {
+    padding: 0;
+  }
+}
+
+.mat-mdc-tab-body-content {
+  @include flex-column-container();
+}
+
+.mat-mdc-tab-body-wrapper {
+  height: 100%;
+  flex: 1 1 auto;
+  .mat-mdc-tab-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+  }
+}
+
+/* Imx */
+
+.imx-tab-content {
+  @include flex-column-container($height: 100%);
+
+  .imx-tab-content-body {
+    @include flex-column-container-fill();
+
+    .mat-mdc-card {
+      > form {
+        padding-right: 10px;
+      }
+    }
+  }
+}
+
+.imx-tab-content-sidesheet-with-table {
+  height: 100%;
+  padding: 0;
+
+  .imx-sidesheet-content__overflow {
+    @include flex-column-container-fill();
+
+    .imx-sidesheet-content__overflow {
+      imx-data-table {
+        height: 100%;
+      }
+    }
+  }
+}
+
+.imx-tab-margin {
+  .mat-mdc-tab-body-content {
+    margin: 20px;
+  }
+}
+
+.imx-tab-header-indent {
+  .mat-mdc-tab-header {
+    margin-left: 20px;
+  }
+}
+
+.imx-tab-card.imx-card-fill {
+  margin: 20px;
+}
+
+.imx-tab-container {
+  padding: 20px;
+
+  &-full {
+    @include flex-column-container-fill();
+    height: 100%;
+  }
+}
+
+.imx-tab-group-wrapper {
+  @include flex-row-container-fill();
+  overflow: auto;
+
+  .mat-mdc-tab-group {
+    width: 100%;
+  }
+}
+
+.imx-nested-group {
+  &.eui-sidesheet-content {
+    padding: 20px;
+    .mat-mdc-card {
+      height: 100%;
+      padding: 0;
+      .mat-mdc-card:not(.imx-card-shadow) {
+        box-shadow: none;
+        border-style: none;
+      }
+      ::ng-deep .mat-mdc-tab-group {
+        border-radius: 4px;
+        imx-object-hyperview {
+          .imx-tab-content-body {
+            padding: 0;
+          }
+        }
+        .mat-mdc-ink-bar {
+          background-color: $color-blue-90;
+        }
+        .governance-sidesheet {
+          &__tab-content-body {
+            ng-component {
+              height: 100%;
+              .mat-mdc-card {
+                padding: 0;
+                box-shadow: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* IMX ~ menu*/
+.imx-menu-like-tabs {
+  .mat-mdc-tab-link {
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: $color-gray-60;
+    min-width: 10px !important;
+  }
+
+  .mat-mdc-tab-link,
+  .mat-mdc-tab-link:focus,
+  .mat-mdc-tab-link:hover {
+    text-decoration: none;
+  }
+
+  .mat-mdc-tab-link.mat-mdc-tab-label-active {
+    font-weight: bold;
+  }
+
+  .mat-mdc-tab-nav-bar {
+    background-color: $color-gray-0;
+
+    .mat-mdc-tab-link {
+      font-size: 16px;
+      color: $color-gray-60;
+    }
+  }
+}
+
+/* Light theme */
+
+.mat-mdc-tab-group.imx-card-heading {
+  .mat-mdc-tab-header {
+    background-color: $color-gray-0;
+  }
+}
+
+/* Dark theme */
+
+.eui-dark-theme {
+  .mat-mdc-tab-group {
+    .mat-mdc-tab-header {
+      background-color: $color-gray-80;
+    }
+  }
+
+  .mat-mdc-tab-group.imx-card-heading {
+    .mat-mdc-tab-header {
+      background-color: $color-gray-70;
+    }
+  }
+
+  .mat-mdc-tab-group.imx-aob {
+    .mat-mdc-tab-body {
+      background-color: $color-gray-70;
+    }
+    .mat-mdc-tab-header {
+      background-color: $color-gray-70;
+    }
+  }
+
+  .imx-nested-group {
+    .mat-mdc-tab-group {
+      .mat-mdc-tab-header {
+        background-color: $color-gray-70;
+        .mat-mdc-ink-bar {
+          background-color: $color-gray-0;
+        }
+      }
+    }
+  }
+
+  .imx-menu-like-tabs {
+    background-color: $color-gray-80;
+
+    .mat-mdc-tab-link {
+      color: $color-gray-5;
+    }
+
+    .mat-mdc-tab-nav-bar {
+      background-color: $color-gray-80;
+
+      .mat-mdc-tab-link {
+        color: $color-gray-5;
+      }
+    }
+  }
+}
+
+/* High-contrast theme */
+
+.eui-contrast-theme {
+  .mat-mdc-tab-group {
+    .mat-mdc-tab-header {
+      background-color: $color-gray-90;
+    }
+  }
+
+  .mat-mdc-tab-group.imx-card-heading {
+    .mat-mdc-tab-header {
+      background-color: $color-gray-100;
+    }
+  }
+  .imx-nested-group {
+    .mat-mdc-tab-group {
+      .mat-mdc-tab-header {
+        background-color: $color-gray-90;
+        .mat-mdc-ink-bar {
+          background-color: $color-gray-0;
+        }
+      }
+    }
+  }
+  .imx-menu-like-tabs {
+    background-color: $color-gray-100;
+
+    .mat-mdc-tab-link {
+      color: $color-gray-0;
+    }
+
+    .mat-mdc-tab-nav-bar {
+      background-color: $color-gray-100;
+
+      .mat-mdc-tab-link {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

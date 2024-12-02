@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,10 +41,7 @@ import { SourceDetectiveSidesheetComponent } from './sourcedetective-sidesheet.c
 import { RequestHistoryModule } from '../request-history/request-history.module';
 
 @NgModule({
-  declarations: [
-    SourceDetectiveComponent,
-    SourceDetectiveSidesheetComponent
-  ],
+  declarations: [SourceDetectiveComponent, SourceDetectiveSidesheetComponent],
   imports: [
     CommonModule,
     QbmModule,
@@ -60,11 +57,8 @@ import { RequestHistoryModule } from '../request-history/request-history.module'
     TranslateModule,
     ParameterizedTextModule,
     RequestHistoryModule,
-    MatCardModule
+    MatCardModule,
   ],
-  exports: [
-    SourceDetectiveComponent
-  ]
-
+  exports: [SourceDetectiveComponent],
 })
-export class SourceDetectiveModule { }
+export class SourceDetectiveModule {}

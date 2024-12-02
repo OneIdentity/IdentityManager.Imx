@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,14 +38,8 @@ import { ImageSelectComponent } from './image-select/image-select.component';
 import { ImageViewComponent } from './image-view/image-view.component';
 
 @NgModule({
-  declarations: [
-    ImageSelectComponent,
-    ImageViewComponent
-  ],
-  exports: [
-    ImageSelectComponent,
-    ImageViewComponent
-  ],
+  declarations: [ImageSelectComponent, ImageViewComponent],
+  exports: [ImageSelectComponent, ImageViewComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -55,7 +49,7 @@ import { ImageViewComponent } from './image-view/image-view.component';
     MatInputModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class ImageModule { }
+export class ImageModule {}

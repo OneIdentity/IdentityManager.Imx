@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalServiceitems } from 'imx-api-qer';
+import { PortalServiceitems } from '@imx-modules/imx-api-qer';
 
 import { ClassloggerService, ColumnDependentReference, ConfirmationService, HELP_CONTEXTUAL, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
@@ -37,16 +37,15 @@ import { ServiceItemsEditFormComponent } from '../service-items-edit-form/servic
 @Component({
   selector: 'imx-service-items-edit-sidesheet',
   templateUrl: './service-items-edit-sidesheet.component.html',
-  styleUrls: ['./service-items-edit-sidesheet.component.scss']
+  styleUrls: ['./service-items-edit-sidesheet.component.scss'],
 })
 export class ServiceItemsEditSidesheetComponent implements OnDestroy {
-
   @ViewChild('serviceItemsEditForm') public serviceItemsEditForm: ServiceItemsEditFormComponent;
 
   public readonly formGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public isInActiveFormControl = new UntypedFormControl();
-  public contextId = HELP_CONTEXTUAL.ServiceItemsEdit
+  public contextId = HELP_CONTEXTUAL.ServiceItemsEdit;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -57,15 +56,17 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
     private readonly snackbar: SnackBarService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
     this.formGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (this.formGroup.pristine || await confirmation.confirmLeaveWithUnsavedChanges()) {
-        this.sidesheetRef.close();
-      }
-    }));
+    this.subscriptions.push(
+      this.sidesheetRef.closeClicked().subscribe(async () => {
+        if (this.formGroup.pristine || (await confirmation.confirmLeaveWithUnsavedChanges())) {
+          this.sidesheetRef.close();
+        }
+      }),
+    );
   }
 
   get formArray(): UntypedFormArray {
@@ -73,7 +74,7 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public async saveChanges(): Promise<void> {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,22 +26,21 @@
 
 import { Component, Inject } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { DependencyToConfirm, OutstandingAction } from 'imx-api-dpr';
+import { DependencyToConfirm, OutstandingAction } from '@imx-modules/imx-api-dpr';
 
 @Component({
   templateUrl: './dependencies.component.html',
-  styleUrls: ['./dependencies.component.scss']
+  styleUrls: ['./dependencies.component.scss'],
 })
 export class DependenciesComponent {
-
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      dependencies: DependencyToConfirm[],
-      action: OutstandingAction
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      dependencies: DependencyToConfirm[];
+      action: OutstandingAction;
     },
-    private sidesheetRef: EuiSidesheetRef
-  ) {
-  }
+    private sidesheetRef: EuiSidesheetRef,
+  ) {}
 
   public async save(): Promise<void> {
     this.sidesheetRef.close(true);

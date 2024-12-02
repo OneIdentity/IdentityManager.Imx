@@ -28,32 +28,6 @@
   flex: 0 0 auto;
   margin-top: 15px;
   align-items: center;
-
-  .helper-alert {
-    display: flex;
-  }
-
-  .alert-wrapper {
-    width: 100%;
-    margin: 0 0 0 auto;
-    align-self: flex-end;
-  }
-
-  .alert-wrapper--shortened {
-    width: 70%;
-  }
-}
-
-th.mat-header-cell:not(:last-child), td.mat-cell:not(:last-child) {
-  padding-right: 10px;
-}
-
-table.mat-table {
-  box-shadow: none;
-  padding: 1px;
-}
-.table-row-tall {
-  padding: 5px 0;
 }
 
 .table-subtitle {

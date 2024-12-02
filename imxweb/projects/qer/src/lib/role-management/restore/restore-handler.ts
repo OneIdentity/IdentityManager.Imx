@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,9 @@
  *
  */
 
-import { DeletedObjectInfo, RestoreActionList, RestoreActions } from "imx-api-qer";
+import { DeletedObjectInfo, RestoreActionList, RestoreActions } from '@imx-modules/imx-api-qer';
 
 export interface IRoleRestoreContext {
-
   getRoles(): Promise<DeletedObjectInfo[]>;
 
   getRestoreActions(uidRole: string): Promise<RestoreActions>;
@@ -36,39 +35,40 @@ export interface IRoleRestoreContext {
 }
 
 export interface IRoleRestoreHandler {
-
   asAdmin(): IRoleRestoreContext;
 
   asOwner(): IRoleRestoreContext;
-
 }
 
 export class BaseTreeRoleRestoreHandler implements IRoleRestoreHandler {
-
-  constructor(private readonly admin: () => Promise<DeletedObjectInfo[]>,
+  constructor(
+    private readonly admin: () => Promise<DeletedObjectInfo[]>,
     private readonly owner: () => Promise<DeletedObjectInfo[]>,
     private readonly adminRestoreActions: (uidRole: string) => Promise<RestoreActions>,
     private readonly ownerRestoreActions: (uidRole: string) => Promise<RestoreActions>,
     private readonly adminRestore: (uidRole: string, uidActions: RestoreActionList) => Promise<any>,
     private readonly ownerRestore: (uidRole: string, uidActions: RestoreActionList) => Promise<any>,
-  ) { }
+  ) {}
 
   asAdmin(): IRoleRestoreContext {
     return new BaseTreeRoleRestoreContext(this.admin, this.adminRestoreActions, this.adminRestore);
   }
 
   asOwner(): IRoleRestoreContext {
-    return new BaseTreeRoleRestoreContext(() => this.owner(),
-      uidRole => this.ownerRestoreActions(uidRole),
-      (uidRole, uidActions) => this.ownerRestore(uidRole, uidActions));
+    return new BaseTreeRoleRestoreContext(
+      () => this.owner(),
+      (uidRole) => this.ownerRestoreActions(uidRole),
+      (uidRole, uidActions) => this.ownerRestore(uidRole, uidActions),
+    );
   }
-
 }
 
 class BaseTreeRoleRestoreContext implements IRoleRestoreContext {
-  constructor(private readonly api: () => Promise<DeletedObjectInfo[]>,
+  constructor(
+    private readonly api: () => Promise<DeletedObjectInfo[]>,
     private readonly restoreActionsApi: (uidRole) => Promise<RestoreActions>,
-    private readonly restoreApi: (uidRole: string, uidActions: RestoreActionList) => Promise<void>) { }
+    private readonly restoreApi: (uidRole: string, uidActions: RestoreActionList) => Promise<void>,
+  ) {}
 
   restore(uidRole: string, uidActions: RestoreActionList): Promise<void> {
     return this.restoreApi(uidRole, uidActions);

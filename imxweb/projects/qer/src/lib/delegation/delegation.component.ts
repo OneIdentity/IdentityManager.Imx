@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,38 @@
  *
  */
 
+import { STEPPER_GLOBAL_OPTIONS, StepperSelectionEvent } from '@angular/cdk/stepper';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
-import { StepperSelectionEvent, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { EuiLoadingService } from '@elemental-ui/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
-import { Subscription } from 'rxjs';
-import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { MatStep, MatStepper } from '@angular/material/stepper';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { ColumnDependentReference, BaseCdr, EntityService, AuthenticationService, ClassloggerService, BusyService } from 'qbm';
 import {
-  PortalDelegations,
-  PortalDelegable,
-  QerProjectConfig,
   GlobalDelegationInput,
+  PortalDelegable,
+  PortalDelegations,
   PortalDelegationsGlobalRoleclasses,
-} from 'imx-api-qer';
+  QerProjectConfig,
+} from '@imx-modules/imx-api-qer';
+import {
+  AuthenticationService,
+  BaseCdr,
+  BusyService,
+  ClassloggerService,
+  ColumnDependentReference,
+  EntityService,
+  ISessionState,
+} from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
-import { DelegationService } from './delegation.service';
 import { UserModelService } from '../user/user-model.service';
+import { DelegationService } from './delegation.service';
 
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
+import moment from 'moment';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
 
 /**
@@ -87,19 +96,20 @@ export class DelegationComponent implements OnInit, OnDestroy {
   public cdrList: ColumnDependentReference[];
 
   public completed = false;
-  public state: string;
+  public state: string | undefined;
 
   public withSubordinates = false;
   public isManager = false;
   public cdrPersonSender: ColumnDependentReference;
 
-  public readonly recipientFormGroup = new UntypedFormGroup({});
+  public recipientFormGroup: UntypedFormGroup;
   public readonly delegationForm = new UntypedFormGroup({}, DelegationComponent.dateIsAscending());
-  public readonly senderFormGroup = new UntypedFormGroup({});
+  public senderFormGroup: UntypedFormGroup;
 
   public busyService = new BusyService();
   public isLoading = false;
   public initialized = false;
+  public isSaving = false;
 
   @ViewChild(MatSelectionList) public roleAndMembershipList: MatSelectionList;
   @ViewChild('delegationObjects') public delegationObjects: MatStep;
@@ -110,6 +120,9 @@ export class DelegationComponent implements OnInit, OnDestroy {
 
   public countReports: number;
   public roleClasses: PortalDelegationsGlobalRoleclasses[] = [];
+
+  public canDelegateAll: boolean = true;
+  public canDelegateSelected: boolean = true;
 
   private subscriptions: Subscription[] = [];
   public navigationState: CollectionLoadParameters = { PageSize: 20 };
@@ -128,11 +141,13 @@ export class DelegationComponent implements OnInit, OnDestroy {
     private readonly permissions: QerPermissionsService,
     private readonly elementalBusy: EuiLoadingService,
     private readonly changeDetector: ChangeDetectorRef,
-    authenticationservice: AuthenticationService
+    authenticationservice: AuthenticationService,
   ) {
     this.initGlobalDelegation();
     this.initSearchControl();
-    this.subscriptions.push(authenticationservice.onSessionResponse.subscribe((session) => (this.uidPerson = session.UserUid)));
+    this.subscriptions.push(
+      authenticationservice.onSessionResponse.subscribe((session: ISessionState) => (this.uidPerson = session.UserUid || '')),
+    );
     this.busyService.busyStateChanged.subscribe((value) => {
       this.isLoading = value;
       changeDetector.detectChanges();
@@ -148,7 +163,12 @@ export class DelegationComponent implements OnInit, OnDestroy {
     try {
       this.projectConfig = await this.projectConfigSvc.getConfig();
       this.newDelegation = await this.delegationService.createDelegation();
-      this.isManager = await this.permissions.isPersonManager();
+      this.isManager = (await this.permissions.isPersonManager()) || (await this.permissions.isPersonAdmin());
+      this.canDelegateAll = this.projectConfig.EnableNewDelegationSubstitute;
+      this.canDelegateSelected = this.projectConfig.EnableNewDelegationIndividual;
+      if (!this.canDelegateAll || !this.canDelegateSelected) {
+        this.isGlobalDelegation = this.canDelegateAll; // because if both were false, the component would not be displayed anyway
+      }
     } finally {
       isBusy.endBusy();
       this.initialized = true;
@@ -194,6 +214,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
    */
   public async saveDelegation(): Promise<void> {
     let overlay = this.elementalBusy.show();
+    this.isSaving = true;
     this.changeDetector.detectChanges();
     try {
       if (this.isGlobalDelegation) {
@@ -205,6 +226,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
       this.state = 'done';
     } finally {
       this.elementalBusy.hide(overlay);
+      this.isSaving = false;
     }
   }
 
@@ -243,7 +265,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
    */
   public onSelectall(): void {
     const items = this.roleAndMembershipList.options.filter(
-      (elem) => this.selections.findIndex((sel) => sel.ObjectKeyToDelegate.value === elem.value.ObjectKeyToDelegate.value) === -1
+      (elem) => this.selections.findIndex((sel) => sel.ObjectKeyToDelegate.value === elem.value.ObjectKeyToDelegate.value) === -1,
     );
 
     items.forEach((element) => {
@@ -287,7 +309,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
    * @param cdr the cdr to check
    * @returns true, if the delegation is not global and the columnname is IsDelegable
    */
-  public isShowCdr(cdr: BaseCdr): boolean {
+  public isShowCdr(cdr: ColumnDependentReference): boolean {
     return !this.isGlobalDelegation || cdr.column.ColumnName !== 'IsDelegable';
   }
 
@@ -357,11 +379,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
     // Update date from cdr
     this.newDelegation.InsertValidFrom.value = this.cdrTimeSpan[0].column.GetValue();
     this.newDelegation.InsertValidUntil.value = this.cdrTimeSpan[1].column.GetValue();
-
-    await this.delegationService.commitDelegations(
-      this.newDelegation,
-      this.selections.map((option) => option.ObjectKeyToDelegate.value)
-    );
+    await this.delegationService.commitDelegations(this.newDelegation, this.selections);
   }
 
   /**
@@ -387,7 +405,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
       const delegations = await this.delegationService.getDelegatableItems(
         this.uidDelegator,
         this.newDelegation.UID_PersonReceiver.value,
-        this.navigationState
+        this.navigationState,
       );
       this.paginatorConfig.length = delegations.totalCount;
       this.delegateableItems = delegations.Data;
@@ -395,7 +413,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
         this.logger.trace(this, 'Try marking items as selected');
         if (this.roleAndMembershipList) {
           const preselectedElements = this.roleAndMembershipList.options.filter(
-            (elem) => this.selections.findIndex((sel) => sel.ObjectKeyToDelegate.value === elem.value.ObjectKeyToDelegate.value) !== -1
+            (elem) => this.selections.findIndex((sel) => sel.ObjectKeyToDelegate.value === elem.value.ObjectKeyToDelegate.value) !== -1,
           );
           preselectedElements.forEach((elem) => elem.toggle());
           this.logger.trace(this, 'items marked es selected', preselectedElements);
@@ -417,15 +435,15 @@ export class DelegationComponent implements OnInit, OnDestroy {
    * Inits the 'Select the identity which responsibilities you like to delegate' form
    */
   private initSenderForm(): void {
-    Object.keys(this.senderFormGroup.controls).forEach((name) => this.recipientFormGroup.removeControl(name));
-    this.cdrPersonSender = this.delegationService.buildSenderCdr(this.newDelegation);
+    this.senderFormGroup = new UntypedFormGroup({});
+    this.cdrPersonSender = new BaseCdr(this.newDelegation.UID_PersonSender.Column);
   }
 
   /**
    * Inits the 'Select the identity to which you want to delegate' form
    */
   private initRecipientForm(): void {
-    Object.keys(this.recipientFormGroup.controls).forEach((name) => this.recipientFormGroup.removeControl(name));
+    this.recipientFormGroup = new UntypedFormGroup({});
     this.cdrPersonRecipient = new BaseCdr(this.newDelegation.UID_PersonReceiver.Column);
   }
 
@@ -437,7 +455,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
 
     const values = [this.newDelegation.KeepMeInformed.Column, this.newDelegation.IsDelegable.Column, this.newDelegation.OrderReason.Column];
 
-    if (this.projectConfig.ITShopConfig.VI_ITShop_EnablePWOPriorityChange) {
+    if (this.projectConfig.ITShopConfig?.VI_ITShop_EnablePWOPriorityChange) {
       values.push(this.newDelegation.PWOPriority.Column);
     }
 
@@ -453,7 +471,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
     const schema = this.delegationService.getDelegationSchema();
     this.cdrTimeSpan = [schema.Columns.InsertValidFrom, schema.Columns.InsertValidUntil].map((property) => {
       property.IsReadOnly = false;
-      return new BaseCdr(this.entityService.createLocalEntityColumn(property, undefined, { ValueConstraint: { MinValue: new Date() } }));
+      return new BaseCdr(this.entityService.createLocalEntityColumn(property, undefined, { ValueConstraint: { MinValue: moment() } }));
     });
   }
 
@@ -467,7 +485,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
         this.navigationState = { ...this.navigationState, ...{ search: value, StartIndex: 0 } };
         this.paginatorConfig.index = 0;
         await this.navigateDelegateable();
-      })
+      }),
     );
   }
 
@@ -480,12 +498,12 @@ export class DelegationComponent implements OnInit, OnDestroy {
   private buildValidationFunction(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
       if (this.isGlobalDelegation) {
-        return this.isValidGlobalDelegation ? null : { invalid: true };
+        return this.isValidGlobalDelegation() ? null : { invalid: true };
       }
       // at least one item set?
       const group = control as UntypedFormGroup;
 
-      return group == null || group.get('items') == null || group.get('items').value == null || group.get('items').value.length > 0
+      return group == null || group.get('items') == null || group.get('items')?.value == null || group.get('items')?.value.length > 0
         ? null
         : { noRoleSelected: true };
     };

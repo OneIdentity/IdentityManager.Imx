@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalPersonOrgdata } from 'imx-api-qer';
+import { PortalPersonOrgdata } from '@imx-modules/imx-api-qer';
 import { QerApiService } from '../qer-api-client.service';
 
 @Component({
@@ -35,7 +35,10 @@ import { QerApiService } from '../qer-api-client.service';
   styleUrls: ['./org-chart.component.scss'],
 })
 export class OrgChartComponent implements OnInit {
-  constructor(private readonly apiService: QerApiService, private readonly busyService: EuiLoadingService) {}
+  constructor(
+    private readonly apiService: QerApiService,
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   @Input() uidPerson: string;
   data: {

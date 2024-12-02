@@ -1,31 +1,15 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-
-@mixin imx-flex-column-container {
-  display: flex;
-  flex-direction: column;
-}
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 
 :host {
   .eui-sidesheet-content {
-    @include imx-flex-column-container();
+    @include flex-column-container();
 
     .imx-rules-violations-action-form {
-      @include imx-flex-column-container();
-      overflow: auto;
+      @include flex-column-container($overflow: auto);
 
       > * {
-        @include imx-flex-column-container();
-        overflow: auto;
-      }
-    }
-
-    .eui-sidesheet-actions {
-      .justify-start {
-        margin-right: auto;
-      }
-
-      button:not(:last-of-type):not(.justify-start) {
-        margin-right: 10px;
+        @include flex-column-container($overflow: auto);
       }
     }
   }

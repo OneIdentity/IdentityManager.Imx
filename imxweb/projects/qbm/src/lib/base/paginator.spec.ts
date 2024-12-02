@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,9 +32,9 @@ import { LdsReplacePipe } from '../lds-replace/lds-replace.pipe';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 export class TranslateServiceStub {
-	public get(key: any): any {
-		return of(key);
-	}
+  public get(key: any): any {
+    return of(key);
+  }
 }
 
 describe('Paginator', () => {
@@ -51,38 +51,48 @@ describe('Paginator', () => {
 
   [
     {
-      page: 0, pageSize: 0, length: 1,
+      page: 0,
+      pageSize: 0,
+      length: 1,
       expected: [
         { index: 0, value: '0' },
-        { index: 2, value: '1' }
-      ]
+        { index: 2, value: '1' },
+      ],
     },
     {
-      page: 0, pageSize: 1, length: 0,
+      page: 0,
+      pageSize: 1,
+      length: 0,
       expected: [
         { index: 0, value: '0' },
-        { index: 2, value: '0' }
-      ]
+        { index: 2, value: '0' },
+      ],
     },
     {
-      page: 0, pageSize: 1, length: 2,
+      page: 0,
+      pageSize: 1,
+      length: 2,
       expected: [
         { index: 0, value: '1' },
         { index: 2, value: '1' },
-        { index: 4, value: '2' }
-      ]
+        { index: 4, value: '2' },
+      ],
     },
     {
-      page: 2, pageSize: 1, length: 2,
+      page: 2,
+      pageSize: 1,
+      length: 2,
       expected: [
         { index: 0, value: '3' },
         { index: 2, value: '3' },
-        { index: 4, value: '2' }
-      ]
-    }
-  ].forEach(testcase => it('displays correct page info', () => {
-    const paginator = Paginator.Create(translationService, mockLdsReplacePipe);
-    const rangelabelTokens = paginator.getRangeLabel(testcase.page, testcase.pageSize, testcase.length).replace('#LDS#', '').split(' ');
-    testcase.expected.forEach(result => expect(rangelabelTokens[result.index]).toEqual(result.value));
-  }));
+        { index: 4, value: '2' },
+      ],
+    },
+  ].forEach((testcase) =>
+    it('displays correct page info', () => {
+      const paginator = Paginator.Create(translationService, mockLdsReplacePipe);
+      const rangelabelTokens = paginator.getRangeLabel(testcase.page, testcase.pageSize, testcase.length).replace('#LDS#', '').split(' ');
+      testcase.expected.forEach((result) => expect(rangelabelTokens[result.index]).toEqual(result.value));
+    }),
+  );
 });

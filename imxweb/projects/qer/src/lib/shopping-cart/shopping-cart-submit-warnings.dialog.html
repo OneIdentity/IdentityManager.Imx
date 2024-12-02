@@ -1,13 +1,20 @@
 <h2 mat-dialog-title>{{ "#LDS#Heading Shopping Cart Status" | translate }}</h2>
 
 <mat-dialog-content class="mat-typography">
-  <p *ngIf="!data.hasErrors && !data.hasWarnings" data-imx-identifier="cart-validation-success">{{ "#LDS#The request has been successfully submitted." | translate }}</p>
+  <p *ngIf="!data.hasErrors && !data.hasWarnings" data-imx-identifier="cart-validation-success">
+    {{ "#LDS#The request has been successfully submitted." | translate }}
+  </p>
   <p *ngIf="data.hasErrors" data-imx-identifier="cart-validation-error">{{ "#LDS#The request could not be submitted." | translate }}</p>
   <ng-container *ngIf="!data.hasErrors && data.hasWarnings">
-    <p data-imx-identifier="cart-validation-warning">{{ "#LDS#Your shopping cart may be submitted, but there are warnings." | translate }}</p>
+    <p data-imx-identifier="cart-validation-warning">
+      {{ "#LDS#Your shopping cart may be submitted, but there are warnings." | translate }}
+    </p>
     <mat-list dense>
       <ng-container *ngFor="let warning of data.warnings">
-        <mat-list-item *ngFor="let check of warning.checkResult.Checks" [attr.data-imx-identifier]="'cart-item-validation-detail-' + check.Id">
+        <mat-list-item
+          *ngFor="let check of warning.checkResult.Checks"
+          [attr.data-imx-identifier]="'cart-item-validation-detail-' + check.Id"
+        >
           <mat-icon mat-list-icon>{{getStatus(check).icon}}</mat-icon>
           <div mat-line data-imx-identifier="cart-item-validation-detail-title">{{ check.Title }}</div>
           <div mat-line data-imx-identifier="cart-item-validation-detail-status">{{ getStatus(check).status }}</div>
@@ -19,7 +26,9 @@
     </mat-list>
   </ng-container>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
+<mat-dialog-actions>
   <button mat-button [mat-dialog-close]="false" data-imx-identifier="cartwarnings-button-cancel">{{ "#LDS#Cancel" | translate }}</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial data-imx-identifier="cartwarnings-button-submit">{{ "#LDS#Submit anyway" | translate }}</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial data-imx-identifier="cartwarnings-button-submit">
+    {{ "#LDS#Submit anyway" | translate }}
+  </button>
 </mat-dialog-actions>

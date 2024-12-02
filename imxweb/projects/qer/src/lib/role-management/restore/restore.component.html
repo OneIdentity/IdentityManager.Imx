@@ -5,7 +5,9 @@
         <mat-step [stepControl]="wizardForm" label="{{ '#LDS#Select object to restore' | translate }}">
           <imx-busy-indicator class="imx-busy" *ngIf="busy"></imx-busy-indicator>
           <ng-container *ngIf="!busy">
-            <eui-alert [condensed]="true" [colored]="true" type="error" *ngIf="0 == roles.length">{{ LdsNoObjectsFound | translate }} </eui-alert>
+            <eui-alert [condensed]="true" [colored]="true" type="error" *ngIf="0 == roles.length"
+              >{{ LdsNoObjectsFound | translate }}
+            </eui-alert>
 
             <mat-selection-list [multiple]="false" formControlName="role">
               <mat-list-option checkboxPosition="before" *ngFor="let r of roles" [value]="r">
@@ -13,7 +15,7 @@
                 <div class="subtext">{{ '#LDS#Deleted on' | translate }}: {{ r.DeletionDate | localizedDate }}</div>
               </mat-list-option>
             </mat-selection-list>
-            <div class="imx-step-button">
+            <div class="imx-button-stepper">
               <button
                 mat-stroked-button
                 color="primary"
@@ -21,7 +23,7 @@
                 data-imx-identifier="restore-step-1-next"
                 matStepperNext
                 (click)="loadActions()"
-                [disabled]="wizardForm.controls.role.prestine || wizardForm.controls.role.invalid"
+                [disabled]="wizardForm.controls.role.pristine || wizardForm.controls.role.invalid"
               >
                 {{ '#LDS#Next' | translate }}
               </button>
@@ -46,9 +48,11 @@
               </mat-list-option>
             </mat-selection-list>
 
-            <div class="imx-step-button">
+            <div class="imx-button-stepper">
               <button mat-stroked-button data-imx-identifier="restore-step-2-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-              <button mat-stroked-button data-imx-identifier="restore-step-2-next" (click)="Execute()" color="primary" matStepperNext>{{ '#LDS#Next' | translate }}</button>
+              <button mat-stroked-button data-imx-identifier="restore-step-2-next" (click)="Execute()" color="primary" matStepperNext>
+                {{ '#LDS#Next' | translate }}
+              </button>
             </div>
           </ng-container>
         </mat-step>

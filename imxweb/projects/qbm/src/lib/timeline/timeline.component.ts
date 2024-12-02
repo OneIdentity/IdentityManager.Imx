@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,23 @@
  *
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { TimelineEventsGroupedByDate, ExtendedObjectHistoryEvent } from './timeline';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import moment from 'moment-timezone';
-import { ObjectHistoryService } from '../object-history/object-history.service';
+import { ExtendedObjectHistoryEvent, TimelineEventsGroupedByDate } from './timeline';
+import { EventChangeTypes, HistoryEventChangeType } from './timeline.model';
 
 @Component({
   selector: 'imx-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss']
+  styleUrls: ['./timeline.component.scss'],
 })
 export class TimelineComponent implements OnInit, OnChanges {
-  @Input() public data: ExtendedObjectHistoryEvent[];
+  @Input() public data: ExtendedObjectHistoryEvent[] = [];
 
   public eventsGroupedByDate: TimelineEventsGroupedByDate[] = [];
+  public eventChangeTypes = EventChangeTypes;
 
-  constructor() { }
+  constructor() {}
 
   /**
    * Inits table
@@ -62,19 +63,23 @@ export class TimelineComponent implements OnInit, OnChanges {
     this.eventsGroupedByDate = [];
 
     this.data.forEach((elem) => {
-      const date = moment(elem.ChangeTime).format("L");
+      const date = moment(elem.ChangeTime).format('L');
 
-      elem.Time = moment(elem.ChangeTime).format("HH:mm:ss");
+      elem.Time = moment(elem.ChangeTime).format('HH:mm:ss');
       if (this.eventsGroupedByDate.some((event) => event.date === date)) {
-        const dateEvents = this.eventsGroupedByDate.find((event) => event.date === date).events;
+        const dateEvents = this.eventsGroupedByDate?.find((event) => event.date === date)?.events ?? [];
         dateEvents.push(elem);
         dateEvents.sort((a, b) => b.Time.localeCompare(a.Time));
       } else {
         this.eventsGroupedByDate.push({
           date: date,
-          events: [elem]
+          events: [elem],
         });
       }
     });
+  }
+
+  public getEventChangeType(event: ExtendedObjectHistoryEvent): EventChangeTypes {
+    return HistoryEventChangeType[event.ChangeTypeId || ''];
   }
 }

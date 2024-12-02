@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,43 +28,43 @@ import { Injectable } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalCartitem } from 'imx-api-qer';
-import { BaseCdr, BulkItem, BulkItemStatus } from 'qbm';
+import { PortalCartitem } from '@imx-modules/imx-api-qer';
+import { BaseCdr, BulkItem, BulkItemStatus, calculateSidesheetWidth } from 'qbm';
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
 import { ServiceItemEditComponent } from './service-item-edit.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ItemEditService {
   constructor(
     private readonly sidesheetService: EuiSidesheetService,
-    private readonly translateService: TranslateService
-  ) { }
+    private readonly translateService: TranslateService,
+  ) {}
 
-  public async openEditor(cartItems: ExtendedEntityWrapper<PortalCartitem>[])
-    : Promise<{ submit: boolean, bulkItems: BulkItem[] }> {
-    const bulkItems = cartItems.map(cartItem => ({
+  public async openEditor(cartItems: ExtendedEntityWrapper<PortalCartitem>[]): Promise<{ submit: boolean; bulkItems: BulkItem[] }> {
+    const bulkItems = cartItems.map((cartItem) => ({
       entity: cartItem.typedEntity,
-      properties: cartItem.parameterCategoryColumns.map(item => new BaseCdr(item.column)),
+      properties: cartItem.parameterCategoryColumns.map((item) => new BaseCdr(item.column)),
       additionalInfo: cartItem.typedEntity.UID_PersonOrdered.Column.GetDisplayValue(),
-      status: BulkItemStatus.unknown
+      status: BulkItemStatus.unknown,
     }));
 
-    const submit = await this.sidesheetService.open(
-      ServiceItemEditComponent,
-      {
+    const submit = await this.sidesheetService
+      .open(ServiceItemEditComponent, {
         title: await this.translateService.get('#LDS#Heading Request Details').toPromise(),
-        width: '750px',
+        width: calculateSidesheetWidth(800),
         padding: '0px',
         data: bulkItems,
         testId: 'new-request-service-item-edit-sidesheet',
         disableClose: true,
-      }).afterClosed().toPromise();
+      })
+      .afterClosed()
+      .toPromise();
 
     return {
       bulkItems,
-      submit
+      submit,
     };
   }
 }

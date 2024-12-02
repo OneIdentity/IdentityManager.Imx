@@ -1,17 +1,17 @@
-<mat-card *ngIf="!usedInSidesheet" class="data-explorer data-explorer--groups">
-  <div class="data-explorer-card-header">
-    <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Heading System Entitlements</span>
+<mat-card *ngIf="!usedInSidesheet" class="data-explorer data-explorer--groups imx-card-fill">
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Heading System Entitlements</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
   <ng-container *ngTemplateOutlet="table"> </ng-container>
 </mat-card>
-<div *ngIf="!usedInSidesheet" class="data-explorer-bottom-button-row">
+<div *ngIf="!usedInSidesheet" class="imx-button-bar-transparent">
   <ng-container *ngTemplateOutlet="actions"> </ng-container>
 </div>
 
-<mat-card *ngIf="usedInSidesheet" class="imx-tab-card">
+<mat-card *ngIf="usedInSidesheet" class="imx-card-fill imx-tab-card">
   <ng-container *ngTemplateOutlet="table"> </ng-container>
 </mat-card>
 <div *ngIf="usedInSidesheet && (unsAccountIdFilter ? false : true)" eui-sidesheet-actions>
@@ -19,56 +19,53 @@
 </div>
 
 <ng-template #table>
-  <imx-data-source-toolbar
-    #dst
-    [settings]="dstSettings"
-    [options]="['search', 'sort', 'filter', 'filterTree', 'settings']"
-    [hiddenFilters]="['namespace']"
-    [busyService]="busyService"
-    [searchBoxText]="'#LDS#Search' | translate"
-    [itemStatus]="itemStatus"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
-    (filterTreeSelectionChanged)="filterByTree($event)"
-    (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"
-  >
-  </imx-data-source-toolbar>
-
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  ></imx-data-view-toolbar>
   <div class="imx-data-explorer-content">
     <div class="data-explorer-table">
-      <imx-data-table
-        #dataTable
-        [dst]="dst"
-        [showSelectionInfo]="false"
-        [showSelectedItemsMenu]="false"
-        (highlightedEntityChanged)="onGroupChanged($event)"
-        detailViewVisible="false"
-        [selectable]="unsAccountIdFilter ? false : true"
-        (selectionChanged)="onGroupSelected($event)"
+      <imx-data-view-auto-table
+        [dataSource]="dataSource"
         mode="manual"
-        data-imx-identifier="groups-tabledata-table"
+        matSort
+        (matSortChange)="dataSource?.sortChange($event)"
+        [matSortActive]="dataSource.sortId()"
+        [matSortDirection]="dataSource.sortDirection()"
+        [selectable]="unsAccountIdFilter ? false : true"
       >
-        <imx-data-table-column [entityColumn]="entitySchemaUnsGroup?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-          <ng-template let-item>
+        <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaUnsGroup?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+          </th>
+          <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
             <div data-imx-identifier="groups-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
             <div subtitle data-imx-identifier="groups-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column align="center" [entityColumn]="entitySchemaUnsGroup?.Columns.Requestable"> </imx-data-table-column>
-        <imx-data-table-generic-column
-          *ngIf="entitySchemaUnsGroup?.Columns.XMarkedForDeletion"
-          alignHeader="center"
-          alignContent="center"
-          [columnName]="entitySchemaUnsGroup?.Columns.XMarkedForDeletion.ColumnName"
+          </td>
+        </ng-container>
+        <ng-container [matColumnDef]="entitySchemaUnsGroup.Columns.Requestable.ColumnName">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaUnsGroup?.Columns?.Requestable?.Display }}
+          </th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            <div>{{ item.Requestable.Column.GetDisplayValue() }}</div>
+          </td>
+        </ng-container>
+        <ng-container
+          [matColumnDef]="entitySchemaUnsGroup.Columns.XMarkedForDeletion.ColumnName"
+          *ngIf="entitySchemaUnsGroup?.Columns?.XMarkedForDeletion"
         >
-          <ng-template let-item>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ entitySchemaUnsGroup?.Columns?.XMarkedForDeletion?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
             <div *ngIf="item.XMarkedForDeletion.value !== 0">
               <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
             </div>
-          </ng-template>
-        </imx-data-table-generic-column>
-        <imx-data-table-generic-column *ngIf="unsAccountIdFilter" alignHeader="center" alignContent="center" columnName="action">
-          <ng-template let-item>
+          </td>
+        </ng-container>
+        <ng-container [matColumnDef]="'action'" *ngIf="unsAccountIdFilter">
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchemaUnsGroup?.Columns?.UID_UNSRoot?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
             <button
               mat-button
               color="primary"
@@ -78,20 +75,24 @@
             >
               {{ '#LDS#View assignment analysis' | translate }}
             </button>
-          </ng-template>
-        </imx-data-table-generic-column>
-      </imx-data-table>
-      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+          </td>
+        </ng-container>
+      </imx-data-view-auto-table>
+      <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
     </div>
   </div>
 </ng-template>
 
 <ng-template #actions>
-  <imx-selected-elements [selectedElements]="selectedGroupsForUpdate" [isLoading]="busyService.isBusy"></imx-selected-elements>
-  <div class="imx-spacer"></div>
-  <button mat-stroked-button data-imx-identifier="groups-button-actions" title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu">
+  <imx-data-view-selection [dataSource]="dataSource"></imx-data-view-selection>
+  <button
+    mat-stroked-button
+    data-imx-identifier="groups-button-actions"
+    title="{{ '#LDS#Actions' | translate }}"
+    [matMenuTriggerFor]="actionsMenu"
+  >
     <eui-icon icon="ellipsisvertical"></eui-icon>
-    {{'#LDS#Actions' | translate}}
+    {{ '#LDS#Actions' | translate }}
   </button>
   <mat-menu yPosition="above" xPosition="before" data-imx-identifier="attestations-actions-menu" #actionsMenu="matMenu">
     <button mat-menu-item color="primary" [disabled]="itemsAreRequestable" (click)="bulkUpdateSelected(true)">
@@ -100,7 +101,13 @@
     <button mat-menu-item color="primary" [disabled]="itemsAreNotRequestable" (click)="bulkUpdateSelected(false)">
       <span translate>#LDS#Make not requestable</span>
     </button>
-    <button *ngIf="isAdmin" [disabled]="selectedGroupsForUpdate.length === 0" mat-menu-item (click)="bulkUpdateOwner()" class="imx-right-button">
+    <button
+      *ngIf="isAdmin"
+      [disabled]="selectedGroupsForUpdate.length === 0"
+      mat-menu-item
+      (click)="bulkUpdateOwner()"
+      class="imx-right-button"
+    >
       <span translate>#LDS#Assign product owner</span>
     </button>
   </mat-menu>

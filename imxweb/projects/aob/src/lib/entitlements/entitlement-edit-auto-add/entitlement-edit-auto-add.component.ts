@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,21 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
 import _ from 'lodash';
+import { Subscription } from 'rxjs';
 
-import { EntitlementToAddData, PortalApplication } from 'imx-api-aob';
-import { isExpressionInvalid, SqlExpression, SqlWizardExpression } from 'imx-qbm-dbts';
-import { ConfirmationService, SnackBarService } from 'qbm';
+import { EntitlementToAddData, PortalApplication, SqlWizardWrite } from '@imx-modules/imx-api-aob';
+import { isExpressionInvalid, SqlExpression, SqlWizardExpression } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth, ConfirmationService, SnackBarService } from 'qbm';
 import { EntitlementEditAutoAddService } from './entitlement-edit-auto-add.service';
 import { EntitlementToAddDataWrapperService } from './entitlement-to-add-data-wrapper.service';
 import { MappedEntitlementsPreviewComponent } from './mapped-entitlements-preview/mapped-entitlements-preview.component';
 
 @Component({
   templateUrl: './entitlement-edit-auto-add.component.html',
-  styleUrls: ['./entitlement-edit-auto-add.component.scss'],
 })
 export class EntitlementEditAutoAddComponent implements OnDestroy {
   private subscriptions: Subscription[] = [];
@@ -66,12 +64,12 @@ export class EntitlementEditAutoAddComponent implements OnDestroy {
     private readonly snackbar: SnackBarService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translateService: TranslateService,
-    confirm: ConfirmationService
+    confirm: ConfirmationService,
   ) {
     this.subscriptions.push(
       sidesheetRef.closeClicked().subscribe(async () => {
         if (this.exprHasntChanged || (await confirm.confirmLeaveWithUnsavedChanges())) sidesheetRef.close(this.reload);
-      })
+      }),
     );
     this.sqlExpression = _.cloneDeep(data.sqlExpression);
   }
@@ -81,29 +79,25 @@ export class EntitlementEditAutoAddComponent implements OnDestroy {
   }
 
   public async showResults(withSave: boolean): Promise<void> {
-    let overlay: OverlayRef;
-    setTimeout(() => {
-      overlay = this.busyService.show();
-    });
+    this.showBusyIndicator();
     let elements: EntitlementToAddData;
     try {
       await this.setExtendedData(this.sqlExpression.Expression);
       elements = await this.svc.showEntitlementsToMap(this.data.application.InteractiveEntityStateData);
     } finally {
-      setTimeout(() => {
-        this.busyService.hide(overlay);
-      });
+      this.busyService.hide();
     }
     if (!elements) {
       return;
     }
 
     const entitlementToAdd = this.entitlementToAddWrapperService.buildTypedEntities(elements);
-    const saveChanges: { save: boolean; map: boolean } = await this.sidesheet.open(MappedEntitlementsPreviewComponent, {
+    const saveChanges: { save: boolean; map: boolean } = await this.sidesheet
+      .open(MappedEntitlementsPreviewComponent, {
         title: await this.translateService.get('#LDS#Heading View Matching Application Entitlements').toPromise(),
         subTitle: this.data.application.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(550px, 55%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'mapped-entitlements-preview-sidesheet',
         data: {
           entitlementToAdd,
@@ -116,18 +110,14 @@ export class EntitlementEditAutoAddComponent implements OnDestroy {
     this.reload = true;
 
     if (withSave && saveChanges?.save) {
-      setTimeout(() => {
-        overlay = this.busyService.show();
-      });
+      this.showBusyIndicator();
       try {
         await this.data.application.GetEntity().Commit(false);
         if (saveChanges.map) {
           this.svc.mapEntitlementsToApplication(this.data.application.UID_AOBApplication.value);
         }
       } finally {
-        setTimeout(() => {
-          this.busyService.hide(overlay);
-        });
+        this.busyService.hide();
       }
       this.sidesheetRef.close(true);
       this.snackbar.open({
@@ -137,15 +127,11 @@ export class EntitlementEditAutoAddComponent implements OnDestroy {
       });
     } else {
       // reset the extended data if you do not save the data
-      setTimeout(() => {
-        overlay = this.busyService.show();
-      });
+      this.showBusyIndicator();
       try {
         await this.setExtendedData(this.data.sqlExpression.Expression);
       } finally {
-        setTimeout(() => {
-          this.busyService.hide(overlay);
-        });
+        this.busyService.hide();
       }
     }
   }
@@ -154,28 +140,38 @@ export class EntitlementEditAutoAddComponent implements OnDestroy {
     // check if the sqlWizard has a valid expression
     return (
       this.exprHasntChanged ||
-      this.sqlExpression?.Expression?.Expressions.length === 0 ||
+      this.sqlExpression?.Expression?.Expressions?.length === 0 ||
       isExpressionInvalid(this.sqlExpression) ||
-      !this.hasValuesSet(this.sqlExpression.Expression)
+      !this.hasValuesSet(this.sqlExpression?.Expression)
     );
   }
 
-  private hasValuesSet(sqlExpression: SqlExpression, checkCurrent: boolean = false): boolean {
-    const current = !checkCurrent || sqlExpression.Value != null;
+  private hasValuesSet(sqlExpression: SqlExpression | undefined, checkCurrent: boolean = false): boolean {
+    const current = !checkCurrent || sqlExpression?.Value != null;
 
-    if (sqlExpression.Expressions?.length > 0) {
-      return current && sqlExpression.Expressions.every((elem) => this.hasValuesSet(elem, true));
+    if (!!sqlExpression?.Expressions?.length) {
+      return current && !!sqlExpression?.Expressions?.every((elem) => this.hasValuesSet(elem, true));
     }
 
     return current;
   }
 
-  private async setExtendedData(sqlExpression: SqlExpression): Promise<void> {
+  private async setExtendedData(sqlExpression: SqlExpression | undefined): Promise<void> {
+    const SqlExpression: SqlWizardWrite = { Filters: [] };
+    if (sqlExpression) {
+      SqlExpression.Filters?.push(sqlExpression);
+    }
     return this.data.application.setExtendedData({
       ...this.data.application.extendedData,
       ...{
-        SqlExpression: { Filters: [sqlExpression] },
+        SqlExpression,
       },
     });
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

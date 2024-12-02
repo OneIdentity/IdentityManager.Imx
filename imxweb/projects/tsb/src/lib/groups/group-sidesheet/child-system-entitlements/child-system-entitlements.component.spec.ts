@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,13 @@
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { GroupsService } from '../../groups.service';
 
 import { ChildSystemEntitlementsComponent } from './child-system-entitlements.component';
 
 function mockGetGroups(): TypedEntityCollectionData<any> {
-  return {totalCount: 100, Data: ['1', '2']};
+  return { totalCount: 100, Data: ['1', '2'] };
 }
 
 describe('ChildSystemEntitlementsComponent', () => {
@@ -41,7 +41,8 @@ describe('ChildSystemEntitlementsComponent', () => {
 
   const euiLoadingServiceStub = {
     hide: jasmine.createSpy('hide'),
-    show: jasmine.createSpy('show')
+    show: jasmine.createSpy('show'),
+    overlayRefs: [],
   };
 
   beforeEach(waitForAsync(() => {
@@ -49,26 +50,25 @@ describe('ChildSystemEntitlementsComponent', () => {
       declarations: [ChildSystemEntitlementsComponent],
       providers: [
         {
-        provide: EuiLoadingService,
-        useValue: euiLoadingServiceStub
-      },
-      {
-        provide: GroupsService,
-        useValue: {
-          getDataModel:jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({})),
-          getGroupsGroupMembers: jasmine.createSpy('getGroupsGroupMembers').and.returnValue(Promise.resolve(mockGetGroups())),
-          UnsGroupMembersSchema: {
-            Columns: {
-              __Display: { ColumnName: '__Display' },
-              UID_UNSGroupChild: { ColumnName: 'UID_UNSGroupChild' },
-              XDateInserted: { ColumnName: 'XDateInserted' }
-            }
-          }
-        }
-      }
-    ]
-    })
-      .compileComponents();
+          provide: EuiLoadingService,
+          useValue: euiLoadingServiceStub,
+        },
+        {
+          provide: GroupsService,
+          useValue: {
+            getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({})),
+            getGroupsGroupMembers: jasmine.createSpy('getGroupsGroupMembers').and.returnValue(Promise.resolve(mockGetGroups())),
+            UnsGroupMembersSchema: {
+              Columns: {
+                __Display: { ColumnName: '__Display' },
+                UID_UNSGroupChild: { ColumnName: 'UID_UNSGroupChild' },
+                XDateInserted: { ColumnName: 'XDateInserted' },
+              },
+            },
+          },
+        },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

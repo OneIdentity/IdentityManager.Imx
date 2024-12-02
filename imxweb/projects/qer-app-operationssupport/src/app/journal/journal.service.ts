@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,23 +27,20 @@
 import { Injectable } from '@angular/core';
 import { imx_SessionService } from 'qbm';
 
-import { OpsupportJournal } from 'imx-api-qbm';
-import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { OpsupportJournal } from '@imx-modules/imx-api-qbm';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class JournalService {
-
   public get OpsupportJournalEntitySchema(): EntitySchema {
     return this.session.TypedClient.OpsupportJournal.GetSchema();
   }
 
-  constructor(private session: imx_SessionService) {
-  }
+  constructor(private session: imx_SessionService) {}
 
-  public async getItems(parameter: CollectionLoadParameters):
-  Promise<ExtendedTypedEntityCollection<OpsupportJournal, unknown>> {
+  public async getItems(parameter: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<OpsupportJournal, unknown>> {
     return this.session.TypedClient.OpsupportJournal.Get(parameter);
   }
 

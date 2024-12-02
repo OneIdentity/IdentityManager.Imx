@@ -1,27 +1,16 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   flex: 1 1 auto;
 
-  eui-icon {
-    font-size: 14px;
-    margin-right: 4px;
-  }
-
   .imx-tab-content-body {
     padding: 0;
   }
-}
-
-.spaced-badge {
-  margin-right: 1em;
-}
-
-.helper-alert ::ng-deep > div {
-  margin-bottom: 20px;
 }
 
 imx-selected-elements {
@@ -30,42 +19,4 @@ imx-selected-elements {
 
 .imx-tab-content {
   height: 100%;
-}
-
-.imx-tab-content-body {
-  height: 100%;
-  padding: 0;
-
-  .eui-sidesheet-content {
-    overflow: hidden;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    .mat-card {
-      overflow: hidden;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-
-      imx-data-table {
-        height: 100%;
-      }
-    }
-  }
-}
-
-.eui-dark-theme{
-  :host{
-    .eui-sidesheet-actions{
-      background-color: $color-gray-70;
-    }
-  }
-}
-
-.eui-contrast-theme{
-  :host{
-    .eui-sidesheet-actions{
-      background-color: $color-gray-90;
-    }
-  }
 }

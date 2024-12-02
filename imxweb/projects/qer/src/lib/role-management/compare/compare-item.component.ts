@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,14 @@
  *
  */
 
-import { Component, Input } from "@angular/core";
-import { XOrigin } from "imx-qbm-dbts";
+import { Component, Input } from '@angular/core';
+import { XOrigin } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   templateUrl: './compare-item.component.html',
-  selector: 'imx-role-compareitem'
+  selector: 'imx-role-compareitem',
 })
 export class CompareItemComponent {
-
   public origins: number[] = [XOrigin.Direct, XOrigin.Indirect, XOrigin.Dynamic, XOrigin.Ordered];
 
   @Input() val: number;

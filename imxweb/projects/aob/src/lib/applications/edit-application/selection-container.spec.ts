@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,45 +31,46 @@ describe('SelectionContainer', () => {
     {
       assigned: [],
       selected: [],
-      expected: { adds: 0, removes: 0 }
+      expected: { adds: 0, removes: 0 },
     },
     {
       assigned: [0],
       selected: [],
-      expected: { adds: 0, removes: 1 }
+      expected: { adds: 0, removes: 1 },
     },
     {
       assigned: [0],
       selected: [0],
-      expected: { adds: 0, removes: 0 }
+      expected: { adds: 0, removes: 0 },
     },
     {
       assigned: [],
       selected: [0],
-      expected: { adds: 1, removes: 0 }
+      expected: { adds: 1, removes: 0 },
     },
     {
       assigned: [1],
       selected: [0],
-      expected: { adds: 1, removes: 1 }
+      expected: { adds: 1, removes: 1 },
     },
     {
-      assigned: [0,1],
-      selected: [0,1],
-      expected: { adds: 0, removes: 0 }
+      assigned: [0, 1],
+      selected: [0, 1],
+      expected: { adds: 0, removes: 0 },
     },
     {
-      assigned: [0,1],
+      assigned: [0, 1],
       selected: [],
-      expected: { adds: 0, removes: 2 }
-    }
-  ].forEach(testcase =>
-  it('creates the correct changeSet, assigned ' + testcase.assigned + ', selected ' + testcase.selected, () => {
-    const selected = new SelectionContainer<{ id: string }>(item => item.id);
-    selected.init(testcase.assigned.map(id => ({ id: id.toString() })));
-    selected.selected = testcase.selected.map(id => ({ id: id.toString() }));
-    const change = selected.getChangeSet();
-    expect(change.add.length).toEqual(testcase.expected.adds);
-    expect(change.remove.length).toEqual(testcase.expected.removes);
-  }));
+      expected: { adds: 0, removes: 2 },
+    },
+  ].forEach((testcase) =>
+    it('creates the correct changeSet, assigned ' + testcase.assigned + ', selected ' + testcase.selected, () => {
+      const selected = new SelectionContainer<{ id: string }>((item) => item.id);
+      selected.init(testcase.assigned.map((id) => ({ id: id.toString() })));
+      selected.selected = testcase.selected.map((id) => ({ id: id.toString() }));
+      const change = selected.getChangeSet();
+      expect(change.add.length).toEqual(testcase.expected.adds);
+      expect(change.remove.length).toEqual(testcase.expected.removes);
+    }),
+  );
 });

@@ -1,9 +1,13 @@
 <div class="imx-tab-content">
-  <div class="imx-mat-tab-content-body">
-    <div eui-sidesheet-content class="imx-tab-content-body">
-      <mat-tab-group *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic; else secondaryOnly">
+  <div class="imx-tab-content-body">
+    <div class="imx-sidesheet-content__overflow imx-card-fill">
+      <mat-tab-group
+        mat-stretch-tabs="false"
+        *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic; else secondaryOnly"
+        class="imx-padding-top-20 imx-tab-header-indent"
+      >
         <mat-tab *ngIf="canHavePrimaryMemberships()" [label]="'#LDS#Primary memberships' | translate">
-          <imx-primary-memberships></imx-primary-memberships>
+          <imx-primary-memberships class="imx-margin-20"></imx-primary-memberships>
         </mat-tab>
         <mat-tab [label]="'#LDS#Secondary memberships' | translate">
           <imx-secondary-memberships></imx-secondary-memberships>
@@ -32,5 +36,5 @@
 </div>
 
 <ng-template #secondaryOnly>
-  <imx-secondary-memberships [isAdmin]="isAdmin" [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
+  <imx-secondary-memberships></imx-secondary-memberships>
 </ng-template>

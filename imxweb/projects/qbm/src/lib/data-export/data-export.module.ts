@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,6 @@ import { DataExportComponent } from './data-export.component';
 import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
 import { MatRadioModule } from '@angular/material/radio';
 
-
 @NgModule({
   imports: [
     CommonModule,
@@ -53,7 +52,7 @@ import { MatRadioModule } from '@angular/material/radio';
     DragDropModule,
     CdkScrollableModule,
     MatRadioModule,
-    FormsModule
+    FormsModule,
   ],
   declarations: [DataExportComponent],
 })

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { Component, ViewEncapsulation, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { ITShopConfig } from 'imx-api-qer';
-import { AuthenticationService } from 'qbm';
+import { ITShopConfig } from '@imx-modules/imx-api-qer';
+import { AuthenticationService, ISessionState } from 'qbm';
+import { QerPermissionsService } from '../../admin/qer-permissions.service';
+import { ItshopService } from '../../itshop/itshop.service';
 import { Approval } from '../approval';
 import { WorkflowActionService } from '../workflow-action/workflow-action.service';
-import { ItshopService } from '../../itshop/itshop.service';
-import { QerPermissionsService } from '../../admin/qer-permissions.service';
 
 @Component({
   selector: 'imx-approvals-sidesheet',
@@ -44,7 +44,7 @@ export class ApprovalsSidesheetComponent implements OnDestroy, OnInit {
   public readonly hasPeerGroupAnalysis: boolean;
 
   public currentUserId: string;
-  public isChiefApprover:boolean;
+  public isChiefApprover: boolean;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -52,26 +52,28 @@ export class ApprovalsSidesheetComponent implements OnDestroy, OnInit {
     @Inject(EUI_SIDESHEET_DATA)
     public readonly data: {
       pwo: Approval;
-      itShopConfig: ITShopConfig;
+      itShopConfig?: ITShopConfig;
       fromInquiry: boolean;
     },
     public readonly actionService: WorkflowActionService,
     private readonly sideSheetRef: EuiSidesheetRef,
     itshop: ItshopService,
     authentication: AuthenticationService,
-    private readonly permission: QerPermissionsService
+    private readonly permission: QerPermissionsService,
   ) {
     this.subscriptions.push(this.actionService.applied.subscribe(() => this.sideSheetRef.close()));
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((state) => (this.currentUserId = state.UserUid)));
+    this.subscriptions.push(
+      authentication.onSessionResponse.subscribe((state: ISessionState) => (this.currentUserId = state.UserUid || '')),
+    );
 
     if (this.data.pwo.pwoData?.WorkflowHistory) {
       const history = itshop.createTypedHistory(this.data.pwo.pwoData);
       this.hasPeerGroupAnalysis = history.some((item) =>
-        ['EXWithPeerGroupAnalysis', 'Peer group analysis'].includes(item.Ident_PWODecisionStep.value)
+        ['EXWithPeerGroupAnalysis', 'Peer group analysis'].includes(item.Ident_PWODecisionStep.value),
       );
     }
   }
-  public async  ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
     this.isChiefApprover = await this.permission.isCancelPwO();
   }
 
@@ -110,4 +112,7 @@ export class ApprovalsSidesheetComponent implements OnDestroy, OnInit {
   public modifyPriority(): void {
     // TODO later
   }
+
+  public LdsKeyApprove = '#LDS#Based on the peer group analysis, it is recommended that you approve this request.';
+  public LdsKeyDeny = '#LDS#Based on the peer group analysis, it is recommended that you deny this request.';
 }

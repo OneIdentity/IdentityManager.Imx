@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 @import '../../new-request-global.scss';
 
 :host {
@@ -7,18 +8,17 @@
   align-items: center;
 
   .imx-request-label {
-    @include imx-text();
+    @include new-request-text();
   }
 
   .imx-request-label-value {
-    @include imx-text(body, true);
+    @include new-request-text(body, true);
   }
 
   imx-data-source-toolbar ::ng-deep .imx-data-source-toolbar-search {
-    width: min(420px, 70vw)
+    width: min(480px, 70vw);
   }
 }
-
 
 // Theming
 :host {

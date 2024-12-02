@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,10 @@
  */
 
 import { Injectable } from '@angular/core';
-import {
-  ExtendedTypedEntityCollection,
-  CollectionLoadParameters,
-  TypedEntityCollectionData,
-} from 'imx-qbm-dbts';
-import { PortalTargetsystemUnsContainer, PortalTargetsystemUnsSystem } from 'imx-api-tsb';
-import { Subject } from 'rxjs';
 import { EuiLoadingService } from '@elemental-ui/core';
+import { PortalTargetsystemUnsContainer, PortalTargetsystemUnsSystem } from '@imx-modules/imx-api-tsb';
+import { CollectionLoadParameters, ExtendedTypedEntityCollection, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { Subject } from 'rxjs';
 import { TsbApiService } from './tsb-api-client.service';
 
 @Injectable({ providedIn: 'root' })
@@ -41,7 +37,7 @@ export class DeHelperService {
 
   constructor(
     private loader: EuiLoadingService,
-    private tsbClient: TsbApiService
+    private tsbClient: TsbApiService,
   ) {}
 
   public async getAuthorityData(search?: string, skipLoader?: boolean): Promise<DataDeleteOptions> {
@@ -50,7 +46,7 @@ export class DeHelperService {
       loadParams.search = search;
     }
     const method = this.tsbClient.typedClient.PortalTargetsystemUnsSystem;
-    let data: ExtendedTypedEntityCollection<PortalTargetsystemUnsSystem, {}>;
+    let data: ExtendedTypedEntityCollection<PortalTargetsystemUnsSystem, unknown>;
     if (skipLoader) {
       data = await method.Get(loadParams);
     } else {
@@ -63,7 +59,7 @@ export class DeHelperService {
   }
 
   public async getContainers(
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsContainer>> {
     return this.tsbClient.typedClient.PortalTargetsystemUnsContainer.Get(navigationState);
   }

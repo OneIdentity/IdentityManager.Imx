@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { EditReportComponent } from './reports/edit-report.component';
 import { EditReportModule } from './reports/edit-report.module';
 import { ReportButtonModule } from './report-button/report-button.module';
-import {StatisticReportButtonModule} from './statistic-report-button/statistic-report-button.module';
+import { StatisticReportButtonModule } from './statistic-report-button/statistic-report-button.module';
 
 const routes: Routes = [
   {
@@ -41,20 +41,15 @@ const routes: Routes = [
     component: EditReportComponent,
     canActivate: [RouteGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.Reports
-    }
-  }
+    data: {
+      contextId: HELP_CONTEXTUAL.Reports,
+    },
+  },
 ];
 
 @NgModule({
-  imports: [
-    EditReportModule,
-    SubscriptionsModule,
-    ReportButtonModule,
-    StatisticReportButtonModule,
-    RouterModule.forChild(routes)
-  ]
+  imports: [EditReportModule, SubscriptionsModule, ReportButtonModule, StatisticReportButtonModule, RouterModule.forChild(routes)],
+  declarations: [],
 })
 export class RpsConfigModule {
   constructor(private readonly initializer: InitService) {

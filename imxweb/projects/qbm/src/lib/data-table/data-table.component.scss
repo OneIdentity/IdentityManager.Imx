@@ -13,37 +13,9 @@
     display: none;
   }
 
-  .imx-data-table-grouped {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  
 
-    .spaced-left {
-      margin-left: 5px;
-    }
-    imx-data-table{
-      overflow-y: unset;
-    }
-    td.mat-cell {
-      padding-top: 12px;
-
-      div {
-        overflow: hidden;
-
-        &.group-row-expanded {
-          margin-bottom: 15px;
-        }
-      }
-    }
-
-    .imx-data-table-grouped-content {
-      flex: 1 1 auto;
-      overflow: auto;
-    }
-  }
-
-  .imx-data-table-no-results {
+  .imx-no-results {
     text-align: center;
     margin: 20px 0;
     flex: 1 1 auto;
@@ -51,74 +23,11 @@
     flex-direction: column;
     justify-content: center;
 
-    .eui-icon {
-      font-size: 100px;
-      color: $color-gray-10;
-    }
-
     p {
       margin: 0;
       font-size: 18px;
       color: $color-gray-80;
     }
-  }
-
-  // Handle background row coloring
-  .imx-data-table-highlightedActive .mat-row:hover {
-    background-color: $color-blue-10;
-  }
-
-  // Handle cursor icons, make sure divs are minimal so we don't have the text icon too much
-  .imx-data-table-highlightedActive ::ng-deep.mat-cell {
-    &:hover {
-      cursor: pointer;
-    }
-
-    // Make sure to exclude checkboxes as they behave differently with content fitting
-    > *:not(.mat-checkbox) {
-      display: flex;
-      height: fit-content;
-
-      &:hover {
-        cursor: text;
-      }
-    }
-
-    > .mat-button,
-    .mat-stroked-button,
-    .mat-raised-button,
-    .mat-flat-button,
-    .mat-icon-button {
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
-
-  .imx-data-table-row-highlighted {
-    background-color: $color-gray-5;
-  }
-
-  .imx-data-table-row-conditional {
-    background-color: $color-red-20;
-  }
-
-  .mat-column-select {
-    overflow: initial;
-    max-width: 50px;
-    width: 15px;
-  }
-
-  td.mat-cell {
-    padding-right: 10px;
-  }
-
-  table.mat-table {
-    box-shadow: none;
-    padding: 1px;
-  }
-  .imx-table-column {
-    padding-right: 15px;
   }
 
   .hidden {
@@ -130,30 +39,8 @@
   :host {
     background-color: $color-gray-70;
 
-    .mat-table {
-      background-color: $color-gray-70;
-    }
 
-    .imx-data-table-row-highlighted {
-      background-color: $color-gray-60;
-    }
-    .imx-data-table-highlightedActive .mat-row:hover {
-      background-color: $color-gray-60;
-    }
-
-    .imx-data-table-row-conditional {
-      background-color: $color-red-80;
-    }
-
-    ::ng-deep .custom-row td {
-      border-bottom-color: $color-gray-60;
-    }
-
-    .imx-data-table-no-results {
-      eui-icon {
-        color: $color-gray-20;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-10;
       }
@@ -165,57 +52,7 @@
   :host {
     background-color: $color-gray-90;
 
-    .mat-table {
-      background-color: $color-gray-90;
-    }
-
-    .imx-data-table-row-highlighted,
-    .imx-data-table-highlightedActive .mat-row:hover {
-      background-color: $color-gray-0;
-
-      ::ng-deep td.mat-cell {
-        color: $color-gray-100;
-      }
-
-      ::ng-deep .mat-checkbox-frame,
-      ::ng-deep .mat-radio-outer-circle {
-        border-color: $color-gray-100;
-      }
-    }
-
-    table {
-      border-top: none;
-    }
-
-    ::ng-deep th:after,
-    ::ng-deep th:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      width: 100%;
-    }
-    ::ng-deep th:before {
-      top: 0;
-      border-top: 1px solid white;
-    }
-    ::ng-deep th:after {
-      bottom: 0;
-      border-bottom: 1px solid white;
-    }
-
-    .imx-data-table-row-conditional {
-      background-color: $color-red-80;
-    }
-
-    .imx-data-table-selection-info {
-      color: $color-blue-40;
-    }
-
-    .imx-data-table-no-results {
-      eui-icon {
-        color: $color-gray-10;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-0;
       }

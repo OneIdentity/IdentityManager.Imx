@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 export function isAobApplicationOwner(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_ApplicationOwner') != null;
+  return features.find((item) => item === 'Portal_UI_ApplicationOwner') != null;
 }
 
 export function isAobApplicationAdmin(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_ApplicationAdmin') != null;
+  return features.find((item) => item === 'Portal_UI_ApplicationAdmin') != null;
 }

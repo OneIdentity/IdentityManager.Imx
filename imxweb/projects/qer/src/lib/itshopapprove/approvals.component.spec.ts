@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,13 +41,17 @@ describe('Approvals', () => {
   beforeEach(() => {
     return MockBuilder(ApprovalsComponent, ApprovalsModule)
       .mock(EuiSidesheetService)
-      .mock(UserModelService,{getPendingItems: jasmine.createSpy('getPendingItems').and.returnValue(Promise.resolve({}))},{export:true})
+      .mock(
+        UserModelService,
+        { getPendingItems: jasmine.createSpy('getPendingItems').and.returnValue(Promise.resolve({})) },
+        { export: true },
+      )
       .mock(
         ActivatedRoute,
         {
           queryParams: from([]),
         },
-        { export: true }
+        { export: true },
       );
   });
 

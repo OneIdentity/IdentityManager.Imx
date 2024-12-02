@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,9 +32,8 @@ import { Router } from '@angular/router';
   templateUrl: './service-report.component.html',
   styleUrls: ['./service-report.component.scss'],
 })
-export class ServiceReportComponent  {
-
-  constructor(private router: Router) { }
+export class ServiceReportComponent {
+  constructor(private router: Router) {}
 
   public CheckServiceAvailability(): void {
     this.router.navigate(['ServiceAvailability']);

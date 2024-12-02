@@ -24,17 +24,31 @@
   <!-- Show tiles of statistics -->
   <mat-card class="cards-container">
     <div class="checkbox-container">
-      <mat-checkbox color="primary" labelPosition="before" [(ngModel)]="hideEmpty">{{'Hide missing data?'}}</mat-checkbox>
+      <mat-checkbox color="primary" labelPosition="before" [(ngModel)]="hideEmpty">{{
+        '#LDS#Hide missing data?' | translate
+      }}</mat-checkbox>
     </div>
     <eui-scroll [options]="{ alwaysShowTracks: true }">
       <div class="grid-container">
-        <mat-card class="stat-card" *ngFor="let chart of charts" [ngClass]="{ 'stat-card--disabled': !chartHasData(chart), 'stat-card--hidden': hideEmpty && !chartIsLoading(chart) && !chartHasData(chart) }" (click)="openStatistic(chart)">
-          <span [matTooltip]="chart?.Description" matTooltipPosition="above">
-            {{ chart.Title }}
+        <mat-card
+          class="stat-card"
+          *ngFor="let chart of charts"
+          [ngClass]="{
+            'stat-card--disabled': !chartHasData(chart),
+            'stat-card--hidden': hideEmpty && !chartIsLoading(chart) && !chartHasData(chart)
+          }"
+          (click)="openStatistic(chart)"
+        >
+          <span [matTooltip]="chart?.Description?.value" matTooltipPosition="above">
+            {{ chart.GetEntity().GetDisplay() }}
           </span>
           <div class="card-content center-content" *ngIf="!chartIsLoading(chart); else loading">
             <div *ngIf="chartHasData(chart); else noStat">
-              <imx-chart-tile [summaryStat]="getSummaryStat(chart)" (chartDetails)="getDetails(chart, $event)"></imx-chart-tile>
+              <imx-chart-tile
+                [chartInfo]="chart"
+                [summaryStat]="getSummaryStat(chart)"
+                (chartDetails)="getDetails(chart, $event)"
+              ></imx-chart-tile>
             </div>
           </div>
         </mat-card>
@@ -44,7 +58,7 @@
 </ng-template>
 
 <ng-template #noStat>
-  <div  class="card-no-data center-content">
+  <div class="card-no-data center-content">
     <eui-icon icon="content-alert"></eui-icon>
     <p>{{ '#LDS#Missing data' | translate }}</p>
   </div>

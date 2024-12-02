@@ -6,35 +6,3 @@
   overflow: hidden;
   height: 100%;
 }
-
-.imx-service-category-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 32px;
-
-  .imx-helper-alert {
-    width: 100%;
-
-    ::ng-deep .eui-alert {
-      margin-bottom: 20px;
-    }
-  }
-}
-
-.imx-action {
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px 32px;
-
-  .justify-start {
-    margin-right: auto;
-
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
-}

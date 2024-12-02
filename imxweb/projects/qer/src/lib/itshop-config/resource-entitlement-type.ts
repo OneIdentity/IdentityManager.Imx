@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,40 +24,46 @@
  *
  */
 
-import { TypedEntity, CollectionLoadParameters, ExtendedTypedEntityCollection, EntitySchema, EntityData } from "imx-qbm-dbts";
-import { IRequestableEntitlementType } from "./irequestable-entitlement-type";
+import { CollectionLoadParameters, EntityData, EntitySchema, ExtendedTypedEntityCollection, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { IRequestableEntitlementType } from './irequestable-entitlement-type';
 
 export class ResourceEntitlementType implements IRequestableEntitlementType {
-
-  constructor(private readonly resourceType: string,
+  constructor(
+    private readonly resourceType: string,
     private type: {
       GetSchema(): EntitySchema;
       createEntity(initialData?: EntityData): TypedEntity;
       Get(shelfUid: string, navigationState: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<any, unknown>>;
       Post(shelfId: string, entitlement: TypedEntity): Promise<any>;
-    }) { }
+    },
+  ) {}
 
   getFkColumnName(): string {
-    return "UID_" + this.getTableName();
+    return 'UID_' + this.getTableName();
   }
 
   public addEntitlementSelections(shelfId: string, values: string[]): Promise<any> {
-    const promises = [];
+    const promises: Promise<any>[] = [];
     values.forEach((value) => {
       const entitlement = this.type.createEntity();
-      entitlement.GetEntity().GetColumn("UID_" + this.resourceType).PutValue(value);
+      entitlement
+        .GetEntity()
+        .GetColumn('UID_' + this.resourceType)
+        .PutValue(value);
       promises.push(this.type.Post(shelfId, entitlement));
     });
     return Promise.all(promises);
   }
 
-  public getTableName(): string { return this.resourceType };
+  public getTableName(): string {
+    return this.resourceType;
+  }
 
   public createAssignmentEntity(shelfId: string): TypedEntity {
     const e = this.type.createEntity({
       Columns: {
-        "UID_ITShopOrg": { Value: shelfId }
-      }
+        UID_ITShopOrg: { Value: shelfId },
+      },
     });
     return e;
   }
@@ -65,5 +71,4 @@ export class ResourceEntitlementType implements IRequestableEntitlementType {
   getSchema(): EntitySchema {
     return this.type.GetSchema();
   }
-
 }

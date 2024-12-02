@@ -1,79 +1,111 @@
 <div>
-  <mat-button-toggle-group #buttonToggle value="direct" (change)="onToggleChanged($event)" [vertical]="isMobile">
-    <mat-button-toggle [matTooltip]="LdsDirectlyAssignedHint | translate" value="direct">{{ LdsDirectlyAssigned
-      | translate }}</mat-button-toggle>
-    <mat-button-toggle [matTooltip]="LdsIndirectlyAssignedHint | translate" value="nested">{{ LdsIndirectlyAssigned
-      | translate }}</mat-button-toggle>
+  <mat-button-toggle-group
+    #buttonToggle
+    class="imx-button-toggle-group-warning"
+    value="direct"
+    (change)="onToggleChanged($event)"
+    [hideSingleSelectionIndicator]="true"
+    [vertical]="isMobile"
+  >
+    <mat-button-toggle [matTooltip]="LdsDirectlyAssignedHint | translate" value="direct">
+      {{ LdsDirectlyAssigned | translate }}
+    </mat-button-toggle>
+    <mat-button-toggle [matTooltip]="LdsIndirectlyAssignedHint | translate" value="nested">
+      {{ LdsIndirectlyAssigned | translate }}
+    </mat-button-toggle>
   </mat-button-toggle-group>
 </div>
 
-<ng-container *ngIf="membershipView === 'direct'">
-  <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false" >
-    {{ '#LDS#Here you can manage the memberships of the system entitlement. You can request and remove memberships and view the assignment analysis for each membership.' | translate }}
-    </eui-alert>
-  <eui-alert *ngIf="showUnsubscribeWarning" type="warning" [condensed]="true" [colored]="true" [dismissable]="true"
-    (dismissed)="onWarningDismissed()">{{LdsNotUnsubscribableHint | translate}}</eui-alert>
-    
-  <imx-data-source-toolbar #dstDirect [settings]="dstSettings"
-    [hiddenFilters]="['namespace']"
-    [itemStatus]="itemStatus" (navigationStateChanged)="onDirectNavigationStateChanged($event)"
-    [searchBoxText]="'#LDS#Search' | translate">
-  </imx-data-source-toolbar>
+@if (membershipView === 'direct') {
+  <eui-alert [condensed]="true" [colored]="true" type="info" [dismissable]="false">
+    {{
+      '#LDS#Here you can manage the memberships of the system entitlement. You can request and remove memberships and view the assignment analysis for each membership.'
+        | translate
+    }}
+  </eui-alert>
+  @if (showUnsubscribeWarning) {
+    <eui-alert type="warning" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onWarningDismissed()">{{
+      LdsNotUnsubscribableHint | translate
+    }}</eui-alert>
+  }
+  <imx-data-view-toolbar [dataSource]="dataSourceDirect" [showSettings]="false"></imx-data-view-toolbar>
+  <mat-card class="imx-card-fill">
+    <imx-data-view-auto-table [dataSource]="dataSourceDirect" mode="manual" [selectable]="true">
+      <ng-container [matColumnDef]="entitySchemaGroupDirectMemberships.Columns.UID_Person.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>{{ entitySchemaGroupDirectMemberships.Columns.UID_Person.Display }}</th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div class="filled-cell">
+            <div>{{ item.UID_Person.Column.GetDisplayValue() }}</div>
+            @if (item.XIsInEffect?.value !== true) {
+              <eui-badge class="imx-margin-left-auto" color="primary">{{ '#LDS#Not effective' | translate }}</eui-badge>
+            }
+          </div>
+        </td>
+      </ng-container>
 
-  <imx-data-table #membersTable [dst]="dstDirect" mode="manual" detailViewVisible="false"
-    noDataText="#LDS#There are currently no direct memberships." [selectable]="true"
-    (highlightedEntityChanged)="onShowDetails($event)"
-    (selectionChanged)="onSelectionChanged($event)">
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.UID_Person">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.UID_UNSAccount">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.XOrigin">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.XDateInserted">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.OrderState">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.ValidUntil">
-    </imx-data-table-column>
-    <imx-data-table-generic-column alignHeader="center" alignContent="center"
-      [columnName]="entitySchemaGroupDirectMemberships?.Columns.XMarkedForDeletion.ColumnName">
-      <ng-template let-item>
-        <div *ngIf="item.XMarkedForDeletion.value !== 0">
-          <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
-        </div>
-      </ng-template>
-    </imx-data-table-generic-column>
-  </imx-data-table>
+      @for (column of automaticColumnDirect; track column.ColumnName) {
+        <ng-container [matColumnDef]="column.ColumnName">
+          <th mat-header-cell *matHeaderCellDef>{{ column.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            {{ item.GetEntity().GetColumn(column.ColumnName)?.GetDisplayValue() }}
+          </td>
+        </ng-container>
+      }
 
+      <ng-container [matColumnDef]="entitySchemaGroupDirectMemberships.Columns.XMarkedForDeletion.ColumnName">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div>
+            @if (item.XMarkedForDeletion.value !== 0) {
+              <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
+            }
+          </div>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSourceDirect"></imx-data-view-paginator>
+  </mat-card>
+  <imx-data-view-selection [dataSource]="dataSourceDirect" class="imx-selection-toggle"></imx-data-view-selection>
+} @else if (membershipView === 'nested') {
+  <eui-alert [condensed]="true" [colored]="true" type="info" [dismissable]="false">
+    {{
+      '#LDS#Here you can get an overview of the memberships of the system entitlement. Additionally, you can view the assignment analysis for each membership.'
+        | translate
+    }}
+  </eui-alert>
 
-  <imx-data-source-paginator [dst]="dstDirect"></imx-data-source-paginator>
-</ng-container>
+  <imx-data-view-toolbar [dataSource]="dataSourceNested" [showSettings]="false"></imx-data-view-toolbar>
+  <mat-card class="imx-card-fill">
+    <imx-data-view-auto-table [dataSource]="dataSourceNested" mode="manual">
+      <ng-container [matColumnDef]="entitySchemaGroupNestedMemberships.Columns.UID_Person.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>{{ entitySchemaGroupNestedMemberships.Columns.UID_Person.Display }}</th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div class="filled-cell">
+            <div>{{ item.UID_Person.Column.GetDisplayValue() }}</div>
+          </div>
+        </td>
+      </ng-container>
 
-<ng-container *ngIf="membershipView === 'nested'">
-  <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false" >
-    {{ '#LDS#Here you can get an overview of the memberships of the system entitlement. Additionally, you can view the assignment analysis for each membership.' | translate }}
-    </eui-alert>
-  <imx-data-source-toolbar #dstNested [settings]="dstNestedGroupSettings"
-    [hiddenFilters]="['namespace']"
-    (navigationStateChanged)="onNestedNavigationStateChanged($event)" [searchBoxText]="'#LDS#Search' | translate">
-  </imx-data-source-toolbar>
+      <ng-container [matColumnDef]="entitySchemaGroupNestedMemberships.Columns.UID_UNSGroupChild.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>{{ entitySchemaGroupNestedMemberships.Columns.UID_UNSGroupChild.Display }}</th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div class="filled-cell">
+            <div>{{ item.UID_UNSGroupChild.Column.GetDisplayValue() }}</div>
+          </div>
+        </td>
+      </ng-container>
 
-  <imx-data-table #membersTable [dst]="dstNested" mode="manual" detailViewVisible="false"
-  (highlightedEntityChanged)="onShowDetails($event)"
-    noDataText="#LDS#There are currently no inherited memberships.">
-    <imx-data-table-column [entityColumn]="entitySchemaGroupNestedMemberships?.Columns.UID_Person">
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupNestedMemberships?.Columns.UID_UNSGroupChild">
-    </imx-data-table-column>
-    <imx-data-table-generic-column alignHeader="center" alignContent="center"
-      [columnName]="entitySchemaGroupNestedMemberships?.Columns.XMarkedForDeletion.ColumnName">
-      <ng-template let-item>
-        <div *ngIf="item.XMarkedForDeletion.value !== 0">
-          <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
-        </div>
-      </ng-template>
-    </imx-data-table-generic-column>
-  </imx-data-table>
-  <imx-data-source-paginator [dst]="dstNested"></imx-data-source-paginator>
-</ng-container>
+      <ng-container [matColumnDef]="entitySchemaGroupNestedMemberships.Columns.XMarkedForDeletion.ColumnName">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div>
+            @if (item.XMarkedForDeletion.value !== 0) {
+              <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
+            }
+          </div>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSourceNested"></imx-data-view-paginator>
+  </mat-card>
+}

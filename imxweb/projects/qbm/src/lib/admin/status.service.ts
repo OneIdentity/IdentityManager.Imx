@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { EventStreamConfig } from 'imx-api-qbm';
-import { EntityCollectionChangeData } from 'imx-qbm-dbts';
+import { EventStreamConfig } from '@imx-modules/imx-api-qbm';
+import { EntityCollectionChangeData } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { imx_SessionService } from '../session/imx-session.service';
 
@@ -37,7 +37,7 @@ export interface StatusSession {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StatusService {
   public statusSessionData: EntityCollectionChangeData[] = [];
@@ -49,9 +49,9 @@ export class StatusService {
   constructor(
     public session: imx_SessionService,
     public translateService: TranslateService,
-    private logger: ClassloggerService) { }
+    private logger: ClassloggerService,
+  ) {}
 
-  
   public async setUp(path: string): Promise<void> {
     // Setup connection and event triggers
     this.stream = new EventSource(path + '/admin/status', {
@@ -64,8 +64,8 @@ export class StatusService {
 
     this.stream.onmessage = (evt) => {
       const changeData: EntityCollectionChangeData = JSON.parse(evt.data);
-      console.log(changeData)
-      this.statusSession = changeData["OpenSessions"];
+      console.log(changeData);
+      this.statusSession = changeData['OpenSessions'];
     };
 
     this.stream.onerror = (err) => {
@@ -73,7 +73,7 @@ export class StatusService {
     };
   }
 
-  public getStatusSessionData(){
+  public getStatusSessionData() {
     return this.statusSession;
   }
 }

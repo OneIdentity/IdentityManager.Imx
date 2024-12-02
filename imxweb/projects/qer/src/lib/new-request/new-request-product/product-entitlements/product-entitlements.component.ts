@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,17 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { PortalShopServiceitemsEntitlements } from 'imx-api-qer';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { PortalShopServiceitemsEntitlements } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, ValType } from '@imx-modules/imx-qbm-dbts';
 import { ClientPropertyForTableColumns, DataSourceToolbarSettings, MetadataService } from 'qbm';
 import { ProductEntitlementApiService } from './product-entitlement-api.service';
 
 @Component({
-  selector: 'imx-product-entitlements',
+  selector: 'imx-new-request-product-entitlements',
   templateUrl: './product-entitlements.component.html',
   styleUrls: ['./product-entitlements.component.scss'],
 })
-export class ProductEntitlementsComponent implements OnInit {
+export class NewRequestProductEntitlementsComponent implements OnInit {
   @Input() public uidAccProduct: string;
 
   public dstSettings: DataSourceToolbarSettings;
@@ -46,7 +46,10 @@ export class ProductEntitlementsComponent implements OnInit {
   public entitlementTypes: Map<string, string>;
   private displayColumns: ClientPropertyForTableColumns[];
 
-  constructor(private readonly entitlementApi: ProductEntitlementApiService, private readonly metadata: MetadataService) {
+  constructor(
+    private readonly entitlementApi: ProductEntitlementApiService,
+    private readonly metadata: MetadataService,
+  ) {
     this.entitySchema = entitlementApi.productEntitlementSchema;
     this.displayColumns = this.displayColumns = [
       {
@@ -92,6 +95,6 @@ export class ProductEntitlementsComponent implements OnInit {
   private async getTypeDescription(item: PortalShopServiceitemsEntitlements): Promise<string> {
     const objKey = DbObjectKey.FromXml(item.TargetEntitlement.value);
     const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
-    return metadata.DisplaySingular;
+    return metadata?.DisplaySingular || '';
   }
 }

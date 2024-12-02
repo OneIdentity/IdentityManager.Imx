@@ -1,0 +1,11 @@
+@import '@elemental-ui/core/src/styles/eui_palette.scss';
+
+:host {
+  .spinner {
+    position: absolute;
+  }
+
+  ::ng-deep .mat-mdc-progress-spinner circle {
+    stroke: $color-gray-0;
+  }
+}

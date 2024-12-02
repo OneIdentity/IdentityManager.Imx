@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,20 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { HistoryFilterMode, ITShopConfig } from 'imx-api-qer';
-import { CollectionLoadParameters, EntityData, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { HistoryFilterMode, ITShopConfig } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntityData, EntitySchema, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
   AuthenticationService,
+  calculateSidesheetWidth,
   ClassloggerService,
   ClientPropertyForTableColumns,
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
+  ISessionState,
 } from 'qbm';
 import { ProjectConfigurationService } from '../../../project-configuration/project-configuration.service';
 import { ItshopRequest } from '../../../request-history/itshop-request';
@@ -53,7 +54,7 @@ export class ApprovalHistoryComponent implements OnInit {
   @Input() public approval: Approval;
   public dstSettings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
-  // tslint:disable-next-line: no-bitwise
+  // eslint-disable-next-line no-bitwise
   public filtermode: HistoryFilterMode = HistoryFilterMode.SameAccProduct | HistoryFilterMode.SameStep;
   public filters: DataSourceToolbarFilter[] = [];
   public hasFilterApplied = true;
@@ -64,7 +65,7 @@ export class ApprovalHistoryComponent implements OnInit {
   private navigationState: CollectionLoadParameters = { OrderBy: 'OrderDate' };
   private currentUser: string;
   private displayedColumns: ClientPropertyForTableColumns[];
-  private itShopConfig: ITShopConfig;
+  private itShopConfig: ITShopConfig | undefined;
 
   constructor(
     private readonly approvalHistoryservice: ApprovalHistoryService,
@@ -73,25 +74,21 @@ export class ApprovalHistoryComponent implements OnInit {
     private readonly translate: TranslateService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly projectConfig: ProjectConfigurationService,
-    auth: AuthenticationService
+    auth: AuthenticationService,
   ) {
-    auth.onSessionResponse.subscribe((session) => (this.currentUser = session.UserUid));
+    auth.onSessionResponse.subscribe((session: ISessionState) => (this.currentUser = session.UserUid || ''));
   }
 
   public async ngOnInit(): Promise<void> {
     this.entitySchema = this.approvalHistoryservice.PortalItshopRequestsSchema;
     this.filters = await this.buildFilter();
-    let overlay: OverlayRef;
-
-    setTimeout(() => {
-      overlay = this.busy.show();
-    });
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
     try {
       this.itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
     } finally {
-      setTimeout(() => {
-        this.busy.hide(overlay);
-      });
+      this.busy.hide();
     }
     return this.navigate();
   }
@@ -113,26 +110,27 @@ export class ApprovalHistoryComponent implements OnInit {
     return this.navigate();
   }
 
-  public isApproved(pwo: ItshopRequest): { caption: string; color: string;} {
-    const approvalStep = pwo.pwoData.WorkflowHistory.Entities.filter(
-      (entity) => entity.Columns.UID_PersonHead.Value === this.currentUser && entity.Columns.DecisionType.Value !== 'Order'
-    ).sort((a, b) => new Date(b.Columns.DateHead.Value).valueOf() - new Date(a.Columns.DateHead.Value).valueOf());
+  public isApproved(pwo: ItshopRequest): { caption: string; color: string } | undefined {
+    const approvalStep = pwo.pwoData.WorkflowHistory?.Entities?.find(
+      (entity) =>
+        entity.Columns?.DecisionLevel.Value === this.approval.DecisionLevel.value &&
+        entity.Columns?.UID_PersonHead.Value === this.currentUser &&
+        entity.Columns?.DecisionType.Value !== 'Order',
+    );
 
-    if (approvalStep?.length === 0) {
+    if (approvalStep == null) {
       this.logger.warn(this, 'no approval step found');
-      return null;
+      return undefined;
     }
 
-    const stepForDisplay = approvalStep.find((elem) => elem.Columns.DecisionLevel.Value === this.approval.DecisionLevel.value) ?? approvalStep[0];
-
     return {
-      caption: stepForDisplay.Columns.DecisionType.DisplayValue ?? stepForDisplay.Columns.DecisionType.Value,
+      caption: approvalStep.Columns?.DecisionType.DisplayValue || '',
       color:
-        stepForDisplay.Columns.DecisionType.Value === 'Grant'
+        approvalStep.Columns?.DecisionType.Value === 'Grant'
           ? 'green'
-          : stepForDisplay.Columns.DecisionType.Value === 'Dismiss'
-          ? 'red'
-          : 'gray',
+          : approvalStep.Columns?.DecisionType.Value === 'Dissmiss'
+            ? 'red'
+            : 'gray',
     };
   }
 
@@ -142,7 +140,7 @@ export class ApprovalHistoryComponent implements OnInit {
   }
 
   public get isSameStepActive(): boolean {
-    // tslint:disable-next-line: no-bitwise
+    // eslint-disable-next-line no-bitwise
     return (this.filtermode & HistoryFilterMode.SameStep) === HistoryFilterMode.SameStep;
   }
 
@@ -152,7 +150,7 @@ export class ApprovalHistoryComponent implements OnInit {
         title: await this.translate.get('#LDS#Heading View Request Details').toPromise(),
         subTitle: pwo.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'imx-approval-history-request-detail',
         data: {
           isReadOnly: true,
@@ -167,12 +165,11 @@ export class ApprovalHistoryComponent implements OnInit {
   }
 
   private async navigate(): Promise<void> {
-    let overlay: OverlayRef;
     let result: any;
 
-    setTimeout(() => {
-      overlay = this.busy.show();
-    });
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
     try {
       this.hasFilterApplied = this.filtermode !== HistoryFilterMode.None;
       if (!this.hasFilterApplied) {
@@ -186,26 +183,29 @@ export class ApprovalHistoryComponent implements OnInit {
           return;
         }
 
-        result = await this.approvalHistoryservice.getRequests(
-          currentHelperPwo.Columns.UID_PWOHelperPWO.Value,
-          this.filtermode,
-          this.currentUser,
-          this.navigationState
-        );
+        result = currentHelperPwo.Columns?.UID_PWOHelperPWO.Value
+          ? await this.approvalHistoryservice.getRequests(
+              currentHelperPwo.Columns?.UID_PWOHelperPWO.Value,
+              this.filtermode,
+              this.currentUser,
+              this.navigationState,
+            )
+          : undefined;
       }
     } finally {
-      setTimeout(() => {
-        this.busy.hide(overlay);
-      });
+      this.busy.hide();
     }
 
-    if (result) {
+    if (result != null) {
       this.displayedColumns = [
         this.entitySchema.Columns.UID_PersonOrdered,
         this.entitySchema.Columns.OrderDate,
         this.entitySchema.Columns.UiOrderState,
-        this.isSameStepActive ? { Type: ValType.String, ColumnName: 'decision', untranslatedDisplay: '#LDS#Approval decision' } : null,
-      ].filter((elem) => elem != null);
+      ];
+
+      if (this.isSameStepActive) {
+        this.displayedColumns.push({ Type: ValType.String, ColumnName: 'decision', untranslatedDisplay: '#LDS#Approval decision' });
+      }
 
       this.dstSettings = {
         dataSource: {
@@ -221,19 +221,19 @@ export class ApprovalHistoryComponent implements OnInit {
     }
   }
 
-  private getCurrentPwoHelperPwo(): EntityData {
-    const currentStep = this.approval.pwoData.WorkflowSteps.Entities.find(
+  private getCurrentPwoHelperPwo(): EntityData | undefined {
+    const currentStep = this.approval.pwoData.WorkflowSteps?.Entities?.find(
       (elem) =>
-        elem.Columns.UID_QERWorkingMethod.Value === this.approval.UID_QERWorkingMethod.value &&
-        elem.Columns.LevelNumber.Value === this.approval.DecisionLevel.value
+        elem.Columns?.UID_QERWorkingMethod.Value === this.approval.UID_QERWorkingMethod.value &&
+        elem.Columns?.LevelNumber.Value === this.approval.DecisionLevel.value,
     );
     this.logger.trace(this, 'current step the user has to decide', currentStep);
 
-    return this.approval.pwoData.WorkflowData.Entities.find(
+    return this.approval.pwoData.WorkflowData?.Entities?.find(
       (elem) =>
-        elem.Columns.RulerLevel.Value === 0 &&
-        elem.Columns.UID_QERWorkingStep.Value === currentStep.Columns.UID_QERWorkingStep.Value &&
-        elem.Columns.UID_PersonHead.Value === this.currentUser
+        elem.Columns?.RulerLevel.Value === 0 &&
+        elem.Columns?.UID_QERWorkingStep.Value === currentStep?.Columns?.UID_QERWorkingStep.Value &&
+        elem.Columns?.UID_PersonHead.Value === this.currentUser,
     );
   }
 

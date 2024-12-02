@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,12 @@
 
 import { Component, Input } from '@angular/core';
 
-import { PortalAttestationRun } from 'imx-api-att';
+import { PortalAttestationRun } from '@imx-modules/imx-api-att';
 import { percentage } from '../helpers';
 
 @Component({
   selector: 'imx-progress',
-  templateUrl: './progress.component.html',
-  styleUrls: ['./progress.component.scss']
+  templateUrl: './progress.component.html'
 })
 export class ProgressComponent {
   public get progress(): number {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalItshopPatternRequestable, PortalShopServiceitems } from 'imx-api-qer';
+import { PortalItshopPatternRequestable, PortalShopServiceitems } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   DisplayColumns,
   EntitySchema,
   ExtendedTypedEntityCollection,
-  IClientProperty,
   IWriteValue,
   MultiValue,
+  TypedEntity,
   ValType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import {
   ClientPropertyForTableColumns,
   DataSourceToolbarComponent,
@@ -52,7 +51,6 @@ import { PatternItemService } from './pattern-item.service';
 @Component({
   selector: 'imx-pattern-item-list',
   templateUrl: './pattern-item-list.component.html',
-  styleUrls: ['./pattern-item-list.component.scss'],
 })
 export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('dst') public dstComponent: DataSourceToolbarComponent;
@@ -62,11 +60,14 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
   @Input() public dataSourceView = { selected: 'cardlist' };
   @Input() public itemActions: DataTileMenuItem[];
 
-  @Output() public handleAction = new EventEmitter<
-    { name: string, serviceItems?: PortalShopServiceitems[], patternItem?: PortalItshopPatternRequestable }>();
+  @Output() public handleAction = new EventEmitter<{
+    name: string;
+    serviceItems?: (PortalShopServiceitems | undefined)[];
+    patternItem?: PortalItshopPatternRequestable;
+  }>();
   @Output() public selectionChanged = new EventEmitter<PortalItshopPatternRequestable[]>();
 
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public filterType: PatternItemListFilterType = PatternItemListFilterType.All;
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
@@ -75,16 +76,16 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
   public filterTypes = [
     {
       type: PatternItemListFilterType.All,
-      display: '#LDS#All product bundles'
+      display: '#LDS#All product bundles',
     },
     {
       type: PatternItemListFilterType.Public,
-      display: '#LDS#Public product bundles'
+      display: '#LDS#Public product bundles',
     },
     {
       type: PatternItemListFilterType.Private,
-      display: '#LDS#Private product bundles'
-    }
+      display: '#LDS#Private product bundles',
+    },
   ];
 
   public badgeContent = {
@@ -116,11 +117,10 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
 
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
-
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly patternItemService: PatternItemService,
-    settingsService: SettingsService
+    settingsService: SettingsService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = patternItemService.PortalShopPatternRequestableSchema;
@@ -129,12 +129,12 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
       {
         ColumnName: 'badges',
         Type: ValType.String,
-        untranslatedDisplay: '#LDS#Type'
+        untranslatedDisplay: '#LDS#Type',
       },
       {
         ColumnName: 'actions',
         Type: ValType.String,
-        untranslatedDisplay: '#LDS#Actions'
+        untranslatedDisplay: '#LDS#Actions',
       },
     ];
   }
@@ -168,8 +168,8 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
     return this.getData(navigationState);
   }
 
-  public onSelectionChanged(items: PortalItshopPatternRequestable[]): void {
-    this.selectionChanged.emit(items);
+  public onSelectionChanged(items: TypedEntity[]): void {
+    this.selectionChanged.emit(items as PortalItshopPatternRequestable[]);
   }
 
   public async getData(newState?: CollectionLoadParameters): Promise<void> {
@@ -177,11 +177,10 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
       this.navigationState = newState;
     }
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => {
-      overlayRef = this.busyService.show();
-      this.isLoading = true;
-    });
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
+    this.isLoading = true;
 
     try {
       const data = await this.patternItemService.get({
@@ -199,16 +198,14 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
         this.dstSettings = undefined;
       }
     } finally {
-      setTimeout(() => {
-        this.busyService.hide(overlayRef);
-        this.isLoading = false;
-      });
+      this.busyService.hide();
+      this.isLoading = false;
     }
   }
 
   public applyFilter(
     data: ExtendedTypedEntityCollection<PortalItshopPatternRequestable, unknown>,
-    filterType: PatternItemListFilterType
+    filterType: PatternItemListFilterType,
   ): ExtendedTypedEntityCollection<PortalItshopPatternRequestable, unknown> {
     switch (filterType) {
       case PatternItemListFilterType.All:
@@ -249,27 +246,26 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   public async emitAction(item: DataTileMenuItem, patternRequestable?: PortalItshopPatternRequestable): Promise<void> {
-
     if (item.name === 'details') {
-      let overlayRef: OverlayRef;
-      setTimeout(() => {
-        overlayRef = this.busyService.show();
-      });
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
 
       try {
-        const items = await this.patternItemService.getServiceItems(patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable);
-        this.handleAction.emit({ 
-          serviceItems: items, 
-          patternItem: patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable,
-          name: item.name });
-      } finally {
-        setTimeout(() => {
-          this.busyService.hide(overlayRef);
+        const items = await this.patternItemService.getServiceItems(
+          patternRequestable ?? (item.typedEntity as PortalItshopPatternRequestable),
+        );
+        this.handleAction.emit({
+          serviceItems: items,
+          patternItem: patternRequestable ?? (item.typedEntity as PortalItshopPatternRequestable),
+          name: item.name,
         });
+      } finally {
+        this.busyService.hide();
       }
     }
     if (item.name === 'addTemplateToCart') {
-      this.handleAction.emit({ patternItem: patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable, name: item.name });
+      this.handleAction.emit({ patternItem: patternRequestable ?? (item.typedEntity as PortalItshopPatternRequestable), name: item.name });
     }
   }
 

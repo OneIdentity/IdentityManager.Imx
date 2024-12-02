@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,21 @@
  *
  */
 
-import { OwnershipInformation } from 'imx-api-qer';
-import { CollectionLoadParameters, EntityData, EntitySchema, HierarchyData, IEntity, TypedEntityBuilder, ValType } from 'imx-qbm-dbts';
+import { OwnershipInformation } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  EntityData,
+  EntitySchema,
+  HierarchyData,
+  IEntity,
+  TypedEntityBuilder,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { BusyService, SettingsService, TreeDatabase, TreeNodeResultParameter } from 'qbm';
 import { RoleService } from '../role.service';
 
 export class TreeDatabaseAdaptorService extends TreeDatabase {
-  private entitySchema: EntitySchema;
+  private entitySchema: EntitySchema | undefined;
   private builder: TypedEntityBuilder<any>;
 
   constructor(
@@ -38,7 +46,7 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
     private readonly settingsService: SettingsService,
     private readonly ownershipInfo: OwnershipInformation,
     public busyService: BusyService,
-    type: any
+    type: any,
   ) {
     super();
     this.canSearch = true;
@@ -47,7 +55,7 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
 
   public async getData(
     showLoading: boolean,
-    parameter: CollectionLoadParameters = { ParentKey: '' /* first level */ }
+    parameter: CollectionLoadParameters = { ParentKey: '' /* first level */ },
   ): Promise<TreeNodeResultParameter> {
     if (this.ownershipInfo == null) {
       return { entities: [], canLoadMore: false, totalCount: 0 };
@@ -64,17 +72,20 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
         },
       };
 
-      const data = await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, navigationState);
+      const data =
+        this.ownershipInfo.TableName != null
+          ? await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, navigationState)
+          : undefined;
 
-      if (data) {
+      if (data?.Entities != null) {
         const nodeEntities = await Promise.all(
           data.Entities.map(async (elem): Promise<IEntity> => {
             return (await this.buildEntityWithHasChildren(elem, data.Hierarchy))?.GetEntity();
-          })
+          }),
         );
-        this.dataChanged.emit(nodeEntities.filter(elem=>elem != null));
+        this.dataChanged.emit(nodeEntities.filter((elem) => elem != null));
         return {
-          entities: nodeEntities.filter(elem=>elem != null),
+          entities: nodeEntities.filter((elem) => elem != null),
           canLoadMore: navigationState.StartIndex + navigationState.PageSize < data.TotalCount,
           totalCount: data.TotalCount,
         };
@@ -85,15 +96,16 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
     }
   }
 
-  public async prepare(entitySchema: EntitySchema, withReload: boolean): Promise<void> {
+  public async prepare(entitySchema: EntitySchema | undefined, withReload: boolean): Promise<void> {
     this.entitySchema = entitySchema;
-    if(withReload)
-    {this.reloadData();}
+    if (withReload) {
+      this.reloadData();
+    }
   }
 
   /** adds a hasChildren column to the entity */
-  private async buildEntityWithHasChildren(entityData: EntityData, data: HierarchyData): Promise<any> {
-    if(!this.entitySchema){
+  private async buildEntityWithHasChildren(entityData: EntityData, data: HierarchyData | undefined): Promise<any> {
+    if (!this.entitySchema) {
       return undefined;
     }
     const entity = this.builder.buildReadWriteEntity({ entitySchema: this.entitySchema, entityData });
@@ -109,7 +121,7 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
     await entity
       .GetEntity()
       .GetColumn('HasChildren')
-      .PutValue(data ? data.EntitiesWithHierarchy.some((elem) => entityData.Keys.some((key) => key === elem)) : false);
+      .PutValue(data ? data.EntitiesWithHierarchy?.some((elem) => entityData?.Keys?.some((key) => key === elem)) : false);
 
     return entity;
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { EntitlementLossDto } from 'imx-api-att';
-import { LossPreview } from '../loss-preview.interface';
+import { EntitlementLossDto } from '@imx-modules/imx-api-att';
 import { AttestationCasesService } from '../attestation-cases.service';
+import { LossPreview } from '../loss-preview.interface';
 
 @Component({
   selector: 'imx-loss-preview-table',
@@ -57,7 +57,9 @@ export class LossPreviewTableComponent implements OnInit {
   public async loadData(): Promise<void> {
     this.isLoading = true;
     try {
-      this.lossPreview.LossPreviewItems = await this.caseService.getLossPreviewEntities(this.lossPreview.Case);
+      if (!!this.lossPreview.Case) {
+        this.lossPreview.LossPreviewItems = await this.caseService.getLossPreviewEntities(this.lossPreview.Case);
+      }
     } finally {
       this.isLoading = false;
     }

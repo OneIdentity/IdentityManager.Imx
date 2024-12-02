@@ -1,6 +1,6 @@
 [
   {
-    "title": "Library Overview",
+    "title": "Library overview",
     "file": "overview.md",
     "children": [
       {
@@ -8,19 +8,19 @@
         "file": "admin.md"
       },
       {
-        "title": "Property Handling",
+        "title": "Properties of an object",
         "file": "properties.md"
       },
       {
-        "title": "Data Sets",
+        "title": "Data sets",
         "file": "datasets.md"
       },
       {
-        "title": "Messages",
+        "title": "UI texts and translation",
         "file": "messages.md"
       },
       {
-        "title": "Other reusable components",
+        "title": "Other reusable components and services",
         "file": "other.md"
       }
     ]
@@ -38,7 +38,7 @@
         "file": "../../../compodoc/samples/tiles.md"
       },
       {
-        "title": "Adding a menu to the Portal",
+        "title": "Adding a menu to the Web Portal",
         "file": "../../../compodoc/samples/menu.md"
       },
       {

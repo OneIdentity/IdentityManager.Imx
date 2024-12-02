@@ -1,4 +1,3 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -6,55 +5,51 @@
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noImplicitOverride": false,
+    "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,
-    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
+      "aad": ["dist/aad"],
+      "aad/*": ["dist/aad/*"],
+      "aob": ["dist/aob"],
+      "aob/*": ["dist/aob/*"],
+      "apc": ["dist/apc"],
+      "apc/*": ["dist/apc/*"],
+      "att": ["dist/att"],
+      "att/*": ["dist/att/*"],
       "dpr": ["dist/dpr"],
       "dpr/*": ["dist/dpr/*"],
+      "o3t": ["dist/o3t"],
+      "o3t/*": ["dist/o3t/*"],
       "qbm": ["dist/qbm"],
       "qbm/*": ["dist/qbm/*"],
       "qer": ["dist/qer"],
       "qer/*": ["dist/qer/*"],
-      "aob": ["dist/aob"],
-      "aob/*": ["dist/aob/*"],
-      "tsb": ["dist/tsb"],
-      "tsb/*": ["dist/tsb/*"],
-      "att": ["dist/att"],
-      "att/*": ["dist/att/*"],
       "rps": ["dist/rps"],
       "rps/*": ["dist/rps/*"],
-      "o3t": ["dist/o3t"],
-      "o3t/*": ["dist/o3t/*"],
-      "aad": ["dist/aad"],
-      "aad/*": ["dist/aad/*"],
-      "apc": ["dist/apc"],
-      "apc/*": ["dist/apc/*"]
+      "tsb": ["dist/tsb"],
+      "tsb/*": ["dist/tsb/*"]
     },
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
-    "module": "es2020",
-    "lib": [
-      "es2020",
-      "dom"
-    ]
+    "target": "es2022",
+    "module": "es2022",
+    "lib": ["es2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": false,
     "strictInputAccessModifiers": true,
-    "strictTemplates": false,
-    "strictNullInputTypes": false,
+    "strictTemplates": true,
+    "strictNullInputTypes": false
   }
 }

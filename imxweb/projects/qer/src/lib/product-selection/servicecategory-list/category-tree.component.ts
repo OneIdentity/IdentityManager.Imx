@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA, EUI_SIDESHEET_REF } from '@elemental-ui/core';
-import { PortalShopCategories } from 'imx-api-qer';
-import { EntitySchema, IEntity, IWriteValue } from 'imx-qbm-dbts';
+import { EUI_SIDESHEET_DATA, EUI_SIDESHEET_REF, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalShopCategories } from '@imx-modules/imx-api-qer';
+import { EntitySchema, IEntity, IWriteValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService, SettingsService } from 'qbm';
 import { ProductSelectionService } from '../product-selection.service';
 import { ServicecategoryTreeDatabase } from './servicecategory-tree-database';
@@ -35,10 +35,10 @@ import { ServicecategoryTreeDatabase } from './servicecategory-tree-database';
 @Component({
   selector: 'imx-category-tree',
   templateUrl: './category-tree.component.html',
-  styleUrls: ['./category-tree.component.scss']
+  styleUrls: ['./category-tree.component.scss'],
 })
 export class CategoryTreeComponent {
-  public selectedServiceCategory: PortalShopCategories;
+  public selectedServiceCategory: TypedEntity;
   public treeDatabase: ServicecategoryTreeDatabase;
   public readonly entitySchema: EntitySchema;
   public recipients: IWriteValue<string>;
@@ -46,12 +46,13 @@ export class CategoryTreeComponent {
   @Output() public serviceCategorySelected = new EventEmitter<PortalShopCategories>();
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly  sidesheetData: any,
+    @Inject(EUI_SIDESHEET_DATA) public readonly sidesheetData: any,
     @Inject(EUI_SIDESHEET_REF) public readonly sidesheetRef: EuiSidesheetRef,
     private readonly busyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     settingsService: SettingsService,
-    private readonly productSelectionService: ProductSelectionService) {
+    private readonly productSelectionService: ProductSelectionService,
+  ) {
     this.selectedServiceCategory = sidesheetData.selectedServiceCategory;
     this.recipients = sidesheetData.recipients;
     this.treeDatabase = new ServicecategoryTreeDatabase(this.busyService, settingsService, this.productSelectionService);
@@ -65,5 +66,4 @@ export class CategoryTreeComponent {
     this.serviceCategorySelected.emit(servicecategory);
     this.sidesheetRef.close(servicecategory);
   }
-
 }

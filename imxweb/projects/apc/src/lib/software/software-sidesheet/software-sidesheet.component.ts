@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormArray, FormGroup, FormArray } from '@angular/forms';
+import { FormGroup, UntypedFormArray } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
-import { PortalRespApplication } from 'imx-api-apc';
+import { PortalRespApplication } from '@imx-modules/imx-api-apc';
+import { IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { BusyService, CdrFactoryService, ColumnDependentReference, ConfirmationService } from 'qbm';
 import { SoftwareService } from '../software.service';
 
@@ -44,8 +44,8 @@ interface ServiceItemGroup {
 /**
  * internal interface for the service item form
  */
-interface SoftwareFormGroup{
-  array: UntypedFormArray
+interface SoftwareFormGroup {
+  array: UntypedFormArray;
 }
 
 @Component({
@@ -53,14 +53,13 @@ interface SoftwareFormGroup{
   styleUrls: ['./software-sidesheet.component.scss'],
 })
 export class SoftwareSidesheetComponent implements OnInit, OnDestroy {
-  
   public cdrList: ColumnDependentReference[];
   public softwareFormGroup = new FormGroup<SoftwareFormGroup>({ array: new UntypedFormArray([]) });
 
-  public serviceItemGroup = new FormGroup<ServiceItemGroup>({ serviceItemParameter: new FormArray([]) });
+  public serviceItemGroup = new FormGroup<ServiceItemGroup>({ serviceItemParameter: new UntypedFormArray([]) });
   public isLoading = false;
 
-  public serviceItem: TypedEntity;
+  public serviceItem: TypedEntity | null;
 
   public get withProduct(): boolean {
     const value = this.productColumn?.GetValue();
@@ -74,7 +73,7 @@ export class SoftwareSidesheetComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private entity: PortalRespApplication;
   private editableFields: string[];
-  private busyService = new BusyService();
+  public busyService = new BusyService();
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
@@ -85,7 +84,7 @@ export class SoftwareSidesheetComponent implements OnInit, OnDestroy {
     private readonly changeDetector: ChangeDetectorRef,
     private readonly softwareService: SoftwareService,
     sidesheetRef: EuiSidesheetRef,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
     this.subscriptions.push(
       sidesheetRef.closeClicked().subscribe(async () => {
@@ -93,14 +92,14 @@ export class SoftwareSidesheetComponent implements OnInit, OnDestroy {
           return;
         }
         sidesheetRef.close(false);
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.busyService.busyStateChanged.subscribe((state: boolean) => {
         this.isLoading = state;
         this.changeDetector.detectChanges();
-      })
+      }),
     );
   }
 
@@ -146,6 +145,9 @@ export class SoftwareSidesheetComponent implements OnInit, OnDestroy {
    * Saves the service item and reloads the form for further editing
    */
   public async saveServiceItem(): Promise<void> {
+    if (!this.serviceItem) {
+      return;
+    }
     const isBusy = this.busyService.beginBusy();
     try {
       await this.serviceItem.GetEntity().Commit();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,24 +24,24 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, OnInit } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
+import { OpsupportSystemoverview } from '@imx-modules/imx-api-qbm';
 import { UserActionService } from 'qbm';
-import { OpsupportSystemoverview } from 'imx-api-qbm';
 import { SystemOverviewService } from './system-overview.service';
-import { SystemTreeNode } from './system-tree/system-tree-node';
 import { SystemTreeDatabase } from './system-tree/system-tree-database';
 import { SystemTreeDataSource } from './system-tree/system-tree-datasource';
+import { SystemTreeNode } from './system-tree/system-tree-node';
 
 const recommendValClass = 'imx-recommendedValue-exceeded';
-const tresholdExceededClass = 'imx-treshold-exceeded';
+const thresholdExceededClass = 'imx-threshold-exceeded';
 
 @Component({
   selector: 'imx-system-overview',
-  templateUrl: './system-overview.component.html'
+  templateUrl: './system-overview.component.html',
 })
 export class SystemOverviewComponent implements OnInit {
   public treeControl: FlatTreeControl<SystemTreeNode>;
@@ -55,14 +55,14 @@ export class SystemOverviewComponent implements OnInit {
     private systemOverviewService: SystemOverviewService,
     private userActionService: UserActionService,
     private busyService: EuiLoadingService,
-    private database: SystemTreeDatabase) {
+    private database: SystemTreeDatabase,
+  ) {
     this.treeControl = new FlatTreeControl<SystemTreeNode>(this.getLevel, this.isExpandable);
     this.dataSource = new SystemTreeDataSource(this.treeControl, database);
-
   }
   public async ngOnInit(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       const entity = await this.systemOverviewService.ItemsProvider();
       this.dataSource.data = this.database.initialize(entity);
@@ -78,13 +78,13 @@ export class SystemOverviewComponent implements OnInit {
   public isExpandable = (node: SystemTreeNode): boolean => node.expandable;
 
   public hasChild = (index: number, nodeData: SystemTreeNode): boolean => nodeData.expandable;
-  get exceededTresholdsCounter(): number {
-    return this.database.ExceededTresholdsCounter;
+  get exceededThresholdsCounter(): number {
+    return this.database.ExceededThresholdsCounter;
   }
 
   public qualityOfValueClass(node: OpsupportSystemoverview): string {
     const qualityValue = node.QualityOfValue.value;
-    return qualityValue <= 0.2 ? tresholdExceededClass : qualityValue <= 0.5 ? recommendValClass : '';
+    return qualityValue <= 0.2 ? thresholdExceededClass : qualityValue <= 0.5 ? recommendValClass : '';
   }
 
   public disableTooltip(node: OpsupportSystemoverview): boolean {

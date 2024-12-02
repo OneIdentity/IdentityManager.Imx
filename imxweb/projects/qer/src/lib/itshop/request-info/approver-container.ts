@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { EntityCollectionData, EntityData, MultiValueProperty } from 'imx-qbm-dbts';
+import { EntityCollectionData, EntityData, MultiValueProperty } from '@imx-modules/imx-qbm-dbts';
 
 import { ClassloggerService } from 'qbm';
 import { OrderedWorkingStep } from './ordered-working-step.interface';
@@ -36,6 +36,8 @@ export class ApproverContainer {
    * List of current approvers
    */
   public approverNow: EntityData[] = [];
+
+  public canSeeSteps: boolean;
 
   /**
    * List of next approvers
@@ -58,31 +60,34 @@ export class ApproverContainer {
       VI_ITShop_CurrentApproversCanBeSeen?: boolean;
       VI_ITShop_NextApproverCanBeSeen?: boolean;
     } = {},
-    private logger?: ClassloggerService
+    private logger?: ClassloggerService,
   ) {
-    this.isInWorkflow = this.request.isInWorkflow;
+    this.isInWorkflow = this.request.isInWorkflow ?? false;
 
     if (this.config?.VI_ITShop_NextApproverCanBeSeen || this.config?.VI_ITShop_CurrentApproversCanBeSeen) {
-      this.initApproverContainer(this.config.VI_ITShop_CurrentApproversCanBeSeen, this.config.VI_ITShop_NextApproverCanBeSeen);
+      this.initApproverContainer(
+        this.config.VI_ITShop_CurrentApproversCanBeSeen ?? false,
+        this.config.VI_ITShop_NextApproverCanBeSeen ?? false,
+      );
     } else {
       this.initApproverContainer(true, true);
     }
   }
 
   public getApproverSortedByStep(future = true): { display: string; data: EntityData[] }[] {
-    const ret = [];
+    const ret: { display: string; data: EntityData[] }[] = [];
     const steps = [
       ...new Set(
-        this.request.pwoData.WorkflowSteps?.Entities.sort((a, b) => a.Columns.LevelNumber.Value - b.Columns.LevelNumber.Value).map(
+        this.request.pwoData.WorkflowSteps?.Entities?.sort((a, b) => a.Columns?.LevelNumber.Value - b.Columns?.LevelNumber.Value).map(
           (elem) =>
-            elem.Columns.UID_QERWorkingStep.Value +
+            elem.Columns?.UID_QERWorkingStep.Value +
             MultiValueProperty.DefaultSeparator +
-            (elem.Columns.Ident_PWODecisionStep.DisplayValue ?? elem.Columns.Ident_PWODecisionStep.Value)
-        )
+            (elem.Columns?.Ident_PWODecisionStep.DisplayValue ?? elem.Columns?.Ident_PWODecisionStep.Value),
+        ),
       ),
     ];
 
-    this.logger.trace(this, 'following approval steps are available', steps);
+    this.logger?.trace(this, 'following approval steps are available', steps);
 
     steps.forEach((element) => {
       const uid = element.split(MultiValueProperty.DefaultSeparator)[0];
@@ -90,18 +95,18 @@ export class ApproverContainer {
       const approver = future
         ? this.approverFuture?.filter(
             (workflowData, index, newArray) =>
-              workflowData.Columns.UID_QERWorkingStep.Value === uid &&
-              newArray.findIndex((checkData) => checkData.Columns.UID_PersonHead.Value === workflowData.Columns.UID_PersonHead.Value) ===
-                index
+              workflowData.Columns?.UID_QERWorkingStep.Value === uid &&
+              newArray.findIndex((checkData) => checkData.Columns?.UID_PersonHead.Value === workflowData.Columns?.UID_PersonHead.Value) ===
+                index,
           )
         : this.approverNow?.filter(
             (workflowData, index, newArray) =>
-              workflowData.Columns.UID_QERWorkingStep.Value === uid &&
-              newArray.findIndex((checkData) => checkData.Columns.UID_PersonHead.Value === workflowData.Columns.UID_PersonHead.Value) ===
-                index
+              workflowData.Columns?.UID_QERWorkingStep.Value === uid &&
+              newArray.findIndex((checkData) => checkData.Columns?.UID_PersonHead.Value === workflowData.Columns?.UID_PersonHead.Value) ===
+                index,
           );
 
-      this.logger.trace(this, `analysing ${future ? 'future' : 'current'} step ${uid} (${display}):`, approver);
+      this.logger?.trace(this, `analysing ${future ? 'future' : 'current'} step ${uid} (${display}):`, approver);
 
       if (approver?.length > 0) {
         ret.push({ display: display, data: approver });
@@ -120,20 +125,33 @@ export class ApproverContainer {
     const orderedWorkingSteps = this.buildOrderedWorkingSteps();
     this.logger?.trace(this, 'working steps with order', orderedWorkingSteps);
 
+    this.canSeeSteps = !this.request.pwoData?.WorkflowSteps?.Entities ? false : this.request.pwoData?.WorkflowSteps?.Entities.length > 0;
+
     if (canSeeCurrent) {
       const currentSteps = orderedWorkingSteps.filter((step) => step.order === 1);
       this.logger?.trace(this, 'current steps', currentSteps);
 
       this.approverNow =
-        this.request == null || this.request.pwoData == null || this.request.pwoData.WorkflowData == null || currentSteps.length === 0
+        this.request == null ||
+        this.request.pwoData == null ||
+        this.request.pwoData.WorkflowData == null ||
+        this.request.pwoData.WorkflowData.Entities == null ||
+        currentSteps.length === 0
           ? []
-          : this.request.pwoData.WorkflowData.Entities.filter(
+          : this.request.pwoData.WorkflowData?.Entities?.filter(
               (data) =>
-                !this.isDecided(data,this.request.pwoData.WorkflowData.Entities.filter((elem) => elem.Columns.Decision?.Value !== '')) &&
-                data.Columns.UID_PersonHead.Value &&
-                currentSteps.some((step) => data.Columns.UID_QERWorkingStep.Value === step.uidWorkingStep) &&
-                this.request.approvers.includes(data.Columns.UID_PersonHead.Value)
-            ).sort((data1, data2) => data1.Columns.UID_PersonHead.DisplayValue.localeCompare(data2.Columns.UID_PersonHead.DisplayValue));
+                !this.isDecided(
+                  data,
+                  !this.request.pwoData.WorkflowData?.Entities
+                    ? []
+                    : this.request.pwoData.WorkflowData?.Entities?.filter((elem) => elem.Columns?.Decision?.Value !== ''),
+                ) &&
+                data.Columns?.UID_PersonHead.Value &&
+                currentSteps.some((step) => data.Columns?.UID_QERWorkingStep.Value === step.uidWorkingStep) &&
+                this.request.approvers.includes(data.Columns?.UID_PersonHead.Value),
+            ).sort((data1, data2) =>
+              (data1.Columns?.UID_PersonHead.DisplayValue || '').localeCompare(data2.Columns?.UID_PersonHead.DisplayValue || ''),
+            );
       this.logger?.trace(this, 'personWantsOrg should be approved by', this.approverNow);
     }
 
@@ -142,13 +160,21 @@ export class ApproverContainer {
       this.logger?.trace(this, 'future steps', futureSteps);
 
       this.approverFuture =
-        this.request == null || this.request.pwoData == null || this.request.pwoData.WorkflowData == null || futureSteps == null
+        this.request == null ||
+        this.request.pwoData == null ||
+        this.request.pwoData.WorkflowData == null ||
+        this.request.pwoData.WorkflowData.Entities == null ||
+        futureSteps == null
           ? []
-          : this.request.pwoData.WorkflowData.Entities.filter(
+          : this.request.pwoData.WorkflowData?.Entities?.filter(
               (data) =>
-                data.Columns.UID_PersonHead.Value &&
-                futureSteps.map((step) => step.uidWorkingStep).includes(data.Columns.UID_QERWorkingStep.Value)
-            ).sort((data1, data2) => data1.Columns.UID_PersonHead.DisplayValue.localeCompare(data2.Columns.UID_PersonHead.DisplayValue));
+                data.Columns?.UID_PersonHead.Value &&
+                futureSteps.map((step) => step.uidWorkingStep).includes(data.Columns?.UID_QERWorkingStep.Value),
+            ).sort((data1, data2) =>
+              (!data1.Columns?.UID_PersonHead?.DisplayValue ? '' : data1.Columns.UID_PersonHead.DisplayValue).localeCompare(
+                !data2.Columns?.UID_PersonHead?.DisplayValue ? '' : data2.Columns.UID_PersonHead.DisplayValue,
+              ),
+            );
       this.logger?.trace(this, 'personWantsOrg should be approved in the future by', this.approverFuture);
     }
   }
@@ -156,11 +182,11 @@ export class ApproverContainer {
   /*
    *  Checks, if a workflowData item is already decided (by any person in the same sub step)
    */
-  private isDecided(data: EntityData, decidedEntries:EntityData[]): boolean {
+  private isDecided(data: EntityData, decidedEntries: EntityData[]): boolean {
     return decidedEntries.some(
       (elem) =>
-        elem.Columns.LevelNumber.Value === data.Columns.LevelNumber.Value &&
-        elem.Columns.SubLevelNumber.Value === data.Columns.SubLevelNumber.Value
+        elem.Columns?.LevelNumber.Value === data.Columns?.LevelNumber.Value &&
+        elem.Columns?.SubLevelNumber.Value === data.Columns?.SubLevelNumber.Value,
     );
   }
 
@@ -173,13 +199,13 @@ export class ApproverContainer {
     const currentLevel = this.request.decisionLevel;
     const workingMethod = this.request.qerWorkingMethod;
 
-    const stepsForWorkingMethod = this.request.pwoData.WorkflowSteps.Entities.filter(
-      (elem) => elem.Columns.UID_QERWorkingMethod.Value === workingMethod
-    );
+    const stepsForWorkingMethod = !this.request.pwoData.WorkflowSteps?.Entities
+      ? []
+      : this.request.pwoData.WorkflowSteps?.Entities?.filter((elem) => elem.Columns?.UID_QERWorkingMethod.Value === workingMethod);
     this.logger?.trace(this, `calculate steps for method ${workingMethod}`, stepsForWorkingMethod);
 
     const startSteps = stepsForWorkingMethod.filter(
-      (n, i, arr) => arr.findIndex((elem) => elem.Keys[0] === n.Keys[0] && elem.Columns.LevelNumber.Value === currentLevel) === i
+      (n, i, arr) => arr.findIndex((elem) => elem.Keys?.[0] === n.Keys?.[0] && elem.Columns?.LevelNumber.Value === currentLevel) === i,
     );
 
     this.logger?.trace(this, 'starting with step', startSteps);
@@ -191,11 +217,11 @@ export class ApproverContainer {
 
     orderedSteps.push(
       ...startSteps.map((elem) => ({
-        uidWorkingStep: elem.Keys[0],
+        uidWorkingStep: !elem.Keys ? '' : elem.Keys?.[0],
         decisionLevel: currentLevel,
-        positiveSteps: elem.Columns.PositiveSteps.Value,
+        positiveSteps: elem.Columns?.PositiveSteps.Value,
         order: 1,
-      }))
+      })),
     );
 
     this.logger?.debug(this, 'first working steps are added');
@@ -210,7 +236,7 @@ export class ApproverContainer {
         (join) =>
           join.orderedStep != null &&
           join.orderedStep.positiveSteps !== 0 &&
-          orderedSteps.findIndex((workunit) => workunit.uidWorkingStep === join.workingStep.Keys[0]) === -1
+          orderedSteps.findIndex((workunit) => workunit.uidWorkingStep === join.workingStep.Keys?.[0]) === -1,
       );
       this.logger?.debug(this, 'new steps has been filtered');
 
@@ -219,11 +245,11 @@ export class ApproverContainer {
         this.logger?.debug(this, 'at least one new step has been calculated');
         orderedSteps = orderedSteps.concat(
           filteredJoin.map((join) => ({
-            decisionLevel: join.workingStep.Columns.LevelNumber.Value,
+            decisionLevel: join.workingStep.Columns?.LevelNumber.Value,
             order: join.orderedStep.order + 1,
-            positiveSteps: join.workingStep.Columns.PositiveSteps.Value,
-            uidWorkingStep: join.workingStep.Keys[0],
-          }))
+            positiveSteps: join.workingStep.Columns?.PositiveSteps.Value,
+            uidWorkingStep: !join.workingStep.Keys ? '' : join.workingStep.Keys?.[0],
+          })),
         );
         this.logger?.trace(this, 'new step list', orderedSteps);
       }
@@ -233,14 +259,14 @@ export class ApproverContainer {
 
   private joinOrderedStepsWithOthers(
     workingSteps: EntityData[],
-    orderedSteps: OrderedWorkingStep[]
+    orderedSteps: OrderedWorkingStep[],
   ): { orderedStep: OrderedWorkingStep; workingStep: EntityData }[] {
     let join: { orderedStep: OrderedWorkingStep; workingStep: EntityData }[] = [];
     for (const workingStep of workingSteps) {
       this.logger?.trace(this, 'working step for join', workingStep);
 
       const filteredOrderedSteps = orderedSteps.filter(
-        (step) => workingStep.Columns.LevelNumber.Value === step.decisionLevel + step.positiveSteps
+        (step) => workingStep.Columns?.LevelNumber.Value === step.decisionLevel + step.positiveSteps,
       );
       this.logger?.trace(this, 'filtered order steps', filteredOrderedSteps);
 
@@ -249,7 +275,7 @@ export class ApproverContainer {
           filteredOrderedSteps.map((orderedStep) => ({
             orderedStep,
             workingStep,
-          }))
+          })),
         );
       }
     }

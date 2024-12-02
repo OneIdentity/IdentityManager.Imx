@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,10 +35,8 @@ import { MatInputModule } from '@angular/material/input';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthConfigProvider, AuthenticationService, CaptchaModule } from 'qbm';
-import { QaLoginFlow } from './qa-login-flow';
+import { CaptchaModule } from 'qbm';
 import { QaLoginComponent } from './qa-login.component';
-
 
 @NgModule({
   imports: [
@@ -52,21 +50,9 @@ import { QaLoginComponent } from './qa-login.component';
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    TranslateModule
+    TranslateModule,
   ],
-  declarations: [
-    QaLoginComponent
-  ]
+  declarations: [QaLoginComponent],
 })
 export class QaLoginModule {
-
-  constructor(authService: AuthenticationService) {
-    const passwordQuestionsProvider: AuthConfigProvider = {
-      display: '#LDS#Log in by answering your password questions',
-      name: 'CustomPasswordQuestions',
-      authProps: [],
-      customAuthFlow: new QaLoginFlow()
-    };
-    authService.registerAuthConfigProvider(passwordQuestionsProvider);
-  }
 }

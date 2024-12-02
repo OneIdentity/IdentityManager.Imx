@@ -1,10 +1,15 @@
-<div class="center-content" *ngIf="isPoint">
-  <imx-point-stat-visual [summaryStat]="summaryStat" [pointStatStatus]="pointStatStatus"></imx-point-stat-visual>
-</div>
-<div *ngIf="!isPoint && dataHasNonZero && chartOptions" class="chart-container">
-  <imx-temp-billboard [options]="chartOptions" (chart)="cacheChart($event)"></imx-temp-billboard>
-</div>
-<div *ngIf="!isPoint && !dataHasNonZero" class="card-zero-data center-content">
-  <eui-icon [icon]="determineIcon()"></eui-icon>
-  <p>{{ '#LDS#No data available yet' | translate }}</p>
+<div [ngSwitch]="type">
+  <div *ngSwitchCase="'point'" class="center-content">
+    <imx-point-stat-visual [summaryStat]="summaryStat" [pointStatStatus]="pointStatStatus"></imx-point-stat-visual>
+  </div>
+  <div *ngSwitchCase="'table'">
+    <imx-table-stat-visual [summaryStat]="summaryStat"></imx-table-stat-visual>
+  </div>
+  <div *ngSwitchCase="'chart'">
+    <eui-billboard [options]="chartOptions" (chart)="cacheChart($event)"></eui-billboard>
+  </div>
+  <div *ngSwitchCase="'no-data'" class="card-zero-data center-content">
+    <eui-icon [icon]="determineIcon()"></eui-icon>
+    <p>{{ '#LDS#No data available yet' | translate }}</p>
+  </div>
 </div>

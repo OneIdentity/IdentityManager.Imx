@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,7 +32,6 @@ import { MatChipInputEvent } from '@angular/material/chips';
 @Component({
   selector: 'imx-service-item-tags',
   templateUrl: './service-item-tags.component.html',
-  styleUrls: ['./service-item-tags.component.scss']
 })
 export class ServiceItemTagsComponent implements OnInit {
   public readonly separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -49,7 +48,7 @@ export class ServiceItemTagsComponent implements OnInit {
   }
 
   public addTag(event: MatChipInputEvent): void {
-    const input = event.input;
+    const input = event.chipInput.inputElement;
     const value = event.value;
 
     if ((value || '').trim() && this.selection.indexOf((value || '').trim()) < 0) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,17 +28,17 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { UntypedFormControl } from '@angular/forms';
 
 import { EuiSelectOption } from '@elemental-ui/core';
-import { IEntity } from 'imx-qbm-dbts';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   selector: 'imx-identity-select',
   templateUrl: './identity-select.component.html',
-  styleUrls: ['./identity-select.component.scss']
+  styleUrls: ['./identity-select.component.scss'],
 })
 export class IdentitySelectComponent implements OnChanges {
   public readonly control = new UntypedFormControl(undefined);
 
-  public options: EuiSelectOption[];
+  public options: EuiSelectOption[] | undefined;
 
   @Input() public entities: IEntity[];
   @Input() public preselectedEntity: IEntity;
@@ -55,9 +55,9 @@ export class IdentitySelectComponent implements OnChanges {
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.entities || changes.display) {
       if (this.entities) {
-        this.options = this.entities.map(entity => ({
+        this.options = this.entities.map((entity) => ({
           display: entity.GetDisplay(),
-          value: this.getId(entity)
+          value: this.getId(entity),
         }));
       } else {
         this.options = undefined;
@@ -69,7 +69,7 @@ export class IdentitySelectComponent implements OnChanges {
       this.control.setValue(this.selectedId, { emitEvent: false });
     }
 
-    if (this.options?.length > 1 || this.control.value == null) {
+    if ((this.options?.length || 0) > 1 || this.control.value == null) {
       this.control.enable();
     } else {
       this.control.disable();

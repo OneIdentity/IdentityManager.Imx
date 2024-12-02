@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
-import { PasswordItemData } from 'imx-api-qer';
-import { DbObjectKey } from 'imx-qbm-dbts';
+import { PasswordItemData } from '@imx-modules/imx-api-qer';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 
 export class PasswordItem {
-
   public tableDisplay: string;
 
   public get display(): string {
-    return this.dataItem.Display;
+    return this.dataItem.Display || '';
   }
 
   public get tableName(): string {
-    return DbObjectKey.FromXml(this.dataItem.ObjectKey).TableName;
+    return this.dataItem.ObjectKey ? DbObjectKey.FromXml(this.dataItem.ObjectKey).TableName : '';
   }
 
-  constructor(public readonly dataItem: PasswordItemData) { }
+  constructor(public readonly dataItem: PasswordItemData) {}
 }

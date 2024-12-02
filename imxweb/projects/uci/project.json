@@ -1,0 +1,70 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "uci",
+  "sourceRoot": "projects/uci/src",
+  "implicitDependencies": [
+    "qer"
+  ],
+  "projectType": "library",
+  "prefix": "imx",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/uci/tsconfig.lib.json",
+        "project": "projects/uci/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/uci/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/uci/tsconfig.lib.json"
+        },
+        "dynamic-ops": {
+          "project": "projects/uci/ng-package.dynamic-ops.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/uci/tsconfig.lib.json"
+        },
+        "remote-qs": {
+          "tsConfig": "projects/uci/tsconfig.lib.json"
+        }
+      },
+      "outputs": [
+        "{workspaceRoot}/dist/uci"
+      ]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/uci/src/test.ts",
+        "tsConfig": "projects/uci/tsconfig.spec.json",
+        "karmaConfig": "projects/uci/karma.conf.js",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": [
+          "projects/uci/tsconfig.lib.json",
+          "projects/uci/tsconfig.spec.json"
+        ],
+        "exclude": [
+          "**/node_modules/**",
+          "**/*.spec.ts",
+          "**/*.json"
+        ]
+      }
+    }
+  }
+}

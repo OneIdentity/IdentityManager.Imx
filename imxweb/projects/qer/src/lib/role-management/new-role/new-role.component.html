@@ -5,13 +5,19 @@
 
     <form class="imx-cdr-group" [formGroup]="formGroup">
       <ng-container *ngFor="let cdr of cdrList">
-        <imx-cdr-editor [cdr]="cdr" (controlCreated)="addControl(cdr.column.ColumnName, $event)"> </imx-cdr-editor>
+        <imx-cdr-editor [cdr]="cdr" (controlCreated)="addControl(cdr?.column?.ColumnName, $event)"> </imx-cdr-editor>
       </ng-container>
     </form>
   </mat-card>
 </div>
 <div eui-sidesheet-actions>
-  <button data-imx-identifier="new-role-button-create" mat-raised-button color="primary" [disabled]="formGroup.invalid || !formGroup.dirty" (click)="save()">
+  <button
+    data-imx-identifier="new-role-button-create"
+    mat-flat-button
+    color="primary"
+    [disabled]="formGroup.invalid || !formGroup.dirty"
+    (click)="save()"
+  >
     <span translate>#LDS#Create</span>
   </button>
 </div>

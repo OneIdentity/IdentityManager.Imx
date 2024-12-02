@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,22 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { additionalColumnsForServiceItemsKey } from 'qer';
 
 import { ExtService, MenuItem, MenuService } from 'qbm';
+import { LockInfoAlertExtension } from './extensions/service-items-edit/lock-info-alert/lock-info-alert-extension';
 import { KpiTileComponent } from './global-kpi/kpi-tile/kpi-tile.component';
 import { isAobApplicationAdmin, isAobApplicationOwner } from './permissions/aob-permissions-helper';
-import { LockInfoAlertExtension } from './extensions/service-items-edit/lock-info-alert/lock-info-alert-extension';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AobService {
   constructor(
     private readonly router: Router,
     private readonly extService: ExtService,
-    private readonly menuService: MenuService
+    private readonly menuService: MenuService,
   ) {
     this.setupMenu();
   }
@@ -50,11 +50,11 @@ export class AobService {
 
     this.extService.register(additionalColumnsForServiceItemsKey, {
       inputData: {
-        columnName: 'UID_AOBApplication'
-      }
+        columnName: 'UID_AOBApplication',
+      },
     });
     this.extService.register('Dashboard-MediumTiles', {
-      instance: KpiTileComponent
+      instance: KpiTileComponent,
     });
 
     this.extService.register(LockInfoAlertExtension.id, new LockInfoAlertExtension());
@@ -62,7 +62,7 @@ export class AobService {
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);
@@ -72,24 +72,22 @@ export class AobService {
     this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
       const items: MenuItem[] = [];
       if (isAobApplicationAdmin(features) || isAobApplicationOwner(features)) {
-        items.push(
-          {
-            id: 'AOB_Data_Applications',
-            title: '#LDS#Applications',
-            navigationCommands: { commands: ['/applications', { outlets: { primary: ['navigation'], content: ['detail'] } }] },
-            sorting: '40-20',
-          }
-        );
+        items.push({
+          id: 'AOB_Data_Applications',
+          title: '#LDS#Applications',
+          navigationCommands: { commands: ['/applications', { outlets: { primary: ['navigation'], content: ['detail'] } }] },
+          sorting: '40-20',
+        });
       }
       if (items.length === 0) {
-        return null;
+        return undefined;
       }
 
       return {
         id: 'ROOT_Data',
         title: '#LDS#Data administration',
         sorting: '40',
-        items
+        items,
       };
     });
   }

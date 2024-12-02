@@ -1,0 +1,21 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+imx-data-source-toolbar {
+  &-custom {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-right: 5px;
+
+    button {
+      height: 100%;
+
+      &:not(:last-of-type) {
+        margin-right: 5px;
+      }
+    }
+  }
+}

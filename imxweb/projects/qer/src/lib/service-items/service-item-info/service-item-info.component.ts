@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,26 +26,25 @@
 
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PortalShopServiceitems } from 'imx-api-qer';
-import { IWriteValue, MultiValue } from 'imx-qbm-dbts';
+import { PortalShopServiceitems } from '@imx-modules/imx-api-qer';
+import { IWriteValue, MultiValue } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   selector: 'imx-service-item-info',
   templateUrl: './service-item-info.component.html',
-  styleUrls: ['./service-item-info.component.scss']
+  styleUrls: ['./service-item-info.component.scss'],
 })
-export class ServiceItemInfoComponent  {
-
+export class ServiceItemInfoComponent {
   constructor(
     public readonly dialogRef: MatDialogRef<ServiceItemInfoComponent>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: { prod: PortalShopServiceitems, recipients: IWriteValue<string> }) { }
+    @Inject(MAT_DIALOG_DATA) public readonly data: { prod: PortalShopServiceitems; recipients: IWriteValue<string> },
+  ) {}
 
   public isValueContains(input: string, values: string | string[]): boolean {
     const inputValues = MultiValue.FromString(input).GetValues();
     if (typeof values === 'string') {
       return inputValues.includes(values);
     }
-    return inputValues.findIndex(i => values.includes(i)) != -1;
+    return inputValues.findIndex((i) => values.includes(i)) != -1;
   }
-
 }

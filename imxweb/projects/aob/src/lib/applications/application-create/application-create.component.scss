@@ -1,54 +1,27 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: $asher-gray;
+  @include flex-column-container($height: 100%);
+  background-color: $color-gray-2;
 }
 
 .imx-content {
-  display: flex;
-  flex-direction: column;
+   @include flex-column-container-fill();
   margin: 30px;
   overflow-y: auto;
-  flex: 1 1 auto;
   max-height: calc(100% - 60px);
-}
-
-.imx-button-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0;
-  padding: 16px 32px;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  background-color: $white;
-
-  button {
-    margin-left: 10px;
-  }
-
-  .justify-start {
-    margin-right: auto;
-  }
 }
 
 .eui-dark-theme {
   :host {
-     background-color: $color-gray-80;
-    .imx-button-bar {
-      background-color: $color-gray-70;
-    }
+    background-color: $color-gray-80;
   }
 }
 
 .eui-contrast-theme {
   :host {
-     background-color: $color-gray-100;
-    .imx-button-bar {
-      background-color: $color-gray-90;
-    }
+    background-color: $color-gray-100;
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,10 +28,10 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalShopServiceitems, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { MultiValue } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
-import { MultiValue } from 'imx-qbm-dbts';
 import { ConfirmationService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { ServiceItemsService } from '../../service-items/service-items.service';
@@ -55,7 +55,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
 
   private initialState: { isChecked: boolean; isIndeterminate: boolean; parentChecked: boolean }[] = [];
   private optionalItemMap: {
-    [key: string]: Promise<PortalShopServiceitems>;
+    [key: string]: Promise<PortalShopServiceitems | undefined>;
   } = {};
   private subscriptions: Subscription[] = [];
 
@@ -69,9 +69,9 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     public data: {
       serviceItemTree: ServiceItemTreeWrapper;
       projectConfig: QerProjectConfig;
-    }
+    },
   ) {
-    this.dataSource.data = this.data.serviceItemTree.trees;
+    this.dataSource.data = this.data.serviceItemTree.trees || [];
     this.treeControl.dataNodes = this.dataSource.data;
 
     this.subscriptions.push(
@@ -84,7 +84,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
         ) {
           this.sideSheetRef.close();
         }
-      })
+      }),
     );
   }
 
@@ -116,11 +116,21 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public getRecipientText(node: ServiceItemHierarchyExtended): string {
-    return this.nRecipientsText.slice().replace('{0}', node.Recipients.length.toString());
+    return this.nRecipientsText.slice().replace('{0}', node.Recipients?.length?.toString() ?? '');
   }
 
   public getKey(item: PortalShopServiceitems): string {
     return item.GetEntity().GetKeys()[0];
+  }
+
+  /**
+   * Check if the uidPerson is in the valid list, if list is empty then all people are valid
+   * @param uidPersonsValidFor list of people this item is valid for
+   * @param uidPerson recipient of the potential item
+   * @returns if this item can be ordered by this person
+   */
+  public isValidFor(uidPersonsValidFor: string[] | undefined, uidPerson: string): boolean {
+    return !uidPersonsValidFor || uidPersonsValidFor.length === 0 ? true : uidPersonsValidFor!.includes(uidPerson);
   }
 
   public async addToCart(): Promise<void> {
@@ -135,26 +145,29 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
       requestables: [],
     };
 
-    this.treeControl.dataNodes.forEach((tree) => {
+    for (const tree of this.treeControl.dataNodes) {
+      if (!tree.UidRecipients) {
+        continue;
+      }
       // Loop over each service item tree
-      tree.UidRecipients.forEach((uidRecipient, index) => {
+      for (const [index, uidRecipient] of tree.UidRecipients.entries()) {
         // Loop over each recipient
         const recipient = {
           DataValue: uidRecipient,
-          DisplayValue: tree.Recipients[index],
+          DisplayValue: tree.Recipients?.[index],
         };
-        this.treeControl.getDescendants(tree).forEach(async (child) => {
-          // Grab all descendants of the parent service item and create an order
-          if (!child.isMandatory && child.isChecked && !child.isIndeterminate) {
+        for await (const child of this.treeControl.getDescendants(tree)) {
+          // Grab all descendants of the parent service item and create an order, if they are valid
+          if (!child.isMandatory && child.isChecked && !child.isIndeterminate && this.isValidFor(child?.UidPersonsValidFor, uidRecipient)) {
             const uid = child.UidAccProduct;
             const childItem = await this.optionalItemMap[uid];
-            const childRequestable = this.serviceItemsProvider.getServiceItemsForPersons([childItem], [recipient])[0];
+            const childRequestable = this.serviceItemsProvider.getServiceItemsForPersons(childItem ? [childItem] : [], [recipient])[0];
             childRequestable.UidAccProductParent = child.parentUid;
-            outgoingServiceOrder.requestables.push(childRequestable);
+            outgoingServiceOrder.requestables!.push(childRequestable);
           }
-        });
-      });
-    });
+        }
+      }
+    }
     this.sideSheetRef.close(outgoingServiceOrder);
   }
 
@@ -181,7 +194,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
         if (!child.isMandatory) {
           child.isIndeterminate ? (this.selected -= 1) : (this.selected += 1);
         }
-        this.walkChildren(child, [...child.Mandatory, ...child.Optional]);
+        this.walkChildren(child, [...(child.Mandatory || []), ...(child.Optional || [])]);
       }
     });
   }
@@ -192,7 +205,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     leaf.isChecked = value.checked;
     leaf.isIndeterminate = false;
     // Modify all children to reflect parent state
-    this.walkChildren(leaf, [...leaf.Mandatory, ...leaf.Optional]);
+    this.walkChildren(leaf, [...(leaf.Mandatory || []), ...(leaf.Optional || [])]);
   }
 
   public onDeselectAll(): void {

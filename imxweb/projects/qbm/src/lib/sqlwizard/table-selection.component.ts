@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,27 +30,24 @@ import { SqlNodeView } from './SqlNodeView';
 import { SqlWizardApiService } from './sqlwizard-api.service';
 
 @Component({
-    selector: 'imx-sqlwizard-tableselection',
-    templateUrl: './table-selection.component.html',
+  selector: 'imx-sqlwizard-tableselection',
+  templateUrl: './table-selection.component.html',
 })
 export class TableSelectionComponent implements OnInit {
+  @Input() public node: SqlNodeView;
 
-    @Input() public node: SqlNodeView;
+  public selectableTables: EuiSelectOption[] = [];
 
-    public selectableTables: EuiSelectOption[] = [];
+  public tableFilter: string;
 
-    public tableFilter: string;
+  constructor(private readonly sqlApiService: SqlWizardApiService) {}
 
-    constructor(private readonly sqlApiService: SqlWizardApiService) {
-    }
+  public async ngOnInit() {
+    // TODO const tables = await this.sqlApiService.getSelectableTables(this.node.Data.);
+    // this.selectableTables = tables;
+  }
 
-    public async ngOnInit() {
-        // TODO const tables = await this.sqlApiService.getSelectableTables(this.node.Data.);
-        // this.selectableTables = tables;
-    }
-
-    public filter(option: EuiSelectOption, searchInputValue: string): boolean {
-        return option.display.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim());
-    }
-
+  public filter(option: EuiSelectOption, searchInputValue: string): boolean {
+    return option.display.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim());
+  }
 }

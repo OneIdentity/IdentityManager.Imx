@@ -17,23 +17,35 @@
   </mat-card>
 
   <ng-container *ngIf="definition?.TableName && sqlExpression">
-    <eui-alert class="helper-alert" *ngIf="sqlExpression.IsUnsupported" condensed="true" [colored]="true" type="info">
+    <eui-alert *ngIf="sqlExpression.IsUnsupported" [condensed]="true" [colored]="true" type="info">
       {{ ldsUnsupportedExpression | translate }}
     </eui-alert>
 
     <mat-card *ngIf="!sqlExpression.IsUnsupported">
       <mat-card-title>{{ '#LDS#Conditions' | translate }}*</mat-card-title>
 
-      <eui-alert class="helper-alert" *ngIf="sqlExpression.Expression?.Expressions.length < 1" condensed="true" [colored]="true" type="info">
+      <eui-alert *ngIf="isCondition" [condensed]="true" [colored]="true" type="info">
         {{ ldsAllRowsInfoText | translate }}
       </eui-alert>
-      <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" [tableName]="definition.TableName" [apiService]="svc" [expression]="sqlExpression.Expression" (change)="checkChanges()">
+      <imx-sqlwizard
+        *ngIf="!sqlExpression.IsUnsupported"
+        [tableName]="definition.TableName"
+        [apiService]="svc"
+        [expression]="sqlExpression.Expression"
+        (change)="checkChanges()"
+      >
       </imx-sqlwizard>
     </mat-card>
   </ng-container>
 </div>
 <div eui-sidesheet-actions>
-  <button mat-raised-button color="primary" data-imx-identifier="report-sidesheet-button" [disabled]="controlsInvalid || data.isReadonly" (click)="save()">
+  <button
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="report-sidesheet-button"
+    [disabled]="controlsInvalid || data.isReadonly"
+    (click)="save()"
+  >
     {{ (data.isNew ? '#LDS#Create' : '#LDS#Save') | translate }}
   </button>
 </div>

@@ -1,0 +1,59 @@
+$spaceamounts: (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 16, 20, 24, 25, 30, 32, 35, 40, 45, 48, 50, 64, 75, 80, 100);
+$sides: (top, bottom, left, right);
+
+@each $space in $spaceamounts {
+  @each $side in $sides {
+    .imx-margin-#{$side}-#{$space} {
+      margin-#{$side}: #{$space}px !important;
+    }
+
+    .imx-padding-#{$side}-#{$space} {
+      padding-#{$side}: #{$space}px !important;
+    }
+  }
+
+  .imx-margin-horizontal-#{$space} {
+    margin: 0 #{$space}px !important;
+  }
+
+  .imx-margin-vertical-#{$space} {
+    margin: #{$space}px 0 !important;
+  }
+
+  .imx-margin-#{$space} {
+    margin: #{$space}px !important;
+  }
+
+  .imx-padding-horizontal-#{$space} {
+    padding: 0 #{$space}px !important;
+  }
+
+  .imx-padding-vertical-#{$space} {
+    padding: #{$space}px 0 !important;
+  }
+
+  .imx-padding-#{$space} {
+    padding: #{$space}px !important;
+  }
+}
+
+@each $side in $sides {
+  .imx-margin-#{$side}-auto {
+    margin-#{$side}: auto !important;
+  }
+
+  .imx-padding-#{$side}-auto {
+    padding-#{$side}: auto !important;
+  }
+}
+
+@for $nLines from 1 through 4 {
+  .imx-text-overflow--#{$nLines} {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $nLines; /* number of lines to show */
+    line-clamp: $nLines;
+    -webkit-box-orient: vertical;
+  }
+}

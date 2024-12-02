@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,30 +26,30 @@
 
 import { Component, Inject } from '@angular/core';
 
-import { CartItemValidationResult } from './cart-item-validation-result.interface';
-import { ICartItemCheck } from 'imx-api-qer';
-import { CartItemValidationStatus, getCartItemValidationStatus } from '../cart-items/cart-item-validation-status.enum';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
+import { CartItemValidationStatus, getCartItemValidationStatus } from '../cart-items/cart-item-validation-status.enum';
+import { CartItemValidationResult } from './cart-item-validation-result.interface';
 
 @Component({
   selector: 'imx-cart-item-validation-overview',
   templateUrl: './cart-item-validation-overview.component.html',
-  styleUrls: ['./cart-item-validation-overview.component.scss']
+  styleUrls: ['./cart-item-validation-overview.component.scss'],
 })
 export class CartItemValidationOverviewComponent {
   public checks: ICartItemCheck[][] = [];
 
-    constructor(@Inject(EUI_SIDESHEET_DATA) public readonly data: CartItemValidationResult) {
-    const checks = this.data.checkResult.Checks;
+  constructor(@Inject(EUI_SIDESHEET_DATA) public readonly data: CartItemValidationResult) {
+    const checks = this.data.checkResult?.Checks || [];
 
-    this.checks.push(checks.filter(item => item.Status === CartItemValidationStatus.error));
-    this.checks.push(checks.filter(item => item.Status === CartItemValidationStatus.warning));
-    this.checks.push(checks.filter(item => item.Status === CartItemValidationStatus.disabled));
-    this.checks.push(checks.filter(item => item.Status === CartItemValidationStatus.pending));
-    this.checks.push(checks.filter(item => item.Status === CartItemValidationStatus.success));
+    this.checks.push(checks.filter((item) => item.Status === CartItemValidationStatus.error));
+    this.checks.push(checks.filter((item) => item.Status === CartItemValidationStatus.warning));
+    this.checks.push(checks.filter((item) => item.Status === CartItemValidationStatus.disabled));
+    this.checks.push(checks.filter((item) => item.Status === CartItemValidationStatus.pending));
+    this.checks.push(checks.filter((item) => item.Status === CartItemValidationStatus.success));
   }
 
-  public getStatus(check: ICartItemCheck): { status: string, icon: string } {
+  public getStatus(check: ICartItemCheck): { status: string; icon: string } {
     return getCartItemValidationStatus(check);
   }
 
@@ -60,5 +60,4 @@ export class CartItemValidationOverviewComponent {
   public isWarning(check: ICartItemCheck): boolean {
     return check.Status === CartItemValidationStatus.warning;
   }
-
 }

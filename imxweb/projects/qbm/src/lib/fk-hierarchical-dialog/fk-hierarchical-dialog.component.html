@@ -1,9 +1,14 @@
 <div eui-sidesheet-content>
   <mat-card class="imx-dialog-content">
-    <mat-form-field *ngIf="data.fkRelations?.length > 3" appearance="outline">
-      <mat-label>{{'#LDS#Object type' | translate}}</mat-label>
-      <mat-select [(ngModel)]="hierarchyService.fkTable" disableOptionCentering panelClass="imx-under"
-        (selectionChange)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-select-tables">
+    <mat-form-field *ngIf="(data.fkRelations?.length ?? 0) > 3" appearance="outline">
+      <mat-label>{{ '#LDS#Object type' | translate }}</mat-label>
+      <mat-select
+        [(ngModel)]="hierarchyService.fkTable"
+        disableOptionCentering
+        panelClass="imx-margin-bottom-30"
+        (selectionChange)="tableChanged()"
+        data-imx-identifier="cdr-fkadvancedpicker-select-tables"
+      >
         <mat-option *ngFor="let item of data.fkRelations" [value]="item">
           {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
         </mat-option>
@@ -11,33 +16,53 @@
     </mat-form-field>
 
     <!-- if more than 1 candidate table -> show radio buttons -->
-    <mat-radio-group class="imx-fk-table-radio" *ngIf="data.fkRelations?.length <= 3 && data.fkRelations?.length > 1"
-      [(ngModel)]="hierarchyService.fkTable" (change)="tableChanged()"
-      data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
-      <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item"
-        data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
+    <mat-radio-group
+      *ngIf="(data.fkRelations?.length ?? 0) <= 3 && (data.fkRelations?.length ?? 0) > 1"
+      [(ngModel)]="hierarchyService.fkTable"
+      (change)="tableChanged()"
+      data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables"
+    >
+      <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item" data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
         {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
       </mat-radio-button>
     </mat-radio-group>
 
-    <imx-data-tree-wrapper #fkTree [withMultiSelect]="data.isMultiValue" [selectedEntities]="selectedEntities" [hideSelection]="true"
-    [database]="hierarchyService" [filters]="filters" [filterTree]="filterTree" (checkedNodesChanged)="selectedNodesChanged()"
-     [entitySchema]="entitySchema" (nodeSelected)="onNodeSelected($event)">
+    <imx-data-tree-wrapper
+      #fkTree
+      [withMultiSelect]="data.isMultiValue"
+      [selectedEntities]="selectedEntities"
+      [hideSelection]="true"
+      [database]="hierarchyService"
+      [filters]="filters"
+      [filterTree]="filterTree"
+      (checkedNodesChanged)="selectedNodesChanged()"
+      [entitySchema]="entitySchema"
+      (nodeSelected)="onNodeSelected($event)"
+    >
     </imx-data-tree-wrapper>
   </mat-card>
 </div>
 
 <div eui-sidesheet-actions *ngIf="data.isMultiValue">
-  <div>
-   <imx-selected-elements [selectedElements]="selectedEntityCandidates" [tables]="tableNames"></imx-selected-elements>
-  </div>
-  <button class="justify-start" mat-stroked-button type="button"
-    [disabled]="selectedEntityCandidates?.length === 0" (click)="clearSelection()"
-    data-imx-identifier="cdr-fk-hierarchical-dialog-button-clear-selection">
+  <imx-selected-elements class="justify-start" [selectedElements]="selectedEntityCandidates" [tables]="tableNames"></imx-selected-elements>
+  <button
+    class="imx-margin-right-auto imx-margin-left-10"
+    mat-stroked-button
+    type="button"
+    [disabled]="selectedEntityCandidates.length === 0"
+    (click)="clearSelection()"
+    data-imx-identifier="cdr-fk-hierarchical-dialog-button-clear-selection"
+  >
     {{ '#LDS#Clear selection' | translate }}
   </button>
-  <button [disabled]="data?.isRequired && selectedEntityCandidates?.length < 1" mat-flat-button color="primary"
-    (click)="applySelection()" data-imx-identifier="cdr-fk-hierarchical-dialog-button-apply-selection">
+  <button
+    [disabled]="data?.isRequired && selectedEntityCandidates.length < 1"
+    mat-flat-button
+    color="primary"
+    (click)="applySelection()"
+    data-imx-identifier="cdr-fk-hierarchical-dialog-button-apply-selection"
+    class="imx-margin-left-10"
+  >
     {{ '#LDS#Apply' | translate }}
   </button>
 </div>

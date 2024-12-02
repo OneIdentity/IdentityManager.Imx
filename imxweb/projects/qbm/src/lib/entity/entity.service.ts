@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,23 +26,29 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityColumnData, IClientProperty, FkCandidateProvider, FkProviderItem, IEntityColumn, LocalEntityColumn } from 'imx-qbm-dbts';
+import {
+  EntityColumnData,
+  IClientProperty,
+  FkCandidateProvider,
+  FkProviderItem,
+  IEntityColumn,
+  LocalEntityColumn,
+} from '@imx-modules/imx-qbm-dbts';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EntityService {
-  constructor(private readonly translator: ImxTranslationProviderService) { }
+  constructor(private readonly translator: ImxTranslationProviderService) {}
 
   public createLocalEntityColumn(
     property: IClientProperty,
     fkProviderItems?: FkProviderItem[],
     data: EntityColumnData = {},
-    putValueDelegate: (oldValue: any, newValue: any) => Promise<void> = () => Promise.resolve()
+    putValueDelegate: (oldValue: any, newValue: any) => Promise<void> = () => Promise.resolve(),
   ): IEntityColumn {
-
     var fkProvider = fkProviderItems ? new FkCandidateProvider(fkProviderItems) : undefined;
-    return new LocalEntityColumn(property, this.translator, fkProvider, data, ((z, x, y) => putValueDelegate(x, y)));
+    return new LocalEntityColumn(property, this.translator, fkProvider, data, (z, x, y) => putValueDelegate(x, y));
   }
 }

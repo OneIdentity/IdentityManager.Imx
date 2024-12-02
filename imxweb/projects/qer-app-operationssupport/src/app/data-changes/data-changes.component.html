@@ -1,70 +1,131 @@
-<h1 class="mat-headline">{{ '#LDS#Heading Operation History' | translate }}</h1>
+<h2 class="mat-headline-5">{{ '#LDS#Heading Operation History' | translate }}</h2>
 <div class="search-type">
   <label>{{ '#LDS#Show operations by' | translate }}:</label>
-  <mat-radio-group [attr.data-imx-identifier]="'search-type-radio-group'" class="search-type-radio-group"
-    [(ngModel)]="selectedSearchType" (change)="searchTypeChange()">
-    <mat-radio-button class="search-type-radio-button" [attr.data-imx-identifier]="'search-type-radio-button-user-name'"
-      [value]="'UserName'">
+  <mat-radio-group
+    [attr.data-imx-identifier]="'search-type-radio-group'"
+    class="imx-margin-left-15"
+    [(ngModel)]="selectedSearchType"
+    (change)="searchTypeChange()"
+  >
+    <mat-radio-button
+      class="search-type-radio-button"
+      [attr.data-imx-identifier]="'search-type-radio-button-user-name'"
+      [value]="'UserName'"
+    >
       {{ '#LDS#User' | translate }}
     </mat-radio-button>
-    <mat-radio-button class="search-type-radio-button"
+    <mat-radio-button
+      class="search-type-radio-button"
       [attr.data-imx-identifier]="'search-type-radio-button-date-range-and-change-type'"
-      [value]="'ChangeType'">
+      [value]="'ChangeType'"
+    >
       {{ '#LDS#Type of operation' | translate }}
     </mat-radio-button>
   </mat-radio-group>
 </div>
 <form [attr.data-imx-identifier]="'search-form'" [formGroup]="searchForm" class="search-type-option-controls">
-  <mat-form-field *ngIf="isEnabledUsername">
-    <mat-label>{{ '#LDS#User name' | translate }}</mat-label>
-    <input [attr.data-imx-identifier]="'username-input'" formControlName="usernameFormControl" matInput type="text">
-  </mat-form-field>
-
-  <mat-form-field *ngIf="isEnabledChangeType">
-    <mat-label>{{ '#LDS#Type of operation' | translate }}</mat-label>
-    <mat-select [attr.data-imx-identifier]="'change-type-selection'" formControlName="changeTypeFormControl" multiple>
-      <mat-option *ngFor="let changeType of changeTypes" [value]="changeType.value"
-        [attr.data-imx-identifier]="'search-form-change-type-' + changeType.name">{{changeType.title}}</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field *ngIf="isEnabledBackTo">
-    <mat-label>{{ '#LDS#From' | translate }}</mat-label>
-    <input matInput [matDatepicker]="datepickerBackToDate" formControlName="backToDateFormControl" [attr.data-imx-identifier]="'back-to-date-date-picker'">
-    <mat-datepicker-toggle matSuffix [for]="datepickerBackToDate"></mat-datepicker-toggle>
-    <mat-datepicker #datepickerBackToDate></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field *ngIf="isEnabledBackFrom">
-    <mat-label>{{ '#LDS#To' | translate }}</mat-label>
-    <input matInput [matDatepicker]="datepickerBackFromDate" formControlName="backFromDateFormControl" [attr.data-imx-identifier]="'back-from-date-date-picker'">
-    <mat-datepicker-toggle matSuffix [for]="datepickerBackFromDate"></mat-datepicker-toggle>
-    <mat-datepicker #datepickerBackFromDate></mat-datepicker>
-  </mat-form-field>
-
-  <button [attr.data-imx-identifier]="'search-form-submit-button'" mat-raised-button type="button" color="primary"
-    [disabled]="!searchForm.valid" (click)="loadHistoryOperationsData()">{{ '#LDS#Show operations' | translate }}</button>
+  @if (isEnabledUsername) {
+    <eui-form-field>
+      <eui-label>{{ '#LDS#User name' | translate }}</eui-label>
+      <input matInput [formControl]="searchForm.controls.usernameFormControl" autocomplete="no" />
+    </eui-form-field>
+  }
+  @if (isEnabledChangeType) {
+    <eui-select
+      [label]="'#LDS#Type of operation' | translate"
+      [inputControl]="searchForm.controls.changeTypeFormControl"
+      [multiple]="true"
+      [options]="changeTypes"
+      [enableFormFieldMargin]="true"
+      [feedbackMessages]="feedbackMessages"
+    >
+    </eui-select>
+  }
+  <eui-date-picker
+    #fromDateControl
+    [dateControl]="searchForm.controls.fromDateFormControl"
+    [label]="'#LDS#From' | translate"
+    [allowTextInput]="true"
+    [useClearIcon]="false"
+    [max]="yesterday"
+  >
+    @if (fromDateControl.getErrors()['matDatepickerMin'] || fromDateControl.getErrors()['matDatepickerMax']) {
+      <mat-error>{{ '#LDS#Specify a "From" date that lies before the "To" date.' | translate }}</mat-error>
+    }
+  </eui-date-picker>
+  @if (isEnabledChangeType) {
+    <eui-date-picker
+      #toDateControl
+      [dateControl]="searchForm.controls.toDateFormControl"
+      [label]="'#LDS#To' | translate"
+      [allowTextInput]="true"
+      [useClearIcon]="false"
+      [max]="today"
+    >
+      @if (toDateControl.getErrors()['matDatepickerMin'] || toDateControl.getErrors()['matDatepickerMax']) {
+        <mat-error>{{ '#LDS#Specify a "To" date that lies after the "From" date.' | translate }}</mat-error>
+      }
+    </eui-date-picker>
+  }
+  <button
+    [attr.data-imx-identifier]="'search-form-submit-button'"
+    mat-flat-button
+    type="button"
+    color="primary"
+    [disabled]="searchForm.invalid"
+    (click)="loadHistoryOperationsData()"
+  >
+    {{ '#LDS#Show operations' | translate }}
+  </button>
 </form>
 <div class="search-result-table-container">
-  <table *ngIf="columns" mat-table [dataSource]="dataSource">
-    <ng-container *ngFor="let column of columns" [matColumnDef]="column.name">
-      <th mat-header-cell *matHeaderCellDef>{{ column.title | translate }}</th>
-      <td mat-cell *matCellDef="let row">
-        <ng-container *ngIf="column.name !== 'ChangeType'">
-          {{ column.value(row) }}
-        </ng-container>
-        <ng-container *ngIf="column.name === 'ChangeType'">
-          <ng-container [ngSwitch]="row.ChangeType">
-            <eui-badge size="medium" [color]="badgeColor.Insert" *ngSwitchCase="changeTypeEnum.Insert">{{ column.value(row) }}</eui-badge>
-            <eui-badge size="medium" [color]="badgeColor.Update" *ngSwitchCase="changeTypeEnum.Update">{{ column.value(row) }}</eui-badge>
-            <eui-badge size="medium" [color]="badgeColor.Delete" *ngSwitchCase="changeTypeEnum.Delete">{{ column.value(row) }}</eui-badge>
-          </ng-container>
-        </ng-container>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="displayChangedPropertyListSidesheet(row)"></tr>
-  </table>
-  <mat-paginator [pageSize]="paginatorConfigurations.size" [pageSizeOptions]="paginatorConfigurations.sizeOptions" [showFirstLastButtons]="paginatorConfigurations.showFirstLastButtons">
+  @if (busyService.isBusy) {
+    <imx-busy-indicator></imx-busy-indicator>
+  } @else {
+    @if (columns && !!dataSource && !!dataSource.data.length) {
+      <div class="search-result-table">
+        <table mat-table [dataSource]="dataSource">
+          @for (column of columns; track column.name) {
+            <ng-container [matColumnDef]="column.name">
+              <th mat-header-cell *matHeaderCellDef>{{ column.title | translate }}</th>
+              <td mat-cell *matCellDef="let row">
+                @switch (column.name) {
+                  @case ('ChangeType') {
+                    @switch (row.ChangeType) {
+                      @case (changeTypeEnum.Insert) {
+                        <eui-badge size="medium" [color]="badgeColor.Insert">{{ column.value(row) }}</eui-badge>
+                      }
+                      @case (changeTypeEnum.Update) {
+                        <eui-badge size="medium" [color]="badgeColor.Update">{{ column.value(row) }}</eui-badge>
+                      }
+                      @case (changeTypeEnum.Delete) {
+                        <eui-badge size="medium" [color]="badgeColor.Delete">{{ column.value(row) }}</eui-badge>
+                      }
+                    }
+                  }
+                  @default {
+                    <span>{{ column.value(row) }}</span>
+                  }
+                }
+              </td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="displayChangedPropertyListSidesheet(row)"></tr>
+        </table>
+      </div>
+    } @else {
+      <div class="imx-no-results">
+        <eui-icon icon="content-alert"></eui-icon>
+        <p>{{ '#LDS#No matching data' | translate }}</p>
+      </div>
+    }
+  }
+  <mat-paginator
+    [ngClass]="{ hidden: busyService.isBusy || !dataSource?.data?.length }"
+    [pageSize]="paginatorConfigurations.size"
+    [pageSizeOptions]="paginatorConfigurations.sizeOptions"
+    [showFirstLastButtons]="paginatorConfigurations.showFirstLastButtons"
+  >
   </mat-paginator>
 </div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,14 @@
 
 import { Component, Input } from '@angular/core';
 
-import { ShapeData } from 'imx-api-qbm';
+import { ShapeData } from '@imx-modules/imx-api-qbm';
 
 /**
  * A shape component that only display the description of an  {@link ShapeData|shape}.
  */
 @Component({
   selector: 'imx-hyperview-simpleshape',
-  templateUrl: './simpleshape.component.html'
+  templateUrl: './simpleshape.component.html',
 })
 export class SimpleShapeComponent {
   @Input() public shape: ShapeData;

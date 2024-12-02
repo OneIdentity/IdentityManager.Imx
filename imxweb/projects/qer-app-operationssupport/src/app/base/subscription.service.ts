@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,9 +39,7 @@ export abstract class SubscriptionService<T> {
 
   public subscribe(updateInterval: number = 30000): void {
     this.updateItems();
-    this.refreshTimer = interval(updateInterval).subscribe(_ =>
-      this.updateItems()
-    );
+    this.refreshTimer = interval(updateInterval).subscribe((_) => this.updateItems());
   }
 
   public unsubscribe(): void {

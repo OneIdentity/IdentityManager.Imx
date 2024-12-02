@@ -1,47 +1,57 @@
 <ng-container *ngIf="pingResult && pingResult.NoDbConnection">
-  <p>{{ '#LDS#An error occurred while connecting to the database. Please try again. If the problem persists, contact your administrator.' | translate }}</p>
+  <p>
+    {{
+      '#LDS#An error occurred while connecting to the database. Please try again. If the problem persists, contact your administrator.'
+        | translate
+    }}
+  </p>
 </ng-container>
 
-<h2 class="mat-headline">{{ '#LDS#Overview' | translate }}</h2>
+<h2 class="mat-headline-5">{{ '#LDS#Overview' | translate }}</h2>
 <div class="content-container" [ngClass]="{ loading: !dataReady }">
   <mat-spinner *ngIf="!dataReady" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
   <ng-container *ngIf="dataReady">
     <mat-card class="imx-billboard-card">
       <mat-card-header>
-          <mat-card-title>{{'#LDS#Sessions' | translate}} </mat-card-title>
+        <mat-card-title>{{ '#LDS#Sessions' | translate }} </mat-card-title>
       </mat-card-header>
-        <eui-billboard [options]="chartOptions"></eui-billboard>
+      <eui-billboard [options]="chartOptions" (chart)="onChart($event)"></eui-billboard>
     </mat-card>
     <table class="status-table mat-table" data-imx-identifier="admin-status-table">
       <tbody>
         <tr>
           <td colspan="2">
-            <button data-imx-identifier="admin-status-reload" mat-raised-button color="primary" (click)="Reload()">{{ '#LDS#Refresh' | translate }}</button>
+            <button data-imx-identifier="admin-status-reload" mat-flat-button color="primary" (click)="Reload()">
+              {{ '#LDS#Refresh' | translate }}
+            </button>
           </td>
         </tr>
         <tr>
           <td>{{ '#LDS#API projects' | translate }}</td>
           <td>
-            <mat-chip-list data-imx-identifier="admin-status-api-projects">
+            <mat-chip-listbox data-imx-identifier="admin-status-api-projects">
               <mat-chip *ngFor="let p of apiProjects">
                 {{ p.AppId }}
               </mat-chip>
-            </mat-chip-list>
+            </mat-chip-listbox>
           </td>
         </tr>
         <tr>
           <td>{{ '#LDS#Software update' | translate }}</td>
           <td data-imx-identifier="admin-status-software-update">
             <div *ngIf="updaterState == UpdaterState.AlreadyRunning">{{ '#LDS#Update is currently running.' | translate }}</div>
-            <div *ngIf="updaterState == UpdaterState.Disabled">{{ '#LDS#Software updates are not enabled for this server.' | translate }}</div>
+            <div *ngIf="updaterState == UpdaterState.Disabled">
+              {{ '#LDS#Software updates are not enabled for this server.' | translate }}
+            </div>
             <div *ngIf="updaterState == UpdaterState.UpdatesAvailable">
               {{ '#LDS#Updates are available.' | translate }}
               <p>
                 <button
-                  mat-raised-button
+                  mat-flat-button
                   matTooltip="{{ '#LDS#Installs updates and restarts the server.' | translate }}"
                   color="primary"
                   data-imx-identifier="admin-status-update"
+                  [disabled]="updatesStarted"
                   (click)="StartUpdate()"
                 >
                   {{ '#LDS#Install updates now' | translate }}

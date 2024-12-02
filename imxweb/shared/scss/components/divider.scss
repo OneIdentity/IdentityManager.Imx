@@ -1,0 +1,19 @@
+/* Elemental UI */
+
+/* Angular Material */
+mat-divider.mat-mdc-divider-horizontal {
+  position: inherit;
+}
+
+/* Imx */
+.imx-divider {
+  &-dashed {
+    mat-divider.mat-mdc-divider-horizontal {
+      border-top-style: dashed;
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

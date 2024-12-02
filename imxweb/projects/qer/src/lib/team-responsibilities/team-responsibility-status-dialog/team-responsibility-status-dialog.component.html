@@ -1,0 +1,21 @@
+<div mat-dialog-title>
+  {{ '#LDS#Heading Status' | translate }}
+</div>
+<mat-dialog-content>
+  @if (!!data.reassignedResponsibilities) {
+    <div>{{ reassignInfo | translate | ldsReplace: data.reassignedResponsibilities }}</div>
+  }
+  <div>
+    {{ shoppingCartInfo | translate | ldsReplace: data.cartResponsibilities }}
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button mat-stroked-button (click)="dialogRef.close()">
+    {{ '#LDS#OK' | translate }}
+  </button>
+  <button mat-button mat-flat-button color="primary" (click)="dialogRef.close(true)">
+    <eui-icon icon="cart"></eui-icon>
+    {{ '#LDS#Go to cart' | translate }}
+  </button>
+</mat-dialog-actions>

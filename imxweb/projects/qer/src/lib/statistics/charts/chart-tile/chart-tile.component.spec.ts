@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 import { StatisticsChartHandlerService } from '../statistics-chart-handler.service';
 
-import { ChartDto } from 'imx-api-qer';
+import { ChartDto } from '@imx-modules/imx-api-qer';
 import { ChartTileComponent } from './chart-tile.component';
 import { PointStatVisualService } from './point-stat-visual/point-stat-visual.service';
 
@@ -44,19 +44,19 @@ describe('ChartTileComponent', () => {
     NegateThresholds: false,
     TimeScaleUnit: 0,
     WarningThreshold: 0,
-    Data: []
-  }
+    Data: [],
+  };
 
   beforeEach(() => {
     return MockBuilder(ChartTileComponent)
       .mock(StatisticsChartHandlerService)
       .mock(PointStatVisualService)
-      .beforeCompileComponents(testBed => {
+      .beforeCompileComponents((testBed) => {
         testBed.configureTestingModule({
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
-        })
-      })
-    });
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        });
+      });
+  });
 
   beforeEach(() => {
     fixture = MockRender(ChartTileComponent, {
@@ -64,7 +64,7 @@ describe('ChartTileComponent', () => {
     });
     component = fixture.point.componentInstance;
     fixture.detectChanges();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

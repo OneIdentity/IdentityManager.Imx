@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,33 +35,28 @@ describe('NonRequestableItemsComponent', () => {
   let fixture: ComponentFixture<NonRequestableItemsComponent>;
 
   const mockMatDialogRef = {
-    close: jasmine.createSpy('close')
+    close: jasmine.createSpy('close'),
   };
 
   const dialogData = {
-    nonRequestableProductsForPersons: []
-  }
+    nonRequestableProductsForPersons: [],
+  };
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        NonRequestableItemsComponent
-      ],
-      imports: [
-        MatTableModule,
-      ],
+      declarations: [NonRequestableItemsComponent],
+      imports: [MatTableModule],
       providers: [
         {
           provide: MatDialogRef,
-          useValue: mockMatDialogRef
+          useValue: mockMatDialogRef,
         },
         {
           provide: MAT_DIALOG_DATA,
-          useValue: dialogData
-        }
-      ]
-    })
-      .compileComponents();
+          useValue: dialogData,
+        },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

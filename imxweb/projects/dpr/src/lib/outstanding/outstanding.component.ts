@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,28 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { DependencyToConfirm, OpsupportNamespaces, OpsupportOutstandingTables, OutstandingAction, OutstandingObject } from 'imx-api-dpr';
+import {
+  DependencyToConfirm,
+  OpsupportNamespaces,
+  OpsupportOutstandingTables,
+  OutstandingAction,
+  OutstandingObject,
+} from '@imx-modules/imx-api-dpr';
 import {
   CollectionLoadParameters,
   DisplayColumns,
   EntitySchema,
   IClientProperty,
   ReadOnlyEntity,
+  TypedEntity,
   TypedEntityCollectionData,
   ValType,
-} from 'imx-qbm-dbts';
-import { ConfirmationService, DataSourceToolbarSettings, SnackBarService } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { BusyService, ConfirmationService, DataSourceToolbarSettings, SnackBarService, calculateSidesheetWidth } from 'qbm';
 import { DependenciesComponent } from './dependencies.component';
 import { OutstandingObjectEntity } from './outstanding-object-entity';
 import { OutstandingService } from './outstanding.service';
@@ -56,14 +62,16 @@ export class OutstandingComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
 
   public tabledata: OpsupportOutstandingTables[] = [];
-  public selectedTable: OpsupportOutstandingTables;
+  public selectedTable: OpsupportOutstandingTables | null;
 
   public showHelper = true;
   public bulk = true;
   public selected: OutstandingObjectEntity[] = [];
 
   public schema: EntitySchema;
-  public busyLoadingTable = false;
+
+  public busyService = new BusyService();
+
   public loadingTableData = false;
   public showAllData = false;
   public tableDataCount: number = 0;
@@ -83,10 +91,10 @@ export class OutstandingComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
     private readonly snackbar: SnackBarService,
     private readonly translate: TranslateService,
-    private readonly busyService: EuiLoadingService
+    private readonly busyServiceElemental: EuiLoadingService,
   ) {}
 
-  public busy = false;
+  public busy = true;
 
   public async ngOnInit(): Promise<void> {
     this.busy = true;
@@ -126,17 +134,17 @@ export class OutstandingComponent implements OnInit {
           // remove tables without outstanding objects
           .filter((m) => m.CountOutstanding.value > 0)
           // count outstanding objects
-          .map((table => {
+          .map((table) => {
             this.tableDataCount += table.CountOutstanding.value;
             return table;
-          }));
+          });
       } finally {
         this.loadingTableData = false;
       }
     }
   }
   public async onShowAllData(): Promise<void> {
-    if (this.showAllData && (!!this.selectedTable || this.dstSettings.dataSource.totalCount === 0)) {
+    if (this.showAllData && (!!this.selectedTable || this.dstSettings?.dataSource?.totalCount === 0)) {
       this.confirmationService
         .confirm({
           Title: '#LDS#Heading Show All Outstanding Objects',
@@ -156,8 +164,8 @@ export class OutstandingComponent implements OnInit {
     }
   }
 
-  public selectionChanged(selected: OutstandingObjectEntity[]): void {
-    this.selected = selected;
+  public selectionChanged(selected: TypedEntity[]): void {
+    this.selected = selected as OutstandingObjectEntity[];
   }
 
   public async getData(newState: CollectionLoadParameters): Promise<void> {
@@ -173,24 +181,25 @@ export class OutstandingComponent implements OnInit {
     this.sidesheet.open(SelectedItemsComponent, {
       title: await this.translate.get('#LDS#Heading Selected Items').toPromise(),
       padding: '0',
-      width: 'max(550px, 55%)',
+      width: calculateSidesheetWidth(),
       data: { objects, schema: this.schema },
       testId: 'outstanding-objects-selected-elements-sidesheet',
     });
   }
 
   public async confirmDependencies(action: OutstandingAction): Promise<boolean> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyServiceElemental.overlayRefs.length === 0) {
+      this.busyServiceElemental.show();
+    }
 
     let dependencies: DependencyToConfirm[];
     try {
       dependencies = await this.apiService.getDependencies(
         action,
-        this.selected.map((m) => m.ObjectKey.value)
+        this.selected.map((m) => m.ObjectKey.value),
       );
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyServiceElemental.hide();
     }
 
     // no dependencies? don't show confirmation dialog
@@ -202,7 +211,7 @@ export class OutstandingComponent implements OnInit {
       title: await this.translator.get('#LDS#Heading View Dependencies').toPromise(),
       subTitle: this.selected.length === 1 ? this.selected[0].GetEntity().GetDisplay() : '',
       padding: '0px',
-      width: 'max(600px, 55%)',
+      width: calculateSidesheetWidth(),
       testId: 'outstanding-view-depedencies-sidesheet',
       data: {
         dependencies,
@@ -264,17 +273,16 @@ export class OutstandingComponent implements OnInit {
           Delimiter: ',',
         },
       ],
-      displayedColumns: [this.schema.Columns.Display, this.schema.Columns.LastLogEntry],
+      displayedColumns: [this.schema.Columns.Display, this.schema.Columns?.LastLogEntry],
     };
   }
 
   private async navigate(): Promise<void> {
+    const isBusy = this.busyService.beginBusy();
     try {
-      this.busyLoadingTable = true;
-
       await this.navigateWithoutBusy();
     } finally {
-      this.busyLoadingTable = false;
+      isBusy.endBusy();
     }
   }
 
@@ -289,16 +297,13 @@ export class OutstandingComponent implements OnInit {
       baseObjects = await this.apiService.getOutstandingTable(
         this.selectedTable.TableName.value,
         this.selectedNamespace.Ident_DPRNameSpace.value,
-        this.currentFilterValue
+        this.currentFilterValue,
       );
     } else {
-      baseObjects = await this.apiService.getOutstandingNamespace(
-        this.selectedNamespace.Ident_DPRNameSpace.value,
-        this.currentFilterValue
-      );
+      baseObjects = await this.apiService.getOutstandingNamespace(this.selectedNamespace.Ident_DPRNameSpace.value, this.currentFilterValue);
     }
 
-    const reduce: (input: string[]) => string = (m) => {
+    const reduce: (input: string[] | undefined) => string | null = (m) => {
       if (!m || m.length == 0) return null;
       return m.reduce((p, v) => p + ' ' + v);
     };
@@ -306,7 +311,7 @@ export class OutstandingComponent implements OnInit {
       (obj) =>
         new OutstandingObjectEntity(
           new ReadOnlyEntity(this.dstSettings.entitySchema, {
-            Keys: [obj.ObjectKey],
+            Keys: [obj.ObjectKey ?? ''],
             Columns: {
               ObjectKey: {
                 Value: obj.ObjectKey,
@@ -336,8 +341,8 @@ export class OutstandingComponent implements OnInit {
                 Value: obj.LastMethodRun,
               },
             },
-          })
-        )
+          }),
+        ),
     );
     this.buildDstSettings({
       Data: typedEntities,
@@ -364,17 +369,18 @@ export class OutstandingComponent implements OnInit {
   }
 
   private async process(action: OutstandingAction): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyServiceElemental.overlayRefs.length === 0) {
+      this.busyServiceElemental.show();
+    }
 
     try {
       await this.apiService.processObjects(
         action,
         this.bulk,
-        this.selected.map((k) => k.ObjectKey.value)
+        this.selected.map((k) => k.ObjectKey.value),
       );
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyServiceElemental.hide();
       this.snackbar.open({ key: this.getSnackbarText(action) });
     }
 
@@ -485,7 +491,7 @@ export class OutstandingComponent implements OnInit {
     return { TypeName: 'OutstandingObject', Columns: columns };
   }
 
-  private get selectedNamespaceTitle(): string{
+  public get selectedNamespaceTitle(): string {
     return this.selectedNamespace?.GetEntity()?.GetDisplayLong();
   }
 }

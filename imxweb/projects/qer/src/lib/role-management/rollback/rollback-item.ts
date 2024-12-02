@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,11 @@
  *
  */
 
-import { HistoryComparisonData } from 'imx-api-qer';
-import { TypedEntity, EntitySchema, DisplayColumns, ValType, IReadValue } from 'imx-qbm-dbts';
+import { HistoryComparisonData } from '@imx-modules/imx-api-qer';
+import { TypedEntity, EntitySchema, DisplayColumns, ValType, IReadValue } from '@imx-modules/imx-qbm-dbts';
 
 export type ComparisonItem = HistoryComparisonData & { TypeDisplay?: string };
 export class RollbackItem extends TypedEntity {
-
   public readonly CurrentValueDisplay: IReadValue<string> = this.GetEntityValue('CurrentValueDisplay');
   public readonly HasChanged: IReadValue<boolean> = this.GetEntityValue('HasChanged');
   public readonly ChangeType: IReadValue<string> = this.GetEntityValue('ChangeType');
@@ -38,7 +37,7 @@ export class RollbackItem extends TypedEntity {
   public readonly TableName: IReadValue<string> = this.GetEntityValue('TableName');
   public readonly Id: IReadValue<string> = this.GetEntityValue('Id');
   public readonly TypeDisplay: IReadValue<string> = this.GetEntityValue('TypeDisplay');
-  
+
   public static GetEntitySchema(): EntitySchema {
     const columns = {
       CurrentValueDisplay: {

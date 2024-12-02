@@ -1,5 +1,4 @@
-@import "variables.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   display: flex;
 
@@ -45,13 +44,13 @@
   }
 
   .imx-iconStack eui-icon {
-    color: $black-6;
+    color: $color-gray-60;
   }
 
   .imx-ellipse {
     height: 13px;
     width: 90px;
-    background-color: $Imx_Ellipse_Gray;
+    background-color: $color-gray-10;
     border-radius: 50%;
     display: inline-block;
   }
@@ -59,7 +58,7 @@
   .imx-iconStack-text {
     width: 100%;
     font-size: 16px;
-    color: $black-6;
+    color: $color-gray-60;
     line-height: 4em;
   }
 }

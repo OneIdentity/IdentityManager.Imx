@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { ActivateFactorData, AuthFactors } from 'imx-api-olg';
+import { ActivateFactorData, AuthFactors } from '@imx-modules/imx-api-olg';
 
 export abstract class MfaService {
   public abstract activateFactor(workflowActionId: string, deviceId: string): Promise<ActivateFactorData>;

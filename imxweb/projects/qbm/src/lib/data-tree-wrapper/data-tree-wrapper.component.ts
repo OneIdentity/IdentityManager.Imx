@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, ContentChild, EventEmitter, Input, OnChanges, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { CollectionLoadParameters, EntitySchema, FilterData, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, FilterData, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { FilterTreeParameter } from '../data-source-toolbar/data-model/filter-tree-parameter';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
@@ -58,6 +58,7 @@ export class DataTreeWrapperComponent implements OnChanges {
   @ViewChild('tree') public treeControl: DataTreeComponent;
 
   @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
+  @ContentChild('customDisplay', { static: true }) public customDisplay: TemplateRef<any>;
 
   @Output() public nodeSelected = new EventEmitter<IEntity>();
   @Output() public checkedNodesChanged = new EventEmitter();
@@ -157,10 +158,10 @@ export class DataTreeWrapperComponent implements OnChanges {
    * @param entity entity, for identifying the node
    */
   public deleteNode(entity: IEntity, withDescendants: boolean) {
-    this.treeControl.deleteNode(entity,withDescendants);
+    this.treeControl.deleteNode(entity, withDescendants);
   }
 
-  public getEntityById(id: string): IEntity {
+  public getEntityById(id: string): IEntity | undefined {
     return this.treeControl.getEntityById(id);
   }
 }

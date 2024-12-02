@@ -1,0 +1,68 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+.imx-loginInput {
+  margin: auto 12px;
+
+  input {
+    box-sizing: content-box;
+    margin-bottom: 9px;
+    height: 30px;
+    width: calc(40vw - 6px);
+  }
+  .mat-mdc-card{
+    color: $color-gray-80;
+    flex-direction: row;
+  }
+}
+
+:host {
+  eui-alert{
+    color: $color-gray-80;
+  }
+}
+
+.buttonbar {
+  margin-top: 1.5em;
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+}
+
+.passcode, .pwd-answer {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.eui-dark-theme,
+.eui-contrast-theme {
+  :host {
+    eui-alert {
+      color: $color-gray-0;
+    }
+  }
+  .imx-loginInput {
+    .mat-mdc-card {
+      color: $color-gray-0;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-loginInput {
+        .imx-input-login {
+          background-color: $color-gray-70 !important;
+        }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-loginInput {
+        .imx-input-login {
+          background-color: $color-gray-90 !important;
+        }
+    }
+  }
+}

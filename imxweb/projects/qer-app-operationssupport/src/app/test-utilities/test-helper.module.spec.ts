@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,9 +28,9 @@ import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { TranslateModule, TranslateLoader, TranslateParser, TranslateFakeLoader, TranslateDefaultParser } from '@ngx-translate/core';
 
 @NgModule({
-    exports: [TranslateModule],
-    imports: [TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: TranslateFakeLoader } })],
-    providers: [{ provide: TranslateParser, useClass: TranslateDefaultParser }],
-    schemas: [NO_ERRORS_SCHEMA]
+  exports: [TranslateModule],
+  imports: [TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: TranslateFakeLoader } })],
+  providers: [{ provide: TranslateParser, useClass: TranslateDefaultParser }],
+  schemas: [NO_ERRORS_SCHEMA],
 })
-export class TestHelperModule { }
+export class TestHelperModule {}

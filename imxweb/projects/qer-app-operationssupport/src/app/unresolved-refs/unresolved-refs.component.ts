@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,16 +29,15 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import { DataSourceToolbarSettings } from 'qbm';
-import { DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { UnresolvedRefsService } from './unresolved-refs.service';
 
 @Component({
   selector: 'imx-unresolved-refs-gridview',
   templateUrl: './unresolved-refs.component.html',
-  styleUrls: ['./unresolved-refs.component.scss']
+  styleUrls: ['./unresolved-refs.component.scss'],
 })
 export class UnresolvedRefsComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaRefs: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
@@ -54,7 +53,7 @@ export class UnresolvedRefsComponent implements OnInit {
       this.entitySchemaRefs.Columns.OwnerObject,
       this.entitySchemaRefs.Columns.ShellDisplay,
       this.entitySchemaRefs.Columns.SystemDisplay,
-      this.entitySchemaRefs.Columns.Data
+      this.entitySchemaRefs.Columns.Data,
     ];
   }
 
@@ -67,19 +66,16 @@ export class UnresolvedRefsComponent implements OnInit {
   }
 
   public async getData(): Promise<void> {
-
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
       const journalEntries = await this.unresolvedRefsService.get();
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: journalEntries,
         entitySchema: this.entitySchemaRefs,
-        navigationState: {}
+        navigationState: {},
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }

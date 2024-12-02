@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
 
 export interface RequestHistoryLoadParameters extends CollectionLoadParameters {
   DocumentNumber?: string;
@@ -34,6 +34,7 @@ export interface RequestHistoryLoadParameters extends CollectionLoadParameters {
   ShowMyPending?: string;
   ShowEndingSoon?: string;
   person?: string;
+  MyDelegations?: string;
 }
 
 export interface ArchivedRequestHistoryLoadParameters {

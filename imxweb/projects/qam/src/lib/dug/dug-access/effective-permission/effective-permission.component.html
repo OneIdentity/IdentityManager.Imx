@@ -1,0 +1,50 @@
+<mat-card class="dug-tree-card">
+  <h3>{{ '#LDS#Trustee' | translate }}</h3>
+  <mat-card class="dug-tree-content qam-tree-content">
+    <imx-data-tree
+      [withSelectedNodeHighlight]="true"
+      data-imx-identifier="filter-tree-data-tree"
+      #tree
+      [hideSelection]="true"
+      *ngIf="treeDataBase"
+      [withMultiSelect]="false"
+      [database]="treeDataBase"
+      (nodeSelected)="showDetails($event)"
+    >
+      <ng-template #customDisplay let-node>
+        <div class="imx-trustee-text">
+          <span caption>{{ node.item?.GetDisplay() }}</span>
+          <ng-container *ngIf="node.item?.columns?.TypeDisplay.GetValue() !== ''">
+            <span> (</span>
+            <span italic>{{ node.item?.columns?.TypeDisplay.GetValue() }} </span>
+            <span> )</span>
+          </ng-container>
+        </div>
+      </ng-template>
+    </imx-data-tree>
+  </mat-card>
+</mat-card>
+<div class="effective-permission-content">
+  <h3 class="imx-margin-left-16 imx-margin-top-10 imx-padding-bottom-16">{{ displayedEntity?.GetDisplay() }}</h3>
+  <mat-card class="effective-permission-content-card imx-margin-left-16">
+    <mat-card
+      *ngIf="displayedEntity != null && displayedEntity.GetColumn('HasPermissions').GetValue(); else selectInfo"
+      class="imx-margin-bottom-3"
+    >
+      <mat-card-header> Permissions </mat-card-header>
+      <mat-card-content class="imx-flex-line">
+        <div *ngFor="let perm of permissionColumns" style="flex: 1">
+          <imx-box-icon [isChecked]="displayedEntity.GetColumn(perm.ColumnName ?? '').GetValue()" [display]="perm.Display"></imx-box-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <imx-permission-member [members]="members" [displayedEntity]="displayedEntity"></imx-permission-member>
+  </mat-card>
+</div>
+
+<ng-template #selectInfo>
+  <div class="imx-no-results">
+    <eui-icon size="75px" icon="openfolder"></eui-icon>
+    <p [translate]="displayedEntity ? '#LDS#Please select a sub node' : '#LDS#No item selected'"></p>
+  </div>
+</ng-template>

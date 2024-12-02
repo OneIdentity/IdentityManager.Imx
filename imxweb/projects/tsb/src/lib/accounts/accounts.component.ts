@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,31 +24,39 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiSidesheetService } from '@elemental-ui/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
+import { ViewConfigData } from '@imx-modules/imx-api-qer';
+import { PortalTargetsystemUnsAccount } from '@imx-modules/imx-api-tsb';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DbObjectKey,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 import {
   BusyService,
   ClassloggerService,
   DataSourceToolbarFilter,
-  DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
+  HELP_CONTEXTUAL,
   SettingsService,
   SideNavigationComponent,
-  DataSourceToolbarViewConfig,
-  DataSourceToolbarExportMethod,
-  HELP_CONTEXTUAL,
+  calculateSidesheetWidth,
 } from 'qbm';
 import { ViewConfigService } from 'qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
-import { ViewConfigData } from 'imx-api-qer';
-import { PortalTargetsystemUnsSystem, PortalTargetsystemUnsAccount } from 'imx-api-tsb';
 import { ContainerTreeDatabaseWrapper } from '../container-list/container-tree-database-wrapper';
-import { DataExplorerFiltersComponent } from '../data-filters/data-explorer-filters.component';
 import { DeHelperService } from '../de-helper.service';
 import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet.component';
-import { AccountSidesheetData, GetAccountsOptionalParameters } from './accounts.models';
+import { AccountSidesheetData } from './accounts.models';
 import { AccountsService } from './accounts.service';
 import { TargetSystemReportComponent } from './target-system-report/target-system-report.component';
 
@@ -56,19 +64,9 @@ import { TargetSystemReportComponent } from './target-system-report/target-syste
   selector: 'imx-data-explorer-accounts',
   templateUrl: './accounts.component.html',
   styleUrls: ['./accounts.component.scss'],
+  providers: [DataViewSource],
 })
 export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNavigationComponent {
-  @Input() public applyIssuesFilter = false;
-  @Input() public issuesFilterMode: string;
-  @Input() public targetSystemData?: PortalTargetsystemUnsSystem[];
-
-  @ViewChild('dataExplorerFilters', { static: false }) public dataExplorerFilters: DataExplorerFiltersComponent;
-
-  /**
-   * Settings needed by the DataSourceToolbarComponent
-   */
-
-  public dstSettings: DataSourceToolbarSettings;
   /**
    * Page size, start index, search and filtering options etc.
    */
@@ -96,11 +94,13 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
     private readonly accountsService: AccountsService,
     private readonly dataHelper: DeHelperService,
     private viewConfigService: ViewConfigService,
-    readonly settingsService: SettingsService
+    readonly settingsService: SettingsService,
+    private readonly busyServiceElemental: EuiLoadingService,
+    public dataSource: DataViewSource<PortalTargetsystemUnsAccount>,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaUnsAccount = accountsService.accountSchema;
-    this.authorityDataDeleted$ = this.dataHelper.authorityDataDeleted.subscribe(() => this.navigate());
+    this.authorityDataDeleted$ = this.dataHelper.authorityDataDeleted.subscribe(() => this.dataSource.updateState());
     this.treeDbWrapper = new ContainerTreeDatabaseWrapper(this.busyService, dataHelper);
   }
 
@@ -117,32 +117,35 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
     const isBusy = this.busyService.beginBusy();
 
     try {
-      this.filterOptions = await this.accountsService.getFilterOptions();
       this.dataModel = await this.accountsService.getDataModel();
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
+      const dataViewInitParameters: DataViewInitParameters<PortalTargetsystemUnsAccount> = {
+        execute: (
+          params: CollectionLoadParameters,
+          signal: AbortSignal,
+        ): Promise<TypedEntityCollectionData<PortalTargetsystemUnsAccount>> => this.accountsService.getAccounts(params, signal),
+        schema: this.entitySchemaUnsAccount,
+        columnsToDisplay: this.displayedColumns,
+        dataModel: this.dataModel,
+        exportFunction: this.accountsService.exportAccounts(this.dataSource.state),
+        viewConfig: this.viewConfig,
+        highlightEntity: (identity: PortalTargetsystemUnsAccount) => {
+          this.onAccountChanged(identity);
+        },
+        filterTree: {
+          filterMethode: async (parentkey) => {
+            return this.accountsService.getFilterTree({
+              parentkey,
+              filter: this.dataSource.state().filter,
+            });
+          },
+          multiSelect: false,
+        },
+      };
+      this.dataSource.init(dataViewInitParameters);
     } finally {
       isBusy.endBusy();
     }
-    if (this.applyIssuesFilter && !this.issuesFilterMode) {
-      const orphanedFilter = this.filterOptions.find((f) => {
-        return f.Name === 'orphaned';
-      });
-
-      if (orphanedFilter) {
-        orphanedFilter.InitialValue = '1';
-      }
-    }
-
-    if (this.applyIssuesFilter && this.issuesFilterMode === 'manager') {
-      const managerDiscrepencyFilter = this.filterOptions.find((f) => {
-        return f.Name === 'managerdiscrepancy';
-      });
-
-      if (managerDiscrepencyFilter) {
-        managerDiscrepencyFilter.InitialValue = '1';
-      }
-    }
-    await this.navigate();
   }
 
   public ngOnDestroy(): void {
@@ -154,24 +157,13 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
-  }
-
-  /**
-   * Occurs when the navigation state has changed - e.g. users clicks on the next page button.
-   *
-   */
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.navigationState = newState;
-    }
-    await this.navigate();
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async onAccountChanged(unsAccount: PortalTargetsystemUnsAccount): Promise<void> {
@@ -180,40 +172,22 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
 
     let data: AccountSidesheetData;
 
-    const isBusy = this.busyService.beginBusy();
+    const hideOverlayRef = this.busyServiceElemental.show();
     try {
-      const unsDbObjectKey = DbObjectKey.FromXml(unsAccount.XObjectKey.value);
+      const unsDbObjectKey = DbObjectKey.FromXml(unsAccount.GetEntity().GetColumn('XObjectKey').GetValue());
 
       data = {
-        unsAccountId: unsAccount.UID_UNSAccount.value,
+        unsAccountId: unsAccount.GetEntity().GetColumn('UID_UNSAccount').GetValue(),
         unsDbObjectKey,
         selectedAccount: await this.accountsService.getAccountInteractive(unsDbObjectKey, 'UID_UNSAccount'),
-        uidPerson: unsAccount.UID_Person.value,
+        uidPerson: unsAccount.GetEntity().GetColumn('UID_Person').GetValue(),
         tableName: this.tableName,
       };
     } finally {
-      isBusy.endBusy();
+      this.busyServiceElemental.hide(hideOverlayRef);
     }
 
     await this.viewAccount(data);
-  }
-
-  /**
-   * Occurs when user triggers search.
-   *
-   * @param keywords Search keywords.
-   */
-  public async onSearch(keywords: string): Promise<void> {
-    this.logger.debug(this, `Searching for: ${keywords}`);
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    await this.navigate();
-  }
-
-  public async filterByTree(filters: FilterData[]): Promise<void> {
-    this.navigationState.filter = filters;
-    this.navigationState.StartIndex = 0;
-    return this.navigate();
   }
 
   public async openReportOptionsSidesheet(): Promise<void> {
@@ -221,52 +195,9 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
       title: await this.translateProvider.get('#LDS#Heading Download Target System Report').toPromise(),
       icon: 'download',
       padding: '0px',
-      width: 'max(400px, 40%)',
+      width: calculateSidesheetWidth(700, 0.4),
       testId: 'accounts-report-sidesheet',
     });
-  }
-
-  private async navigate(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    const getParams: GetAccountsOptionalParameters = this.navigationState;
-
-    try {
-      this.logger.debug(this, `Retrieving accounts list`);
-      this.logger.trace('Navigation settings', this.navigationState);
-      const tsUid = this.dataExplorerFilters.selectedTargetSystemUid;
-      const cUid = this.dataExplorerFilters.selectedContainerUid;
-      getParams.system = tsUid ? tsUid : undefined;
-      getParams.container = cUid ? cUid : undefined;
-
-      const data = await this.accountsService.getAccounts(getParams);
-      const exportMethod: DataSourceToolbarExportMethod = this.accountsService.exportAccounts(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
-        entitySchema: this.entitySchemaUnsAccount,
-        navigationState: this.navigationState,
-        filters: this.filterOptions,
-        filterTree: {
-          filterMethode: async (parentkey) => {
-            return this.accountsService.getFilterTree({
-              parentkey,
-              container: getParams.container,
-              system: getParams.system,
-              filter: getParams.filter,
-            });
-          },
-          multiSelect: false,
-        },
-        dataModel: this.dataModel,
-        viewConfig: this.viewConfig,
-        exportMethod,
-      };
-      this.tableName = data.tableName;
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
-    } finally {
-      isBusy.endBusy();
-    }
   }
 
   private async viewAccount(data: AccountSidesheetData): Promise<void> {
@@ -276,14 +207,14 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
       title: await this.translateProvider.get('#LDS#Heading Edit User Account').toPromise(),
       subTitle: data.selectedAccount.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
       icon: 'account',
       testId: 'edit-user-account-sidesheet',
       data,
     });
     sidesheetRef.afterClosed().subscribe((dataRefreshRequired) => {
       if (dataRefreshRequired) {
-        this.navigate();
+        this.dataSource.updateState();
       }
     });
   }

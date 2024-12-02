@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,24 +24,25 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, effect, Input, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService, EuiTopNavigationItem } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { AppConfigService } from '../appConfig/appConfig.service';
-import { AboutComponent } from '../about/About.component';
-import { AuthenticationService } from '../authentication/authentication.service';
-import { ISessionState } from '../session/session-state';
-import { MastHeadService } from './mast-head.service';
-import { ConfirmationService } from '../confirmation/confirmation.service';
-import { SystemInfoService } from '../system-info/system-info.service';
-import { ConnectionComponent } from '../connection/connection.component';
 import { TranslateService } from '@ngx-translate/core';
+import { AboutComponent } from '../about/About.component';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { AuthenticationService } from '../authentication/authentication.service';
+import { calculateSidesheetWidth, isMobile } from '../base/sidesheet-helper';
+import { ConfirmationService } from '../confirmation/confirmation.service';
+import { ConnectionComponent } from '../connection/connection.component';
 import { ExtService } from '../ext/ext.service';
 import { IExtension } from '../ext/extension';
+import { ProcessingQueueService } from '../processing-queue/processing-queue.service';
+import { ISessionState } from '../session/session-state';
+import { SystemInfoService } from '../system-info/system-info.service';
+import { MastHeadService } from './mast-head.service';
 
 /**
  * Masthead of IMX web applications. It can contain dynamic menus or buttons, emitting menus/menu itmes when selected.
@@ -104,10 +105,10 @@ import { IExtension } from '../ext/extension';
 @Component({
   selector: 'imx-mast-head',
   templateUrl: './mast-head.component.html',
-  styleUrls: ['./mast-head.component.scss']
+  styleUrls: ['./mast-head.component.scss'],
 })
 export class MastHeadComponent implements OnDestroy {
-
+  public isQueueFinished: boolean;
   /**
    * When these {@link EuiTopNavigationItem|items} are set, the menu is displayed.
    */
@@ -118,17 +119,16 @@ export class MastHeadComponent implements OnDestroy {
   }
 
   public get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
+    return isMobile();
   }
 
   public get isAuthenticated(): boolean {
-    return this.sessionState?.IsLoggedIn;
+    return this.sessionState?.IsLoggedIn ?? false;
   }
 
   public get isAppOverview(): boolean {
     return this.appConfig?.Config?.WebAppIndex === 'admin' && this.router.url === '/';
   }
-
   public get isAppAdminPortal(): boolean {
     return this.appConfig?.Config?.WebAppIndex === 'admin' && this.router.url === '/dashboard';
   }
@@ -146,6 +146,7 @@ export class MastHeadComponent implements OnDestroy {
     private readonly router: Router,
     private readonly dialog: MatDialog,
     private readonly confirmationService: ConfirmationService,
+    private queueService: ProcessingQueueService,
     private readonly busyService: EuiLoadingService,
     private readonly mastHeadService: MastHeadService,
     private readonly authentication: AuthenticationService,
@@ -153,12 +154,13 @@ export class MastHeadComponent implements OnDestroy {
     private readonly translate: TranslateService,
     private readonly extService: ExtService,
   ) {
-    this.subscriptions.push(this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) =>
-      this.sessionState = sessionState
-    ));
+    effect(() => (this.isQueueFinished = this.queueService.isAllGroupsCompleted()));
+    this.subscriptions.push(
+      this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) => (this.sessionState = sessionState)),
+    );
 
     // apply custom logo from configuration
-    this.systemInfoService.getImxConfig().then(config => {
+    this.systemInfoService.getImxConfig().then((config) => {
       if (config.CompanyLogoUrl) {
         // make relative URL absolute if needed
         this.logoUrl = new URL(config.CompanyLogoUrl, this.appConfig.BaseUrl).href;
@@ -167,15 +169,13 @@ export class MastHeadComponent implements OnDestroy {
       if (name) {
         this.productName = name;
       }
-
     });
 
     this.getDynamicExtensions();
   }
 
-  public getDynamicExtensions(): void{
+  public getDynamicExtensions(): void {
     this.extensions = this.extService.Registry['mastHead'];
-
   }
 
   public showExtension(extension: IExtension): void {
@@ -185,14 +185,14 @@ export class MastHeadComponent implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   /**
    * For navigating home, you know.
    */
   public goHome(): void {
-    if (!this.isAppOverview) this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+    if (!this.isAppOverview) this.router.navigate([this.appConfig.Config.routeConfig?.start], { queryParams: {} });
   }
 
   /**
@@ -208,30 +208,55 @@ export class MastHeadComponent implements OnDestroy {
   public async openConnection(): Promise<void> {
     const data = await this.mastHeadService.getConnectionData(this.appConfig.Config.WebAppIndex);
 
-    await this.sideSheetService.open(ConnectionComponent, {
-      icon: 'rss',
-      title: this.translate.instant('#LDS#Heading Connection Information'),
-      padding: '0px',
-      width: 'max(700px, 60%)',
-      data: data
-    }).afterClosed().toPromise();
+    await this.sideSheetService
+      .open(ConnectionComponent, {
+        icon: 'rss',
+        title: this.translate.instant('#LDS#Heading Connection Information'),
+        padding: '0px',
+        width: calculateSidesheetWidth(),
+        data: data,
+      })
+      .afterClosed()
+      .toPromise();
   }
 
   /**
    * Logs out and kills the session.
    */
   public async logout(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Log Out',
-      Message: '#LDS#Are you sure you want to log out?',
-      identifier: 'confirm-logout-'
-    })) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.busyService.show()));
+    if (
+      this.isQueueFinished &&
+      (await this.confirmationService.confirm({
+        Title: '#LDS#Heading Log Out',
+        Message: '#LDS#Are you sure you want to log out?',
+        identifier: 'confirm-logout-',
+      }))
+    ) {
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
       try {
+        this.queueService.clearProcessing();
         await this.authentication.logout();
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
+      }
+    }
+
+    if (
+      !this.isQueueFinished &&
+      (await this.confirmationService.confirm({
+        Title: '#LDS#Heading Unfinished Processes',
+        Message: '#LDS#There are still background processes that are not completed. Are you sure you want to log out?',
+        identifier: 'confirm-logout-busy-queue',
+      }))
+    ) {
+      this.busyService.show();
+      try {
+        this.queueService.clearProcessing();
+        await this.authentication.logout();
+      } finally {
+        this.busyService.hide();
       }
     }
   }

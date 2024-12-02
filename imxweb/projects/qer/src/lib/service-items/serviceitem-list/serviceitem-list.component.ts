@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,31 @@
  */
 
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
   AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
   OnChanges,
-  SimpleChanges,
-  ViewChild,
   OnDestroy,
   OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
+import { PortalShopCategories, PortalShopServiceitems } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  IWriteValue,
+  MultiValue,
+  TypedEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import {
   buildAdditionalElementsString,
   BusyService,
@@ -49,22 +61,11 @@ import {
   MessageDialogComponent,
   SettingsService,
 } from 'qbm';
-import {
-  CollectionLoadParameters,
-  DisplayColumns,
-  IClientProperty,
-  IWriteValue,
-  ValType,
-  MultiValue,
-  EntitySchema,
-  DataModel,
-} from 'imx-qbm-dbts';
-import { PortalShopCategories, PortalShopServiceitems } from 'imx-api-qer';
 
-import { ServiceItemsService } from '../service-items.service';
-import { ServiceItemInfoComponent } from '../service-item-info/service-item-info.component';
-import { ImageService } from '../../itshop/image.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ImageService } from '../../itshop/image.service';
+import { ServiceItemInfoComponent } from '../service-item-info/service-item-info.component';
+import { ServiceItemsService } from '../service-items.service';
 
 @Component({
   selector: 'imx-serviceitem-list',
@@ -74,21 +75,21 @@ import { TranslateService } from '@ngx-translate/core';
 export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {
   @ViewChild('dst') public dstComponent: DataSourceToolbarComponent;
 
-  @Input() public selectedServiceCategory: PortalShopCategories;
+  @Input() public selectedServiceCategory: PortalShopCategories | null;
   @Input() public keywords: string;
   @Input() public recipients: IWriteValue<string>;
   @Input() public referenceUserUid: string;
   @Input() public uidPersonPeerGroup: string;
   @Input() public dataSourceView = { selected: 'cardlist' };
-  @Input() public itemActions: DataTileMenuItem[];  
+  @Input() public itemActions: DataTileMenuItem[];
   @Input() public patternItemsMode: boolean = false;
 
-  @Output() public selectionChanged = new EventEmitter<PortalShopServiceitems[]>();
-  @Output() public handleAction = new EventEmitter<{ item: PortalShopServiceitems, name: string }>();
-  @Output() public categoryRemoved = new EventEmitter<PortalShopCategories>();
+  @Output() public selectionChanged = new EventEmitter<TypedEntity[]>();
+  @Output() public handleAction = new EventEmitter<{ item: PortalShopServiceitems; name: string }>();
+  @Output() public categoryRemoved = new EventEmitter<PortalShopCategories | null>();
   @Output() public readonly openCategoryTree = new EventEmitter<void>();
 
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
   public displayedColumns: ClientPropertyForTableColumns[];
@@ -103,7 +104,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     getImagePath: async (prod: PortalShopServiceitems): Promise<string> => this.image.getPath(prod),
   };
   public peerGroupSize: number;
-  
+
   public busyService = new BusyService();
 
   public get options(): string[] {
@@ -132,7 +133,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
         ColumnName: 'actions',
         Type: ValType.String,
         afterAdditionals: true,
-        untranslatedDisplay: '#LDS#Actions'
+        untranslatedDisplay: '#LDS#Actions',
       },
     ];
   }
@@ -178,7 +179,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     return this.getData(navigationState);
   }
 
-  public onSelectionChanged(items: PortalShopServiceitems[]): void {
+  public onSelectionChanged(items: TypedEntity[]): void {
     this.selectionChanged.emit(items);
   }
 
@@ -210,10 +211,10 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
           displayedColumns: this.displayedColumns,
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
-          dataModel: this.dataModel
+          dataModel: this.dataModel,
         };
 
-        this.peerGroupSize = data.extendedData?.PeerGroupSize;
+        this.peerGroupSize = data.extendedData?.PeerGroupSize ?? 0;
 
         if (this.peerGroupSize === 0) {
           this.noDataText = '#LDS#Heading Peer Group Is Empty';
@@ -259,7 +260,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   public emitAction(item: DataTileMenuItem, serviceItem?: PortalShopServiceitems): void {
-    this.handleAction.emit({ item: serviceItem ?? item.typedEntity as PortalShopServiceitems, name: item.name });
+    this.handleAction.emit({ item: serviceItem ?? (item.typedEntity as PortalShopServiceitems), name: item.name });
   }
 
   public async onRemoveChip(): Promise<void> {

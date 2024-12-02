@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,42 +24,23 @@
  *
  */
 
-import * as TypeMoq from 'typemoq';
-
-import { Connectors } from './connectors';
-import { Connector } from './connector';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
+import { Connector } from './connector';
+import { Connectors } from './connectors';
 
 describe('Connectors', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
 
   it('should create connectors in each direction', () => {
+    const elem1 = { offsetLeft: 10, offsetWidth: 0, offsetTop: 0, offsetHeight: 0 };
+    const elem2 = { offsetLeft: 50, offsetWidth: 0, offsetTop: 50, offsetHeight: 0 };
+    const elem3 = { offsetLeft: 75, offsetWidth: 0, offsetTop: 25, offsetHeight: 0 };
 
-    const elem1 = TypeMoq.Mock.ofType<HTMLElement>();
-    elem1.setup(e => e.offsetLeft).returns(() => 10);
-    elem1.setup(e => e.offsetWidth).returns(() => 0);
-    elem1.setup(e => e.offsetTop).returns(() => 10);
-    elem1.setup(e => e.offsetHeight).returns(() => 0);
-
-    const elem2 = TypeMoq.Mock.ofType<HTMLElement>();
-    elem2.setup(e => e.offsetLeft).returns(() => 50);
-    elem2.setup(e => e.offsetWidth).returns(() => 0);
-    elem2.setup(e => e.offsetTop).returns(() => 50);
-    elem2.setup(e => e.offsetHeight).returns(() => 0);
-
-    const elem3 = TypeMoq.Mock.ofType<HTMLElement>();
-    elem3.setup(e => e.offsetLeft).returns(() => 75);
-    elem3.setup(e => e.offsetWidth).returns(() => 0);
-    elem3.setup(e => e.offsetTop).returns(() => 25);
-    elem3.setup(e => e.offsetHeight).returns(() => 0);
-
-
-    const html1 = elem1.object;
-    const html2 = elem2.object;
-    const html3 = elem3.object;
+    const html1 = elem1 as unknown as HTMLElement;
+    const html2 = elem2 as unknown as HTMLElement;
+    const html3 = elem3 as unknown as HTMLElement;
 
     const conn1 = new Connector(html1, html2);
     const conn2 = new Connector(html1, html1);
@@ -75,5 +56,4 @@ describe('Connectors', () => {
       expect(connectors.maxValue.Y).toBe(50);
     }).not.toThrowError();
   });
-
 });

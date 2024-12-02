@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { AppConfigService } from 'qbm';
 import { PermissionsService } from '../admin/permissions.service';
@@ -33,17 +33,17 @@ import { PermissionsService } from '../admin/permissions.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AttestationPoliciesGuardService implements CanActivate {
+export class AttestationPoliciesGuardService {
   constructor(
     private readonly permissionService: PermissionsService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   public async canActivate(): Promise<boolean> {
     const userCanSeeAttestationPolicies = await this.permissionService.canSeeAttestationPolicies();
     if (!userCanSeeAttestationPolicies) {
-      this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+      this.router.navigate([this.appConfig.Config.routeConfig?.start], { queryParams: {} });
       return false;
     }
     return userCanSeeAttestationPolicies;

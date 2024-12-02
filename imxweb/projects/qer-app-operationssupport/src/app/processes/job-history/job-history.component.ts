@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,13 +27,21 @@
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
+import { OpsupportQueueJobhistory } from '@imx-modules/imx-api-qbm';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { OpsupportQueueJobhistory } from 'imx-api-qbm';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, SettingsService } from 'qbm';
-import { JobHistoryService } from './job-history.service';
+import { DataSourceToolbarSettings, SettingsService, calculateSidesheetWidth } from 'qbm';
 import { ErrorMessageSidesheetComponent } from '../error-message-sidesheet/error-message-sidesheet.component';
 import { SingleFrozenJobComponent } from '../frozen-jobs/single-frozen-job.component';
+import { JobHistoryService } from './job-history.service';
 
 @Component({
   selector: 'imx-job-history',
@@ -54,7 +62,7 @@ export class JobHistoryComponent implements OnInit {
     private readonly settingsService: SettingsService,
     private busyService: EuiLoadingService,
     private readonly translate: TranslateService,
-    private readonly sidesheet: EuiSidesheetService
+    private readonly sidesheet: EuiSidesheetService,
   ) {
     this.entitySchema = jobHistory.EntitySchema;
     this.displayedColumns = [
@@ -111,7 +119,7 @@ export class JobHistoryComponent implements OnInit {
         title: await this.translate.get('#LDS#Heading View Message').toPromise(),
         subTitle: item.GetEntity().GetDisplay(),
         padding: '0',
-        width: 'max(60%,600px)',
+        width: calculateSidesheetWidth(),
         testId: 'error-message-sidesheet',
         data: item.ErrorMessages.value,
       })
@@ -119,14 +127,15 @@ export class JobHistoryComponent implements OnInit {
       .toPromise();
   }
 
-  public async viewDetails(job: OpsupportQueueJobhistory): Promise<void> {
+  public async viewDetails(job: TypedEntity): Promise<void> {
     const opts: EuiSidesheetConfig = {
       title: await this.translate.get('#LDS#Heading View Process Details').toPromise(),
+      subTitle: job.GetEntity().GetDisplay(),
       padding: '1em',
-      width: 'max(800px,80%)',
+      width: calculateSidesheetWidth(1100, 0.7),
       icon: 'reboot',
       data: {
-        UID_Tree: job.UID_Tree.value,
+        UID_Tree: job.GetEntity().GetColumn('UID_Tree').GetValue(),
         disableRefresh: true,
         load: (startId: string) => {
           return this.jobHistory.get({ filter: [{ ColumnName: 'UID_Tree', Value1: startId }] });

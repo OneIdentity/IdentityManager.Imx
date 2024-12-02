@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,16 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { HttpHeaders } from '@angular/common/http';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { EuiDownloadOptions, EuiSelectOption, EuiTheme, EUI_SIDESHEET_DATA, EuiSelectFeedbackMessages } from '@elemental-ui/core';
-import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
-import { ElementalUiConfigService } from '../configuration/elemental-ui-config.service';
-import { AppConfigService } from '../appConfig/appConfig.service';
-import { DSTExportState, ExportColumnsService, FilteredColumnOption } from './export-columns.service';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiSelectFeedbackMessages, EuiSelectOption, EuiTheme } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { ElementalUiConfigService } from '../configuration/elemental-ui-config.service';
+import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { DSTExportState, ExportColumnsService, FilteredColumnOption } from './export-columns.service';
 
 @Component({
   selector: 'imx-data-export',
@@ -50,44 +51,52 @@ export class DataExportComponent implements OnInit, OnDestroy {
     @Inject(EUI_SIDESHEET_DATA) public readonly settings: DataSourceToolbarSettings,
     private readonly config: AppConfigService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
-    private readonly translateService: TranslateService
-    ) {
-      this.feedbackMessages = {
-        ...this.feedbackMessages,
-        clear: this.translateService.instant('#LDS#Clear'),
-        search :this.translateService.instant('#LDS#Search'),
-      }
-    }
+    private readonly translateService: TranslateService,
+  ) {
+    this.feedbackMessages = {
+      ...this.feedbackMessages,
+      clear: this.translateService.instant('#LDS#Clear'),
+      search: this.translateService.instant('#LDS#Search'),
+    };
+  }
 
   public get controlsCount(): number {
-    return this.state?.columns.length;
+    return this.state?.columns?.length ?? 0;
   }
 
   public get uniqueControlsCount(): number {
-    return new Set(this.state?.columns.map(column => column.value)).size;
+    return new Set(this.state?.columns?.map((column) => column.value)).size;
   }
 
   public get canAddMore(): boolean {
-    return this.controlsCount < this.state?.columnOptions.length;
+    return this.controlsCount < (this.state?.columnOptions?.length ?? 0);
   }
 
   public get canExport(): boolean {
-    return this.controlsCount > 0 &&
-      this.state?.columns.map(control => control.valid).every(value => value) &&
-      this.uniqueControlsCount === this.controlsCount;
+    return (
+      this.controlsCount > 0 &&
+      (this.state?.columns?.map((control) => control.valid)?.every((value) => value) ?? false) &&
+      this.uniqueControlsCount === this.controlsCount
+    );
   }
 
   public get currentDataCount(): number {
-    return this.settings.dataSource.Data.length;
+    return this.settings.dataSource?.Data.length ?? 0;
   }
 
   public get allDataCount(): number {
-    return this.settings.dataSource.totalCount;
+    return this.settings.dataSource?.totalCount ?? 0;
   }
 
   public get theme(): string {
     const bodyClasses = document.body.classList;
-    return bodyClasses.contains(EuiTheme.LIGHT) ? EuiTheme.LIGHT : (bodyClasses.contains(EuiTheme.DARK) ? EuiTheme.DARK : (bodyClasses.contains(EuiTheme.CONTRAST) ? EuiTheme.CONTRAST : ''));
+    return bodyClasses.contains(EuiTheme.LIGHT)
+      ? EuiTheme.LIGHT
+      : bodyClasses.contains(EuiTheme.DARK)
+        ? EuiTheme.DARK
+        : bodyClasses.contains(EuiTheme.CONTRAST)
+          ? EuiTheme.CONTRAST
+          : '';
   }
 
   public ngOnInit(): void {
@@ -105,61 +114,65 @@ export class DataExportComponent implements OnInit, OnDestroy {
   public setDownloadOptions(): void {
     this.downloadOptions = {
       ...this.elementalUiConfigService.Config.downloadOptions,
-      fileMimeType: this.state.selectedExport.value,
+      fileMimeType: this.state?.selectedExport?.value,
       requestOptions: {
-        headers: {
-          'Accept': this.state.selectedExport.value
-        },
-        withCredentials: true
+        headers: new HttpHeaders({ Accept: this.state.selectedExport?.value }),
+        withCredentials: true,
       },
-    }
+      url: '',
+    };
   }
 
   // Update the request url
   public setUrl(): void {
-    const withProperties = '-' + this.state.columns.map(column => column.value).join(',');
-     const method = this.settings.exportMethod.getMethod(withProperties, this.state.isAllData ? this.allDataCount : null);
+    const withProperties = '-' + this.state.columns?.map((column) => column.value).join(',');
+    const method = this.settings?.exportMethod?.getMethod(withProperties, this.state.isAllData ? this.allDataCount : 0);
     this.downloadOptions = {
       ...this.downloadOptions,
-      url: this.config.BaseUrl + method.path
+      url: this.config.BaseUrl + (method?.path ?? ''),
     };
     this.updateFilteredColumnOptions();
   }
 
   // Calculate all valid options for all select (remove selected ones)
-  public updateFilteredColumnOptions():void{
-    this.filteredColumnOptions = this.state.columns.map(
-      form => (
-        {
-          value: form.value,
-          options: this.state.columnOptions.filter(option => !this.state.columns.filter(columnForm => columnForm.value !== form.value).map(columnForm => columnForm.value).includes(option.value))
-        }
-      )
-    );
+  public updateFilteredColumnOptions(): void {
+    this.filteredColumnOptions =
+      this.state.columns?.map((form) => ({
+        value: form.value,
+        options:
+          this.state.columnOptions?.filter(
+            (option) =>
+              !this.state.columns
+                ?.filter((columnForm) => columnForm.value !== form.value)
+                .map((columnForm) => columnForm.value)
+                .includes(option.value),
+          ) ?? [],
+      })) ?? [];
   }
 
   // Return all available options
-  public getFilteredOptions(value:string): EuiSelectOption[]{
-    return this.filteredColumnOptions.filter(columnOption => columnOption.value === value)[0]?.options;
+  public getFilteredOptions(value: string): EuiSelectOption[] {
+    return this.filteredColumnOptions.filter((columnOption) => columnOption.value === value)[0]?.options;
   }
 
   // Drag & drop order of columns
   public drop(event: CdkDragDrop<FormControl[]>): void {
+    if (!this.state.columns) {
+      return;
+    }
     moveItemInArray(this.state.columns, event.previousIndex, event.currentIndex);
     this.setUrl();
   }
 
   // Remove a column from the export list
   public deleteColumn(ind: number): void {
-    this.state.columns.splice(ind, 1);
+    this.state.columns?.splice(ind, 1);
     this.setUrl();
   }
 
   // Add a column to the export list
   public addNewColumn(value?: EuiSelectOption): void {
-    this.state.columns.push(
-      this.columnExportService.createColumn(value)
-    );
+    this.state.columns?.push(this.columnExportService.createColumn(value));
     this.updateFilteredColumnOptions();
   }
 
@@ -169,11 +182,12 @@ export class DataExportComponent implements OnInit, OnDestroy {
       ...this.downloadOptions,
       fileMimeType: type.value,
       requestOptions: {
-        headers: {
-          accept: type.value
-        },
-        withCredentials: true
-      }
+        headers: new HttpHeaders({ Accept: type.value }),
+        withCredentials: true,
+      },
     };
   }
+
+  public LdsKey =
+    '#LDS#Here you can export data. Select all columns whose contents you want to export. Additionally, you can change the order using drag and drop. Move the mouse pointer over the corresponding area on the left and drag the element to the desired location.';
 }

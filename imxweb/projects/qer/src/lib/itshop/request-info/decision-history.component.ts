@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { EntityData } from 'imx-qbm-dbts';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { EntityData } from '@imx-modules/imx-qbm-dbts';
 import { DecisionHistoryService } from '../decision-history.service';
 
 import { ApproverContainer } from './approver-container';
@@ -34,20 +34,18 @@ import { WorkflowHistoryItemWrapper } from './workflow-history-item-wrapper';
 @Component({
   selector: 'imx-decision-history',
   templateUrl: './decision-history.component.html',
-  styleUrls: ['./decision-history.component.scss']
+  styleUrls: ['./decision-history.component.scss'],
 })
 export class DecisionHistoryComponent implements OnChanges {
   @Input() public approverContainer: ApproverContainer;
   @Input() public workflow: WorkflowHistoryItemWrapper[];
 
-  public approverNow:{ display: string; data: EntityData[] }[] = [];
-  public approverFuture:{ display: string; data: EntityData[] }[] = [];
-  constructor(
-    public readonly decisionHistory: DecisionHistoryService
-  ) { }
+  public approverNow: { display: string; data: EntityData[] }[] = [];
+  public approverFuture: { display: string; data: EntityData[] }[] = [];
+  constructor(public readonly decisionHistory: DecisionHistoryService) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if(changes.approverContainer){
+    if (changes.approverContainer) {
       this.approverFuture = this.approverContainer?.getApproverSortedByStep();
       this.approverNow = this.approverContainer?.getApproverSortedByStep(false);
     }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,31 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ActivatedRoute, Params } from '@angular/router';
-import { CollectionLoadParameters, EntitySchema, TypedEntity, ValType } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 
-import { PortalRules } from 'imx-api-cpl';
-import { ViewConfigData } from 'imx-api-qer';
+import { PortalRules } from '@imx-modules/imx-api-cpl';
+import { ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
   BusyService,
+  calculateSidesheetWidth,
   ClassloggerService,
-  DataModelWrapper,
   DataSourceToolbarFilter,
-  DataSourceToolbarSettings,
   DataSourceToolbarViewConfig,
-  DataSourceWrapper,
-  DataTableComponent,
   DataTableGroupedData,
+  DataViewInitParameters,
+  DataViewSource,
 } from 'qbm';
 import { ViewConfigService } from 'qer';
 import { Subscription } from 'rxjs';
@@ -63,18 +69,16 @@ import { RulesViolationsService } from './rules-violations.service';
   selector: 'imx-rules-violations',
   templateUrl: './rules-violations.component.html',
   styleUrls: ['./rules-violations.component.scss'],
+  providers: [DataViewSource],
 })
 export class RulesViolationsComponent implements OnInit, OnDestroy {
   @Input() public isMControlPerViolation: boolean;
-  public dataModelWrapper: DataModelWrapper;
-  public dstWrapper: DataSourceWrapper<RulesViolationsApproval>;
-  public dstSettings: DataSourceToolbarSettings;
+  public dataModel: DataModel;
   public selectedRulesViolations: RulesViolationsApproval[] = [];
   public groupedData: { [key: string]: DataTableGroupedData } = {};
   public entitySchema: EntitySchema;
   public busyService = new BusyService();
-
-  @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
+  public displayedColumns: IClientProperty[];
 
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'rules/violations';
@@ -89,49 +93,36 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
     private readonly translate: TranslateService,
     private readonly logger: ClassloggerService,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly elementalBusyService: EuiLoadingService
+    private readonly elementalBusyService: EuiLoadingService,
+    public dataSource: DataViewSource<RulesViolationsApproval>,
   ) {
     this.subscriptions.push(
       this.actionService.applied.subscribe(async () => {
-        this.getData();
-        this.table.clearSelection();
-      })
+        this.dataSource.selection.clear();
+        this.dataSource.updateState();
+      }),
     );
   }
 
   public async ngOnInit(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      const entitySchema = this.rulesViolationsService.rulesViolationsApproveSchema;
-      this.entitySchema = entitySchema;
+      this.entitySchema = this.rulesViolationsService.rulesViolationsApproveSchema;
       // If this wasn't already set, then we need to get it from the config
       this.isMControlPerViolation ??= (await this.rulesViolationsService.featureConfig()).MitigatingControlsPerViolation;
-
-      this.dataModelWrapper = {
-        dataModel: await this.rulesViolationsService.getDataModel(),
-        getGroupInfo: (parameters) => this.rulesViolationsService.getGroupInfo(parameters),
-        groupingFilterOptions: ['state'],
-      };
-      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModelWrapper.dataModel, this.viewConfigPath);
-
-      this.dstWrapper = new DataSourceWrapper(
-        (state) => this.rulesViolationsService.getRulesViolationsApprove(state),
-        [
-          entitySchema.Columns.UID_Person,
-          entitySchema.Columns.UID_NonCompliance,
-          entitySchema.Columns.State,
-          entitySchema.Columns.RiskIndexCalculated,
-          entitySchema.Columns.RiskIndexReduced,
-          {
-            ColumnName: 'decision',
-            Type: ValType.String,
-            afterAdditionals: true,
-            untranslatedDisplay: '#LDS#Approval decision',
-          },
-        ],
-        entitySchema,
-        this.dataModelWrapper
-      );
+      this.dataModel = await this.rulesViolationsService.getDataModel();
+      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
+      this.displayedColumns = [
+        this.entitySchema.Columns.UID_Person,
+        this.entitySchema.Columns.UID_NonCompliance,
+        this.entitySchema.Columns.State,
+        this.entitySchema.Columns.RiskIndexCalculated,
+        this.entitySchema.Columns.RiskIndexReduced,
+        {
+          ColumnName: 'decision',
+          Type: ValType.String,
+        },
+      ];
 
       this.subscriptions.push(this.activatedRoute.queryParams.subscribe((params) => this.updateFiltersFromRouteParams(params)));
     } finally {
@@ -147,24 +138,32 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(parameter);
-      this.dstSettings.exportMethod = this.rulesViolationsService.exportRulesViolations(parameter);
-      this.dstSettings.viewConfig = this.viewConfig;
-    } finally {
-      isBusy.endBusy();
-    }
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<RulesViolationsApproval> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<RulesViolationsApproval>> =>
+        this.rulesViolationsService.getRulesViolationsApprove(params, signal),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      groupExecute: (column: string, params: CollectionLoadParameters, signal: AbortSignal) =>
+        this.rulesViolationsService.getGroupInfo({ ...params, by: column }),
+      exportFunction: this.rulesViolationsService.exportRulesViolations(this.dataSource.state()),
+      viewConfig: this.viewConfig,
+      highlightEntity: (entity: RulesViolationsApproval) => {
+        this.viewDetails(entity);
+      },
+      selectionChange: (selection: RulesViolationsApproval[]) => this.onSelectionChanged(selection),
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public onSelectionChanged(items: RulesViolationsApproval[]): void {
@@ -176,7 +175,8 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
    * Opens the {@link RulesViolationsDetailsComponent} sidesheet thats shows some informations of the selected rules violation.
    * @param selectedRulesViolation the selected {@link RulesViolationsApproval}
    */
-  public async viewDetails(selectedRulesViolation: RulesViolationsApproval): Promise<void> {
+  public async viewDetails(entity: RulesViolationsApproval): Promise<void> {
+    const selectedRulesViolation = entity;
     let complianceRule: PortalRules;
     this.elementalBusyService.show();
 
@@ -196,7 +196,7 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
         padding: '0px',
         panelClass: 'imx-sidesheet',
         disableClose: this.isMControlPerViolation,
-        width: 'max(1200px, 80%)',
+        width: calculateSidesheetWidth(1200, 0.7),
         testId: 'rules-violations-details-sidesheet',
         data: {
           selectedRulesViolation,
@@ -208,61 +208,27 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
       .toPromise();
 
     if (result) {
-      this.getData();
-    }
-  }
-
-  public async onGroupingChange(groupKey: string): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-
-    try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.rulesViolationsService.getRulesViolationsApprove(groupedData.navigationState);
-      groupedData.settings = {
-        displayedColumns: this.dstSettings.displayedColumns,
-        dataModel: this.dstSettings.dataModel,
-        dataSource: groupedData.data,
-        entitySchema: this.dstSettings.entitySchema,
-        navigationState: groupedData.navigationState,
-      };
-    } finally {
-      isBusy.endBusy();
+      this.dataSource.updateState();
     }
   }
 
   private updateFiltersFromRouteParams(params: Params): void {
-    if (this.viewConfigService.isDefaultConfigSet()) {
-      // If we have a default config, we won't set our filters
-      return;
-    }
-    let foundMatchingParam = false;
     for (const [key, value] of Object.entries(params)) {
-      if (this.tryApplyFilter(key, value)) {
-        foundMatchingParam = true;
-      }
-    }
-
-    if (!foundMatchingParam) {
-      this.applyDefaultFiltering();
+      this.tryApplyFilter(key, value);
     }
   }
 
-  private applyDefaultFiltering(): void {
-    this.tryApplyFilter('state', 'pending');
-  }
-
-  private tryApplyFilter(name: string, value: string): boolean {
-    const index = this.dataModelWrapper.dataModel.Filters.findIndex((elem) => elem.Name.toLowerCase() === name.toLowerCase());
+  private tryApplyFilter(name: string, value: string): void {
+    let filterOptions: DataSourceToolbarFilter[] = this.dataModel?.Filters || [];
+    const index = filterOptions.findIndex((elem) => elem.Name?.toLowerCase() === name.toLowerCase());
 
     if (index > -1) {
-      const filter = this.dataModelWrapper.dataModel.Filters[index] as DataSourceToolbarFilter;
+      const filter = filterOptions[index];
       if (filter) {
         filter.InitialValue = value;
         filter.CurrentValue = value;
-        return true;
+        this.dataSource.state.update((state) => ({ ...state, [name.toLowerCase()]: value }));
       }
     }
-
-    return false;
   }
 }

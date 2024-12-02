@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 .data-explorer {
   &.data-explorer--identities {
     &.identities--fullscreen {
@@ -14,16 +14,9 @@
     }
   }
 }
-
-.data-explorer-bottom-button-row {
-  @include imx-button-bar();
-}
-
-.hidden {
-  display: none;
-}
-::ng-deep{
-  imx-report-button, imx-report-button-ext{
+::ng-deep {
+  imx-report-button,
+  imx-report-button-ext {
     display: none;
   }
 }

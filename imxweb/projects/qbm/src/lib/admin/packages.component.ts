@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,26 @@
  *
  */
 
-import { Component, OnInit, Input } from "@angular/core";
-import { PackageInfo } from "imx-api-qbm";
-import { AppConfigService } from "../appConfig/appConfig.service";
-import { imx_SessionService } from "../session/imx-session.service";
-import { SideNavigationComponent } from "../side-navigation-view/side-navigation-view-interfaces";
+import { Component, Input, OnInit } from '@angular/core';
+import { PackageInfo } from '@imx-modules/imx-api-qbm';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { imx_SessionService } from '../session/imx-session.service';
+import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
 
 type ExtendedPackageInfo = PackageInfo & { App?: string };
 
 @Component({
   templateUrl: './packages.component.html',
   selector: 'imx-packages',
-  styleUrls: ['./packages.component.scss']
+  styleUrls: ['./packages.component.scss'],
 })
 export class PackagesComponent implements OnInit, SideNavigationComponent {
   @Input() public isAdmin: boolean;
 
-  constructor(private readonly session: imx_SessionService,
-    private readonly appConfigService: AppConfigService) {
-  }
+  constructor(
+    private readonly session: imx_SessionService,
+    private readonly appConfigService: AppConfigService,
+  ) {}
 
   public busy = true;
   public displayedColumns: string[] = ['Name', 'App', 'RelativePath', 'LastChangeDate', 'Fingerprint'];
@@ -53,13 +54,11 @@ export class PackagesComponent implements OnInit, SideNavigationComponent {
       this.packages = await this.session.Client.admin_packages_get();
       const apps = await this.session.Client.imx_applications_get();
       for (var p of this.packages) {
-        p.Fingerprint = p.Fingerprint.substring(0, 8);
+        p.Fingerprint = p.Fingerprint?.substring(0, 8);
 
-        var app = apps.filter(a => a.Name == p.Name);
-        if (app.length > 0)
-          p.App = app[0].DisplayName;
+        var app = apps.filter((a) => a.Name == p.Name);
+        if (app.length > 0) p.App = app[0].DisplayName;
       }
-
     } finally {
       this.busy = false;
     }

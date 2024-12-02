@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { PortalAttestationRun } from '@imx-modules/imx-api-att';
 import { TranslateService } from '@ngx-translate/core';
 import { bar, Chart, ChartOptions } from 'billboard.js';
-import { PortalAttestationRun } from 'imx-api-att';
-import { Subscription, fromEvent } from 'rxjs';
+import { fromEvent, Subscription } from 'rxjs';
 
 @Component({
   selector: 'imx-case-chart',
@@ -38,7 +38,7 @@ import { Subscription, fromEvent } from 'rxjs';
 export class CaseChartComponent implements OnInit, OnDestroy {
   @Input() public run: PortalAttestationRun;
 
-  public chartData: ChartOptions;
+  public chartData: ChartOptions | undefined;
 
   private chart: Chart;
   private subscriptions$: Subscription[] = [];
@@ -60,7 +60,7 @@ export class CaseChartComponent implements OnInit, OnDestroy {
             width: this.chartWrapper?.nativeElement.offsetWidth,
           });
         }
-      })
+      }),
     );
   }
 
@@ -76,7 +76,7 @@ export class CaseChartComponent implements OnInit, OnDestroy {
     });
   }
 
-  private buildSingleValueChart(): ChartOptions {
+  private buildSingleValueChart(): ChartOptions | undefined {
     if (
       this.run.PendingCases.value === 0 &&
       this.run.GrantedCases.value === 0 &&

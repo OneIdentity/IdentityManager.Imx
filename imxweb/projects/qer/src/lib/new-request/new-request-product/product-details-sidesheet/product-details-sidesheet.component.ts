@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,15 @@
  *
  */
 
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { Router } from '@angular/router';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalServiceitems, QerProjectConfig } from 'imx-api-qer';
+import { PortalServiceitems, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { TranslateService } from '@ngx-translate/core';
+import { LdsReplacePipe, SnackBarService } from 'qbm';
+import { NEW_REQUEST_ROUTE } from '../../constants';
 
 @Component({
   selector: 'imx-product-details-sidesheet',
@@ -37,16 +42,20 @@ import { PortalServiceitems, QerProjectConfig } from 'imx-api-qer';
 export class ProductDetailsSidesheetComponent implements OnInit {
   public hasEntitlements: boolean;
   public onEntitlements = false;
+
   /**
    * A list of AccProduct properties, that can be customized in the Admin Portal:
    * ServerConfig/ITShopConfig/AccProductProperties
    */
   protected accProductProperties: string[] = [];
 
-  /** A list of properties, that cannot be customized in the Admin Portal */
+  /** A list of properties, that cannot be customized in the Admin Portal. */
   protected fixedProductProperties = ['ServiceCategoryFullPath', 'TableName', 'Tags'];
 
-  /** A mapping between properties/columns and a css class to visualize the property value */
+  protected ldsEntitlementInfo =
+    '#LDS#Here you can get an overview of the entitlements associated with the product. If you request the product, the recipient will get the listed entitlements.';
+
+  /** A mapping between properties/columns and a css class to visualize the property value. */
   private cssPropertyMapping = new Map<string, string>([
     ['ServiceCategoryFullPath', 'link'],
     ['TableName', 'bold'],
@@ -64,7 +73,12 @@ export class ProductDetailsSidesheetComponent implements OnInit {
       } | null;
       imageUrl: string;
       projectConfig: QerProjectConfig;
-    }
+    },
+    private snackbar: SnackBarService,
+    private translate: TranslateService,
+    private ldsReplace: LdsReplacePipe,
+    private clipboard: Clipboard,
+    private route: Router,
   ) {}
 
   public ngOnInit(): void {
@@ -95,5 +109,33 @@ export class ProductDetailsSidesheetComponent implements OnInit {
   private getValue(column: string): string {
     const value: string = this.data.item.GetEntity().GetColumn(column).GetValue();
     return value;
+  }
+
+  /**
+   * Display a snackbar with copied url to clipboard
+   */
+  public copyUrl(): void {
+    const url = this.createUrl();
+    this.clipboard.copy(url);
+    this.snackbar.open(
+      {
+        key: this.ldsReplace.transform(this.translate.instant('#LDS#The following product URL has been successfully copied to your clipboard: {0}'), url),
+      },
+      '#LDS#Close',
+      { duration: 3000 },
+    );
+  }
+
+  /**
+   * Uses the window location and module route head to get the platform origin, combines that with the relative serialized url from the router
+   */
+  private createUrl(): string {
+    const domain = window.location.href.split('/' + NEW_REQUEST_ROUTE)[0];
+    const tree = this.route.parseUrl(this.route.url);
+    tree.queryParams = {
+      ...tree.queryParams,
+      serviceItem: this.data.item.GetEntity().GetKeys().join(','),
+    };
+    return [domain, this.route.serializeUrl(tree)].join('');
   }
 }

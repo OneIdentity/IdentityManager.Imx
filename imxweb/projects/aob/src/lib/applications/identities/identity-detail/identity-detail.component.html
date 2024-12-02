@@ -1,21 +1,28 @@
-<imx-data-source-toolbar #dst
-  data-imx-identifier="identity-detail-dst"
-  [options]="['search']"
-  [settings]="dstSettings"
-  (search)="onSearch($event)"
-  (navigationStateChanged)="onNavigationStateChanged($event)">
-</imx-data-source-toolbar>
-<imx-data-table data-imx-identifier="identity-detail-data-table" [dst]="dst" [detailViewVisible]="false" mode="manual">
-  <imx-data-table-column data-imx-identifier="identity-detail-column-default-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"></imx-data-table-column>
-  <imx-data-table-column data-imx-identifier="identity-detail-column-order-state" [entityColumn]="entitySchema?.Columns['OrderState']"></imx-data-table-column>
-  <imx-data-table-column data-imx-identifier="identity-detail-column-valid-until" [entityColumn]="entitySchema?.Columns['ValidUntil']" columnLabel="">
-    <ng-template let-item>
+<imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+<imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+  <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+    <th mat-header-cell *matHeaderCellDef>
+      {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+    </th>
+    <td mat-cell *matCellDef="let item" role="gridcell">
+      <span>{{ item.GetEntity().GetDisplay() }}</span>
+    </td>
+  </ng-container>
+  <ng-container [matColumnDef]="entitySchema.Columns.OrderState.ColumnName">
+    <th mat-header-cell *matHeaderCellDef>{{ entitySchema.Columns.OrderState.Display }}</th>
+    <td mat-cell *matCellDef="let item" role="gridcell">
+      <div>{{ item.OrderState?.Column.GetDisplayValue() }}</div>
+    </td>
+  </ng-container>
+  <ng-container [matColumnDef]="entitySchema.Columns.ValidUntil.ColumnName">
+    <th mat-header-cell *matHeaderCellDef>{{ entitySchema.Columns.ValidUntil.Display }}</th>
+    <td mat-cell *matCellDef="let item" role="gridcell">
       <div *ngIf="item.ValidUntil.value" class="imx-badge-container">
         <eui-badge>
           {{ translateProvider.GetColumnDisplay('ValidUntil', entitySchema) + ': ' + (item.ValidUntil.value | shortDate) }}
         </eui-badge>
       </div>
-    </ng-template>
-  </imx-data-table-column>
-</imx-data-table>
-<imx-data-source-paginator data-imx-identifier="identity-detail-paginator" [dst]="dst"></imx-data-source-paginator>
+    </td>
+  </ng-container>
+</imx-data-view-auto-table>
+<imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>

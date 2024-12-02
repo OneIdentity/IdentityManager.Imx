@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,16 @@
 
 import { Component, Inject } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { PersonForProduct, ShelfObject, ShelfSelectionObject } from './shelf-selection-sidesheet.model';
 
 @Component({
   selector: 'imx-shelf-selection',
   templateUrl: './shelf-selection.component.html',
-  styleUrls: ['./shelf-selection.component.scss']
+  styleUrls: ['./shelf-selection.component.scss'],
 })
 export class ShelfSelectionComponent {
-
   public showHelperAlert = true;
-
 
   public shelfSelectionObjects: ShelfSelectionObject[] = [];
   public formGroup: UntypedFormGroup;
@@ -46,16 +44,17 @@ export class ShelfSelectionComponent {
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: ShelfSelectionObject[],
-    public readonly sideSheetRef: EuiSidesheetRef) {
+    public readonly sideSheetRef: EuiSidesheetRef,
+  ) {
     this.setup();
   }
 
   public optionSelected(uidItShopOrg: string, uidAccproduct: string): void {
     const group = this.formGroup.get(uidAccproduct) as UntypedFormGroup;
-    const persons = this.shelfSelectionObjects.find(elem => elem.uidAccproduct === uidAccproduct);
-    persons.personsForProduct.forEach(person => {
-      const control = group.get(person.uidPerson);
-      if (control?.value === '' && person.shelfsObjects.some(shelf => shelf.uidItShopOrg === uidItShopOrg)) {
+    const persons = this.shelfSelectionObjects.find((elem) => elem.uidAccproduct === uidAccproduct);
+    persons?.personsForProduct.forEach((person) => {
+      const control = group.get(person.uidPerson ?? '');
+      if (control?.value === '' && person.shelfsObjects.some((shelf) => shelf.uidItShopOrg === uidItShopOrg)) {
         control.setValue(uidItShopOrg);
       }
     });
@@ -68,21 +67,23 @@ export class ShelfSelectionComponent {
   }
 
   public needsDefaultShelf(product: ShelfSelectionObject): boolean {
-    return product.personsForProduct.filter(person => person.shelfsObjects.length > 1).length > 1;
+    return product.personsForProduct.filter((person) => person.shelfsObjects.length > 1).length > 1;
   }
 
-
   public getFormControl(shelfSelectionObject: ShelfSelectionObject, personForProduct: PersonForProduct): UntypedFormControl {
-    return (this.formGroup.get(shelfSelectionObject.uidAccproduct) as UntypedFormGroup).get(personForProduct.uidPerson) as UntypedFormControl;
+    return (this.formGroup.get(shelfSelectionObject.uidAccproduct ?? '') as UntypedFormGroup).get(
+      personForProduct.uidPerson ?? '',
+    ) as UntypedFormControl;
   }
 
   public submit(): void {
-    this.shelfSelectionObjects.forEach(product => {
-      product.personsForProduct.filter(elem => elem.shelfsObjects.length > 1).forEach(person => {
-        const control = this.getFormControl(product, person);
-        person.uidItShopOrg = control.value;
-      }
-      );
+    this.shelfSelectionObjects.forEach((product) => {
+      product.personsForProduct
+        .filter((elem) => elem.shelfsObjects.length > 1)
+        .forEach((person) => {
+          const control = this.getFormControl(product, person);
+          person.uidItShopOrg = control.value;
+        });
     });
     this.sideSheetRef.close(this.shelfSelectionObjects);
   }
@@ -91,14 +92,17 @@ export class ShelfSelectionComponent {
     this.shelfSelectionObjects = this.data;
 
     this.formGroup = new UntypedFormGroup({});
-    this.shelfSelectionObjects.forEach(element => {
+    this.shelfSelectionObjects.forEach((element) => {
       const personGroup = new UntypedFormGroup({});
-      element.personsForProduct.filter(elem => elem.shelfsObjects.length > 1).forEach(person =>
-        personGroup.addControl(person.uidPerson, new UntypedFormControl(person.uidItShopOrg, Validators.required))
-      );
-      this.formGroup.addControl(element.uidAccproduct, personGroup);
+      element.personsForProduct
+        .filter((elem) => elem.shelfsObjects.length > 1)
+        .forEach((person) =>
+          personGroup.addControl(person.uidPerson ?? '', new UntypedFormControl(person.uidItShopOrg, Validators.required)),
+        );
+      this.formGroup.addControl(element.uidAccproduct ?? '', personGroup);
     });
   }
 
-
+  public LdsKey =
+    '#LDS#One or more selected products are included in several shelves. For each product, select from which shelf you want to request the product. You can select a default shelf that will be used for all recipients or select a shelf individually for each recipient.';
 }

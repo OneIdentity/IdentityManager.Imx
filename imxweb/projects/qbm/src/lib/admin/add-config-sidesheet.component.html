@@ -1,8 +1,7 @@
 <div eui-sidesheet-content>
-
   <mat-card>
-    <mat-form-field class="key-selector" appearance="outline">
-      <mat-label>{{'#LDS#Select where to add the configuration key' | translate}}</mat-label>
+    <mat-form-field class="imx-form-field-width-full" appearance="outline">
+      <mat-label>{{ '#LDS#Select where to add the configuration key' | translate }}</mat-label>
       <mat-select [(ngModel)]="selectedKey">
         <mat-option *ngFor="let k of keyData" [value]="k">
           <config-key-path [path]="k.DisplayPath"></config-key-path>
@@ -12,18 +11,25 @@
 
     <ng-container *ngIf="selectedKey">
       <eui-alert type="info" [condensed]="true" [colored]="true">
-        {{selectedKey.Description}}
+        {{ selectedKey.Description }}
       </eui-alert>
 
-      <mat-form-field class="new-key" appearance="outline">
-        <mat-label>{{'#LDS#Name of the new configuration key' | translate}}</mat-label>
-        <input matInput [(ngModel)]="newKey">
+      <mat-form-field class="imx-form-field-width-full" appearance="outline">
+        <mat-label>{{ '#LDS#Name of the new configuration key' | translate }}</mat-label>
+        <input matInput [(ngModel)]="newKey" />
       </mat-form-field>
     </ng-container>
   </mat-card>
 </div>
 
-<div eui-sidesheet-actions >
-  <button data-imx-identifier="admin-add-config-submit-button" [disabled]="!selectedKey || !newKey" mat-raised-button
-    color="primary" (click)="submit()">{{'#LDS#Create' | translate}}</button>
+<div eui-sidesheet-actions>
+  <button
+    data-imx-identifier="admin-add-config-submit-button"
+    [disabled]="!selectedKey || !newKey"
+    mat-flat-button
+    color="primary"
+    (click)="submit()"
+  >
+    {{ '#LDS#Create' | translate }}
+  </button>
 </div>

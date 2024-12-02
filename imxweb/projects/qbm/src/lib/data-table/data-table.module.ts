@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -42,16 +42,16 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 
+import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
-import { DataTableComponent } from './data-table.component';
-import { DataTableColumnComponent } from './data-table-column.component';
-import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
 import { DateModule } from '../date/date.module';
 import { DataTableCellComponent } from './data-table-cell/data-table-cell.component';
+import { DataTableColumnComponent } from './data-table-column.component';
 import { DataTableDisplayCellComponent } from './data-table-display-cell/data-table-display-cell.component';
-import { GroupPaginatorComponent } from './group-paginator/group-paginator.component';
+import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
+import { DataTableComponent } from './data-table.component';
 import { ExcludedColumnsPipe } from './excluded-columns.pipe';
-import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
+import { GroupPaginatorComponent } from './group-paginator/group-paginator.component';
 import { TableAccessiblilityDirective } from './table-accessibility.directive';
 
 @NgModule({
@@ -63,7 +63,7 @@ import { TableAccessiblilityDirective } from './table-accessibility.directive';
     DataTableGenericColumnComponent,
     GroupPaginatorComponent,
     ExcludedColumnsPipe,
-    TableAccessiblilityDirective
+    TableAccessiblilityDirective,
   ],
   imports: [
     CommonModule,
@@ -84,8 +84,14 @@ import { TableAccessiblilityDirective } from './table-accessibility.directive';
     MatToolbarModule,
     MatDialogModule,
     BusyIndicatorModule,
-    TranslateModule
+    TranslateModule,
   ],
-  exports: [DataTableComponent, DataTableColumnComponent, DataTableGenericColumnComponent, ExcludedColumnsPipe],
+  exports: [
+    DataTableComponent,
+    DataTableColumnComponent,
+    DataTableGenericColumnComponent,
+    ExcludedColumnsPipe,
+    TableAccessiblilityDirective,
+  ],
 })
 export class DataTableModule {}

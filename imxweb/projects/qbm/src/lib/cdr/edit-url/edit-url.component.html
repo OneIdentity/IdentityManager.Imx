@@ -1,7 +1,13 @@
-<mat-form-field appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
-  <mat-label>{{ columnContainer?.display | translate }}</mat-label>
-  <input matInput type="url" [formControl]="control" [readonly]="!columnContainer?.canEdit"
-    [attr.data-imx-identifier]="'edit-url-input-' + columnContainer?.name" [required]="columnContainer.isValueRequired">
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
+  <mat-label>{{ columnContainer.display | translate }}</mat-label>
+  <input
+    matInput
+    type="url"
+    [formControl]="control"
+    [readonly]="!columnContainer?.canEdit"
+    [attr.data-imx-identifier]="'edit-url-input-' + columnContainer?.name"
+    [required]="columnContainer.isValueRequired"
+  />
   <mat-error *ngIf="control.errors?.pattern">
     {{ '#LDS#Please enter a valid URL in the format https://www.example.com or http://www.example.com respectively.' | translate }}
   </mat-error>
@@ -12,10 +18,5 @@
 
 <!-- template for read only elements-->
 <ng-template #isReadonly>
-  <imx-view-property
-    [columnContainer]="columnContainer"
-    defaultValue="#LDS#Not set"
-  >
-  </imx-view-property>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
 </ng-template>
-

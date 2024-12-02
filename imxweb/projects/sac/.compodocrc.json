@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - SAC Library",
-  "output": "../../documentation/v92/sac",
+  "output": "../../documentation/v93/sac",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

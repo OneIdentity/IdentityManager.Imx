@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,37 +24,46 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, ClassloggerService, DataSourceToolbarModule, DataTableModule, HELP_CONTEXTUAL, HelpContextualModule, MenuItem, MenuService, RouteGuardService } from 'qbm';
-import { ServiceItemsEditComponent } from './service-items-edit.component';
-import { ServiceItemsEditSidesheetComponent } from './service-items-edit-sidesheet/service-items-edit-sidesheet.component';
-import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
+import { MatTableModule } from '@angular/material/table';
+import {
+  CdrModule,
+  ClassloggerService,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
+  MenuItem,
+  MenuService,
+  RouteGuardService,
+} from 'qbm';
 import { isShopAdmin } from '../admin/qer-permissions-helper';
-import { ServiceItemsEditFormModule } from './service-items-edit-form/service-items-edit-form.module';
+import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
 import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
+import { ServiceItemsEditFormModule } from './service-items-edit-form/service-items-edit-form.module';
+import { ServiceItemsEditSidesheetComponent } from './service-items-edit-sidesheet/service-items-edit-sidesheet.component';
+import { ServiceItemsEditComponent } from './service-items-edit.component';
 
 const routes: Routes = [
   {
     path: 'admin/serviceitems',
     component: ServiceItemsEditComponent,
     canActivate: [RouteGuardService, ShopAdminGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.ServiceItems
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.ServiceItems,
+    },
   },
 ];
 
 @NgModule({
-  declarations: [
-    ServiceItemsEditComponent,
-    ServiceItemsEditSidesheetComponent,
-  ],
+  declarations: [ServiceItemsEditComponent, ServiceItemsEditSidesheetComponent],
   imports: [
     CommonModule,
     CdrModule,
@@ -68,44 +77,41 @@ const routes: Routes = [
     ServiceItemsEditFormModule,
     TranslateModule,
     HelpContextualModule,
-  ]
+    MatTableModule,
+    DataViewModule,
+  ],
 })
 export class ServiceItemsEditModule {
-
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService) {
+    logger: ClassloggerService,
+  ) {
     logger.info(this, '▶️ ServiceItemsEditModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (isShopAdmin(features)) {
+        items.push({
+          id: 'QER_ServiceItems',
+          navigationCommands: { commands: ['admin', 'serviceitems'] },
+          title: '#LDS#Menu Entry Service items',
+          sorting: '60-40',
+        });
+      }
 
-        if (isShopAdmin(features)) {
-          items.push(
-            {
-              id: 'QER_ServiceItems',
-              navigationCommands: { commands: ['admin', 'serviceitems'] },
-              title: '#LDS#Menu Entry Service items',
-              sorting: '60-40',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Setup',
-          title: '#LDS#Setup',
-          sorting: '60',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return;
+      }
+      return {
+        id: 'ROOT_Setup',
+        title: '#LDS#Setup',
+        sorting: '60',
+        items,
+      };
+    });
   }
 }

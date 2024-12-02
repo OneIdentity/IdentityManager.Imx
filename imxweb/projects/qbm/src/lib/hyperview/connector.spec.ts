@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,15 +28,13 @@ import { Connector } from './connector';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('Connector', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
 
   it('should create an visible connector', () => {
-
     const element = document.createElement('div');
-    expect( () => {
+    expect(() => {
       const connector = new Connector(element, element);
       expect(connector.isHidden).toBeFalsy();
     }).not.toThrowError();

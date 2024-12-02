@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,16 +31,16 @@ import { ParameterizedText } from './parameterized-text.interface';
 import { TextToken } from './text-token.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ParameterizedTextService {
   public createTextTokens(text: ParameterizedText): TextToken[] {
     const parameters = this.getParametersWithMatchingValue(text);
 
-    const output = [];
+    const output: TextToken[] = [];
 
     let part = text.value;
-    for (const parameter of parameters) {  
+    for (const parameter of parameters) {
       const tokens = part.split(parameter.delimiter);
 
       const head = tokens[0];
@@ -65,10 +65,10 @@ export class ParameterizedTextService {
   private getParametersWithMatchingValue(text: ParameterizedText): ParameterReplacement[] {
     const re = new RegExp('(' + text.marker.start + '[^"]+' + text.marker.end + ')', 'g');
     return (text.value.match(re) ?? [])
-      .map(parameter => ({
+      .map((parameter) => ({
         delimiter: parameter,
-        replacement: text.getParameterValue(parameter.split(text.marker.start).join('').split(text.marker.end).join(''))
+        replacement: text.getParameterValue(parameter.split(text.marker.start).join('').split(text.marker.end).join('')),
       }))
-      .filter(parameter => parameter.replacement != null);
+      .filter((parameter) => parameter.replacement != null);
   }
 }

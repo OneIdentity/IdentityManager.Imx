@@ -1,8 +1,8 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <form [formGroup]="formGroup">
     <mat-tab [label]="'#LDS#Heading Details' | translate">
       <div eui-sidesheet-content>
-        <eui-alert class="imx-helper-alert" type="info" condensed="true" [colored]="true">
+        <eui-alert type="info" [condensed]="true" [colored]="true">
           <span> {{ requestData.HelpText.General }} </span>
         </eui-alert>
         <div class="form-wrapper">
@@ -11,7 +11,7 @@
               <imx-cdr-editor
                 *ngIf="canSee(cdr)"
                 [cdr]="cdr"
-                [attr.data-imx-identifier]="'approval-step-form-cdr-' + cdr.column.ColumName"
+                [attr.data-imx-identifier]="'approval-step-form-cdr-' + cdr.column.ColumnName"
                 (controlCreated)="addControl(i, $event)"
                 (valueChange)="checkCDRs()"
               >
@@ -23,7 +23,7 @@
     </mat-tab>
     <mat-tab [label]="'#LDS#Heading Mail Templates' | translate">
       <div eui-sidesheet-content>
-        <eui-alert class="imx-helper-alert" type="info" condensed="true" [colored]="true">
+        <eui-alert type="info" [condensed]="true" [colored]="true">
           <span> {{ requestData.HelpText.Mail }} </span>
         </eui-alert>
         <div class="form-wrapper">
@@ -31,8 +31,8 @@
             <imx-cdr-editor
               *ngFor="let cdr of cdrGroups?.Mail; index as i"
               [cdr]="cdr"
-              [attr.data-imx-identifier]="'approval-step-form-cdr-' + cdr.column.ColumName"
-              (controlCreated)="addControl(i + cdrGroups?.General.length, $event)"
+              [attr.data-imx-identifier]="'approval-step-form-cdr-' + cdr.column.ColumnName"
+              (controlCreated)="addControl(i + (cdrGroups?.General?.length || 0), $event)"
             >
             </imx-cdr-editor>
           </mat-card>
@@ -43,12 +43,16 @@
 </mat-tab-group>
 
 <div eui-sidesheet-actions>
-  <button mat-stroked-button data-imx-identifier="approval-step-form-button-back" (click)="formService.cancelChangesGrouped(formGroup, sidesheetRef, requestData)">
+  <button
+    mat-stroked-button
+    data-imx-identifier="approval-step-form-button-back"
+    (click)="formService.cancelChangesGrouped(formGroup, sidesheetRef, requestData)"
+  >
     {{ '#LDS#Cancel' | translate }}
   </button>
   <button
-    mat-raised-button
-    class="apply-button"
+    mat-flat-button
+    class="imx-button-hover-warning"
     color="primary"
     data-imx-identifier="approval-step-form-button-apply"
     (click)="formService.saveChanges(formGroup, sidesheetRef)"

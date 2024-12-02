@@ -2,19 +2,19 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-:host{
-  display:flex;
+:host {
+  display: flex;
   flex-direction: column;
-  height: 100%
+  height: 100%;
 }
 
-.imx-dialog-content{
+.imx-dialog-content {
   flex: 1 1 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-.imx-element-chooser{
+.imx-element-chooser {
   margin-right: 15px;
   overflow: hidden;
   display: flex;
@@ -24,17 +24,6 @@
   > .imx-item-list {
     padding: 10px;
     overflow: auto;
-  }
-}
-
-.imx-helper-alert {
-  grid-row: 1;
-  grid-column-start: 1;
-  grid-column-end: 3;
-  margin-bottom: 10px;
-
-  .imx-info-content {
-    font-size: 14px;
   }
 }
 
@@ -48,7 +37,6 @@
   flex-direction: column;
   background: $white;
   border-radius: 4px;
-  overflow: hidden;
 }
 
 .example-box {
@@ -61,7 +49,7 @@
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  background:  $white;
+  background: $white;
   flex-grow: 1;
   flex-basis: 0;
 
@@ -70,7 +58,7 @@
   }
 }
 
-.dragDropContainer{
+.dragDropContainer {
   grid-column: 2;
   padding: 10px;
   overflow-y: auto;
@@ -86,9 +74,9 @@
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
-  box-shadow: 0 5px 5px -3px $black-c
-              0 8px 10px 1px mat.get-color-from-palette($asher-gray-palette, 900),
-              0 3px 14px 2px mat.get-color-from-palette($asher-gray-palette, 700);
+  box-shadow:
+    0 5px 5px -3px $black-c 0 8px 10px 1px mat.m2-get-color-from-palette($asher-gray-palette, 900),
+    0 3px 14px 2px mat.m2-get-color-from-palette($asher-gray-palette, 700);
 }
 
 .cdk-drag-placeholder {
@@ -112,7 +100,7 @@
     .example-box {
       border: solid 1px $color-gray-60;
       color: $color-gray-10;
-      background:  $color-gray-70;
+      background: $color-gray-70;
     }
   }
 }
@@ -126,7 +114,7 @@
     .example-box {
       border: solid 1px $color-gray-0;
       color: $color-gray-10;
-      background:  $color-gray-100;
+      background: $color-gray-100;
     }
 
     .imx-drag-handle {

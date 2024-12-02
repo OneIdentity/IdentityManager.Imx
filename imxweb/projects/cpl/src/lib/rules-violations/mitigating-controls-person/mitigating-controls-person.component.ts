@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,7 @@ import { EuiLoadingService, EuiSelectOption, EuiSidesheetRef } from '@elemental-
 import { Subscription } from 'rxjs';
 
 import { ConfirmationService, SettingsService, SnackBarService } from 'qbm';
+import { MitigatingControlData } from '../../request/compliance-violation-details/edit-mitigating-controls/mitigating-controls-request/mitigating-control-data.interface';
 import { MitigatingControlsPersonService } from './mitigating-controls-person.service';
 import { PersonMitigatingControls } from './person-mitigating-controls';
 
@@ -61,9 +62,9 @@ export class MitigatingControlsPersonComponent implements OnInit {
     private busyService: EuiLoadingService,
     private snackbarService: SnackBarService,
     private settingService: SettingsService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
   ) {
-    this.mitigatingCaption = mControlService.mitigationSchema.Columns.UID_MitigatingControl.Display;
+    this.mitigatingCaption = mControlService.mitigationSchema.Columns.UID_MitigatingControl.Display || '';
     this.formGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
   }
 
@@ -99,7 +100,7 @@ export class MitigatingControlsPersonComponent implements OnInit {
         if (!this.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
           this.sidesheetRef.close();
         }
-      })
+      }),
     );
     await this.loadMitigatingControls();
   }
@@ -129,17 +130,19 @@ export class MitigatingControlsPersonComponent implements OnInit {
     const mControl = this.mControlService.createControl(this.uidPerson, this.uidNonCompliance);
     this.mControls.push(mControl);
     this.formArray.push(mControl.formControl);
-    this.cd.detectChanges();
 
     mControl.formControl.setValidators([
       Validators.required,
       (control: FormControl<string | undefined>) => (this.isDuplicate(control) ? { duplicated: true } : null),
     ]);
     this.formGroup.markAsDirty();
+    this.cd.detectChanges();
   }
 
-  public onDelete(mControl: PersonMitigatingControls): void {
-    this.mControlsToDelete.push(mControl);
+  public onDelete(mControl: MitigatingControlData | PersonMitigatingControls): void {
+    if (mControl instanceof PersonMitigatingControls) {
+      this.mControlsToDelete.push(mControl);
+    }
   }
 
   public async onSave(): Promise<void> {
@@ -208,8 +211,9 @@ export class MitigatingControlsPersonComponent implements OnInit {
       {},
       {
         PageSize: this.settingService.PageSizeForAllElements,
-      }
+      },
     );
-    this.options = optionCandidates.Entities.map((elem) => ({ display: elem.Display, value: elem.Keys[0] }));
+    this.options =
+      optionCandidates.Entities?.map((elem): EuiSelectOption => ({ display: elem.Display || '', value: elem?.Keys?.[0] || '' })) || [];
   }
 }

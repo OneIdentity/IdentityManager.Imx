@@ -1,45 +1,55 @@
-<li *ngIf="!workflowHistoryEntity.IsToHideInHistory?.value"
-  class="{{ 'imx-event ' + decisionHistory.getDecisionTypeCssClass(workflowHistoryEntity.DecisionType?.value) }}">
+<li
+  *ngIf="!workflowHistoryEntity.IsToHideInHistory?.value"
+  class="{{ 'imx-event ' + decisionHistory.getDecisionTypeCssClass(workflowHistoryEntity.DecisionType?.value || '') }}"
+>
   <mat-card>
     <mat-card-header>
       <mat-card-title>
-        <span *ngIf="workflowHistoryEntity.DecisionType?.value">{{
-          workflowHistoryEntity.DecisionType?.Column?.GetDisplayValue() }}</span>
-        <span *ngIf="workflowHistoryEntity.XDateInserted?.value">&nbsp;-&nbsp;{{
-          workflowHistoryEntity.XDateInserted.value | localizedDate }}
+        <span *ngIf="workflowHistoryEntity.DecisionType?.value">{{ workflowHistoryEntity.DecisionType?.Column?.GetDisplayValue() }}</span>
+        <span *ngIf="workflowHistoryEntity.XDateInserted?.value"
+          >&nbsp;-&nbsp;{{ workflowHistoryEntity.XDateInserted.value | localizedDate }}
         </span>
       </mat-card-title>
       <mat-card-subtitle class="imx-workflowhistory-pwodecisionstep">
         <span *ngIf="workflowHistoryEntity.Ident_PWODecisionStep?.value">
-          {{workflowHistoryEntity.Ident_PWODecisionStep?.Column?.GetDisplayValue()}} </span>
+          {{ workflowHistoryEntity.Ident_PWODecisionStep?.Column?.GetDisplayValue() }}
+        </span>
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <eui-badge [attr.data-imx-identifier]="'chief-approval-badge'"
-        class="chief-approval-badge" color="green" *ngIf="workflowHistoryEntity.RulerLevel?.value == 2">{{'#LDS#Approval decision by chief approval team'|translate}}</eui-badge>
+      <eui-badge
+        [attr.data-imx-identifier]="'chief-approval-badge'"
+        class="imx-margin-bottom-10"
+        color="green"
+        *ngIf="workflowHistoryEntity.RulerLevel?.value == 2"
+        >{{ '#LDS#Approval decision by chief approval team' | translate }}</eui-badge
+      >
 
-      <imx-entity-property-editor *ngIf="workflowHistoryEntity.IsDecisionBySystem?.value; else approverDisplay"
-        [property]="workflowHistoryEntity.IsDecisionBySystem"></imx-entity-property-editor>
-      <ng-template #approverDisplay >
+      <imx-entity-property-editor
+        *ngIf="workflowHistoryEntity.IsDecisionBySystem?.value; else approverDisplay"
+        [property]="workflowHistoryEntity.IsDecisionBySystem"
+      ></imx-entity-property-editor>
+      <ng-template #approverDisplay>
         <div class="imx-entity-data-column" *ngIf="workflowHistoryEntity.DisplayPersonHead?.value">
           <span class="column-display">{{
-            decisionHistory.getColumnDescriptionForDisplayPersonHead(workflowHistoryEntity.DecisionType?.value) | translate }}</span>
-          <span class="column-value"> {{workflowHistoryEntity.DisplayPersonHead?.Column?.GetDisplayValue()}} </span>
+            decisionHistory.getColumnDescriptionForDisplayPersonHead(workflowHistoryEntity.DecisionType?.value || '') | translate
+          }}</span>
+          <span class="column-value"> {{ workflowHistoryEntity.DisplayPersonHead?.Column?.GetDisplayValue() }} </span>
         </div>
       </ng-template>
       <imx-entity-property-editor [property]="workflowHistoryEntity.UID_QERJustification"></imx-entity-property-editor>
 
-      <div *ngIf="workflowHistoryEntity.DecisionType?.value == 'Query' else IsAnswer">
+      <div *ngIf="workflowHistoryEntity.DecisionType?.value == 'Query'; else IsAnswer">
         <div class="imx-entity-data-column">
-          <span class="column-display">{{ "#LDS#Query"| translate }}</span>
-          <span class="column-value"> {{workflowHistoryEntity.ReasonHead?.Column?.GetDisplayValue()}} </span>
+          <span class="column-display">{{ '#LDS#Query' | translate }}</span>
+          <span class="column-value"> {{ workflowHistoryEntity.ReasonHead?.Column?.GetDisplayValue() }} </span>
         </div>
       </div>
       <ng-template #IsAnswer>
-        <div *ngIf="workflowHistoryEntity.DecisionType?.value == 'Answer' else reasonHead">
+        <div *ngIf="workflowHistoryEntity.DecisionType?.value == 'Answer'; else reasonHead">
           <div class="imx-entity-data-column">
-            <span class="column-display">{{ "#LDS#Answer"| translate }}</span>
-            <span class="column-value"> {{workflowHistoryEntity.ReasonHead?.Column?.GetDisplayValue()}} </span>
+            <span class="column-display">{{ '#LDS#Answer' | translate }}</span>
+            <span class="column-value"> {{ workflowHistoryEntity.ReasonHead?.Column?.GetDisplayValue() }} </span>
           </div>
         </div>
       </ng-template>
@@ -47,18 +57,21 @@
         <imx-entity-property-editor [property]="workflowHistoryEntity.ReasonHead"></imx-entity-property-editor>
       </ng-template>
 
-      <imx-entity-property-editor *ngIf="workflowHistoryEntity.RulerLevel?.value !== 0"
-        [property]="workflowHistoryEntity.RulerLevel"></imx-entity-property-editor>
+      <imx-entity-property-editor
+        *ngIf="workflowHistoryEntity.RulerLevel?.value !== 0"
+        [property]="workflowHistoryEntity.RulerLevel"
+      ></imx-entity-property-editor>
       <imx-entity-property-editor [property]="workflowHistoryEntity.UID_PWODecisionRule"></imx-entity-property-editor>
-      <imx-entity-property-editor 
-      [caption]="workflowHistoryEntity.DecisionType?.value === 'AddInsteadOf' ? ('#LDS#Delegated approver' | translate): undefined"
-           *ngIf="['AddInsteadOf', 'AddAdditional'].includes(workflowHistoryEntity.DecisionType?.value)"
-        [property]="workflowHistoryEntity.UID_PersonRelated"></imx-entity-property-editor>
+      <imx-entity-property-editor
+        [caption]="workflowHistoryEntity.DecisionType?.value === 'AddInsteadOf' ? ('#LDS#Delegated approver' | translate) : undefined"
+        *ngIf="['AddInsteadOf', 'AddAdditional'].includes(workflowHistoryEntity.DecisionType?.value || '')"
+        [property]="workflowHistoryEntity.UID_PersonRelated"
+      ></imx-entity-property-editor>
 
       <div *ngIf="workflowHistoryEntity.DecisionType?.value == 'Query'">
         <div class="imx-entity-data-column">
-          <span class="column-display">{{ "#LDS#Recipient"| translate }}</span>
-          <span class="column-value"> {{workflowHistoryEntity.UID_PersonRelated?.Column?.GetDisplayValue()}} </span>
+          <span class="column-display">{{ '#LDS#Recipient' | translate }}</span>
+          <span class="column-value"> {{ workflowHistoryEntity.UID_PersonRelated?.Column?.GetDisplayValue() }} </span>
         </div>
       </div>
     </mat-card-content>

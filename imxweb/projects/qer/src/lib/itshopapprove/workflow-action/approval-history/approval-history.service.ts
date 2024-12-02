@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { HistoryFilterMode, PwoExtendedData } from 'imx-api-qer';
-import { CollectionLoadParameters, CompareOperator, DataModel, EntitySchema, ExtendedTypedEntityCollection, FilterType } from 'imx-qbm-dbts';
+import { HistoryFilterMode, PwoExtendedData } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { ItshopRequestService } from '../../../itshop/itshop-request.service';
 import { ItshopRequestData } from '../../../itshop/request-info/itshop-request-data';
 import { QerApiService } from '../../../qer-api-client.service';
@@ -36,8 +36,10 @@ import { ItshopRequest } from '../../../request-history/itshop-request';
   providedIn: 'root',
 })
 export class ApprovalHistoryService {
-  constructor(private api: QerApiService, private itshopRequest: ItshopRequestService) {}
-
+  constructor(
+    private api: QerApiService,
+    private itshopRequest: ItshopRequestService,
+  ) {}
 
   public async getDataModel(): Promise<DataModel> {
     return this.api.client.portal_itshop_requests_datamodel_get();
@@ -47,17 +49,18 @@ export class ApprovalHistoryService {
     uidhelperpwo: string,
     filtermode: HistoryFilterMode,
     uidperson: string,
-    parameter: CollectionLoadParameters
+    parameter: CollectionLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> {
-
     const collection = await this.api.typedClient.PortalItshopRequests.Get({
       ...parameter,
       status: '4,1', // closed or active
       uidhelperpwo,
       filtermode,
-      // tslint:disable-next-line: no-bitwise
-      UID_PersonDecision: (filtermode & HistoryFilterMode.SameStep) === HistoryFilterMode.SameStep ? uidperson : undefined
+      // eslint-disable-next-line no-bitwise
+      UID_PersonDecision: (filtermode & HistoryFilterMode.SameStep) === HistoryFilterMode.SameStep ? uidperson : undefined,
     });
+
+    const data: PwoExtendedData | undefined = collection.extendedData;
 
     return {
       tableName: collection.tableName,
@@ -66,7 +69,12 @@ export class ApprovalHistoryService {
       Data: collection.Data.map((element, index) => {
         const requestData = new ItshopRequestData({ ...collection.extendedData, ...{ index } });
         const parameterColumns = this.itshopRequest.createParameterColumns(element.GetEntity(), requestData.parameters);
-        return new ItshopRequest(element.GetEntity(), requestData.pwoData, parameterColumns, uidperson);
+        return new ItshopRequest(
+          element.GetEntity(),
+          { ...requestData.pwoData, WorkflowSteps: data?.WorkflowSteps },
+          parameterColumns,
+          uidperson,
+        );
       }),
     };
   }

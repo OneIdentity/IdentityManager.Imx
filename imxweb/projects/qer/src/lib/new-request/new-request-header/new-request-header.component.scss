@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 @import '../new-request-global.scss';
 
 :host {
@@ -11,7 +12,7 @@
   }
 
   .imx-request-title {
-    @include imx-text(title);
+    @include new-request-text(title);
     margin-right: 8px;
   }
 
@@ -22,25 +23,25 @@
   .imx-card {
     padding: 10px 16px;
     padding-bottom: 0;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
 
     &:hover {
-      @include EUI-Elevation-2;
+      @include eui-elevation-2;
     }
 
     .imx-label {
-      @include imx-text(label);
+      @include new-request-text(label);
     }
 
     .imx-description {
-      @include imx-text(description);
+      @include new-request-text(description);
     }
 
     .imx-content {
       display: flex;
       align-items: center;
       span {
-        @include imx-text(emphasize);
+        @include new-request-text(emphasize);
         display: flex;
         align-items: center;
         height: 40px; //This is for the incoming button
@@ -69,11 +70,6 @@
       span {
         color: $color-blue-60;
       }
-
-      button:hover {
-        color: $color-orange-60;
-        @include Ease-Transition;
-      }
     }
   }
 
@@ -97,11 +93,6 @@
       .imx-content {
         span {
           color: $color-blue-40;
-        }
-
-        button:hover {
-          color: $color-orange-40;
-          @include Ease-Transition;
         }
       }
     }
@@ -128,11 +119,6 @@
         span {
           color: $color-blue-40;
         }
-
-        button:hover {
-          color: $color-orange-40;
-          @include Ease-Transition;
-        }
       }
     }
 
@@ -142,7 +128,7 @@
 
     .imx-info-icon {
       color: $color-blue-40;
-      @include Ease-Transition;
+      @include ease-transition;
 
       &:hover {
         color: $color-orange-40;

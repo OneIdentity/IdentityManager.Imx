@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,31 +24,29 @@
  *
  */
 
-import { PasswordItemData, PasswordItemsData, PolicyInfo } from 'imx-api-qer';
+import { PasswordItemData, PasswordItemsData, PolicyInfo } from '@imx-modules/imx-api-qer';
 
 export class PasswordHelper {
-
   public passwordItemData: PasswordItemsData;
 
   public uidPerson: string;
   public embedded: boolean;
   public selectedPassword: PasswordItemData;
-  public selectedPolicy: PolicyInfo;
+  public selectedPolicy: PolicyInfo | undefined;
 
   public isValidating: boolean;
 
   public hasCentralPassword(): boolean {
-    return this.passwordItemData && 0 < this.passwordItemData.Items.filter(i => i.IsCentralPassword).length;
+    return this.passwordItemData != null && !!this.passwordItemData.Items?.filter((i) => i.IsCentralPassword).length;
   }
 
   public selectItem(item: PasswordItemData): void {
     this.selectedPassword = item;
-    this.selectedPolicy = this.passwordItemData.Policies.filter(p => p.PolicyName === item.PolicyName)[0];
+    this.selectedPolicy = this.passwordItemData.Policies?.filter((p) => p.PolicyName === item.PolicyName)[0];
   }
 
   public getManagedByCentralPwd(): PasswordItemData[] {
-    if (!this.passwordItemData)
-      return [];
-    return this.passwordItemData.Items.filter(i => i.IsManagedCentrally);
+    if (!this.passwordItemData) return [];
+    return this.passwordItemData.Items?.filter((i) => i.IsManagedCentrally) || [];
   }
 }

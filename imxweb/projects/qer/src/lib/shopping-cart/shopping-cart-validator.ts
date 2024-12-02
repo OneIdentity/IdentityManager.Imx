@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { CartCheckResult, PortalCartitem } from 'imx-api-qer';
-import { CartItemValidationStatus } from './cart-items/cart-item-validation-status.enum';
+import { CartCheckResult, PortalCartitem } from '@imx-modules/imx-api-qer';
 import { CartItemValidationResult } from './cart-item-validation-overview/cart-item-validation-result.interface';
+import { CartItemValidationStatus } from './cart-items/cart-item-validation-status.enum';
 
 export class ShoppingCartValidator {
   public readonly hasErrors: boolean;
@@ -37,26 +37,24 @@ export class ShoppingCartValidator {
     this.hasWarnings = this.result.HasWarnings;
   }
 
-  public getWarnings(getCartItem: (uid: string) => PortalCartitem): CartItemValidationResult[] {
+  public getWarnings(getCartItem: (uid: string) => PortalCartitem | undefined): CartItemValidationResult[] {
     const cartItemsResults: CartItemValidationResult[] = [];
-    this.result.Items
-      .filter(result => result.HasWarnings)
-      .forEach(result => {
-        const failedChecks = result.Checks.filter(check => check.Status !== CartItemValidationStatus.success);
-        if (failedChecks.length > 0) {
-          const cartItem = getCartItem(result.UidShoppingCartItem);
-          cartItemsResults.push({
-            checkResult: {
-              ...result,
-              ...{
-                Checks: failedChecks
-              }
+    this.result.Items?.filter((result) => result.HasWarnings).forEach((result) => {
+      const failedChecks = result.Checks?.filter((check) => check.Status !== CartItemValidationStatus.success);
+      if (!!failedChecks?.length) {
+        const cartItem = getCartItem(result.UidShoppingCartItem || '');
+        cartItemsResults.push({
+          checkResult: {
+            ...result,
+            ...{
+              Checks: failedChecks,
             },
-            personOrderedDisplay: cartItem.UID_PersonOrdered.Column.GetDisplayValue(),
-            cartItemDisplay: cartItem.GetEntity().GetDisplay()
-          });
-        }
-      });
+          },
+          personOrderedDisplay: cartItem?.UID_PersonOrdered.Column.GetDisplayValue() || '',
+          cartItemDisplay: cartItem?.GetEntity().GetDisplay() || '',
+        });
+      }
+    });
 
     return cartItemsResults;
   }

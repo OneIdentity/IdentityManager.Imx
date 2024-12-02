@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
-@import "variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
 $headerheight: 43;
 
@@ -25,17 +26,17 @@ $headerheight: 43;
 }
 
 .imx-mdc-detail-opened .imx-mdc-master {
-  max-width: calc( 100% - 40em );
+  max-width: calc(100% - 40em);
   width: 100%;
 }
 
 .imx-mdc-detail-close .imx-mdc-master {
-  max-width: calc( 100% - 30px );
+  max-width: calc(100% - 30px);
   width: 100%;
 }
 
 .imx-mdc-detail {
-  background: none repeat scroll 0 0 mat.get-color-from-palette($asher-gray-palette, 900);
+  background: none repeat scroll 0 0 mat.m2-get-color-from-palette($asher-gray-palette, 900);
   border-width: 0;
   display: block;
   position: absolute;
@@ -257,7 +258,7 @@ $headerheight: 43;
 
 /* #region VI_Styles_LayoutPanel_Default (Detail Pane CSS) */
 .imx-mdc-detail .LayoutpPropRow {
-  border-bottom: 1px solid $VI_Common_Color_LightGray;
+  border-bottom: 1px solid $color-gray-30;
   line-height: 20px;
   min-height: 26px;
 }
@@ -265,7 +266,7 @@ $headerheight: 43;
 .imx-mdc-detail .LayoutpPropCol0 {
   width: 146px;
   max-width: 146px;
-  color: $VI_Common_Color_Font;
+  color: $color-gray-80;
 }
 
 .imx-mdc-detail .LayoutpPropCol1 {
@@ -273,7 +274,7 @@ $headerheight: 43;
   /* leave some space for scrollbars*/
   max-width: 245px;
   /* #27180 */
-  color: $VI_Common_Color_Font_Secondary;
+  color: $color-gray-80;
   font-weight: bold;
 }
 

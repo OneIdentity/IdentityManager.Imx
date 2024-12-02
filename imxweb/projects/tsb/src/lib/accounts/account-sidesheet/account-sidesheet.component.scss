@@ -1,98 +1,14 @@
-
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-
-.eui-sidesheet-content:not(.imx-hyperview-sidesheet){
-  padding: 0;
-
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.eui-sidesheet-actions {
-  .justify-start {
-    margin-right: auto;
-  }
-
-  button:not(:last-of-type):not(.justify-start) {
-    margin-right: 10px;
-  }
-}
-
-.governance-sidesheet__tab-content {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  > .governance-sidesheet__tab-content-body {
-
-    .imx-tab-card{
-      margin:20px;
-    }
-    flex: 1 1 auto;
-    overflow: auto;
-    padding: 0px;
-
-    > :first-child {
-      overflow: auto;
-    }
-
-    > .imx-ext {
-      overflow: hidden;
-    }
-  }
-}
-
-.imx-entitlements-card{
+.imx-entitlements-card {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
 }
 
-.mat-checkbox {
+.mat-mdc-checkbox {
   display: flex;
   margin-bottom: 15px;
 }
 
-
-::ng-deep .mat-tab-group {
-  height: 100%;
-  flex-grow: 1;
-  overflow: auto;
-
-  .mat-tab-header {
-    padding: 0 32px;
-    background-color: $white;
-  }
-
-  ::ng-deep .mat-tab-body-wrapper {
-    height: 100%;
-  }
-
-
-  .imx-edit-fk-open-picker {
-    display: none;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    ::ng-deep .mat-tab-group {
-      .mat-tab-header {
-        background-color: $color-gray-80;
-      }
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-tab-group {
-      .mat-tab-header {
-        background-color: $color-gray-90;
-      }
-    }
-  }
-}

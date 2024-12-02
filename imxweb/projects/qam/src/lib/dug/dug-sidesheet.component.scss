@@ -1,0 +1,30 @@
+@import 'base/mixins';
+
+:host {
+ @include flex-column-container-fill();
+ padding-bottom: 3px;
+}
+
+.governance-sidesheet__tab-content-body {
+  .mat-card {
+   @include flex-column-container-fill();
+  }
+}
+
+.governance-sidesheet__tab-content {
+  imx-hyperview {
+    overflow: hidden;
+  }
+}
+
+.mat-card-title {
+  font-size: medium ;
+}
+
+.hidden{
+  display: none;
+}
+
+.imx-busy-loader {
+  height: 100%;
+}

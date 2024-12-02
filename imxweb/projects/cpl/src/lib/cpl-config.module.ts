@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -50,33 +50,30 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
 import { RuleViolationsGuardService } from './guards/rule-violations-guard.service';
 import { MatCardModule } from '@angular/material/card';
-import { RequestModule} from './request/request.module';
+import { RequestModule } from './request/request.module';
 const routes: Routes = [
   {
     path: 'compliance/rules',
     component: RulesComponent,
     canActivate: [RouteGuardService, ComplianceRulesGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.ComplianceRules
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.ComplianceRules,
+    },
   },
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
     canActivate: [RouteGuardService, RuleViolationsGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.ComplianceRulesViolationsApprove
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.ComplianceRulesViolationsApprove,
+    },
   },
 ];
 
 @NgModule({
-  declarations: [
-    DashboardPluginComponent,
-    CartItemComplianceCheckComponent,
-  ],
+  declarations: [DashboardPluginComponent, CartItemComplianceCheckComponent],
   imports: [
     CommonModule,
     CdrModule,
@@ -96,11 +93,14 @@ const routes: Routes = [
     TilesModule,
     TranslateModule,
     EuiCoreModule,
-    IdentityRuleViolationsModule
+    IdentityRuleViolationsModule,
   ],
 })
 export class CplConfigModule {
-  constructor(private readonly initializer: InitService, private readonly logger: ClassloggerService) {
+  constructor(
+    private readonly initializer: InitService,
+    private readonly logger: ClassloggerService,
+  ) {
     this.logger.info(this, '🔥 CPL loaded');
     this.initializer.onInit(routes);
     this.logger.info(this, '▶︝ CPL initialized');

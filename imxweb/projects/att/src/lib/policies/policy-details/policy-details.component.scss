@@ -1,38 +1,19 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+@import 'base/mixins';
 
-.imx-title-card {
-  margin: 20px;
+:host {
+  @include flex-column-container($overflow: hidden);
 }
 
 .eui-sidesheet-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 0px;
+  @include flex-column-container($height: 100%);
+  padding: 0;
 }
-
-.eui-sidesheet-actions{
-  display: flex;
-  flex-direction: row;
-  margin: 0px;
-  }
 
 .imx-runs-grid {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex: 1 1 auto;
-
-  ::ng-deep .imx-table-card{
-    margin: 0px 20px;
-  }
+  @include flex-column-container-fill;
 }
 
-.mat-card-content {
+.mat-mdc-card-content {
   display: flex;
 }
 
@@ -40,8 +21,4 @@
   display: grid;
   grid-template-columns: auto auto;
   gap: 0 10px;
-}
-
-.mat-card {
-  margin-bottom: 30px;
 }

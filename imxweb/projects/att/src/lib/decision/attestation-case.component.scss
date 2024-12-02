@@ -1,43 +1,9 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  ::ng-deep .mat-tab-body-wrapper {
-    flex: 1 1 auto;
-
-    .mat-tab-body {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-    }
-  }
-
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mat-expansion-panel {
-    margin-bottom: 10px;
-  }
-}
-.mat-tab-group {
-  overflow-y: auto;
-  height: 100%;
-}
-
-.imx-mat-tab-container {
-  padding: 20px;
-}
-
-.imx-mat-tab-container-full {
-  height: 100%;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
 }
 
 .imx-attestation-case-information,
@@ -53,62 +19,10 @@
     margin: 10px;
   }
 }
-.imx-attestation-case-hyperview{
+.imx-attestation-case-hyperview {
   display: flex;
   flex-direction: column;
 }
 .imx-attestation-case-loss-preview {
   margin: 0 15px;
-}
-
-.imx-helper-alert {
-  width: 100%;
-
-  ::ng-deep .eui-alert {
-    margin-bottom: 20px;
-  }
-}
-
-.eui-sidesheet-actions {
-  button:not(.imx-justify-right) {
-    margin-left: 16px;
-    .mat-icon {
-      margin-right: 5px;
-      font-size: 24px;
-    }
-  }
-  .imx-justify-right
-  {
-    margin-right: auto;
-  }
-}
-
-:host {
-  ::ng-deep .mat-tab-labels {
-    background-color: $color-gray-0;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-80;
-    }
-
-    .imx-button-bar {
-      background-color: $color-gray-70;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-100;
-    }
-
-    .imx-button-bar {
-      background-color: $color-gray-90;
-    }
-  }
 }

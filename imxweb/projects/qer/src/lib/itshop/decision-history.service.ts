@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DecisionHistoryService {
   public getDecisionTypeCssClass(decisiontype: string): string {
@@ -36,10 +36,14 @@ export class DecisionHistoryService {
       case 'cancel':
       case 'abort':
       case 'unsubscribe':
-      case 'reject': return 'imx-negative';
-      case 'grant': return 'imx-positive';
-      case 'query': return 'imx-question';
-      default: return 'imx-info';
+      case 'reject':
+        return 'imx-negative';
+      case 'grant':
+        return 'imx-positive';
+      case 'query':
+        return 'imx-question';
+      default:
+        return 'imx-info';
     }
   }
 
@@ -100,5 +104,6 @@ export class DecisionHistoryService {
       case 'Reset':
         return '#LDS#DisplayPersonHead_Reset';
     }
+    return '#LDS#No data';
   }
 }

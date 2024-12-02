@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 export function canSeeAttestationPolicies(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_PolicyAdmin' ||
-  item === 'Portal_UI_PolicyStatistics' ||
-    item === 'Portal_UI_PolicyOwner') != null;
+  return (
+    features.find(
+      (item) => item === 'Portal_UI_PolicyAdmin' || item === 'Portal_UI_PolicyStatistics' || item === 'Portal_UI_PolicyOwner',
+    ) != null
+  );
 }
 
 export function isAttestationAdmin(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_PolicyAdmin') != null;
+  return features.find((item) => item === 'Portal_UI_PolicyAdmin') != null;
 }
-
-

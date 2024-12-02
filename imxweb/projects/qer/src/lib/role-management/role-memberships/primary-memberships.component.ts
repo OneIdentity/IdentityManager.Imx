@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { CollectionLoadParameters, DisplayColumns, IClientProperty } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarFilter, DataSourceToolbarSettings } from 'qbm';
 import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
@@ -37,7 +37,7 @@ import { RoleService } from '../role.service';
   styleUrls: ['./primary-memberships.component.scss', '../sidesheet.scss', './role-sidesheet-tabs.scss'],
 })
 export class PrimaryMembershipsComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public navigationState: CollectionLoadParameters = {};
   public DisplayColumns = DisplayColumns;
   public displayColumns: IClientProperty[] = [];
@@ -46,9 +46,8 @@ export class PrimaryMembershipsComponent implements OnInit {
   constructor(
     private roleService: RoleService,
     private dataManagementService: DataManagementService,
-    private readonly busyService: EuiLoadingService
-  ) {
-  }
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     await this.navigate();
@@ -70,20 +69,22 @@ export class PrimaryMembershipsComponent implements OnInit {
   private async navigate(): Promise<void> {
     this.busyService.show();
     const entitySchema = this.roleService.getPrimaryMembershipSchema();
-    this.displayColumns = [
-      entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      entitySchema.Columns.PrimaryMemberSince];
+    this.displayColumns =
+      entitySchema == null ? [] : [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME], entitySchema.Columns.PrimaryMemberSince];
 
     try {
-      this.dstSettings = {
-        dataSource: await this.roleService.getPrimaryMemberships({
-          id: this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
-          navigationState: this.navigationState
-        }),
-        entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-      };
+      this.dstSettings =
+        entitySchema == null
+          ? undefined
+          : {
+              dataSource: await this.roleService.getPrimaryMemberships({
+                id: this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(','),
+                navigationState: this.navigationState,
+              }),
+              entitySchema,
+              navigationState: this.navigationState,
+              displayedColumns: this.displayColumns,
+            };
     } finally {
       this.busyService.hide();
     }

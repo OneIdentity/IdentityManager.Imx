@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,12 +31,8 @@ import { CustomThemeService } from './custom-theme.service';
 
 /** Loads and initializes custom themes provided by the API. */
 @NgModule({
-  imports: [
-    CommonModule
-  ],
-  providers: [
-    AppConfigService
-  ]
+  imports: [CommonModule],
+  providers: [AppConfigService],
 })
 export class CustomThemeModule {
   constructor(config: CustomThemeService) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,11 +28,11 @@ import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, V
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
 
+import { EntityWriteDataSingle } from '@imx-modules/imx-qbm-dbts';
+import { isEqual } from 'lodash';
+import { CdrEditorComponent } from '../../cdr/cdr-editor/cdr-editor.component';
 import { BulkItem, BulkItemStatus } from './bulk-item';
 import { BulkItemIcon } from './bulk-item-icon';
-import { CdrEditorComponent } from '../../cdr/cdr-editor/cdr-editor.component';
-import { isEqual } from 'lodash';
-import { EntityWriteDataSingle } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-bulk-item',

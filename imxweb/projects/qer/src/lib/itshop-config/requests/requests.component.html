@@ -1,49 +1,38 @@
-<div class="heading-wrapper">
-  <h1 class="mat-headline">
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
     <span>{{ requestsService.LdsHeadingShops | translate }}</span>
     <imx-help-contextual></imx-help-contextual>
-  </h1>
-  <div class="alert-wrapper">
+  </h2>
+  <div class="imx-header-toolbar-container">
     <!-- Allow child modules to extend this component by adding alerts -->
     <imx-extd id="Request-Config-Alert" [referrer]="this"></imx-extd>
+    <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
   </div>
 </div>
 <mat-card class="imx-shop-content-card">
-  <div class="imx-table-container">
-    <imx-data-source-toolbar
-      #dst
-      [settings]="dstSettings"
-      [busyService]="busyService"
-      [options]="['search', 'filter']"
-      [hiddenFilters]="['namespace']"
-      [searchBoxText]="'#LDS#Search' | translate"
-      (navigationStateChanged)="onNavigationStateChanged($event)"
-      (search)="onSearch($event)"
-    ></imx-data-source-toolbar>
-
-    <imx-data-table
-      class="imx-requests-table"
-      [dst]="dst"
-      mode="manual"
-      (highlightedEntityChanged)="onRequestShopSelected($event)"
-      detailViewVisible="false"
-      [noDataText]="requestsService.LdsNoShops"
-      [noMatchingDataText]="requestsService.LdsNoMatchingShops"
-      data-imx-identifier="requests-tabledata-table"
-    >
-      <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-        <ng-template let-item>
-          <div data-imx-identifier="requests-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
-          <div subtitle data-imx-identifier="requests-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns.UID_OrgAttestator"> </imx-data-table-column>
-    </imx-data-table>
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-  </div>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchemaShopStructure?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+        <div data-imx-identifier="requests-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
+        <div subtitle data-imx-identifier="requests-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchemaShopStructure.Columns.UID_OrgAttestator.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchemaShopStructure?.Columns?.UID_OrgAttestator?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.UID_OrgAttestator.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
-<div class="request-config__action-buttons">
-  <button mat-raised-button color="primary" data-imx-identifier="create-new-request-shop" (click)="createRequestConfig()">
+<div class="imx-button-bar-transparent">
+  <button mat-flat-button color="primary" data-imx-identifier="create-new-request-shop" (click)="createRequestConfig()">
     <eui-icon icon="add"></eui-icon>
     {{ requestsService.LdsCreateShop | translate }}
   </button>

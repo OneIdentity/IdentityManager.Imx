@@ -1,43 +1,17 @@
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 @import 'pick-category-common.scss';
 
 :host {
-  @include imx-flex-column-container();
-  overflow: hidden;
-  height: inherit;
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
+  @include flex-column-container($overflow: hidden, $height: inherit, $max-width: 100%);
 }
 
 .imx-pickcategory-page {
   background-color: inherit;
-  @include imx-flex-column-container();
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  @include flex-column-container($overflow: hidden);
   flex: 1 1 auto;
 
-  div.imx-table-container {
-    @include imx-flex-column-container();
-    overflow: hidden;
-    height: inherit;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-
-    .imx-pickcategory-table {
-      flex-grow: 1;
-      overflow: auto;
-    }
-  }
-
-  .imx-button-bar {
-    @include imx-button-bar();
-  }
-
-  .mat-card {
-   @include imx-flex-fill-control-hidden-overflow();
+  .mat-mdc-card {
+    @include flex-column-container-fill();
   }
 }
 
@@ -45,11 +19,6 @@
   .imx-pickcategory-page {
     .heading-wrapper {
       display: block;
-
-      .alert-wrapper {
-        margin: 0 0 20px 0;
-        width: 100%;
-      }
     }
   }
 }

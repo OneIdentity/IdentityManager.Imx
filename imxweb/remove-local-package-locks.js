@@ -4,40 +4,38 @@ var data = require(path);
 
 var anyChanges = false;
 for (const name of [
-
   // these are the local packages that must not be included in package-lock.json.
   // This script removes the entries in the package-lock dependencies object
   // for these packages.
 
   // Add any custom API client libraries to this list (imx-api-ccc is already
   // included by default.)
-  'imx-api-ccc',
-  'imx-qbm-dbts',
-  'imx-api-qbm',
-  'imx-api-dpr',
-  'imx-api-tsb',
-  'imx-api-aob',
-  'imx-api-apc',
-  'imx-api-qer',
-  'imx-api-rps',
-  'imx-api-sac',
-  'imx-api-cpl',
-  'imx-api-pol',
-  'imx-api-aad',
-  'imx-api-o3t',
-  'imx-api-rmb',
-  'imx-api-rms',
-  'imx-api-hds',
-  'imx-api-att',
-  'imx-api-uci',
-  'imx-api-olg',
-  'imx-api-o3e'
+  '@imx-modules/imx-api-ccc',
+  '@imx-modules/imx-qbm-dbts',
+  '@imx-modules/imx-api-qbm',
+  '@imx-modules/imx-api-dpr',
+  '@imx-modules/imx-api-tsb',
+  '@imx-modules/imx-api-aob',
+  '@imx-modules/imx-api-apc',
+  '@imx-modules/imx-api-qer',
+  '@imx-modules/imx-api-rps',
+  '@imx-modules/imx-api-sac',
+  '@imx-modules/imx-api-cpl',
+  '@imx-modules/imx-api-pol',
+  '@imx-modules/imx-api-aad',
+  '@imx-modules/imx-api-rmb',
+  '@imx-modules/imx-api-rms',
+  '@imx-modules/imx-api-hds',
+  '@imx-modules/imx-api-att',
+  '@imx-modules/imx-api-uci',
+  '@imx-modules/imx-api-olg',
+  '@elemental-ui/core',
+  '@elemental-ui/cadence-icon'
 ]) {
   if (data?.dependencies && data.dependencies[name]) {
     delete data.dependencies[name];
     anyChanges = true;
   }
-
   const nodeModuleName = 'node_modules/' + name;
   if (data.packages[nodeModuleName]) {
     delete data.packages[nodeModuleName];
@@ -62,5 +60,4 @@ fs.writeFile(path, toWrite, 'utf8', (err) => {
   }
 });
 
-if (error)
-  throw error;
+if (error) throw error;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,31 +31,32 @@ import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ProjectConfig } from 'imx-api-qbm';
-import { QerProjectConfig } from 'imx-api-qer';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
+import { QerProjectConfig } from '@imx-modules/imx-api-qer';
 
 import {
   CdrModule,
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
+  DataViewModule,
   HELP_CONTEXTUAL,
   HelpContextualModule,
   MenuItem,
   MenuService,
   RouteGuardService,
   SelectedElementsModule,
-  UserMessageModule
+  UserMessageModule,
 } from 'qbm';
-import { ItshopPatternComponent } from './itshop-pattern.component';
-import { ItshopPatternSidesheetComponent } from './itshop-pattern-sidesheet/itshop-pattern-sidesheet.component';
-import { ItshopPatternCreateSidesheetComponent } from './itshop-pattern-create-sidesheet/itshop-pattern-create-sidesheet.component';
-import { ItshopPatternAddProductsComponent } from './itshop-pattern-add-products/itshop-pattern-add-products.component';
-import { ServiceItemsModule } from '../service-items/service-items.module';
-import { DuplicatePatternItemsComponent } from './duplicate-pattern-items/duplicate-pattern-items.component';
-import { UserModule } from '../user/user.module';
 import { ItshopPatternGuardService } from '../guards/itshop-pattern-guard.service';
+import { ServiceItemsModule } from '../service-items/service-items.module';
+import { UserModule } from '../user/user.module';
+import { DuplicatePatternItemsComponent } from './duplicate-pattern-items/duplicate-pattern-items.component';
+import { ItshopPatternAddProductsComponent } from './itshop-pattern-add-products/itshop-pattern-add-products.component';
+import { ItshopPatternCreateSidesheetComponent } from './itshop-pattern-create-sidesheet/itshop-pattern-create-sidesheet.component';
 import { ItshopPatternItemEditComponent } from './itshop-pattern-item-edit/itshop-pattern-item-edit.component';
+import { ItshopPatternSidesheetComponent } from './itshop-pattern-sidesheet/itshop-pattern-sidesheet.component';
+import { ItshopPatternComponent } from './itshop-pattern.component';
 
 const routes: Routes = [
   {
@@ -63,10 +64,10 @@ const routes: Routes = [
     component: ItshopPatternComponent,
     canActivate: [RouteGuardService, ItshopPatternGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.RequestTemplates
-    }
-  }
+    data: {
+      contextId: HELP_CONTEXTUAL.RequestTemplates,
+    },
+  },
 ];
 
 @NgModule({
@@ -76,7 +77,7 @@ const routes: Routes = [
     ItshopPatternCreateSidesheetComponent,
     ItshopPatternAddProductsComponent,
     DuplicatePatternItemsComponent,
-    ItshopPatternItemEditComponent
+    ItshopPatternItemEditComponent,
   ],
   imports: [
     CdrModule,
@@ -94,47 +95,43 @@ const routes: Routes = [
     UserModule,
     SelectedElementsModule,
     HelpContextualModule,
-  ]
+    DataViewModule,
+  ],
 })
 export class ItshopPatternModule {
-
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ ItshopPatternModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
-        const items: MenuItem[] = [];
-        const requestTemplatesEnabled = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
+    this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
+      const items: MenuItem[] = [];
+      const requestTemplatesEnabled = projectConfig.ITShopConfig?.VI_ITShop_ProductSelectionFromTemplate || false;
 
-        if (preProps.includes('ITSHOP') && requestTemplatesEnabled) {
-          items.push(
-            {
-              id: 'QER_Request_RequestTemplates',
-              navigationCommands: {
-                commands: ['itshop', 'requesttemplates']
-              },
-              title: '#LDS#Menu Entry Product bundles',
-              sorting: '10-50',
-            }
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Request',
-          title: '#LDS#Requests',
-          sorting: '10',
-          items
-        };
+      if (preProps.includes('ITSHOP') && requestTemplatesEnabled) {
+        items.push({
+          id: 'QER_Request_RequestTemplates',
+          navigationCommands: {
+            commands: ['itshop', 'requesttemplates'],
+          },
+          title: '#LDS#Menu Entry Product bundles',
+          sorting: '10-50',
+        });
       }
-    );
+
+      if (items.length === 0) {
+        return;
+      }
+      return {
+        id: 'ROOT_Request',
+        title: '#LDS#Requests',
+        sorting: '10',
+        items,
+      };
+    });
   }
 }

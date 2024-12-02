@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,15 +30,16 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'imx-application-dialog',
-  templateUrl: './application-dialog.component.html'
+  templateUrl: './application-dialog.component.html',
 })
 export class ApplicationDialogComponent implements OnInit {
-  public urlSafe:SafeResourceUrl;
-  constructor( @Inject(MAT_DIALOG_DATA) public readonly data: {url: string},
-  public sanitizer: DomSanitizer) { }
+  public urlSafe: SafeResourceUrl;
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public readonly data: { url: string },
+    public sanitizer: DomSanitizer,
+  ) {}
 
   public ngOnInit(): void {
     this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.data.url);
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,28 +26,28 @@
 
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import _ from 'lodash';
 
-import { ListReportDefinitionDto, ListReportDefinitionRead, PortalReportsEdit } from 'imx-api-rps';
+import { ListReportDefinitionDto, ListReportDefinitionRead, PortalReportsEdit } from '@imx-modules/imx-api-rps';
 import {
   ExtendedTypedEntityCollection,
-  SqlWizardExpression,
-  isExpressionInvalid,
-  ValType,
   FkProviderItem,
   SqlExpression,
-} from 'imx-qbm-dbts';
+  SqlWizardExpression,
+  ValType,
+  isExpressionInvalid,
+} from '@imx-modules/imx-qbm-dbts';
 
 import {
   BaseCdr,
+  BaseReadonlyCdr,
+  CdrFactoryService,
   ColumnDependentReference,
   ConfirmationService,
   EntityService,
   SnackBarService,
   SqlWizardComponent,
-  CdrFactoryService,
-  BaseReadonlyCdr,
 } from 'qbm';
 import { ProjectConfigurationService } from 'qer';
 import { Subscription } from 'rxjs';
@@ -65,9 +65,6 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
   public cdrList: ColumnDependentReference[] = [];
   public readonly detailsFormGroup: UntypedFormGroup;
 
-  public get sqlExpression(): SqlWizardExpression {
-    return this.definition?.Data;
-  }
   public definition: ListReportDefinitionDto;
   public report: PortalReportsEdit;
 
@@ -83,9 +80,14 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     );
   }
 
+  public get isCondition(): boolean {
+    return !!this.sqlExpression?.Expression?.Expressions && this.sqlExpression?.Expression?.Expressions?.length < 1;
+  }
+
   private closeSubscription: Subscription;
 
-  public lastSavedExpression: SqlExpression;
+  public sqlExpression: SqlWizardExpression;
+  public lastSavedExpression: SqlExpression | undefined;
   public exprHasntChanged = true;
 
   public checkChanges(): void {
@@ -111,7 +113,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     private readonly cdref: ChangeDetectorRef,
     private readonly config: ProjectConfigurationService,
     private readonly cdrFactoryService: CdrFactoryService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
     this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
@@ -125,7 +127,12 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
 
     // Save a local copy of the definition object. The entity will change with every update
     // of the interactive entity that comes back from the server
-    this.definition = this.report.extendedDataRead?.Definition[0];
+    if (!!this.report.extendedDataRead?.Definition) {
+      this.definition = this.report.extendedDataRead.Definition[0];
+    }
+    if (this.definition?.Data) {
+      this.sqlExpression = this.definition.Data;
+    }
 
     this.lastSavedExpression = _.cloneDeep(this.sqlExpression?.Expression);
   }
@@ -135,15 +142,17 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
 
     this.cdrList = this.cdrFactoryService.buildCdrFromColumnList(
       this.report.GetEntity(),
-      c.OwnershipConfig.EditableFields[this.report.GetEntity().TypeName],
-      this.data.isReadonly
+      c?.OwnershipConfig?.EditableFields?.[this.report.GetEntity().TypeName] ?? [],
+      this.data.isReadonly,
     );
 
     if (this.definition) {
       // is it a list report?
       this.cdrList.push(await this.buildTableCdr());
     }
-    this.cdrList.push(this.data.isReadonly ? new BaseReadonlyCdr(this.report.AvailableTo.Column): new BaseCdr(this.report.AvailableTo.Column));
+    this.cdrList.push(
+      this.data.isReadonly ? new BaseReadonlyCdr(this.report.AvailableTo.Column) : new BaseCdr(this.report.AvailableTo.Column),
+    );
   }
 
   public addCdr(control: AbstractControl): void {
@@ -170,7 +179,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
             {
               SelectedColumns: this.definition.SelectedColumns,
               Data: {
-                Filters: [this.definition.Data.Expression],
+                Filters: this.definition.Data?.Expression ? [this.definition.Data?.Expression] : [],
               },
             },
           ],
@@ -191,7 +200,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
       return false;
     } // not a list report?
 
-    if (this.definition.SelectedColumns.filter((elem) => elem != null && elem !== '').length < 1) {
+    if (!this.definition.SelectedColumns || this.definition.SelectedColumns?.filter((elem) => !!elem).length === 0) {
       return true;
     } // must select at least one column
 
@@ -204,11 +213,14 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     return isExpressionInvalid(this.sqlExpression) || !this.hasValuesSet(this.sqlExpression.Expression);
   }
 
-  private hasValuesSet(sqlExpression: SqlExpression, checkCurrent: boolean = false): boolean {
+  private hasValuesSet(sqlExpression: SqlExpression | undefined, checkCurrent: boolean = false): boolean {
+    if (!sqlExpression) {
+      return false;
+    }
     const current = !checkCurrent || sqlExpression.Value != null;
 
-    if (sqlExpression.Expressions?.length > 0) {
-      return current && sqlExpression.Expressions.every((elem) => this.hasValuesSet(elem, true));
+    if (sqlExpression.Expressions) {
+      return current && sqlExpression.Expressions?.every((elem) => this.hasValuesSet(elem, true));
     }
 
     return current;
@@ -239,7 +251,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
         ValidReferencedTables: [{ TableName: fkProviderItem.fkTableName }],
         MinLen: 1,
       },
-      [fkProviderItem]
+      [fkProviderItem],
     );
     await tableCol.PutValueStruct({
       DataValue: this.definition.TableName,
@@ -254,7 +266,12 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
           },
         ],
       });
-      this.definition = this.report.extendedDataRead?.Definition[0];
+      if (!!this.report.extendedDataRead?.Definition) {
+        this.definition = this.report.extendedDataRead.Definition[0];
+      }
+      if (this.definition.Data) {
+        this.sqlExpression = this.definition.Data;
+      }
       this.cdref.detectChanges();
     });
 

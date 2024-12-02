@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,20 @@
  *
  */
 
-import { HeatmapInfoDto } from 'imx-api-qer';
-import { DisplayPattern, EntityColumnData, EntityData, EntitySchema, ExtendedTypedEntityCollection, IClientProperty, IReadValue, IWriteValue, TypedEntity, TypedEntityBuilder, ValType } from 'imx-qbm-dbts';
+import { HeatmapInfoDto } from '@imx-modules/imx-api-qer';
+import {
+  DisplayPattern,
+  EntityColumnData,
+  EntityData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  IReadValue,
+  IWriteValue,
+  TypedEntity,
+  TypedEntityBuilder,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 
 export class HeatmapInfoTyped extends TypedEntity {
   public readonly Area: IReadValue<string> = this.GetEntityValue('Area');
@@ -37,7 +49,6 @@ export class HeatmapInfoTyped extends TypedEntity {
   public readonly Id: IReadValue<string> = this.GetEntityValue('Id');
   public readonly Display: IReadValue<string> = this.GetEntityValue('Display');
   public readonly Description: IReadValue<string> = this.GetEntityValue('Description');
-
 
   public GetDisplay(): string {
     return this.Display.value;
@@ -52,11 +63,11 @@ export class HeatmapInfoTyped extends TypedEntity {
     };
     ret.IsFavorite = {
       Type: ValType.Bool,
-      ColumnName: 'IsFavorite'
+      ColumnName: 'IsFavorite',
     };
     ret.IsOrg = {
       Type: ValType.Bool,
-      ColumnName: 'IsOrg'
+      ColumnName: 'IsOrg',
     };
     ret.NegateThresholds = {
       Type: ValType.Double,
@@ -81,6 +92,7 @@ export class HeatmapInfoTyped extends TypedEntity {
     ret.Description = {
       Type: ValType.String,
       ColumnName: 'Description',
+      Display: '#LDS#Description',
     };
 
     return {
@@ -95,23 +107,23 @@ export class HeatmapInfoTyped extends TypedEntity {
     return builder.buildReadWriteEntities(
       {
         TotalCount: entityData.length,
-        Entities: entityData
+        Entities: entityData,
       },
-      HeatmapInfoTyped.GetEntitySchema()
+      HeatmapInfoTyped.GetEntitySchema(),
     );
   }
 
-  public static buildEntityData(data: HeatmapInfoDto, extras?: {isFavorite: boolean, isOrg: boolean}): EntityData {
+  public static buildEntityData(data: HeatmapInfoDto, extras?: { isFavorite: boolean; isOrg: boolean }): EntityData {
     const ret: { [key: string]: EntityColumnData } = {};
 
     // Setup data
     ret.Area = { Value: data.Area, IsReadOnly: true };
-    ret.IsFavorite = {Value: extras?.isFavorite, IsReadOnly: false};
-    ret.IsOrg = {Value: extras?.isOrg, IsReadOnly: false};
+    ret.IsFavorite = { Value: extras?.isFavorite, IsReadOnly: false };
+    ret.IsOrg = { Value: extras?.isOrg, IsReadOnly: false };
     ret.Display = { Value: data.Display, IsReadOnly: true };
     ret.Description = { Value: data.Description, IsReadOnly: true };
     ret.Id = { Value: data.Id, IsReadOnly: true };
-    ret.NegateThresholds = {Value: data.NegateThresholds, IsReadOnly: true};
+    ret.NegateThresholds = { Value: data.NegateThresholds, IsReadOnly: true };
     ret.ErrorThreshold = { Value: data.ErrorThreshold, IsReadOnly: true };
     ret.WarningThreshold = { Value: data.WarningThreshold, IsReadOnly: true };
 

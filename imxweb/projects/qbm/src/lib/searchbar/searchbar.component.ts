@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,22 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import {
-  Component,
-  OnInit, Input, ContentChild, TemplateRef, ElementRef, ViewChild, Output, EventEmitter, OnDestroy
-} from '@angular/core';
+import { Component, ContentChild, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatSelect } from '@angular/material/select';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
-
-import { TypedEntity } from 'imx-qbm-dbts';
-import { imx_ISearchService } from './iSearchService';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { BusyService } from '../base/busy.service';
+import { imx_ISearchService } from './iSearchService';
 
 @Component({
   selector: 'imx-searchbar',
   templateUrl: './searchbar.component.html',
-  styleUrls: ['./searchbar.component.scss']
+  styleUrls: ['./searchbar.component.scss'],
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
-
   public get autoCompleteIsFocused(): boolean {
     return this.autocompleteFocus;
   }
@@ -53,14 +47,14 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     return this.filterFocus;
   }
 
-  public readonly filterComponentId =
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15);
+  public readonly filterComponentId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   public noEntriesVisible = false;
   public tableList: TypedEntity[] = [];
   public tables = new UntypedFormControl();
   public selectedTables: string[];
   public searchResults: any[] = [];
+
+  private busyService: BusyService = new BusyService();
 
   @Input() public searchService: imx_ISearchService;
   @Input() public debounce = false;
@@ -68,7 +62,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   @Input() public watermark = '#LDS#Insert Text';
   @Output() public selectionChange = new EventEmitter<any>();
 
-  @ContentChild('imxResultTemplate', /* TODO: add static flag */ {}) public resultTemplate: TemplateRef<ElementRef>;
+  @ContentChild('imxResultTemplate', /* TODO: add static flag */ {}) public resultTemplate: TemplateRef<any>;
   @ViewChild('tableSelect', { static: true }) public tableSelect: MatSelect;
   @ViewChild(MatAutocompleteTrigger, { static: true }) public autoCompleteTrigger: MatAutocompleteTrigger;
 
@@ -76,36 +70,34 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   private filterFocus = false;
   private term = '';
   private readonly subscriptions: Subscription[] = [];
+  public isLoading: boolean = false;
 
-  constructor(private busyService: EuiLoadingService) {
+  constructor() {
+    this.subscriptions.push(this.busyService.busyStateChanged.subscribe((state) => (this.isLoading = state)));
   }
 
   public async ngOnInit(): Promise<void> {
     let result: TypedEntity[];
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+
+    const isBusy = this.busyService.beginBusy();
 
     try {
       result = await this.searchService.getIndexedTables();
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
     this.tableList = result;
 
-    this.subscriptions.push(this.searchService.searchTermStream
-      .pipe(
-        debounceTime(this.debounceTime),
-        distinctUntilChanged()
-      )
-      .subscribe(async (term: string) => {
+    this.subscriptions.push(
+      this.searchService.searchTermStream.pipe(debounceTime(this.debounceTime), distinctUntilChanged()).subscribe(async (term: string) => {
         this.term = term;
         await this.searchInternal(term);
-      })
+      }),
     );
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public search(term: string, evt?: KeyboardEvent): void {
@@ -127,13 +119,13 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     }
 
     json = '';
-    Object.keys(link).forEach(key => (json += key + ': ' + link[key] + '\n'));
+    Object.keys(link).forEach((key) => (json += key + ': ' + link[key] + '\n'));
 
     return json.substring(0, json.length - 1);
   }
 
-  public displayItem(item?: any): string | undefined {
-    return item ? item.Display : undefined;
+  public displayItem(item?: any): string {
+    return item ? item.Display : '';
   }
 
   /* *** Event handling *** */
@@ -142,13 +134,12 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     const selectedtables = this.selectedTables !== undefined && this.selectedTables.length > 0 ? this.selectedTables.join(',') : '';
 
     let result: TypedEntity[];
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
 
     try {
       result = await this.searchService.search(item, selectedtables);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
     this.searchResults = result;
     this.setNoEntriesVisibility();
@@ -160,7 +151,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
   public onComponentLostFocus(_: FocusEvent): void {
     setTimeout(() => {
-      if (!this.autocompleteFocus && !this.filterFocus && document.activeElement.id !== this.filterComponentId) {
+      if (!this.autocompleteFocus && !this.filterFocus && document?.activeElement?.id !== this.filterComponentId) {
         this.noEntriesVisible = false;
       }
     });
@@ -169,7 +160,6 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   public onInputFocus(): void {
     setTimeout(() => {
       this.autocompleteFocus = true;
-
       this.setNoEntriesVisibility();
     });
   }

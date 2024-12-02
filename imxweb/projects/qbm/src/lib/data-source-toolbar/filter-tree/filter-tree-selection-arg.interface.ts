@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,14 @@
  *
  */
 
-import { FilterData, IEntity } from 'imx-qbm-dbts';
+import { FilterData, IEntity } from '@imx-modules/imx-qbm-dbts';
+import { FilterTreeSelectionParameter } from '../filter-wizard/filter-tree-sidesheet/filter-tree-sidesheet.model';
 
 /**
  * Provides information for the selection of a filter tree.
  * It is used to unify the information, that is provided by the tree and a loaded configuration
  */
-export interface FilterTreeSelectionArg {
-  /**
-   * The text, that is displayed on chips.
-   */
-  display: string;
-  /**
-   * The real filter information.
-   */
-  filter: FilterData;
-
+export interface FilterTreeSelectionArg extends FilterTreeSelectionParameter {
   /**
    * An optional entity, that is used for data
    */

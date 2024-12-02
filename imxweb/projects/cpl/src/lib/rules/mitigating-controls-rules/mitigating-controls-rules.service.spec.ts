@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,9 +36,8 @@ describe('MitigatingControlsRulesService', () => {
   beforeEach(() => {
     return MockBuilder([MitigatingControlsRulesService])
       .mock(ApiService)
-      .beforeCompileComponents(testBed => {
-        testBed.configureTestingModule({
-        });
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({});
       });
   });
 

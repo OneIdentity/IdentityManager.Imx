@@ -1,38 +1,35 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-.eui-sidesheet-content{
+.eui-sidesheet-content {
   display: flex;
   flex-direction: column;
-  imx-sap-compliance-violation-views-by-role, imx-sap-compliance-violation-views-by-ability{
+
+  imx-sap-compliance-violation-views-by-role,
+  imx-sap-compliance-violation-views-by-ability {
     display: block;
     overflow: hidden;
-    height: 100%;
+    flex-grow: 1;
   }
-  .mat-progress-spinner {
-    margin: auto;
-  }
-  .mat-chip{
+
+  .mat-mdc-chip {
     cursor: pointer;
   }
-  .imx-sap-compliance-selection{
+
+  .imx-sap-compliance-selection {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     font-size: 14px;
     gap: 20px;
-    span{
-      padding-bottom: 20px;
-    }
+    padding-bottom: 20px;
   }
-  ::ng-deep .no-results{
+
+  .imx-no-results {
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    .eui-icon{
-      font-size: 100px;
-      color: $color-gray-10;
-    }
+
     p {
       margin: 0;
       font-size: 18px;
@@ -43,15 +40,9 @@
 
 .eui-dark-theme {
   :host {
-    .eui-sidesheet-content{
-      ::ng-deep .no-results {
-        eui-icon {
-          color: $color-gray-20;
-        }
-
-        p {
-          color: $color-gray-10;
-        }
+    .imx-no-results {
+      p {
+        color: $color-gray-10;
       }
     }
   }

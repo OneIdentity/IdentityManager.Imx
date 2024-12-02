@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { MockBuilder,  MockedComponentFixture, MockRender } from 'ng-mocks';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 import { HeatmapSidesheetService } from '../heatmap-sidesheet/heatmap-sidesheet.service';
 
 import { TreemapChartComponent } from './treemap-chart.component';
@@ -36,12 +36,12 @@ describe('TreemapChartComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([TreemapChartComponent])
-    .mock(HeatmapSidesheetService)
-    .beforeCompileComponents(testBed => {
-      testBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      .mock(HeatmapSidesheetService)
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        });
       });
-    });
   });
 
   beforeEach(() => {

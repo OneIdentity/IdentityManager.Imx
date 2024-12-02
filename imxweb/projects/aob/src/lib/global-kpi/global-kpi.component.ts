@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,22 @@
  *
  */
 
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { MatDialog } from '@angular/material/dialog';
-import { ChartOptions, pie } from 'billboard.js';
 import { KeyValue } from '@angular/common';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+import { ChartOptions, pie, PrimitiveArray } from 'billboard.js';
 
-import { ChartDto, ChartDataPoint } from 'imx-api-aob';
-import { LineChartOptions, XAxisInformation, YAxisInformation, SeriesInformation, ClassloggerService } from 'qbm';
+import { ChartDataPoint, ChartDto } from '@imx-modules/imx-api-aob';
+import { ClassloggerService, LineChartOptions, SeriesInformation, XAxisInformation, YAxisInformation } from 'qbm';
 import { GlobalKpiService } from './global-kpi.service';
 import { KpiData } from './kpi-data.interface';
 
 @Component({
   selector: 'imx-global-kpi',
   templateUrl: './global-kpi.component.html',
-  styleUrls: ['./global-kpi.component.scss']
+  styleUrls: ['./global-kpi.component.scss'],
 })
 /**
  * Builds a component, that displays global KPI data (key performance indicators)
@@ -60,8 +59,7 @@ export class GlobalKpiComponent implements OnInit {
   private business: string;
   private central: string;
   private others: string;
-  private readonly colors: string[] = ['#B4E6F4', '#82D5ED', '#50C4E6', '#2BB7E0',
-    '#05AADB', '#04A3D7', '#0499D2', '#0390CD', '#017FC4'];
+  private readonly colors: string[] = ['#B4E6F4', '#82D5ED', '#50C4E6', '#2BB7E0', '#05AADB', '#04A3D7', '#0499D2', '#0390CD', '#017FC4'];
 
   constructor(
     private readonly logger: ClassloggerService,
@@ -72,27 +70,23 @@ export class GlobalKpiComponent implements OnInit {
   ) {
     this.browserCulture = this.translateService.currentLang;
 
-    translateService.get('#LDS#No data available')
-      .subscribe((trans: string) => this.noDataLoaded = trans);
-    translateService.get('#LDS#Used in business roles')
-      .subscribe((trans: string) => this.business = trans);
-    translateService.get('#LDS#Using central directory')
-      .subscribe((trans: string) => this.central = trans);
-    translateService.get('#LDS#Other')
-      .subscribe((trans: string) => this.others = trans);
+    translateService.get('#LDS#No data available').subscribe((trans: string) => (this.noDataLoaded = trans));
+    translateService.get('#LDS#Used in business roles').subscribe((trans: string) => (this.business = trans));
+    translateService.get('#LDS#Using central directory').subscribe((trans: string) => (this.central = trans));
+    translateService.get('#LDS#Other').subscribe((trans: string) => (this.others = trans));
   }
 
   /**
    * Loads the chartDto objects and inits the component
    */
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
-      this.kpiData = (await this.kpiProvider.get())
-        .map((elem, i) => this.buildKpiData(i, elem));
+      this.kpiData = (await this.kpiProvider.get())?.map((elem, i) => this.buildKpiData(i, elem)) || [];
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
@@ -101,10 +95,11 @@ export class GlobalKpiComponent implements OnInit {
    * @param chart the data of a single chart
    */
   public showDetails(kpi: KpiData): void {
-    if (kpi.chartData.Data.length === 0 ) { return; }
+    if (kpi.chartData.Data?.length === 0) {
+      return;
+    }
     kpi.chartDetails = this.buildLineOptions(kpi.chartData, kpi.pieChart != null, kpi.names);
-    this.matDialog.open(this.chartDialog,
-      { data: kpi, minWidth: 600, autoFocus: false });
+    this.matDialog.open(this.chartDialog, { data: kpi, minWidth: 600, autoFocus: false });
   }
 
   /**
@@ -114,26 +109,26 @@ export class GlobalKpiComponent implements OnInit {
    */
   public isCalculated(chart: ChartDto): boolean {
     return chart.Data != null && chart.Data.length > 0 && chart.Data[0].Points != null;
- }
+  }
 
   /**
    * @ignore determines whether an application has chart data or not
    * @returns true, if there are any KPIs else false
    */
   public hasKpis(): boolean {
-    return (this.kpiData != null && this.kpiData.length > 0 && this.kpiData.some(elem => elem != null));
+    return this.kpiData != null && this.kpiData.length > 0 && this.kpiData.some((elem) => elem != null);
   }
 
   private buildKpiData(chartIndex: number, chart: ChartDto): KpiData {
     const calc = this.isCalculated(chart);
 
     if (!calc) {
-      return { index: chartIndex, chartData: chart, calculated: false, names : [] };
+      return { index: chartIndex, chartData: chart, calculated: false, names: [] };
     }
 
-    let currentData: number = null;
-    let pieOptions: ChartOptions = null;
-    let captions: string[];
+    let currentData: number | undefined;
+    let pieOptions: ChartOptions | undefined;
+    let captions: string[] = [];
 
     switch (chartIndex) {
       case 0:
@@ -142,8 +137,8 @@ export class GlobalKpiComponent implements OnInit {
       case 3:
       case 7:
       case 8:
-        currentData = chart.Data[0].Points[0].Value;
-        captions = chart.Data.map(ch => ch.Name);
+        currentData = chart.Data?.[0].Points?.[0].Value;
+        captions = chart.Data?.map((ch) => ch.Name || '') || [];
         break;
       case 4:
         pieOptions = this.buildSingleValueChart(chart, this.central);
@@ -155,14 +150,14 @@ export class GlobalKpiComponent implements OnInit {
         break;
       case 5:
         pieOptions = this.buildPieChart(chart);
-        captions = chart.Data.map(ch => ch.Name);
+        captions = chart.Data?.map((ch) => ch.Name || '') || [];
         break;
     }
 
     return { index: chartIndex, chartData: chart, calculated: calc, names: captions, currentDataValue: currentData, pieChart: pieOptions };
   }
 
-  private buildSingleValueChart(chart: ChartDto, name: string): ChartOptions {
+  private buildSingleValueChart(chart: ChartDto, name: string): ChartOptions | undefined {
     if (!this.isCalculated(chart)) {
       this.logger.debug(this, 'The chart is not calculated yet, therefore no chart is build');
       return undefined;
@@ -171,28 +166,30 @@ export class GlobalKpiComponent implements OnInit {
     return {
       size: { width: 271, height: 271 },
       data: {
-        columns: [['data1', chart.Data[0].Points[0].Value],
-        ['data2', 100 - chart.Data[0].Points[0].Value]],
+        columns: [
+          ['data1', chart.Data?.[0].Points?.[0].Value || 0],
+          ['data2', 100 - (chart.Data?.[0].Points?.[0].Value || 0)],
+        ],
         names: { data1: name, data2: this.others },
         colors: { data1: this.colors[0], data2: '#CCC' },
         type: pie(),
         empty: {
           label: {
-            text: this.noDataLoaded
-          }
-        }
-      }, pie: {
+            text: this.noDataLoaded,
+          },
+        },
+      },
+      pie: {
         padAngle: 0.01,
         label: {
-          format: d => `${d.toLocaleString(this.browserCulture,
-             { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`,
-          threshold: 0.06
+          format: (d) => `${d.toLocaleString(this.browserCulture, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`,
+          threshold: 0.06,
         },
-      }
+      },
     };
   }
 
-  private buildPieChart(chart: ChartDto): ChartOptions {
+  private buildPieChart(chart: ChartDto): ChartOptions | undefined {
     if (!this.isCalculated(chart)) {
       this.logger.debug(this, 'The chart is not calculated yet, therefore no chart is build');
       return undefined;
@@ -201,23 +198,27 @@ export class GlobalKpiComponent implements OnInit {
     return {
       size: { width: 271, height: 271 },
       data: {
-        columns: chart.Data.map((ch, index) => ['data' + index, ch.Points[0].Value]) as any[],
-        names: this.toObject(chart.Data.map((ch, index) => ({ key: 'data' + index, value: ch.Name }))),
-        colors: this.toObject(chart.Data.map((ch, index) => ({ key: 'data' + index, value: this.colors[index] }))),
+        columns: chart?.Data?.map((ch, index): PrimitiveArray => ['data' + index, ch?.Points?.[0].Value || 0]),
+        names: this.toObject(
+          chart?.Data?.map((ch, index): KeyValue<string, string> => ({ key: 'data' + index, value: ch.Name || '' })) || [],
+        ),
+        colors: this.toObject(
+          chart?.Data?.map((ch, index): KeyValue<string, string> => ({ key: 'data' + index, value: this.colors[index] })) || [],
+        ),
         type: pie(),
         empty: {
           label: {
-            text: this.noDataLoaded
-          }
-        }
-      }, pie: {
+            text: this.noDataLoaded,
+          },
+        },
+      },
+      pie: {
         padAngle: 0.01,
         label: {
-          format: d => `${d.toLocaleString(this.browserCulture,
-             { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`,
-          threshold: 0.06
+          format: (d) => `${d.toLocaleString(this.browserCulture, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`,
+          threshold: 0.06,
         },
-      }
+      },
     };
   }
 
@@ -234,7 +235,6 @@ export class GlobalKpiComponent implements OnInit {
       ret[elem.key] = elem.value;
     }
     return ret;
-
   }
 
   /**
@@ -243,7 +243,7 @@ export class GlobalKpiComponent implements OnInit {
    * @returns true, if the chart has multiple points else it return false
    */
   private hasMultipleDataPoints(chart: ChartDto): boolean {
-    return this.isCalculated(chart) && chart.Data[0].Points.length > 1;
+    return this.isCalculated(chart) && (chart?.Data?.[0]?.Points?.length || 0) > 1;
   }
 
   /**
@@ -252,39 +252,43 @@ export class GlobalKpiComponent implements OnInit {
    * @returns a ChartOptions object, that can be used by billboard.js
    */
   private buildLineOptions(chart: ChartDto, isPercentage: boolean, names: string[]): ChartOptions {
-    const yAxis = new YAxisInformation(chart.Data.map((serie, id) =>
-      new SeriesInformation(names[id],
-        serie.Points.map((point: ChartDataPoint) => point.Value),
-        this.colors[id]
-      )));
+    const yAxis = new YAxisInformation(
+      chart.Data?.map(
+        (serie, id) => new SeriesInformation(names[id], serie.Points?.map((point: ChartDataPoint) => point.Value) || [], this.colors[id]),
+      ) || [],
+    );
 
     yAxis.tickConfiguration = {
-      format: (d) => isPercentage ? `${d.toLocaleString(this.browserCulture)}%` : `${d.toLocaleString(this.browserCulture)}`,
-      values: this.accumulateTicks(chart)
+      format: (d) => (isPercentage ? `${d.toLocaleString(this.browserCulture)}%` : `${d.toLocaleString(this.browserCulture)}`),
+      values: this.accumulateTicks(chart),
     };
 
     const lineChartOptions = new LineChartOptions(
-      new XAxisInformation('date',
-        chart.Data[0].Points.map((point: ChartDataPoint) => new Date(point.Date)), {
+      new XAxisInformation('date', chart.Data?.[0]?.Points?.map((point: ChartDataPoint) => new Date(point.Date)) || [], {
         count: 6,
-        format: (d: Date) => d.toLocaleDateString(this.browserCulture)
+        format: (d: Date) => d.toLocaleDateString(this.browserCulture),
       }),
-      yAxis
+      yAxis,
     );
     lineChartOptions.useCurvedLines = false;
-    lineChartOptions.hideLegend = chart.Data.length === 1;
+    lineChartOptions.hideLegend = chart.Data?.length === 1;
     lineChartOptions.showPoints = !this.hasMultipleDataPoints(chart);
     lineChartOptions.size = { width: 500, height: 325 };
     return lineChartOptions.options;
   }
 
   private accumulateTicks(chart: ChartDto): number[] {
-    const ret = [];
-    const max = Math.max.apply(Math, chart.Data.map(o => this.getMax(o.Points)));
+    const ret: number[] = [];
+    const max = Math.max.apply(
+      Math,
+      chart.Data?.map((o) => this.getMax(o.Points || [])),
+    );
     const steps = Math.max(1, Math.trunc(max / 10)) + 1;
 
     ret.push(0);
-    if (max <= 0) { return ret; }
+    if (max <= 0) {
+      return ret;
+    }
 
     for (let index = 1; index <= 10; index++) {
       ret.push(index * steps);
@@ -293,6 +297,9 @@ export class GlobalKpiComponent implements OnInit {
   }
 
   private getMax(points: ChartDataPoint[]): number {
-    return Math.max.apply(Math, points.map(o => o.Value));
+    return Math.max.apply(
+      Math,
+      points.map((o) => o.Value),
+    );
   }
 }

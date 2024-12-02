@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,22 @@
  *
  */
 
-import { Component, Input } from "@angular/core";
-import { PortalPersonOrgdata } from "imx-api-qer";
-import { XOrigin } from "imx-qbm-dbts";
-import { OrgChartService } from "./org-chart.service";
-import { TranslateService } from "@ngx-translate/core";
+import { Component, Input } from '@angular/core';
+import { PortalPersonOrgdata } from '@imx-modules/imx-api-qer';
+import { XOrigin } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { OrgChartService } from './org-chart.service';
 
 @Component({
   styleUrls: ['./identity.component.scss'],
   selector: 'imx-orgchart-identity',
-  templateUrl: './identity.component.html'
+  templateUrl: './identity.component.html',
 })
 export class IdentityComponent {
-  constructor(public readonly orgChartService: OrgChartService,
-    private readonly translator: TranslateService
-  ) { }
+  constructor(
+    public readonly orgChartService: OrgChartService,
+    private readonly translator: TranslateService,
+  ) {}
 
   @Input() public identity: PortalPersonOrgdata;
 
@@ -53,7 +54,7 @@ export class IdentityComponent {
   }
 
   buildSubTitle(): string {
-    var strings = [];
+    var strings: string[] = [];
     if (this.isExternal()) {
       strings.push(this.translator.instant('#LDS#External'));
     }
@@ -69,6 +70,6 @@ export class IdentityComponent {
       strings.push(employeeType);
     }
 
-    return strings.length > 0 ? strings.reduce((a, b) => a + ", " + b) : '';
+    return strings.length > 0 ? strings.reduce((a, b) => a + ', ' + b) : '';
   }
 }

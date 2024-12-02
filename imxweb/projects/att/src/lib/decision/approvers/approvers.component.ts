@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { Approvers } from '../approvers.interface';
 @Component({
   selector: 'imx-approvers',
   templateUrl: './approvers.component.html',
-  styleUrls: ['./approvers.component.scss']
+  styleUrls: ['./approvers.component.scss'],
 })
 export class ApproversComponent {
   @Input() public approvers: Approvers;

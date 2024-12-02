@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,106 +24,104 @@
  *
  */
 
-import { IEntityColumn, IEntity } from 'imx-qbm-dbts';
+import { IEntityColumn, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { ISessionState } from 'qbm';
 import { Subject } from 'rxjs';
 
 export class AadCommonTestData {
-
   public static mockConfigService: any = {
     getConfig: () => {
       return Promise.resolve({
         PersonConfig: {
           VI_MyData_WhitePages_ResultAttributes: {
-            Columns: ['col1', 'col2']
+            Columns: ['col1', 'col2'],
           },
           VI_PersonalData_Fields: {
-            Columns: ['col1', 'col2']
-          }
-        }
+            Columns: ['col1', 'col2'],
+          },
+        },
       });
-    }
+    },
   };
 
   public static mockAppConfigService: any = {
     Config: {
       Title: '',
       routeConfig: {
-        start: 'dashboard'
-      }
+        start: 'dashboard',
+      },
     },
     client: {
       imx_multilanguage_getcaptions_get: () => Promise.resolve({}),
-      imx_multilanguage_translations_get: () => Promise.resolve({})
-    }
+      imx_multilanguage_translations_get: () => Promise.resolve({}),
+    },
   };
 
   public static mockAuthenticationServiceStub = {
     onSessionResponse: new Subject<ISessionState>(),
-    update: jasmine.createSpy('update')
+    update: jasmine.createSpy('update'),
   };
 
   public static mockSessionService: any = {
     TypedClient: {
       PortalTargetsystemUnsGroup: {
-        Get: () => Promise.resolve({})
+        Get: () => Promise.resolve({}),
       },
       PortalTargetsystemUnsAccount: {
-        Get: () => Promise.resolve({})
+        Get: () => Promise.resolve({}),
       },
       PortalPersonAll: {
-        Get: () => Promise.resolve({})
+        Get: () => Promise.resolve({}),
       },
       PortalAdminPerson: {
-        Get: () => Promise.resolve({})
+        Get: () => Promise.resolve({}),
       },
       PortalPerson: {
-        Get: () => Promise.resolve({Data: ['test1', 'test2']})
+        Get: () => Promise.resolve({ Data: ['test1', 'test2'] }),
       },
-    }
+    },
   };
 
   public static aadUserSchema: any = {
     Columns: {
       UID_AADUser: {},
       XOrigin: {},
-      ObjectKeyAADSubSku: {}
-    }
+      ObjectKeyAADSubSku: {},
+    },
   };
 
   public static aadUserDeniedPlansSchema: any = {
     Columns: {
       UID_AADUser: {},
       XOrigin: {},
-      UID_AADDeniedServicePlan: {}
-    }
+      UID_AADDeniedServicePlan: {},
+    },
   };
 
   public static aadGroupSubSchema: any = {
     Columns: {
       UID_AADGroup: {},
       XOrigin: {},
-      UID_AADSubSku: {}
-    }
+      UID_AADSubSku: {},
+    },
   };
 
   public static aadGroupDeniedPlansSchema: any = {
     Columns: {
       UID_AADGroup: {},
       XOrigin: {},
-      UID_AADDeniedServicePlan: {}
-    }
+      UID_AADDeniedServicePlan: {},
+    },
   };
-
 
   public static mockAzureAdService = {
     aadUserSchema: AadCommonTestData.aadUserSchema,
     aadUserDeniedPlansSchema: AadCommonTestData.aadUserDeniedPlansSchema,
     aadGroupSubSchema: AadCommonTestData.aadGroupSubSchema,
     aadGroupDeniedPlansSchema: AadCommonTestData.aadGroupDeniedPlansSchema,
-    getAadUserSubscriptions: jasmine.createSpy('getAadUserSubscriptions').and.returnValue(Promise.resolve({ Data: []})),
-    getAadUserDeniedPlans: jasmine.createSpy('getAadUserDeniedPlans').and.returnValue(Promise.resolve({ Data: []})),
-    getAadGroupSubscriptions: jasmine.createSpy('getAadGroupSubscriptions').and.returnValue(Promise.resolve({ Data: []})),
+    getAadUserSubscriptions: jasmine.createSpy('getAadUserSubscriptions').and.returnValue(Promise.resolve({ Data: [] })),
+    getAadUserDeniedPlans: jasmine.createSpy('getAadUserDeniedPlans').and.returnValue(Promise.resolve({ Data: [] })),
+    getAadGroupSubscriptions: jasmine.createSpy('getAadGroupSubscriptions').and.returnValue(Promise.resolve({ Data: [] })),
     handleOpenLoader: jasmine.createSpy('handleOpenLoader'),
     handleCloseLoader: jasmine.createSpy('handleCloseLoader'),
   };
@@ -132,33 +130,30 @@ export class AadCommonTestData {
     ColumnName: '',
     GetMetadata: () => {
       return {
-        CanEdit: () =>  false,
+        CanEdit: () => false,
         GetDisplay: () => '',
-        GetMinLength: () => 0
+        GetMinLength: () => 0,
       };
     },
-    GetValue: () => ''
-
+    GetValue: () => '',
   } as IEntityColumn;
 
   public static mockEntityColumnWithValue = {
     ColumnName: '',
     GetMetadata: () => {
       return {
-        CanEdit: () =>  false,
+        CanEdit: () => false,
         GetDisplay: () => '',
-        GetMinLength: () => 0
+        GetMinLength: () => 0,
       };
     },
-    GetValue: () => 'Test value 1'
-
+    GetValue: () => 'Test value 1',
   } as IEntityColumn;
 
   public static mockEntity = {
     GetDisplay: () => 'Display value',
     GetKeys: () => ['1'],
     GetColumn: (name) => AadCommonTestData.mockEntityColumn,
-    Commit: () => Promise.resolve()
+    Commit: () => Promise.resolve(),
   } as IEntity;
-
 }

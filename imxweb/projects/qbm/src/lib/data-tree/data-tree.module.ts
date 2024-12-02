@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,14 +47,13 @@ import { CheckableTreeComponent } from './checkable-tree/checkable-tree.componen
 import { DataTreeSearchResultsComponent } from './data-tree-search-results/data-tree-search-results.component';
 import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
 
-
 @NgModule({
   declarations: [
     DataTreeComponent,
     MatSelectionListMultipleDirective,
     TreeSelectionListComponent,
     CheckableTreeComponent,
-    DataTreeSearchResultsComponent
+    DataTreeSearchResultsComponent,
   ],
   imports: [
     ClassloggerModule,
@@ -71,10 +70,8 @@ import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
     TranslateModule,
     MatPaginatorModule,
     MatCardModule,
-    BusyIndicatorModule
+    BusyIndicatorModule,
   ],
-  exports: [
-    DataTreeComponent
-  ]
+  exports: [DataTreeComponent],
 })
-export class DataTreeModule { }
+export class DataTreeModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,11 +32,11 @@ import { ValueWrapper } from '../../value-wrapper/value-wrapper';
 @Component({
   selector: 'imx-image-view',
   templateUrl: './image-view.component.html',
-  styleUrls: ['./image-view.component.scss']
+  styleUrls: ['./image-view.component.scss'],
 })
 export class ImageViewComponent {
   @Input() public valueWrapper: ValueWrapper;
   @Input() public defaultValue: string;
 
-  constructor(public readonly imageProvider: Base64ImageService) { }
+  constructor(public readonly imageProvider: Base64ImageService) {}
 }

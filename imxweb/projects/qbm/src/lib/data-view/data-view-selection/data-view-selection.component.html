@@ -1,0 +1,25 @@
+<div class="imx-selection">
+  <div class="imx-selection-info">
+    <span class="imx-selection-info-title">{{ '#LDS#Selected items' | translate }}: </span
+    ><span strong>{{ totalSelected() > 0 ? totalSelected() : ('#LDS#None' | translate) }}</span>
+  </div>
+  <button
+    mat-icon-button
+    (click)="onClearSelection()"
+    matTooltip="{{ '#LDS#Clear selection' | translate }}"
+    data-imx-identifier="dataview-button-clear-selection"
+    *ngIf="totalSelected() !== 0"
+    color="primary"
+  >
+    <eui-icon icon="close"></eui-icon>
+  </button>
+  <mat-slide-toggle
+    class="imx-selection-toggle"
+    color="primary"
+    [(ngModel)]="showSelected"
+    [disabled]="totalSelected() === 0"
+    (change)="onShowSelectionChanged($event)"
+  >
+    {{ '#LDS#Show selected only' | translate }}
+  </mat-slide-toggle>
+</div>

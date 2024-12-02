@@ -1,8 +1,7 @@
 <div eui-sidesheet-content>
-
   <mat-card>
     <eui-alert type="info" [condensed]="true" [colored]="true">
-      <span>{{LdsInfoText | translate}}</span>
+      <span>{{ LdsInfoText | translate }}</span>
     </eui-alert>
 
     <ul>
@@ -14,7 +13,13 @@
 </div>
 
 <div eui-sidesheet-actions>
-  <button data-imx-identifier="admin-config-convert-submit-button" mat-raised-button (click)="submit()" color="primary"
-    *ngIf="customizationsToConvert.length > 0">
-    {{'#LDS#Convert' | translate}}</button>
+  <button
+    data-imx-identifier="admin-config-convert-submit-button"
+    mat-flat-button
+    (click)="submit()"
+    color="primary"
+    *ngIf="customizationsToConvert.length > 0"
+  >
+    {{ '#LDS#Convert' | translate }}
+  </button>
 </div>

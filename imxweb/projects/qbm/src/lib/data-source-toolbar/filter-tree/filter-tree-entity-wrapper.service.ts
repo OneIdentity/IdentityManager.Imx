@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,26 @@
  */
 
 import { Injectable } from '@angular/core';
-import { DisplayBuilder, DisplayPattern, EntityColumnData, EntityData, EntitySchema, FilterTreeData, FilterTreeElement, IClientProperty, IEntity, ReadWriteEntity, ValType } from 'imx-qbm-dbts';
+import {
+  DisplayBuilder,
+  DisplayPattern,
+  EntityColumnData,
+  EntityData,
+  EntitySchema,
+  FilterTreeData,
+  FilterTreeElement,
+  IClientProperty,
+  IEntity,
+  ReadWriteEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FilterTreeEntityWrapperService {
-  constructor(
-    private readonly translate: ImxTranslationProviderService
-  ) { }
+  constructor(private readonly translate: ImxTranslationProviderService) {}
 
   /**
    * Converts a list of FilterTreeData objects into a list or correlating entities
@@ -42,7 +52,7 @@ export class FilterTreeEntityWrapperService {
    * @returns a list of entity objects
    */
   public convertToEntities(data: FilterTreeData, parentDisplay: string): IEntity[] {
-    return data.Elements.map(filter => this.buildTreeFilterDataEntity(filter, parentDisplay));
+    return data?.Elements?.map((filter) => this.buildTreeFilterDataEntity(filter, parentDisplay)) ?? [];
   }
 
   private buildTreeFilterDataEntity(data: FilterTreeElement, parentDisplay: string): IEntity {
@@ -51,7 +61,7 @@ export class FilterTreeEntityWrapperService {
       this.buildEntityData(data, parentDisplay),
       undefined,
       undefined,
-      new DisplayBuilder(this.translate)
+      new DisplayBuilder(this.translate),
     );
   }
 
@@ -60,32 +70,32 @@ export class FilterTreeEntityWrapperService {
 
     ret['Display'] = {
       Type: ValType.String,
-      ColumnName: 'Display'
+      ColumnName: 'Display',
     };
 
     ret['Filter'] = {
       Type: ValType.String,
-      ColumnName: 'Filter'
+      ColumnName: 'Filter',
     };
 
     ret['HasChildren'] = {
       Type: ValType.Bool,
-      ColumnName: 'HasChildren'
+      ColumnName: 'HasChildren',
     };
 
     ret['ObjectKey'] = {
       Type: ValType.String,
-      ColumnName: 'ObjectKey'
+      ColumnName: 'ObjectKey',
     };
 
     ret['LongDisplay'] = {
       Type: ValType.String,
-      ColumnName: 'LongDisplay'
+      ColumnName: 'LongDisplay',
     };
 
     return {
       DisplayPattern: new DisplayPattern('%Display%'),
-      Columns: ret
+      Columns: ret,
     };
   }
 
@@ -102,10 +112,9 @@ export class FilterTreeEntityWrapperService {
 
     ret['LongDisplay'] = {
       Value: (parentDisplay || '') === '' ? data.Display : `${parentDisplay}\\${data.Display}`,
-      IsReadOnly: true
+      IsReadOnly: true,
     };
 
     return { Columns: ret, Keys: [JSON.stringify(data.Filter)] };
   }
 }
-

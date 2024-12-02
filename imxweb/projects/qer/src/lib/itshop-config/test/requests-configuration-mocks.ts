@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { PortalShopConfigMembers, PortalShopConfigStructure } from 'imx-api-qer';
-import { CollectionLoadParameters, FkProviderItem, IEntity, IEntityColumn, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { PortalShopConfigMembers, PortalShopConfigStructure } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, FkProviderItem, IEntity, IEntityColumn, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { of } from 'rxjs';
 
 function mockData(): TypedEntityCollectionData<any> {
@@ -38,18 +38,17 @@ const mockEntityColumn = {
     return {
       CanEdit: () => false,
       GetDisplay: () => '',
-      GetMinLength: () => 0
+      GetMinLength: () => 0,
     };
   },
-  GetValue: () => ''
-
+  GetValue: () => '',
 } as IEntityColumn;
 
 const mockRequestEntity = {
   GetDisplay: () => 'Display value',
   GetKeys: () => ['testId'],
   GetColumn: (name) => mockEntityColumn,
-  Commit: (bool) => Promise.resolve()
+  Commit: (bool) => Promise.resolve(),
 } as IEntity;
 
 const mockfkProviderItem = {
@@ -58,7 +57,7 @@ const mockfkProviderItem = {
   parameterNames: [],
   load: () => Promise.resolve(undefined),
   getDataModel: () => Promise.resolve({}),
-  getFilterTree: async () => ({})
+  getFilterTree: async () => ({}),
 } as FkProviderItem;
 
 const mockEntityWithFk = {
@@ -67,11 +66,11 @@ const mockEntityWithFk = {
   GetColumn: (name) => mockEntityColumn,
   GetFkCandidateProvider: () => {
     return { getProviderItem: (colName, table) => mockfkProviderItem };
-  }
+  },
 } as IEntity;
 
 const mockNewMemberEntity: any = {
-  GetEntity: () => mockEntityWithFk
+  GetEntity: () => mockEntityWithFk,
 } as PortalShopConfigMembers;
 
 export class RequestsConfigurationCommonMocks {
@@ -145,10 +144,12 @@ export class RequestsConfigurationCommonMocks {
   };
   public static readonly storage = {};
   public static mockStorageService: any = {
-    isHelperAlertDismissed: jasmine.createSpy('isHelperAlertDismissed').and.callFake(
-      (key: string) => RequestsConfigurationCommonMocks.storage[key]),
-    storeHelperAlertDismissal: jasmine.createSpy('storeHelperAlertDismissal').and.callFake(
-      (key: string) => RequestsConfigurationCommonMocks.storage[key] = true),
+    isHelperAlertDismissed: jasmine
+      .createSpy('isHelperAlertDismissed')
+      .and.callFake((key: string) => RequestsConfigurationCommonMocks.storage[key]),
+    storeHelperAlertDismissal: jasmine
+      .createSpy('storeHelperAlertDismissal')
+      .and.callFake((key: string) => (RequestsConfigurationCommonMocks.storage[key] = true)),
   };
 
   public static mockDialogRef = { afterClosed: () => of(undefined) };

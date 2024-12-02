@@ -1,0 +1,48 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  height: 100%;
+  border-radius: 4px;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.imx-scroll-pad > .eui-scroll-container {
+  padding-left: 5px;
+}
+mat-tree-node[aria-level="1"]{
+  .mdc-button{
+    font-weight: 700;
+  }
+}
+mat-tree-node[aria-level="2"]{
+  .mdc-button{
+    font-weight: 600;
+  }
+}
+mat-tree-node{
+  .mdc-button{
+    font-weight: 400;
+  }
+}
+mat-nested-tree-node[aria-level="1"]{
+  .mat-tree-node{
+    .mdc-button{
+      font-weight: 700;
+    }
+  }
+  mat-tree-node, mat-nested-tree-node[aria-level="2"]{
+    .mat-tree-node{
+      .mdc-button{
+        font-weight: 600;
+      }
+    }
+    mat-tree-node, mat-nested-tree-node{
+      .mat-tree-node{
+        .mdc-button{
+          font-weight: 400;
+        }
+      }
+    }
+  }
+}

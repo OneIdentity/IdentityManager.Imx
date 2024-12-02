@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { Component, Input, OnDestroy } from '@angular/core';
-import { HelpContextualValues, HelpContextualService, HELP_CONTEXTUAL } from './help-contextual.service';
-import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
 import { HelpContextualDialogComponent } from './help-contextual-dialog/help-contextual-dialog.component';
+import { HELP_CONTEXTUAL, HelpContextualService, HelpContextualValues } from './help-contextual.service';
 /**
  * Help contextual component
  * @example
@@ -56,18 +56,18 @@ import { HelpContextualDialogComponent } from './help-contextual-dialog/help-con
 @Component({
   selector: 'imx-help-contextual',
   templateUrl: './help-contextual.component.html',
-  styleUrls: ['./help-contextual.component.scss']
+  styleUrls: ['./help-contextual.component.scss'],
 })
-export class HelpContextualComponent implements OnDestroy{
+export class HelpContextualComponent implements OnDestroy {
   @Input() contextId: HelpContextualValues;
-  @Input() size: 's'| 'm' | 'l' | 'xl' = 'm';
+  @Input() size: 's' | 'm' | 'l' | 'xl' = 'm';
   @Input() title: string;
 
   constructor(
     private router: ActivatedRoute,
     private helpContextualService: HelpContextualService,
-    private dialog: MatDialog
-  ) { }
+    private dialog: MatDialog,
+  ) {}
 
   ngOnDestroy(): void {
     this.helpContextualService.setHelpContextId(null);
@@ -75,23 +75,26 @@ export class HelpContextualComponent implements OnDestroy{
   /**
    * The call opens the dialog with the contextual help data.
    */
-  public async onShowHelp(): Promise<void>{
-    const contextualHelpData = await this.helpContextualService.getHelpContext(this.getContextId());
-    this.dialog
-      .open(HelpContextualDialogComponent, {
-        data: contextualHelpData
-      })
+  public async onShowHelp(): Promise<void> {
+    const id = this.getContextId();
+    if (!id) {
+      return;
+    }
+    const contextualHelpData = await this.helpContextualService.getHelpContext(id);
+    this.dialog.open(HelpContextualDialogComponent, {
+      data: contextualHelpData,
+    });
   }
 
   /**
    * The call returns the selected context ID.
    * @returns {HelpContextualValues}
    */
-  private getContextId(): HelpContextualValues{
-    if(!!this.contextId){
+  private getContextId(): HelpContextualValues | null {
+    if (!!this.contextId) {
       return this.contextId;
     }
-    if(!!this.helpContextualService.GetHelpContextId()){
+    if (!!this.helpContextualService.GetHelpContextId()) {
       return this.helpContextualService.GetHelpContextId();
     }
     let contextId: HelpContextualValues;

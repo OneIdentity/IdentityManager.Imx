@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,11 +36,8 @@ import { OwnerControlModule } from '../../owner-control/owner-control.module';
 import { ServiceItemsEditFormComponent } from './service-items-edit-form.component';
 import { ServiceItemTagsModule } from '../../service-item-tags/service-item-tags.module';
 
-
 @NgModule({
-  declarations: [
-    ServiceItemsEditFormComponent
-  ],
+  declarations: [ServiceItemsEditFormComponent],
   imports: [
     CommonModule,
     CdrModule,
@@ -50,10 +47,8 @@ import { ServiceItemTagsModule } from '../../service-item-tags/service-item-tags
     OwnerControlModule,
     ReactiveFormsModule,
     ServiceItemTagsModule,
-    TranslateModule
+    TranslateModule,
   ],
-  exports: [
-    ServiceItemsEditFormComponent
-  ]
+  exports: [ServiceItemsEditFormComponent],
 })
-export class ServiceItemsEditFormModule { }
+export class ServiceItemsEditFormModule {}

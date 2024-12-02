@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,21 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { EntitySchema } from 'imx-qbm-dbts';
+import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { EntitySchema } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ClassloggerService, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
+import { PolicyGroup } from '../policy-group.interface';
 import { PolicyGroupService } from '../policy-group.service';
-import {PolicyGroup} from '../policy-group.interface';
 @Component({
   templateUrl: './edit-policy-group-sidesheet.component.html',
-  styleUrls: ['./edit-policy-group-sidesheet.component.scss']
+  styleUrls: ['./edit-policy-group-sidesheet.component.scss'],
 })
 export class EditPolicyGroupSidesheetComponent implements OnInit {
-
   public readonly formGroup = new UntypedFormGroup({});
   public readonly schema: EntitySchema;
-  public objectProperties:ColumnDependentReference[]=[]
+  public objectProperties: ColumnDependentReference[] = [];
   public formArray: UntypedFormArray;
   public reload = false;
   public hasAttestations: boolean;
@@ -54,16 +53,15 @@ export class EditPolicyGroupSidesheetComponent implements OnInit {
     private readonly snackBar: SnackBarService,
     private readonly policyGroupService: PolicyGroupService,
     private readonly logger: ClassloggerService,
-    private readonly confirmationService: ConfirmationService
+    private readonly confirmationService: ConfirmationService,
   ) {
     this.initOrRefreshCdrDictionary();
     this.formGroup = new UntypedFormGroup({
-      formArray: new UntypedFormArray([])
+      formArray: new UntypedFormArray([]),
     });
     this.formArray = this.formGroup.get('formArray') as UntypedFormArray;
     this.closeSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (!this.formGroup.dirty
-        || await confirmationService.confirmLeaveWithUnsavedChanges()) {
+      if (!this.formGroup.dirty || (await confirmationService.confirmLeaveWithUnsavedChanges())) {
         this.sidesheetRef.close(this.reload);
       }
     });
@@ -100,7 +98,7 @@ export class EditPolicyGroupSidesheetComponent implements OnInit {
       this.policygroup.policyGroup.UID_AERoleOwner.Column,
       this.policygroup.policyGroup.UID_DialogSchedule.Column,
       this.policygroup.policyGroup.UID_PersonOwner.Column,
-      this.policygroup.policyGroup.UID_QERPickCategory.Column
+      this.policygroup.policyGroup.UID_QERPickCategory.Column,
     ];
 
     for (const column of columns) {
@@ -115,16 +113,16 @@ export class EditPolicyGroupSidesheetComponent implements OnInit {
     }
   }
 
-  public addControl(columnName: string, evt: UntypedFormControl): void {
-    setTimeout(() =>
-    this.formGroup.addControl(columnName, evt)
-  );
+  public addControl(columnName: string, evt: AbstractControl): void {
+    setTimeout(() => this.formGroup.addControl(columnName, evt));
   }
 
   public async saveChanges(): Promise<void> {
     if (this.formGroup.valid) {
       this.policyGroupService.handleOpenLoader();
-      let confirmMessage = !this.policygroup.isNew ? '#LDS#The policy collection has been successfully saved.' :'#LDS#The policy collection has been successfully created.';
+      let confirmMessage = !this.policygroup.isNew
+        ? '#LDS#The policy collection has been successfully saved.'
+        : '#LDS#The policy collection has been successfully created.';
       try {
         this.policygroup.policyGroup.GetEntity().Commit(false);
         this.sidesheetRef.close(true);
@@ -136,10 +134,12 @@ export class EditPolicyGroupSidesheetComponent implements OnInit {
   }
 
   public async delete(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Policy Collection',
-      Message: '#LDS#Are you sure you want to delete the policy collection?'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Delete Policy Collection',
+        Message: '#LDS#Are you sure you want to delete the policy collection?',
+      })
+    ) {
       this.policyGroupService.handleOpenLoader();
       try {
         const key = this.policygroup.policyGroup.GetEntity().GetKeys()[0];
@@ -151,5 +151,4 @@ export class EditPolicyGroupSidesheetComponent implements OnInit {
       this.sidesheetRef.close();
     }
   }
-
 }

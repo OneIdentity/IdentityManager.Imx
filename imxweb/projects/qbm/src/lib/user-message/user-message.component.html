@@ -1,3 +1,10 @@
-<eui-alert [dismissable]="true" [condensed]="true" (dismissed)="dismissClick()" [type]="message?.type || 'info'" [colored]="false" [class]="panelClass">
-    <eui-alert-header class="imx-message-content">{{ (message?.text || '') | translate }}</eui-alert-header>
+<eui-alert
+  [dismissable]="true"
+  [condensed]="true"
+  (dismissed)="dismissClick()"
+  [type]="message?.type || 'info'"
+  [colored]="false"
+  [class]="panelClass"
+>
+  <eui-alert-header class="imx-message-content">{{ message?.text || '' | translate }}</eui-alert-header>
 </eui-alert>

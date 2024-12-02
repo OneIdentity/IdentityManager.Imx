@@ -1,6 +1,6 @@
 <ng-container *ngIf="isRoleAssignment; else otherServiceItem">
   <div class="governance-sidesheet">
-    <mat-tab-group>
+    <mat-tab-group mat-stretch-tabs="false">
       <mat-tab data-imx-identifier="product-details-tab-main" [label]="'#LDS#Heading Information' | translate">
         <ng-template matTabContent>
           <div class="governance-sidesheet__tab-content">

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
+import { EuiLoadingService } from '@elemental-ui/core';
 
-import { JobPerformanceQueuesService } from './job-performance-queues.service';
+import { CollectionLoadParameters, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService, DataSourceToolbarSettings, SettingsService } from 'qbm';
-import { JobPerformanceService, JobPerformanceParameters } from './job-performance.service';
-import { CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-
+import { JobPerformanceQueuesService } from './job-performance-queues.service';
+import { JobPerformanceService } from './job-performance.service';
 
 @Component({
   templateUrl: './job-performance.component.html',
-  styleUrls: ['./job-performance.component.scss']
+  styleUrls: ['./job-performance.component.scss'],
 })
 export class JobPerformanceComponent implements OnInit {
   public get Queues(): string[] {
@@ -58,7 +57,7 @@ export class JobPerformanceComponent implements OnInit {
     private jobPerformance: JobPerformanceService,
     private logger: ClassloggerService,
     private readonly settingsService: SettingsService,
-    private busyService: EuiLoadingService
+    private busyService: EuiLoadingService,
   ) {
     this.entitySchemaJobPerformance = jobPerformance.EntitySchema;
     this.displayedColumns = [
@@ -87,31 +86,27 @@ export class JobPerformanceComponent implements OnInit {
     await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize, queue: this.queueName });
   }
 
-  public async getData(navigationState: JobPerformanceParameters): Promise<void> {
-
+  public async getData(navigationState: CollectionLoadParameters): Promise<void> {
     this.navigationState = navigationState;
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
-      const jobPeformances = await this.jobPerformance.Get(navigationState);
+      const jobPeformances = await this.jobPerformance.Get({ ...navigationState, queue: this.queueName });
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: jobPeformances,
         entitySchema: this.entitySchemaJobPerformance,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
 
-
   private async UpdateQueueNames(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.queues = await this.jobPerformanceQueues.GetItems();
       if (!this.queueName && this.queues.length > 0) {

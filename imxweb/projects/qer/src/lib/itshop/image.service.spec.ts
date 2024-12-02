@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,17 +39,17 @@ describe('ImageService', () => {
       providers: [
         {
           provide: QerApiService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: AppConfigService,
           useClass: class {
             public Config = {
-              BaseUrl: ''
+              BaseUrl: '',
             };
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     service = TestBed.inject(ImageService);
   });

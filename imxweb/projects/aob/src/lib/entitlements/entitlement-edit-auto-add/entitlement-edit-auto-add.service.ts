@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,17 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntitlementToAddData } from 'imx-api-aob';
-import { CollectionLoadParameters, EntityCollectionData, FilterProperty, InteractiveEntityStateData } from 'imx-qbm-dbts';
+import { EntitlementToAddData } from '@imx-modules/imx-api-aob';
+import { CollectionLoadParameters, EntityCollectionData, FilterProperty, InteractiveEntityStateData } from '@imx-modules/imx-qbm-dbts';
 import { SqlWizardApiService } from 'qbm';
 import { AobApiService } from '../../aob-api-client.service';
 
 @Injectable({ providedIn: 'root' })
 export class EntitlementEditAutoAddService implements SqlWizardApiService {
-  constructor(private readonly api: AobApiService) { }
+  constructor(private readonly api: AobApiService) {}
 
   public async getFilterProperties(table: string): Promise<FilterProperty[]> {
-    return (await this.api.client.portal_application_sqlwizard_tables_columns_get(table)).Properties;
+    return (await this.api.client.portal_application_sqlwizard_tables_columns_get(table)).Properties || [];
   }
 
   public async getCandidates(parentTable: string, options?: CollectionLoadParameters): Promise<EntityCollectionData> {
@@ -44,11 +44,13 @@ export class EntitlementEditAutoAddService implements SqlWizardApiService {
   }
 
   public async showEntitlementsToMap(state: InteractiveEntityStateData): Promise<EntitlementToAddData> {
-    return this.api.client.portal_application_interactive_entitlementstoadd_get(
-      state.EntityId, { keys: state.Keys, state: state.State });
+    return this.api.client.portal_application_interactive_entitlementstoadd_get(state?.EntityId || '', {
+      keys: state.Keys,
+      state: state.State,
+    });
   }
 
   public async mapEntitlementsToApplication(uidApplication: string): Promise<void> {
-     return this.api.client.portal_application_map_post(uidApplication);
+    return this.api.client.portal_application_map_post(uidApplication);
   }
 }

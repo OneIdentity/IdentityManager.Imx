@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,21 +46,20 @@ const routes: Routes = [
     path: 'claimgroup',
     component: ClaimGroupComponent,
     canActivate: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.ClaimGroup
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.ClaimGroup,
+    },
   },
   {
     path: 'resp/UNSGroup',
     component: DataExplorerGroupsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
-  declarations: [
-  ],
+  declarations: [],
   imports: [
     AccountsModule,
     BusinessownerAddonTileModule,
@@ -73,11 +72,9 @@ const routes: Routes = [
     MatListModule,
     TileModule,
     TranslateModule,
-    ReportButtonExtModule
+    ReportButtonExtModule,
   ],
-  providers: [
-    TsbNamespaceAdminGuardService
-  ]
+  providers: [TsbNamespaceAdminGuardService],
 })
 export class TsbConfigModule {
   constructor(private readonly initializer: InitService) {

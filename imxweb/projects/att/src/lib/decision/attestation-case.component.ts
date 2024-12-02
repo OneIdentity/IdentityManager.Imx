@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,18 @@
  */
 
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { DbObjectKey } from 'imx-qbm-dbts';
-import { AttestationRelatedObject, PortalAttestationCaseHistory } from 'imx-api-att';
+import { AttestationRelatedObject, PortalAttestationCaseHistory } from '@imx-modules/imx-api-att';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import {
   AuthenticationService,
   BaseReadonlyCdr,
+  calculateSidesheetWidth,
   ClassloggerService,
   ColumnDependentReference,
   MetadataService,
@@ -50,9 +51,9 @@ import {
   TermsOfUseViewerComponent,
 } from 'qer';
 import { AttestationActionService } from '../attestation-action/attestation-action.service';
+import { Approvers } from './approvers.interface';
 import { AttestationCase } from './attestation-case';
 import { AttestationCasesService } from './attestation-cases.service';
-import { Approvers } from './approvers.interface';
 import { LossPreview } from './loss-preview.interface';
 import { MitigatingControlsComponent } from './mitigating-controls/mitigating-controls.component';
 
@@ -131,7 +132,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
     this.reportDownload = this.attestationCasesService.getReportDownloadOptions(this.case);
 
     this.subscriptions$.push(this.attestationAction.applied.subscribe(() => this.sidesheetRef.close()));
-    this.subscriptions$.push(authentication.onSessionResponse.subscribe((sessionState) => (this.userUid = sessionState?.UserUid)));
+    this.subscriptions$.push(authentication.onSessionResponse.subscribe((sessionState) => (this.userUid = sessionState?.UserUid || '')));
   }
 
   public async ngOnInit(): Promise<void> {
@@ -141,7 +142,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
       this.complianceTabTitle = await this.translate.get('#LDS#Heading Rule Violations').toPromise();
       this.policyTabTitle = await this.translate.get('#LDS#Heading Policy Violations').toPromise();
       const info = await this.systemInfoService.get();
-      this.canAnalyzeRisk = info.PreProps.includes('RISKINDEX') && this.case.RiskIndex.value > 0;
+      this.canAnalyzeRisk = !!info.PreProps?.includes('RISKINDEX') && this.case.RiskIndex.value > 0;
     } finally {
       this.busyService.hide(overlay);
     }
@@ -156,7 +157,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
       title: await this.translate.get('#LDS#Heading View Terms of Use').toPromise(),
       subTitle: this.case.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '60%',
+      width: calculateSidesheetWidth(),
       icon: 'accesscertification',
       testId: 'attestation-view-terms-of-use',
       data: this.case.UID_QERTermsOfUse,
@@ -169,7 +170,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
       title: await this.translate.get('#LDS#Heading Analyze Risk').toPromise(),
       subTitle: this.case.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px,60%)',
+      width: calculateSidesheetWidth(),
       data: { objectKey: key },
     });
   }
@@ -223,7 +224,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
       subTitle: this.case.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(60%,600px)',
+      width: calculateSidesheetWidth(),
       disableClose: false,
       testId: 'attestation-history-details-assignment-analysis',
       data,
@@ -233,21 +234,23 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
   public async setRelatedOptions(): Promise<void> {
     this.relatedOptions =
       (await Promise.all(
-        this.data.case.data?.RelatedObjects.map(async (relatedObject) => {
-          const objectType = DbObjectKey.FromXml(relatedObject.ObjectKey);
-          if (!this.metadataService.tables[objectType.TableName]) {
-            await this.metadataService.updateNonExisting([objectType.TableName]);
-          }
+        this.data.case.data?.RelatedObjects?.map(async (relatedObject) => {
+          const objectType = DbObjectKey.FromXml(relatedObject.ObjectKey || '');
+          await this.metadataService.updateNonExisting([objectType.TableName]);
           return {
-            ObjectKey: relatedObject.ObjectKey,
-            Display: `${relatedObject.Display} - ${this.metadataService.tables[objectType.TableName].DisplaySingular}`,
+            ObjectKey: relatedObject.ObjectKey || '',
+            Display: `${relatedObject.Display} - ${this.metadataService.tables[objectType.TableName]?.DisplaySingular}`,
           };
-        }),
+        }) || [],
       )) || [];
+    if (this.relatedOptions?.length > 0) {
+      this.selectedOption = this.relatedOptions[0];
+      this.setHyperviewObject(this.selectedOption);
+    }
   }
 
   public setHyperviewObject(selectedRelatedObject: AttestationRelatedObject): void {
-    const dbKey = DbObjectKey.FromXml(selectedRelatedObject.ObjectKey);
+    const dbKey = DbObjectKey.FromXml(selectedRelatedObject.ObjectKey || '');
     this.selectedHyperviewType = dbKey.TableName;
     this.selectedHyperviewUID = dbKey.Keys.join(',');
   }

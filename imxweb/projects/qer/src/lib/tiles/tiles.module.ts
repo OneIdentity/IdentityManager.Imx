@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,27 +37,9 @@ import { NotificationTileComponent } from './notification-tile/notification-tile
 import { IconTileComponent } from './icon-tile/icon-tile.component';
 import { BadgeTileComponent } from './badge-tile/badge-tile.component';
 
-
 @NgModule({
-  declarations: [
-    NotificationTileComponent,
-    BadgeTileComponent,
-    IconTileComponent
-  ],
-  imports: [
-    CommonModule,
-    TileModule,
-    TranslateModule,
-    MatButtonModule,
-    MatCardModule,
-    MatTooltipModule,
-    EuiCoreModule
-  ],
-  exports: [
-    NotificationTileComponent,
-    BadgeTileComponent,
-    IconTileComponent
-  ]
-
+  declarations: [NotificationTileComponent, BadgeTileComponent, IconTileComponent],
+  imports: [CommonModule, TileModule, TranslateModule, MatButtonModule, MatCardModule, MatTooltipModule, EuiCoreModule],
+  exports: [NotificationTileComponent, BadgeTileComponent, IconTileComponent],
 })
-export class TilesModule { }
+export class TilesModule {}

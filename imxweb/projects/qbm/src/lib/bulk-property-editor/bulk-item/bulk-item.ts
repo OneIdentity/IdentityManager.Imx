@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { ColumnDependentReference } from '../../cdr/column-dependent-reference.interface';
 import { EntitySelect } from '../../entity/entity-select/entity-select.interface';
 
@@ -33,7 +33,7 @@ export enum BulkItemStatus {
   saved,
   skipped,
   error,
-  valid
+  valid,
 }
 
 export interface BulkItem {

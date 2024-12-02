@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { PortalPersonRolemembershipsNoncompliance } from '@imx-modules/imx-api-cpl';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalPersonRolemembershipsNoncompliance } from 'imx-api-cpl';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
+  calculateSidesheetWidth,
+  ClientPropertyForTableColumns,
   DataSourceToolbarSettings,
   DynamicTabDataProviderDirective,
-  ClientPropertyForTableColumns,
   MetadataService,
   SettingsService,
 } from 'qbm';
@@ -49,7 +49,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public displayedColumns: ClientPropertyForTableColumns[];
-  public caption: string;
+  public caption: string | undefined;
   public entitySchema: EntitySchema;
 
   private referrer: { objectuid: string; objecttable: string };
@@ -83,7 +83,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
     } finally {
       this.busyService.hide(overlay);
     }
-    this.caption = this.metadataService.tables[this.referrer.objecttable].Display;
+    this.caption = this.metadataService.tables[this.referrer.objecttable]?.Display;
 
     return this.getData();
   }
@@ -113,7 +113,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
       title: await this.translate.get('#LDS#Heading View Mitigating Controls').toPromise(),
       subTitle: entity.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px,60%)',
+      width: calculateSidesheetWidth(),
       disableClose: false,
       testId: 'identity-rule-violation-mitigating-sidesheet',
       data,
@@ -134,8 +134,9 @@ export class IdentityRuleViolationsComponent implements OnInit {
   }
 
   private async getData(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       const dataSource = await this.roleMembershipsService.getNonCompliance(this.referrer.objectuid, this.navigationState);
 
@@ -146,7 +147,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
         navigationState: this.navigationState,
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 }

@@ -1,60 +1,15 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 
-.mat-dialog-title {
-  font-weight: 600;
-  font-size: 24px;
-}
-
-.mat-dialog-content {
-  display: flex;
-  flex-direction: column;
+.mat-mdc-dialog-content {
+  @include flex-column-container();
   align-items: center;
 
-  >span {
+  > span {
     font-size: 20px;
-  }
-
-  >.mat-raised-button {
-    background-color: $corbin-orange;
-    margin-bottom: 30px;
-    margin-top: 20px
-  }
-}
-
-.mat-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-
-  button {
-    margin-bottom: 10px;
-    margin-left: 10px;
   }
 }
 
 .imx-hidden-element {
   display: none;
-}
-
-.imx-image-selector-list {
-  flex-direction: row;
-  display: flex;
-}
-
-.imx-default-preview-image {
-  box-shadow: none;
-}
-
-.eui-icon {
-  color: $black-9;
-  user-select: none;
-}
-
-.mat-card {
-  box-shadow: none;
-  border: 3px solid transparent;
-  cursor: pointer;
-}
-
-.mat-card.selected {
-  border: 3px solid $iris-blue;
 }

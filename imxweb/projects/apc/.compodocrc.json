@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - APC Library",
-  "output": "../../documentation/v92/apc",
+  "output": "../../documentation/v93/apc",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

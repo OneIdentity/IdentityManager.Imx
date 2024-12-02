@@ -1,14 +1,13 @@
 .page {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: 100vh;
-  }
-  
-  .pageContent {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: inherit;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+}

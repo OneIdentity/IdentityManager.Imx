@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,8 @@
  *
  */
 
+import moment, { Moment } from 'moment-timezone';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import moment from 'moment-timezone';
-import { Moment } from 'moment-timezone';
-
 
 /**
  * Internally used date parser for strings representing date and (optionally) time
@@ -36,7 +34,6 @@ import { Moment } from 'moment-timezone';
  * See {@link https://momentjs.com/docs/#/parsing/|Moment.js parsing}.
  */
 export class DateParser {
-
   /**
    * @ignore
    * The format for the date part.
@@ -61,14 +58,16 @@ export class DateParser {
    */
   private static readonly SEPARATOR_BETWEEN_DATE_AND_TIME = ' ';
 
-
   /**
    * Creates a new DateParser.
    *
    * @param logger The logger
    * @param withTime Whether the string should contain a time part.
    */
-  constructor(private logger: ClassloggerService, private withTime: boolean) { }
+  constructor(
+    private logger: ClassloggerService,
+    private withTime: boolean,
+  ) {}
 
   /**
    * Returns the formatted value for a given date (and time).
@@ -87,9 +86,8 @@ export class DateParser {
    * @param text The string representation
    * @returns A moment according to the date and time part.
    */
-  public parseDateAndTimeString(dateAndTimeString: string): Moment {
+  public parseDateAndTimeString(dateAndTimeString: string): Moment | undefined {
     try {
-
       if (!dateAndTimeString || dateAndTimeString.trim().length === 0) {
         return undefined;
       }
@@ -113,14 +111,15 @@ export class DateParser {
       // that's ok, but at least their separate values need to match the combined value then.
       const combined = moment(dateAndTimeString, DateParser.FORMAT_DATEANDTIME, false);
 
-      if (!combined.isValid()
-        || combined.year() !== date.year()
-        || combined.month() !== date.month()
-        || combined.date() !== date.date()
-        || combined.hour() !== time.hour()
-        || combined.seconds() !== time.seconds()) {
+      if (
+        !combined.isValid() ||
+        combined.year() !== date.year() ||
+        combined.month() !== date.month() ||
+        combined.date() !== date.date() ||
+        combined.hour() !== time.hour() ||
+        combined.seconds() !== time.seconds()
+      ) {
         return moment.invalid();
-
       }
 
       // We cannot simply parse the date and time string, since the moment.js documentation suggests
@@ -133,7 +132,6 @@ export class DateParser {
       m = moment(m.format(DateParser.FORMAT_DATEANDTIME), DateParser.FORMAT_DATEANDTIME, true);
 
       return m;
-
     } catch (error) {
       this.logger.debug(this, `Invalid date string '${dateAndTimeString}': ${error}`);
       return moment('invalid');
@@ -150,7 +148,7 @@ export class DateParser {
    * @param value a moment possibly containing more than date
    * @returns a clean date only moment
    */
-  public static asDateOnly(value: Moment): Moment {
+  public static asDateOnly(value: Moment): Moment | undefined {
     return value?.isValid() ? moment(moment(value).format(DateParser.FORMAT_DATE), DateParser.FORMAT_DATE, true) : undefined;
   }
 
@@ -164,7 +162,7 @@ export class DateParser {
    * @param value a moment possibly containing more than time
    * @returns a clean time only moment
    */
-  public static asTimeOnly(value: Moment): Moment {
+  public static asTimeOnly(value: Moment): Moment | undefined {
     return value?.isValid() ? moment(moment(value).format(DateParser.FORMAT_TIME), DateParser.FORMAT_TIME, true) : undefined;
   }
 
@@ -179,26 +177,24 @@ export class DateParser {
    * @param text The string representation
    * @returns A moment according to the date part.
    */
-     public static parseDate(text: string): Moment {
-      const s = (text ?? '').trim();
-      let date = moment(s, DateParser.FORMAT_DATE, true);
+  public static parseDate(text: string): Moment {
+    const s = (text ?? '').trim();
+    let date = moment(s, DateParser.FORMAT_DATE, true);
 
     if (!date.isValid()) {
+      // maybe it's s.th. like 3/4/21 instead of 04/04/2021
+      // we look for that.
+      const generous = moment(s, DateParser.FORMAT_DATE, false);
 
-        // maybe it's s.th. like 3/4/21 instead of 04/04/2021
-        // we look for that.
-        const generous = moment(s, DateParser.FORMAT_DATE, false);
-
-        // TODO: Reactivate
-        // if (generous.isValid() && (! generous.unusedInput || generous.unusedInput.length === 0)) {
-        if (generous.isValid()) {
-          date = generous;
-        }
+      // TODO: Reactivate
+      // if (generous.isValid() && (! generous.unusedInput || generous.unusedInput.length === 0)) {
+      if (generous.isValid()) {
+        date = generous;
       }
-
-      return date;
     }
 
+    return date;
+  }
 
   /**
    * Parses the time part of a string representation of a date (and time).
@@ -245,5 +241,4 @@ export class DateParser {
   private get fullFormat(): string {
     return this.withTime ? DateParser.FORMAT_DATEANDTIME : DateParser.FORMAT_DATE;
   }
-
 }

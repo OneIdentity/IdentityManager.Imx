@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
-import { Component, OnDestroy, ViewChild, AfterContentInit, Input, ChangeDetectorRef } from '@angular/core';
+import { AfterContentInit, ChangeDetectorRef, Component, Input, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { UserMessageService } from './user-message.service';
-import { Message } from './message.interface';
-import { ClassloggerService } from '../classlogger/classlogger.service';
 import { EuiAlertComponent } from '@elemental-ui/core';
+import { ClassloggerService } from '../classlogger/classlogger.service';
+import { Message } from './message.interface';
+import { UserMessageService } from './user-message.service';
 
 /**
  * A component that displays a message inside an ElementalUI alert control
@@ -38,7 +38,7 @@ import { EuiAlertComponent } from '@elemental-ui/core';
 @Component({
   selector: 'imx-usermessage',
   templateUrl: './user-message.component.html',
-  styleUrls: ['./user-message.component.scss']
+  styleUrls: ['./user-message.component.scss'],
 })
 export class UserMessageComponent implements AfterContentInit, OnDestroy {
   /**
@@ -56,32 +56,35 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
    * @ignore
    * The message, displayed as header of the ElementalUI alert component
    */
-  public message: Message;
+  public message: Message | undefined;
 
   private readonly subscriptions: Subscription[] = [];
 
-  constructor(private readonly messageService: UserMessageService, private readonly logger: ClassloggerService,
-    private cdref: ChangeDetectorRef
+  constructor(
+    private readonly messageService: UserMessageService,
+    private readonly logger: ClassloggerService,
+    private cdref: ChangeDetectorRef,
   ) {
     this.logger.debug(this, 'init user message component');
-    this.subscriptions.push(this.messageService.subject.subscribe(message => {
-
-      this.logger.debug(this, 'message received:', message);
-      this.message = message;
-      if (this.alert) {
-        this.alert.isDismissed = !this.isForMe();
-        this.cdref.detectChanges();
-      }
-    }));
+    this.subscriptions.push(
+      this.messageService.subject.subscribe((message) => {
+        this.logger.debug(this, 'message received:', message);
+        this.message = message;
+        if (this.alert) {
+          this.alert.isDismissed = !this.isForMe();
+          this.cdref.detectChanges();
+        }
+      }),
+    );
   }
 
-  public dismissClick(){
+  public dismissClick() {
     this.cdref.detectChanges();
   }
 
   private isForMe() {
     // is there a message, and is the message for this target?
-    return this.message != null && this.target == this.message.target;
+    return this.message != null && !!this.message.target && this.target == this.message.target;
   }
 
   /**
@@ -99,6 +102,6 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
    */
   public ngOnDestroy(): void {
     this.logger.debug(this, 'unsubscribe observables');
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

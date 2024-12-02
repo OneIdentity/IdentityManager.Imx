@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,35 +25,32 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalRulesMitigatingcontrols } from 'imx-api-cpl';
-import { ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalRulesMitigatingcontrols } from '@imx-modules/imx-api-cpl';
+import { ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { ApiService } from '../../api.service';
 import { RulesMitigatingControls } from './rules-mitigating-controls';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MitigatingControlsRulesService {
-
-  constructor(
-    private apiService: ApiService,
-  ) { }
+  constructor(private apiService: ApiService) {}
 
   public async getControls(uidNonCompliance: string): Promise<ExtendedTypedEntityCollection<RulesMitigatingControls, unknown>> {
     const collection = await this.apiService.typedClient.PortalRulesMitigatingcontrols.Get(uidNonCompliance);
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
-      Data: collection.Data.map((item: PortalRulesMitigatingcontrols) => new RulesMitigatingControls(item))
-    }
+      Data: collection.Data.map((item: PortalRulesMitigatingcontrols) => new RulesMitigatingControls(item)),
+    };
   }
 
   public createControl(uidCompliance: string): RulesMitigatingControls {
     // TODO: When API can handle permission issues uncomment. PBI: 305793
     const newMControl = this.apiService.typedClient.PortalRulesWorkingcopiesMitigatingcontrols.createEntity({
       Columns: {
-        "UID_ComplianceRule": { Value: uidCompliance }
-      }
+        UID_ComplianceRule: { Value: uidCompliance },
+      },
     });
     return new RulesMitigatingControls(newMControl as PortalRulesMitigatingcontrols);
     // const newMControl = this.apiService.typedClient.PortalRulesMitigatingcontrols.createEntity({

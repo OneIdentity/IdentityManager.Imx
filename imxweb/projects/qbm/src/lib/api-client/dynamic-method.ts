@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,25 +26,25 @@
 
 import {
   ApiClient,
+  DataModel,
   EntityCollectionData,
+  EntityData,
+  EntitySchema,
   EntityWriteData,
+  FilterData,
   FkCandidateBuilder,
   ITranslationProvider,
+  MethodDefinition,
   MethodDescriptor,
   TimeZoneInfo,
   TypedEntity,
   TypedEntityBuilder,
-  EntitySchema,
-  EntityData,
-  FilterData,
-  DataModel,
-  MethodDefinition
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { imx_SessionService } from '../session/imx-session.service';
 
-export class GenericTypedEntity extends TypedEntity { }
+export class GenericTypedEntity extends TypedEntity {}
 
-// tslint:disable-next-line: max-classes-per-file
+// eslint-disable-next-line max-classes-per-file
 export class DynamicMethod {
   private builder: TypedEntityBuilder<TypedEntity>;
 
@@ -58,17 +58,16 @@ export class DynamicMethod {
     private readonly path: string,
     private readonly apiClient: ApiClient,
     session: imx_SessionService,
-    translationProvider: ITranslationProvider
+    translationProvider: ITranslationProvider,
   ) {
     const commitMethod = (entity, writeData) => this.apiClient.processRequest(this.do_put(writeData));
 
     this.getSchema = () => session.Client.getSchema(this.schemaPath);
 
-    const fkProviderItems = new FkCandidateBuilder(this.getSchema()?.FkCandidateRoutes, this.apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(this.getSchema()?.FkCandidateRoutes ?? [], this.apiClient).build();
 
     this.builder = new TypedEntityBuilder(GenericTypedEntity, fkProviderItems, commitMethod, translationProvider);
   }
-
 
   public createEntity(initialData?: EntityData): TypedEntity {
     return this.builder.buildReadWriteEntity({ entitySchema: this.getSchema(), entityData: initialData });
@@ -76,6 +75,11 @@ export class DynamicMethod {
 
   async Get(parametersOptional: any = {}) {
     const data = await this.apiClient.processRequest(this.do_get(parametersOptional));
+    return this.builder.buildReadWriteEntities(data, this.getSchema());
+  }
+
+  async Post(parametersOptional: any = {}) {
+    const data = await this.apiClient.processRequest(this.do_post(parametersOptional));
     return this.builder.buildReadWriteEntities(data, this.getSchema());
   }
 
@@ -89,13 +93,12 @@ export class DynamicMethod {
   }
 
   private do_get(parametersOptional: any): MethodDescriptor<EntityCollectionData> {
-
-    const parameters = [];
+    const parameters: any[] = [];
     for (var p in parametersOptional) {
       parameters.push({
         name: p,
         value: parametersOptional[p],
-        in: 'query'
+        in: 'query',
       });
     }
 
@@ -104,7 +107,7 @@ export class DynamicMethod {
       parameters,
       method: 'GET',
       headers: {
-        'imx-timezone': TimeZoneInfo.get()
+        'imx-timezone': TimeZoneInfo.get(),
       },
       credentials: 'include',
       observe: 'response',
@@ -115,15 +118,14 @@ export class DynamicMethod {
   private do_getDataModel(options: { filter?: FilterData[] } = {}): MethodDescriptor<DataModel> {
     return {
       path: this.path + '/datamodel',
-      parameters: MethodDefinition.MakeQueryParameters(options, [
-      ]),
+      parameters: MethodDefinition.MakeQueryParameters(options, []),
       method: 'GET',
       headers: {
         'imx-timezone': TimeZoneInfo.get(),
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
@@ -139,7 +141,30 @@ export class DynamicMethod {
       ],
       method: 'PUT',
       headers: {
-        'imx-timezone': TimeZoneInfo.get()
+        'imx-timezone': TimeZoneInfo.get(),
+      },
+      credentials: 'include',
+      observe: 'response',
+      responseType: 'json',
+    };
+  }
+
+  private do_post(parametersOptional: any): MethodDescriptor<EntityCollectionData> {
+    const parameters: any[] = [];
+    for (var p in parametersOptional) {
+      parameters.push({
+        name: p,
+        value: parametersOptional[p],
+        in: 'query',
+      });
+    }
+
+    return {
+      path: this.path,
+      parameters,
+      method: 'POST',
+      headers: {
+        'imx-timezone': TimeZoneInfo.get(),
       },
       credentials: 'include',
       observe: 'response',

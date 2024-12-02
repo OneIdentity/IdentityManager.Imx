@@ -1,31 +1,12 @@
-@import "../pick-category-common.scss";
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import 'base/mixins';
+@import '../pick-category-common.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   background-color: $color-gray-2;
-
-  .imx-table-container {
-    @include imx-flex-column-container();
-    overflow: hidden;
-
-    > span {
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .buttons {
-      @include imx-flex-row-container();
-      justify-content: flex-end;
-
-      .justify-start {
-        margin-right: auto;
-
-        eui-icon {
-          font-size: 14px;
-          margin-right: 4px;
-        }
-      }
-    }
+  .eui-sidesheet-content{
+    display: flex;
+    flex-direction: column;
   }
 }
 

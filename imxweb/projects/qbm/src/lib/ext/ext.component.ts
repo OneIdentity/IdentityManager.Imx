@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { ComponentFactoryResolver, Component, ViewChild, OnInit, Input } from '@angular/core';
+import { Component, ComponentFactoryResolver, Input, OnInit, ViewChild } from '@angular/core';
 
-import { ExtService } from './ext.service';
 import { ExtDirective } from './ext.directive';
+import { ExtService } from './ext.service';
 
 @Component({
   selector: 'imx-ext',
@@ -42,7 +42,10 @@ export class ExtComponent implements OnInit {
 
   @Input() public properties: { [property: string]: any };
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver, private extService: ExtService) {}
+  constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private extService: ExtService,
+  ) {}
 
   public ngOnInit(): void {
     this.loadComponent();
@@ -60,13 +63,15 @@ export class ExtComponent implements OnInit {
     viewContainerRef.clear();
 
     extensions.forEach((element) => {
-      const c = viewContainerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(element.instance));
-      c.instance.referrer = this.referrer;
-      c.instance.inputData = element.inputData;
+      if (element.instance) {
+        const c = viewContainerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(element.instance));
+        c.instance.referrer = this.referrer;
+        c.instance.inputData = element.inputData;
 
-      if (this.properties) {
-        for (let key in this.properties) {
-          Reflect.set(c.instance, key, this.properties[key]);
+        if (this.properties) {
+          for (let key in this.properties) {
+            Reflect.set(c.instance, key, this.properties[key]);
+          }
         }
       }
     });

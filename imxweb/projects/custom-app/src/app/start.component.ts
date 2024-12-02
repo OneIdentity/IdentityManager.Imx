@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,21 @@
  *
  */
 
-import { Component } from "@angular/core";
-import { PortalPersonAll } from "imx-api-qer";
-import { QerApiService } from "qer";
+import { Component } from '@angular/core';
+import { PortalPersonAll } from '@imx-modules/imx-api-qer';
+import { QerApiService } from 'qer';
 
 @Component({
-  templateUrl: './start.component.html'
+  templateUrl: './start.component.html',
 })
 export class StartComponent {
-
-  constructor(private qerApi: QerApiService) { }
+  constructor(private qerApi: QerApiService) {}
 
   persons: PortalPersonAll[] = [];
   totalCount = 0;
   busy = false;
 
   async loadPersonData() {
-
     try {
       this.busy = true;
 
@@ -56,5 +54,4 @@ export class StartComponent {
       this.busy = false;
     }
   }
-
 }

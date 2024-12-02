@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { DeferredOperationData, PortalPersonMitigatingcontrols } from 'imx-api-cpl';
-import { CollectionLoadParameters, EntityKeysData, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { DeferredOperationData, PortalPersonMitigatingcontrols } from '@imx-modules/imx-api-cpl';
+import { CollectionLoadParameters, EntityKeysData, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { ApiService } from '../../api.service';
 import { PersonMitigatingControls } from './person-mitigating-controls';
 
@@ -43,7 +43,7 @@ export class MitigatingControlsPersonService {
 
   public async getControls(
     uidPerson: string,
-    uidNonCompliance: string
+    uidNonCompliance: string,
   ): Promise<ExtendedTypedEntityCollection<PortalPersonMitigatingcontrols, DeferredOperationData>> {
     return this.apiService.typedClient.PortalPersonMitigatingcontrols.Get(uidPerson, uidNonCompliance);
   }
@@ -67,7 +67,7 @@ export class MitigatingControlsPersonService {
     uidPerson: string,
     uidNonCompliance: string,
     uidPersonWantsOrg: string,
-    uidMitigatinControl: string
+    uidMitigatinControl: string,
   ): Promise<void> {
     const inter = (await this.apiService.typedClient.PortalPersonMitigatingcontrolsInteractive.Get(uidPerson, uidNonCompliance)).Data[0];
     await inter.UID_PersonWantsOrg.Column.PutValue(uidPersonWantsOrg);
@@ -75,14 +75,14 @@ export class MitigatingControlsPersonService {
     await this.apiService.client.portal_person_mitigatingcontrols_interactive_forrequest_get(
       uidPerson,
       uidNonCompliance,
-      inter.InteractiveEntityStateData.EntityId,
-      { keys: inter.InteractiveEntityStateData.Keys, state: inter.InteractiveEntityStateData.State }
+      inter.InteractiveEntityStateData.EntityId || '',
+      { keys: inter.InteractiveEntityStateData.Keys, state: inter.InteractiveEntityStateData.State || '' },
     );
   }
 
   public async deleteControl(mControl: PersonMitigatingControls): Promise<void> {
-      await mControl.GetEntity().MarkForDeletion();
-      await mControl.GetEntity().Commit();
+    await mControl.GetEntity().MarkForDeletion();
+    await mControl.GetEntity().Commit();
   }
 
   public async getCandidates(uid: string, uidNonCompliance: string, data: EntityKeysData, parameter?: CollectionLoadParameters) {
@@ -90,7 +90,7 @@ export class MitigatingControlsPersonService {
       uid,
       uidNonCompliance,
       data,
-      parameter
+      parameter,
     );
   }
 }

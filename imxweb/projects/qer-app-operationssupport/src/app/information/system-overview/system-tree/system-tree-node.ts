@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { OpsupportSystemoverview } from 'imx-api-qbm';
+import { OpsupportSystemoverview } from '@imx-modules/imx-api-qbm';
 
 export class SystemTreeNode {
   public display: string;
@@ -33,8 +33,8 @@ export class SystemTreeNode {
     public name?: string,
     public level: number = 1,
     public expandable: boolean = false,
-    public hasExceeededTresholds: number = 0
+    public hasExceeededTresholds: number = 0,
   ) {
-    this.display = item !== null ? item.Element.value : name;
+    this.display = (item ? item.Element.value : name) ?? '';
   }
 }

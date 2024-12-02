@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,16 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { first } from 'rxjs/operators';
 
+import { PwoExtendedData } from '@imx-modules/imx-api-qer';
+import { DataViewSource, HELP_CONTEXTUAL, HelpContextualValues } from 'qbm';
 import { PendingItemsType } from '../user/pending-items-type.interface';
 import { UserModelService } from '../user/user-model.service';
-import { HELP_CONTEXTUAL, HelpContextualValues } from 'qbm';
+import { Approval } from './approval';
+import { ApprovalsTableComponent } from './approvals-table.component';
 
 @Component({
   templateUrl: './approvals.component.html',
@@ -42,10 +45,13 @@ export class ApprovalsComponent implements OnInit {
   public tabIndex = 0;
   public hasInquiries = false;
   public viewReady = false;
+  public dataSource: DataViewSource<Approval, PwoExtendedData | undefined>;
+  @ViewChild('approvalsTableComponent', { static: false }) public approvalsTableComponent: ApprovalsTableComponent;
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
-    private readonly usermodelService: UserModelService
+    private readonly usermodelService: UserModelService,
+    private changeDetectionRef: ChangeDetectorRef,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -54,24 +60,29 @@ export class ApprovalsComponent implements OnInit {
       this.hasInquiries = pendingItems.OpenInquiries > 0;
       const queryParams = await this.activatedRoute.queryParams.pipe(first()).toPromise();
       const result = {};
-      for (const [key, value] of Object.entries(queryParams)) {
-        result[key.toLowerCase()] = value;
+      if (queryParams) {
+        for (const [key, value] of Object.entries(queryParams)) {
+          result[key.toLowerCase()] = value;
+        }
       }
 
       this.params = result;
 
       if (this.params.inquiries) {
         this.tabIndex = 1;
-        this.hasInquiries = true;}
+        this.hasInquiries = true;
+      }
     } finally {
       this.viewReady = true;
+      this.changeDetectionRef.detectChanges();
+      this.dataSource = this.approvalsTableComponent?.dataSource;
     }
   }
 
-  public get contextId(): HelpContextualValues{
-    if(this.tabIndex === 0){
+  public get contextId(): HelpContextualValues {
+    if (this.tabIndex === 0) {
       return HELP_CONTEXTUAL.PendingRequest;
-    }else{
+    } else {
       return HELP_CONTEXTUAL.PendingRequestInquiries;
     }
   }

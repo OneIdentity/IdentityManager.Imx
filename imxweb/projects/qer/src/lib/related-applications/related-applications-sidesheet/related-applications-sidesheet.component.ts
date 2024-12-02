@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,37 +25,37 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { RelatedApplicationsService } from '../related-applications.service'
-import { RelatedApplication } from 'imx-api-qer';
-import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Router } from '@angular/router';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { RelatedApplication } from '@imx-modules/imx-api-qer';
+import { RelatedApplicationsService } from '../related-applications.service';
 
 @Component({
   selector: 'imx-related-applications-sidesheet',
-  templateUrl: './related-applications-sidesheet.component.html'
+  templateUrl: './related-applications-sidesheet.component.html',
 })
 export class RelatedApplicationsSidesheetComponent implements OnInit {
-  public applications:RelatedApplication[]=[];
-  constructor(private relatedappService: RelatedApplicationsService,
+  public applications: RelatedApplication[] = [];
+  constructor(
+    private relatedappService: RelatedApplicationsService,
     private readonly busyService: EuiLoadingService,
     private router: Router,
-    private readonly sidesheetRef: EuiSidesheetRef) { }
+    private readonly sidesheetRef: EuiSidesheetRef,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
-      this.applications= await this.relatedappService.getRelatedApplications();
-    }
-    finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.applications = await this.relatedappService.getRelatedApplications();
+    } finally {
+      this.busyService.hide();
     }
   }
 
-  public displayApp(app:RelatedApplication):void {
+  public displayApp(app: RelatedApplication): void {
     this.sidesheetRef.close();
-    this.router.navigate(['applicationdetails'], {state: {data: app}});
+    this.router.navigate(['applicationdetails'], { state: { data: app } });
   }
-
 }

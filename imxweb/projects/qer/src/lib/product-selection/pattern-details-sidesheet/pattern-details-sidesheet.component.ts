@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,50 +26,58 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
-import { DisplayColumns, MultiValue } from 'imx-qbm-dbts';
-import { ColumnDependentReference, BaseReadonlyCdr } from 'qbm';
+import { PortalShopServiceitems, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { DisplayColumns, MultiValue } from '@imx-modules/imx-qbm-dbts';
+import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 
 @Component({
   selector: 'imx-pattern-details-sidesheet',
   templateUrl: './pattern-details-sidesheet.component.html',
-  styleUrls: ['./pattern-details-sidesheet.component.scss']
+  styleUrls: ['./pattern-details-sidesheet.component.scss'],
 })
 export class PatternDetailsSidesheetComponent implements OnInit {
   public cdrLists: ColumnDependentReference[][] = [];
   public roleAssignments: boolean[];
   public atLeastOneRoleAssignment = true;
 
-
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      items: PortalShopServiceitems[],
-      projectConfig: QerProjectConfig
-    }
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      items: PortalShopServiceitems[];
+      projectConfig: QerProjectConfig;
+    },
   ) {
-    this.roleAssignments = data.items.map(item => ['ESet', 'QERAssign'].includes(item.TableName.value));
-    this.atLeastOneRoleAssignment = this.roleAssignments.some(item => item);
-   }
+    this.roleAssignments = data.items.map((item) => ['ESet', 'QERAssign'].includes(item.TableName.value));
+    this.atLeastOneRoleAssignment = this.roleAssignments.some((item) => item);
+  }
 
   public async ngOnInit(): Promise<void> {
-    const properties = this.data.projectConfig.ITShopConfig.AccProductProperties;
-    this.cdrLists = this.data.items.map(item => {
+    const properties = this.data.projectConfig.ITShopConfig?.AccProductProperties;
+    this.cdrLists = this.data.items.map((item) => {
       return [
         new BaseReadonlyCdr(item.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME)),
         new BaseReadonlyCdr(item.TableName.Column),
         new BaseReadonlyCdr(item.Tags.Column),
-        ...properties.map(prop => new BaseReadonlyCdr(item.GetEntity().GetColumn(prop)))
+        ...(properties?.map((prop) => new BaseReadonlyCdr(item.GetEntity().GetColumn(prop))) || []),
       ];
     });
   }
 
-  public displayNotRequestable(item: PortalShopServiceitems): boolean  {
+  public displayNotRequestable(item: PortalShopServiceitems): boolean {
     return !item.IsRequestable.value;
   }
 
   public displayInfo(item: PortalShopServiceitems): boolean {
-    return (item.IsRequestable.value &&
-    this.isValueContains(item.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED', 'ORDER', 'NOTORDERABLE', 'CART'])
+    return (
+      item.IsRequestable.value &&
+      this.isValueContains(item.OrderableStatus.value, [
+        'PERSONHASOBJECT',
+        'PERSONHASASSIGNMENTORDER',
+        'ASSIGNED',
+        'ORDER',
+        'NOTORDERABLE',
+        'CART',
+      ])
     );
   }
 
@@ -80,5 +88,4 @@ export class PatternDetailsSidesheetComponent implements OnInit {
     }
     return inputValues.findIndex((i) => values.includes(i)) !== -1;
   }
-
 }

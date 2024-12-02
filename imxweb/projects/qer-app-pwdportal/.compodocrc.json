@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - Password Reset Portal",
-  "output": "../../documentation/v92/qer-app-pwdportal",
+  "output": "../../documentation/v93/qer-app-pwdportal",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

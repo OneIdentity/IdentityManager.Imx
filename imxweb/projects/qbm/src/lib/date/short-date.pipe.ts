@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,18 +28,15 @@ import { Pipe, PipeTransform, Injectable } from '@angular/core';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 @Pipe({
   name: 'shortDate',
 })
 export class ShortDatePipe implements PipeTransform {
-
   private readonly currentCulture: string;
 
-  constructor(
-    private readonly translationProviderService: ImxTranslationProviderService,
-  ) {
+  constructor(private readonly translationProviderService: ImxTranslationProviderService) {
     this.currentCulture = this.translationProviderService.CultureFormat;
   }
 
@@ -52,6 +49,5 @@ export class ShortDatePipe implements PipeTransform {
       return value;
     }
     return new Date(value).toLocaleDateString(this.currentCulture);
-
   }
 }

@@ -1,0 +1,186 @@
+<mat-card class="top-banner">
+  <button mat-stroked-button color="warn" [disabled]="!hasCompletedGroups" (click)="removeCompletedGroups()" translate>
+    <eui-icon class="icon-delete-tasks" icon="delete"></eui-icon>
+    {{ '#LDS#Remove completed processes' | translate }}
+  </button>
+  <mat-slide-toggle color="accent" labelPosition="before" [checked]="isShowErrorsOnly()" (change)="toggleErrorTasks()">
+    {{ '#LDS#Show only processes with errors' | translate }}
+  </mat-slide-toggle>
+</mat-card>
+<div eui-sidesheet-content>
+  @if (isShowErrorsOnly() && !hasErrors) {
+    <!-- Show no errors message -->
+    <div class="empty-message">
+      <eui-icon class="icon-empty" icon="check"></eui-icon>
+      <span>{{ '#LDS#Currently, there are no processes with errors.' | translate }}</span>
+    </div>
+  } @else if (!isShowErrorsOnly() && !hasActions) {
+    <!-- Show no actions message -->
+    <div class="empty-message">
+      <eui-icon class="icon-empty" icon="task"></eui-icon>
+      <span>{{ '#LDS#Currently, there are no background processes.' | translate }}</span>
+    </div>
+  } @else {
+    <mat-accordion class="groups">
+      @for (group of displayedTaskGroups(); track group.uid) {
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title class="group-title">
+              @switch (group.state()) {
+                @case (stateOptions.Success) {
+                  <eui-icon class="icon-success" icon="check"></eui-icon>
+                }
+                @case (stateOptions.Failed) {
+                  <eui-icon class="icon-fail" icon="error-circle"></eui-icon>
+                }
+                @case (stateOptions.Waiting) {
+                  <eui-icon class="icon-pending" icon="waiting" [attr.aria-label]="'#LDS#Retry failed processes' | translate"></eui-icon>
+                }
+                @case (stateOptions.Processing) {
+                  <eui-icon class="icon-processing" icon="run"></eui-icon>
+                }
+              }
+              <span class="group-title-text imx-text-overflow--2" [matTooltip]="group.display" matTooltipShowDelay="1000">
+                {{ group.display }}
+              </span>
+              @if (isShowErrorsOnly()) {
+                ({{ group.erroredActions().length }})
+              } @else {
+                ({{ group.actions().length }})
+              }
+            </mat-panel-title>
+            <mat-panel-description>
+              <!-- Completed state -->
+              <div class="group-description">
+                @switch (group.state()) {
+                  @case (stateOptions.Success) {
+                    {{ '#LDS#Completed without errors' | translate }}
+                  }
+                  @case (stateOptions.Failed) {
+                    @if (group.erroredActions().length == 1) {
+                      {{ '#LDS#Completed with one error' | translate }}
+                    } @else {
+                      {{ '#LDS#Completed with {0} errors' | translate | ldsReplace: group.erroredActions().length }}
+                    }
+                  }
+                  @case (stateOptions.Waiting) {
+                    {{ '#LDS#Queued' | translate }}
+                  }
+                  @case (stateOptions.Processing) {
+                    {{ '#LDS#Processing' | translate }}
+                  }
+                }
+                @if (!!group.finishedDate()) {
+                  <div class="group-time">
+                    {{ '#LDS#Completed on: {0}' | translate | ldsReplace: ((group.finishedDate()! | date: 'short')! | localizedDate) }}
+                  </div>
+                }
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div class="group-body">
+            @if (group.state() === stateOptions.Failed) {
+              <div class="group-body--failed">
+                <button
+                  mat-stroked-button
+                  class="retry-task"
+                  color="primary"
+                  [matTooltip]="'#LDS#Retry all failed processes' | translate"
+                  matTooltipShowDelay="1000"
+                  (click)="retryGroup(group); $event.stopPropagation()"
+                >
+                  <eui-icon class="icon-retry" icon="refresh"></eui-icon>
+                  {{ '#LDS#Retry all failed processes' | translate }}
+                </button>
+              </div>
+            }
+            @if (isShowErrorsOnly()) {
+              @for (task of group.erroredActions(); track task.uid) {
+                <ng-container *ngTemplateOutlet="taskContent; context: { $implicit: task }"></ng-container>
+              }
+            } @else {
+              @for (task of group.actions(); track task.uid) {
+                <ng-container *ngTemplateOutlet="taskContent; context: { $implicit: task }"></ng-container>
+              }
+            }
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
+</div>
+
+<ng-template #taskContent let-task>
+  <div class="task">
+    @switch (task.state()) {
+      @case (stateOptions.Success) {
+        <eui-icon class="icon-success" icon="check" size="l"></eui-icon>
+      }
+      @case (stateOptions.Failed) {
+        <eui-icon class="icon-fail" icon="error-circle" size="l"></eui-icon>
+      }
+      @case (stateOptions.Waiting) {
+        <eui-icon class="icon-pending" icon="waiting" size="l"></eui-icon>
+      }
+      @case (stateOptions.Processing) {
+        <eui-icon class="icon-processing" icon="run" size="l"></eui-icon>
+      }
+    }
+    <div class="task-details">
+      <div class="task-display">
+        @if (task.state() === stateOptions.Failed) {
+          <div class="task-display--failed">
+            <div>
+              <span class="title imx-text-overflow--1" [matTooltip]="task.display" matTooltipShowDelay="1000">
+                {{ task.display }}
+              </span>
+              <span class="description imx-text-overflow--2" [matTooltip]="task.display2" matTooltipShowDelay="1000">
+                {{ task.display2 }}
+              </span>
+            </div>
+            <button
+              mat-stroked-button
+              class="retry-task"
+              color="primary"
+              [matTooltip]="'#LDS#Retry failed process' | translate"
+              matTooltipShowDelay="1000"
+              (click)="retryTask(task)"
+            >
+              <eui-icon class="icon-retry" icon="refresh"></eui-icon>
+              {{ '#LDS#Retry process' | translate }}
+            </button>
+          </div>
+        } @else {
+          <span class="title imx-text-overflow--1" [matTooltip]="task.display" matTooltipShowDelay="1000">
+            {{ task.display }}
+          </span>
+          <span class="description imx-text-overflow--2" [matTooltip]="task.display2" matTooltipShowDelay="1000">
+            {{ task.display2 }}
+          </span>
+        }
+      </div>
+      <div class="task-time">
+        @if (!!task.finishedDate()) {
+          {{ '#LDS#Completed on: {0}' | translate | ldsReplace: ((task.finishedDate()! | date: 'short')! | localizedDate) }}
+        } @else if (task.state() == stateOptions.Waiting) {
+          {{ '#LDS#Queued' | translate }}
+        } @else {
+          {{ '#LDS#Processing' | translate }}
+        }
+      </div>
+      @if (task.error()) {
+        <button
+          mat-flat-button
+          class="task-error-button"
+          (click)="showError(task.display, task.error())"
+          [matTooltip]="'#LDS#Show complete error message' | translate"
+          matTooltipShowDelay="1000"
+        >
+          <div class="task-error imx-text-overflow--2">
+            {{ task.error() }}
+          </div>
+        </button>
+      }
+    </div>
+  </div>
+</ng-template>

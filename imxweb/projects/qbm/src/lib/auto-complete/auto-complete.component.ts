@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,10 +30,9 @@ import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 @Component({
   selector: 'imx-auto-complete',
   templateUrl: './auto-complete.component.html',
-  styleUrls: ['./auto-complete.component.scss']
+  styleUrls: ['./auto-complete.component.scss'],
 })
 export class AutoCompleteComponent {
-
   public filterText = '';
   public filteredOptions: string[];
 
@@ -49,8 +48,7 @@ export class AutoCompleteComponent {
   }
 
   public filterOptions(): void {
-    this.filteredOptions = this.availableOptions
-      .filter(app => app.toLocaleLowerCase().includes(this.filterText.toLocaleLowerCase()));
+    this.filteredOptions = this.availableOptions.filter((app) => app.toLocaleLowerCase().includes(this.filterText.toLocaleLowerCase()));
   }
 
   public clearText(): void {
@@ -58,5 +56,4 @@ export class AutoCompleteComponent {
     this.filterOptions();
     this.EmitValueChangedEvent();
   }
-
 }

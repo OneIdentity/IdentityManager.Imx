@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,36 +24,37 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnDestroy, Inject, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabGroup } from '@angular/material/tabs';
 import { Router } from '@angular/router';
-import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { IdentitiesService } from '../identities.service';
-import { FeatureConfig, PortalAdminPerson, PortalPersonReports, QerProjectConfig } from 'imx-api-qer';
+import { FeatureConfig, PortalAdminPerson, PortalPersonReports, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import {
-  ColumnDependentReference,
-  ClassloggerService,
-  BaseCdr,
-  SnackBarService,
   AuthenticationService,
-  SystemInfoService,
-  ConfirmationService,
-  TabItem,
-  ExtService,
+  BaseCdr,
+  calculateSidesheetWidth,
   CdrFactoryService,
+  ClassloggerService,
+  ColumnDependentReference,
+  ConfirmationService,
+  ExtService,
+  ISessionState,
+  SnackBarService,
+  SystemInfoService,
+  TabItem,
 } from 'qbm';
-import { DbObjectKey } from 'imx-qbm-dbts';
-import { IdentitiesReportsService } from '../identities-reports.service';
+import { FeatureConfigService } from '../../admin/feature-config.service';
 import { PasscodeService } from '../../ops/passcode.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { RiskAnalysisSidesheetComponent } from '../../risk/riskanalysis-sidesheet.component';
-import { FeatureConfigService } from '../../admin/feature-config.service';
+import { IdentitiesReportsService } from '../identities-reports.service';
+import { IdentitiesService } from '../identities.service';
 
 @Component({
   selector: 'imx-identity-sidesheet',
@@ -63,21 +64,22 @@ import { FeatureConfigService } from '../../admin/feature-config.service';
 export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   @ViewChild('tabs') public tabs: MatTabGroup;
 
-  public readonly detailsFormGroup: UntypedFormGroup;
-  public cdrList: ColumnDependentReference[] = [];
-  public cdrListPersonal: ColumnDependentReference[] = [];
-  public cdrListOrganizational: ColumnDependentReference[] = [];
-  public cdrListLocality: ColumnDependentReference[] = [];
+  public readonly detailsFormGroup = new FormGroup({});
+  public cdrList: (ColumnDependentReference | undefined)[] = [];
+  public cdrListPersonal: (ColumnDependentReference | undefined)[] = [];
+  public cdrListOrganizational: (ColumnDependentReference | undefined)[] = [];
+  public cdrListLocality: (ColumnDependentReference | undefined)[] = [];
   public valueChanges$: Subscription;
-  public readonly parameters: { objecttable: string; objectuid: string };
+  public readonly parameters: { objecttable: string; objectuid: string; display: string };
   public canAnalyzeRisk = false;
-  public isActiveFormControl = new UntypedFormControl();
-  public isSecurityIncidentFormControl = new UntypedFormControl();
+  public isActiveFormControl = new FormControl<boolean>(false, { nonNullable: true });
+  public isSecurityIncidentFormControl = new FormControl<boolean>(false, { nonNullable: true });
   public dynamicTabs: TabItem[] = [];
 
   private readonly subscriptions: Subscription[] = [];
   private currentUserUid: string;
   private featureConfig: FeatureConfig;
+  private isInactiveHasChanged = false;
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
@@ -100,11 +102,11 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService,
-    private readonly extService: ExtService,    
+    private readonly extService: ExtService,
     private readonly featureConfigService: FeatureConfigService,
     private readonly cdrFactoryService: CdrFactoryService,
     authentication: AuthenticationService,
-    confirm: ConfirmationService
+    confirm: ConfirmationService,
   ) {
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async (result) => {
@@ -116,20 +118,24 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
         } else {
           this.sidesheetRef.close(result);
         }
-      })
+      }),
     );
 
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((sessionState) => (this.currentUserUid = sessionState.UserUid)));
+    this.subscriptions.push(
+      authentication.onSessionResponse.subscribe((sessionState: ISessionState) => (this.currentUserUid = sessionState.UserUid || '')),
+    );
 
-    this.detailsFormGroup = new UntypedFormGroup({});
     this.parameters = {
-      objecttable: PortalPersonReports.GetEntitySchema().TypeName,
+      objecttable: PortalPersonReports.GetEntitySchema().TypeName ?? '',
       objectuid: data.selectedIdentity.GetEntity().GetKeys()[0],
+      display: data.selectedIdentity.GetEntity().GetDisplay(),
     };
 
     this.systemInfoService
       .get()
-      .then((i) => (this.canAnalyzeRisk = i.PreProps.includes('RISKINDEX') && data.selectedIdentity.RiskIndexCalculated.value > 0));
+      .then(
+        (i) => (this.canAnalyzeRisk = (i.PreProps?.includes('RISKINDEX') && data.selectedIdentity.RiskIndexCalculated.value > 0) || false),
+      );
   }
 
   get isIdentityMarkedForDelete(): boolean {
@@ -167,7 +173,7 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   public async personsManagedReport(): Promise<void> {
     this.reports.personsManagedReport(
       this.data.selectedIdentity.GetEntity().GetKeys()[0],
-      '#LDS#Download report on identities this identity is directly responsible for'
+      '#LDS#View identities this identity is directly responsible for',
     );
   }
 
@@ -202,7 +208,11 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       try {
         await this.data.selectedIdentity.GetEntity().Commit(true);
         this.detailsFormGroup.markAsPristine();
-        this.snackbar.open({ key: '#LDS#The changes have been successfully saved.' });
+        this.snackbar.open({
+          key: this.isInactiveHasChanged
+            ? '#LDS#Your changes have been successfully saved. It may take some time for the changes to take effect.'
+            : '#LDS#The changes have been successfully saved.',
+        });
         this.closeSidesheet();
       } finally {
         this.busyService.hide(overlayRef);
@@ -243,7 +253,7 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       title: await this.translate.get('#LDS#Heading Analyze Risk').toPromise(),
       subTitle: this.data.selectedIdentity.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '60%',
+      width: calculateSidesheetWidth(),
       testId: 'identity-sidesheet-analyze-risk-sidesheet',
       data: { objectKey: new DbObjectKey('Person', this.data.selectedIdentity.GetEntity().GetKeys()[0]).ToXmlString() },
     });
@@ -251,12 +261,13 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
 
   public async generatePasscode(): Promise<void> {
     let passcode;
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       passcode = await this.passcodeService.getPasscodeWithPortalLogin(this.data.selectedIdentity.GetEntity().GetKeys()[0]);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
     if (!passcode) {
       return;
@@ -264,8 +275,8 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     return this.passcodeService.showPasscode(
       passcode,
       this.data.selectedIdentity.GetEntity().GetDisplay(),
-      null,
-      await this.passcodeService.getValidationDuration()
+      '',
+      await this.passcodeService.getValidationDuration(),
     );
   }
 
@@ -289,14 +300,19 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     }
   }
 
-  public update(cdr: ColumnDependentReference, list: ColumnDependentReference[]): void {
-    const index = list.findIndex((elem) => elem.column.ColumnName === cdr.column.ColumnName);
+  public update(cdr: ColumnDependentReference | undefined, list: (ColumnDependentReference | undefined)[]): void {
+    const cdrColumn = cdr?.column;
+    if (!cdrColumn || !list.length) {
+      return;
+    }
+    const index = list.findIndex((elem) => elem?.column?.ColumnName === (cdrColumn?.ColumnName ?? ''));
     if (index === -1) {
       return;
     }
 
-    this.detailsFormGroup.removeControl(cdr.column.ColumnName);
-    list.splice(index, 1, new BaseCdr(cdr.column));
+    this.isInactiveHasChanged = cdrColumn?.ColumnName === 'IsTemporaryDeactivated';
+    this.detailsFormGroup.removeControl(cdrColumn?.ColumnName ?? '');
+    list.splice(index, 1, new BaseCdr(cdrColumn));
   }
 
   private closeSidesheet(): void {
@@ -305,39 +321,57 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
 
   private async setup(): Promise<void> {
     // Resolve an issue where the mat-tab navigation arrows could appear on first load
-    this.subscriptions.push(
-      this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
-        // Recalculate header
-        this.tabs.updatePagination();
-      })
-    );
+    if (this.sidesheetRef?.componentInstance) {
+      this.subscriptions.push(
+        this.sidesheetRef.componentInstance?.onOpen().subscribe(() => {
+          // Recalculate header
+          this.tabs.updatePagination();
+        }),
+      );
+    }
 
     // Handle the IsInActive column outside the context of a CDR editor so the UI can invert the meaning to make more sense to the user
     // This should be inversed on the api data response at some point, but until then we handle it in the UI
     this.isActiveFormControl.setValue(!this.data.selectedIdentity.IsInActive.value);
+    if (!this.data.canEdit || !this.data.selectedIdentity.IsInActive.GetMetadata().CanEdit()) {
+      this.isActiveFormControl.disable();
+    }
     this.detailsFormGroup.addControl(this.data.selectedIdentity.IsInActive.Column.ColumnName, this.isActiveFormControl);
 
-    const personalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_Attributes;
-    this.cdrListPersonal = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(), personalColumns, !this.data.canEdit);
+    this.isSecurityIncidentFormControl.setValue(this.data.selectedIdentity.IsSecurityIncident.value);
+    if (!this.data.canEdit || !this.data.selectedIdentity.IsSecurityIncident.GetMetadata().CanEdit()) {
+      this.isSecurityIncidentFormControl.disable();
+    }
+    this.detailsFormGroup.addControl(this.data.selectedIdentity.IsSecurityIncident.Column.ColumnName, this.isSecurityIncidentFormControl);
+    this.detailsFormGroup.markAsPristine();
 
-    const organizationalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_OrganizationalAttributes;
-    this.cdrListOrganizational = this.cdrFactoryService.buildCdrFromColumnList(
+    const personalColumns = this.data.projectConfig.PersonConfig?.VI_Employee_MasterData_Attributes || [];
+    this.cdrListPersonal = this.cdrFactoryService.buildCdrFromColumnList(
       this.data.selectedIdentity.GetEntity(),
-      organizationalColumns, !this.data.canEdit
+      personalColumns,
+      !this.data.canEdit,
     );
 
-    const localityColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_LocalityAttributes;
-    this.cdrListLocality = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(), localityColumns, !this.data.canEdit);
+    const organizationalColumns = this.data.projectConfig.PersonConfig?.VI_Employee_MasterData_OrganizationalAttributes || [];
+    this.cdrListOrganizational = this.cdrFactoryService.buildCdrFromColumnList(
+      this.data.selectedIdentity.GetEntity(),
+      organizationalColumns.filter((column) => column !== 'IsInActive'),
+      !this.data.canEdit,
+    );
 
-    this.isSecurityIncidentFormControl.setValue(this.data.selectedIdentity.IsSecurityIncident.value);
-    this.detailsFormGroup.addControl(this.data.selectedIdentity.IsSecurityIncident.Column.ColumnName, this.isSecurityIncidentFormControl);
+    const localityColumns = this.data.projectConfig.PersonConfig?.VI_Employee_MasterData_LocalityAttributes || [];
+    this.cdrListLocality = this.cdrFactoryService.buildCdrFromColumnList(
+      this.data.selectedIdentity.GetEntity(),
+      localityColumns,
+      !this.data.canEdit,
+    );
 
     this.busyService.show();
     try {
       this.featureConfig = await this.featureConfigService.getFeatureConfig();
       this.dynamicTabs = (
         await this.extService.getFittingComponents<TabItem>('identitySidesheet', (ext) => ext.inputData.checkVisibility(this.parameters))
-      ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+      ).sort((tab1: TabItem, tab2: TabItem) => (tab1.sortOrder ?? 0) - (tab2.sortOrder ?? 0));
     } finally {
       this.busyService.hide();
     }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,19 @@
 
 import { Injectable } from '@angular/core';
 
-import { ITShopConfig, PortalItshopPattern, PortalItshopPatternItem, PortalServicecategories, PortalShopServiceitems, V2ApiClientMethodFactory } from 'imx-api-qer';
-import { MethodDefinition, MethodDescriptor } from 'imx-qbm-dbts';
+import {
+  ITShopConfig,
+  PortalItshopPatternItem,
+  PortalServicecategories,
+  PortalShopServiceitems,
+  V2ApiClientMethodFactory,
+} from '@imx-modules/imx-api-qer';
+import { MethodDefinition, MethodDescriptor, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, CdrFactoryService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageService {
   private readonly methodFactory = new V2ApiClientMethodFactory();
@@ -40,18 +46,22 @@ export class ImageService {
   constructor(
     private readonly api: QerApiService,
     private readonly config: AppConfigService,
-  ) { }
+  ) {}
 
   /** Returns the URL to the image for the specified service item. */
-  public getPath(item: PortalShopServiceitems | PortalServicecategories | PortalItshopPatternItem): string {
-    const imageValue = item.ImageRef?.value ?? CdrFactoryService.tryGetColumn(item.GetEntity(), 'ImageRef')?.GetValue();
+  public getPath(item: TypedEntity): string {
+    const imageValue =
+      (item as PortalShopServiceitems | PortalServicecategories | PortalItshopPatternItem).ImageRef?.value ??
+      CdrFactoryService.tryGetColumn(item.GetEntity(), 'ImageRef')?.GetValue();
     const tokens = imageValue?.split('/');
     if (tokens?.length > 1) {
-      let path: MethodDescriptor<any>;
+      let path: MethodDescriptor<Blob>;
       if (tokens[0] === 'category') {
         path = this.methodFactory.portal_shop_categoryimage_get(tokens[1]);
       } else if (tokens[0] === 'product') {
         path = this.methodFactory.portal_shop_serviceitemimage_get(tokens[1]);
+      } else {
+        return '';
       }
 
       if (path) {
@@ -59,13 +69,13 @@ export class ImageService {
         return this.config.BaseUrl + new MethodDefinition(path).path;
       }
     }
-    return null;
+    return '';
   }
 
   /**
    * @deprecated Use getPath()
    */
-  public async get(serviceItem: PortalShopServiceitems, config: ITShopConfig): Promise<Blob> {
+  public async get(serviceItem: PortalShopServiceitems, config: ITShopConfig): Promise<Blob | undefined> {
     const tokens = serviceItem.ImageRef.value?.split('/');
     if (tokens?.length > 1) {
       if (tokens[0] === 'category') {
@@ -79,6 +89,6 @@ export class ImageService {
       }
     }
 
-    return null;
+    return undefined;
   }
 }

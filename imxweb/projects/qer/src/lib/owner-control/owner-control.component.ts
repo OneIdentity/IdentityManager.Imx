@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { AbstractControl, UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, BaseReadonlyCdr } from 'qbm';
 import { OwnerCandidateOptions } from './owner.model';
 import { OwnerControlService } from './owner-control.service';
@@ -37,10 +37,9 @@ import { OwnerControlService } from './owner-control.service';
 @Component({
   selector: 'imx-owner-control',
   templateUrl: './owner-control.component.html',
-  styleUrls: ['./owner-control.component.scss']
+  styleUrls: ['./owner-control.component.scss'],
 })
 export class OwnerControlComponent implements OnChanges, OnDestroy {
-
   @Input() public column: IEntityColumn;
   @Input() public isReadOnly: boolean;
   @Output() public formControlCreated = new EventEmitter<AbstractControl>();
@@ -61,7 +60,7 @@ export class OwnerControlComponent implements OnChanges, OnDestroy {
   private prdOwnerPersonControl: AbstractControl;
   private readonly subscribers$: Subscription[] = [];
 
-  constructor(public ownerService: OwnerControlService) { }
+  constructor(public ownerService: OwnerControlService) {}
 
   public ngOnChanges(): void {
     this.productOwnerCdr = this.isReadOnly ? new BaseReadonlyCdr(this.column) : new BaseCdr(this.column);
@@ -100,8 +99,7 @@ export class OwnerControlComponent implements OnChanges, OnDestroy {
           controlToClear.setValue(undefined, { emitEvent: false });
           cdrRef.column.PutValue(undefined);
         }
-      })
+      }),
     );
   }
-
 }

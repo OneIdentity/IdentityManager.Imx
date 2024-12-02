@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,18 @@
  *
  */
 
-import { CommonModule } from "@angular/common";
-import { NgModule } from "@angular/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
-import { EuiCoreModule, EuiMaterialModule } from "@elemental-ui/core";
-import { TranslateModule } from "@ngx-translate/core";
-import { CdrModule, DataSourceToolbarModule, DataTableModule, LdsReplaceModule, FkAdvancedPickerModule } from "qbm";
-import { DynamicExclusionDialogComponent } from "./dynamic-exclusion-dialog.component";
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, LdsReplaceModule, FkAdvancedPickerModule } from 'qbm';
+import { DynamicExclusionDialogComponent } from './dynamic-exclusion-dialog.component';
 
 @NgModule({
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     EuiCoreModule,
@@ -45,9 +46,8 @@ import { DynamicExclusionDialogComponent } from "./dynamic-exclusion-dialog.comp
     DataTableModule,
     LdsReplaceModule,
     FkAdvancedPickerModule,
-    RouterModule
+    RouterModule,
   ],
-  declarations: [DynamicExclusionDialogComponent]
+  declarations: [DynamicExclusionDialogComponent],
 })
-export class DynamicExclusionDialogModule {
-}
+export class DynamicExclusionDialogModule {}

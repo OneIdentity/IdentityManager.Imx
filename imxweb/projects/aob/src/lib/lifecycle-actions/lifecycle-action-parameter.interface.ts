@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { PortalEntitlement, PortalApplicationinshop, PortalApplication } from 'imx-api-aob';
+import { PortalEntitlement, PortalApplicationinshop, PortalApplication } from '@imx-modules/imx-api-aob';
 import { LifecycleAction } from './lifecycle-action.enum';
 
 /**
  * Interface for the {@link MAT_DIALOG_DATA|MAT_DIALOG_DATA} of the {@link LifecycleActionComponent|LifecycleActionComponent}
  */
 export interface LifecycleActionParameter {
-
   /** The mode to show the dialog. */
   action: LifecycleAction;
 

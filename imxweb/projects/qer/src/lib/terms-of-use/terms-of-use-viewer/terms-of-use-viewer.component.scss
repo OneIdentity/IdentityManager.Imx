@@ -1,15 +1,15 @@
+@import 'base/mixins';
+
 .imx-terms-container {
   overflow: auto;
   white-space: pre-line;
   margin-bottom: 10px;
 }
 
-.mat-card{
-  display: flex;
-  flex-direction: column;
-  max-height: 100%;
+.mat-mdc-card{
+  @include flex-column-container($max-height: 100%);
 
-  .mat-card-content{
-   overflow: auto; 
+  .mat-mdc-card-content {
+    overflow: auto;
   }
 }

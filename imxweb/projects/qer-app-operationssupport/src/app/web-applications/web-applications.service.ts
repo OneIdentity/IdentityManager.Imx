@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { Injectable } from '@angular/core';
 
 import { imx_SessionService } from 'qbm';
-import { OpsupportWebapplications } from 'imx-api-qbm';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { OpsupportWebapplications } from '@imx-modules/imx-api-qbm';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 
 @Injectable()
 export class WebApplicationsService {
@@ -36,7 +36,7 @@ export class WebApplicationsService {
     return this.session.TypedClient.OpsupportWebapplications.GetSchema();
   }
 
-  constructor(private session: imx_SessionService) { }
+  constructor(private session: imx_SessionService) {}
 
   public async get(parameter: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<OpsupportWebapplications, unknown>> {
     return this.session.TypedClient.OpsupportWebapplications.Get(parameter);

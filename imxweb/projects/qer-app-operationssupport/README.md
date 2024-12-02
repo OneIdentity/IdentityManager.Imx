@@ -1,4 +1,3 @@
 # Operations Support Portal
 
-The _Operations Support Portal_ is a web application to monitor the Identity Manager system state and troubleshoot queue processing.
-
+With the _Operations Support Portal_ users can perform typical operations support tasks. You can, among other things, monitor Job queue processing, DBQueue processing, and create passcodes to allow identities to log in to the Password Reset Portal.

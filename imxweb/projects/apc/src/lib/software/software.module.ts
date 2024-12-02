@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,27 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SoftwareComponent } from './software.component';
-import { SoftwareSidesheetComponent } from './software-sidesheet/software-sidesheet.component';
-import { BusyIndicatorModule, CdrModule, DataSourceToolbarModule, DataTableModule, HelpContextualModule, SelectedElementsModule } from 'qbm';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
-import { SoftwareMembershipsComponent } from './software-sidesheet/software-memberships/software-memberships.component';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import {
+  BusyIndicatorModule,
+  CdrModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  HelpContextualModule,
+  SelectedElementsModule,
+} from 'qbm';
 import { ServiceItemsEditFormModule } from 'qer';
-
-
+import { SoftwareMembershipsComponent } from './software-sidesheet/software-memberships/software-memberships.component';
+import { SoftwareSidesheetComponent } from './software-sidesheet/software-sidesheet.component';
+import { SoftwareComponent } from './software.component';
 
 @NgModule({
   declarations: [SoftwareComponent, SoftwareSidesheetComponent, SoftwareMembershipsComponent],
@@ -57,7 +63,8 @@ import { ServiceItemsEditFormModule } from 'qer';
     BusyIndicatorModule,
     SelectedElementsModule,
     ServiceItemsEditFormModule,
-    HelpContextualModule
+    HelpContextualModule,
+    DataViewModule,
   ],
 })
 export class SoftwareModule {}

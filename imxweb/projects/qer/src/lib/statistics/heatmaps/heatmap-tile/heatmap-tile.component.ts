@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,15 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { HeatmapSummaryDto } from 'imx-api-qer';
+import { HeatmapSummaryDto } from '@imx-modules/imx-api-qer';
 
 @Component({
   selector: 'imx-heatmap-tile',
   templateUrl: './heatmap-tile.component.html',
-  styleUrls: ['./heatmap-tile.component.scss']
+  styleUrls: ['./heatmap-tile.component.scss'],
 })
 export class HeatmapTileComponent {
   @Input() public summaryStat: HeatmapSummaryDto;
 
-  constructor() { }
+  constructor() {}
 }

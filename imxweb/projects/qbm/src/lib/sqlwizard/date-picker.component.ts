@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { DateDiffUnit } from 'imx-qbm-dbts';
+import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { DateDiffUnit } from '@imx-modules/imx-qbm-dbts';
 import { SqlNodeView } from './SqlNodeView';
 import { DateDiffOption, SqlWizardService } from './sqlwizard.service';
-import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 
 @Component({
   templateUrl: './date-picker.component.html',
@@ -36,6 +36,8 @@ import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
   selector: 'imx-sqlwizard-datepicker',
 })
 export class DatePickerComponent implements OnInit {
+  public absoluteError = false;
+
   @Input() public expr: SqlNodeView;
   @Output() public change = new EventEmitter<any>();
 
@@ -46,12 +48,14 @@ export class DatePickerComponent implements OnInit {
 
   public diffUnits: DateDiffOption[];
 
+  private _relative = false;
+
   private datepickerValidator: ValidatorFn = (form: FormGroup) => {
-    if (form.get('relative').value) {
+    if (form.get('relative')?.value) {
       if (
         !(!!form.get('timeUnit')?.value || form.get('timeUnit')?.value === 0) ||
-        !form.get('difference').value ||
-        Number(form.get('difference').value) < 1
+        !form.get('difference')?.value ||
+        Number(form.get('difference')?.value) < 1
       ) {
         return { datepickerError: true };
       }
@@ -61,13 +65,14 @@ export class DatePickerComponent implements OnInit {
 
   public form = new FormGroup(
     {
-      relative: new FormControl<boolean>(null),
-      difference: new FormControl<number>(null),
-      timeUnit: new FormControl<DateDiffOption>(null),
-      datepicker: new FormControl<Date>(null),
+      relative: new FormControl<boolean | null>(null),
+      difference: new FormControl<number | null>(null),
+      timeUnit: new FormControl<DateDiffOption | null>(null),
+      datepicker: new FormControl<Date | null>(null),
     },
-    [this.datepickerValidator]
+    [this.datepickerValidator],
   );
+
   constructor(svc: SqlWizardService) {
     this.diffUnits = svc.getDateDiffUnits();
   }
@@ -102,6 +107,6 @@ export class DatePickerComponent implements OnInit {
   }
 
   public get isRelative(): boolean {
-    return this.form.controls.relative.value;
+    return this.form.controls.relative.value ?? false;
   }
 }

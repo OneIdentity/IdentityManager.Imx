@@ -1,29 +1,32 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-@import '../../../../../qbm/src/lib/tile/tile-variables.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
-:host > ::ng-deep imx-tile .mat-card {
+:host > ::ng-deep imx-tile .mat-mdc-card {
   height: 60px;
   cursor: auto;
-  width: $tile-width;
-  min-width: $tile-width;
+  width: $IMX_Tile_Width;
+  min-width: $IMX_Tile_Width;
   overflow: hidden;
   padding: 0;
   padding-left: 7px;
 }
 
-.imx-generic-tile-content{
+.imx-generic-tile-content {
   font-weight: 600;
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   height: 100%;
   width: 100%;
   padding: 6px;
-  font-weight: 600;
+  h3{
+    font-size: inherit;
+  }
 }
 
-.imx-generic-tile-content >:first-child {
+.imx-generic-tile-content > :first-child {
   background-color: $iris-pastel;
   color: $iris-blue;
   width: 60px;
@@ -32,7 +35,7 @@
   margin: 10px;
 }
 
-.imx-generic-tile-content >:nth-child(2) {
+.imx-generic-tile-content > :nth-child(2) {
   flex: 1;
   line-height: 46px;
   text-align: left;
@@ -41,13 +44,9 @@
   overflow: hidden;
 }
 
-.mat-button{
-  text-transform: uppercase;
-}
-
 .eui-dark-theme {
-  :host{
-    .imx-generic-tile-content >:first-child {
+  :host {
+    .imx-generic-tile-content > :first-child {
       background-color: $color-gray-60;
       color: $color-gray-10;
     }
@@ -55,8 +54,8 @@
 }
 
 .eui-contrast-theme {
-  :host{
-    .imx-generic-tile-content >:first-child {
+  :host {
+    .imx-generic-tile-content > :first-child {
       background-color: $color-gray-80;
       color: $color-gray-0;
     }

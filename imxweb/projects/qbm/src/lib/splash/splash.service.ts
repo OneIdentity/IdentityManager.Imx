@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,32 +24,28 @@
  *
  */
 
-
 import { Injectable } from '@angular/core';
 import { EuiSplashScreenConfig, EuiSplashScreenOptions, EuiSplashScreenService } from '@elemental-ui/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SplashService {
-
   private defaultOptions: EuiSplashScreenConfig = {
     applicationName: 'One Identity Manager',
     icon: 'oi-horizontal',
     showSpinner: true,
-    message: 'Loading...'
+    message: 'Loading...',
   };
 
-  constructor(
-    private readonly splash: EuiSplashScreenService,
-  ) { }
+  constructor(private readonly splash: EuiSplashScreenService) {}
 
   public init(options: EuiSplashScreenOptions): void {
     // open splash screen with fix values
     const config = {
       ...this.defaultOptions,
-      ...options
-    };    
+      ...options,
+    };
     this.splash.open(config);
   }
 

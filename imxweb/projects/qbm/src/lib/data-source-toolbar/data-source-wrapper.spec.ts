@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,46 +24,36 @@
  *
  */
 
-import { EntitySchema, IClientProperty, TypedEntity } from 'imx-qbm-dbts';
+import { EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceWrapper } from './data-source-wrapper';
 
 describe('DataSourceWrapper', () => {
   it('propertyDisplay', () => {
     const propertyDisplay = { ColumnName: '__Display' } as IClientProperty;
 
-    const dstWrapper = new DataSourceWrapper(
-      undefined,
-      undefined,
-      { Columns: { __Display: propertyDisplay } } as EntitySchema
-    );
-    
+    const dstWrapper = new DataSourceWrapper(undefined, undefined, { Columns: { __Display: propertyDisplay } } as EntitySchema);
+
     expect(dstWrapper.propertyDisplay.ColumnName).toEqual(propertyDisplay.ColumnName);
   });
 
   it('getDstSettings', async () => {
-    type SomeEntity = { someProperty: string; } & TypedEntity;
+    type SomeEntity = { someProperty: string } & TypedEntity;
 
     const data = [{ someProperty: 'some value' }] as SomeEntity[];
     const collection = {
       totalCount: data.length,
-      Data: data
+      Data: data,
     };
 
     const someColumn = { ColumnName: 'SomeColumnName' } as IClientProperty;
     const entitySchema = { Columns: { someColumn } } as EntitySchema;
 
-    const displayedColumns = [
-      entitySchema.Columns.someColumn
-    ];
+    const displayedColumns = [entitySchema.Columns.someColumn];
 
-    const dstWrapper = new DataSourceWrapper(
-      __ => Promise.resolve(collection),
-      displayedColumns,
-      entitySchema
-    );
+    const dstWrapper = new DataSourceWrapper((__) => Promise.resolve(collection), displayedColumns, entitySchema);
 
     const parameters = { StartIndex: 23 };
-    
+
     const dstSettings = await dstWrapper.getDstSettings(parameters);
 
     expect((dstSettings.dataSource.Data[0] as SomeEntity).someProperty).toEqual(data[0].someProperty);

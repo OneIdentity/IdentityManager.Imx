@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,17 +32,8 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 
-
-
 @NgModule({
   declarations: [DbQueueComponent],
-  imports: [
-    CommonModule,
-    DataSourceToolbarModule,
-    DataTableModule,
-    EuiCoreModule,
-    TranslateModule,
-    MatButtonModule
-  ]
+  imports: [CommonModule, DataSourceToolbarModule, DataTableModule, EuiCoreModule, TranslateModule, MatButtonModule],
 })
-export class DbQueueModule { }
+export class DbQueueModule {}
