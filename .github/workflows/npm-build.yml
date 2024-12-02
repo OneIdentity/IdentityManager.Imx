@@ -1,10 +1,10 @@
-name: Build Angular applications
+name: Build Angular workspace
 
 on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master, v82, v90, v92, v93 ]
+    branches: [ master, v93 ]
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        node-version: [18.x]
+        node-version: [20.x]
     
     steps:
     - uses: actions/checkout@v3
@@ -25,89 +25,8 @@ jobs:
 
     - name: Install packages
       working-directory: ./imxweb
-      run: npm install
+      run: npm install --skip-dialog
 
-    - name: Build qbm
+    - name: Build All
       working-directory: ./imxweb
-      run: npm run build qbm
-      
-    - name: Build qer
-      working-directory: ./imxweb
-      run: npm run build qer
-
-    - name: Build tsb
-      working-directory: ./imxweb
-      run: npm run build tsb
-
-    - name: Build att
-      working-directory: ./imxweb
-      run: npm run build att
-
-    - name: Build rms
-      working-directory: ./imxweb
-      run: npm run build rms
-
-    - name: Build aad
-      working-directory: ./imxweb
-      run: npm run build aad
-
-    - name: Build aob
-      working-directory: ./imxweb
-      run: npm run build aob
-
-    - name: Build uci
-      working-directory: ./imxweb
-      run: npm run build uci
-
-    - name: Build cpl
-      working-directory: ./imxweb
-      run: npm run build cpl
-
-    - name: Build dpr
-      working-directory: ./imxweb
-      run: npm run build dpr
-
-    - name: Build rmb
-      working-directory: ./imxweb
-      run: npm run build rmb
-
-    - name: Build rps
-      working-directory: ./imxweb
-      run: npm run build rps
-
-    - name: Build o3t
-      working-directory: ./imxweb
-      run: npm run build o3t
-
-    - name: Build olg
-      working-directory: ./imxweb
-      run: npm run build olg
-      
-    - name: Build hds
-      working-directory: ./imxweb
-      run: npm run build hds
-
-    - name: Build pol
-      working-directory: ./imxweb
-      run: npm run build pol
-
-    - name: Build qer-app-portal
-      working-directory: ./imxweb
-      run: npm run build qer-app-portal
-
-    - name: Build qbm-app-landingpage
-      working-directory: ./imxweb
-      run: npm run build qbm-app-landingpage
-
-    - name: Build qer-app-operationssupport
-      working-directory: ./imxweb
-      run: npm run build qer-app-operationssupport
-
-    - name: Build qer-app-pwdportal    
-      working-directory: ./imxweb
-      run: npm run build qer-app-pwdportal
-
-    - name: Build custom-app
-      working-directory: ./imxweb
-      run: npm run build custom-app
-
+      run: npm run nx:build-all
