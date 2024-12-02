@@ -5,6 +5,7 @@ const readline = require('readline').createInterface({ input: process.stdin, out
 
 // --skip-dialog will auto overwrite feeds if imx-modules are present
 
+let isWin = process.platform === 'win32';
 const imxDir = 'imx-modules';
 const question = (str) => new Promise((resolve) => readline.question(str, resolve));
 const steps = {
@@ -42,16 +43,16 @@ function overwrite() {
     .filter((file) => file.endsWith('.tgz'))
     .forEach((file) => {
       if (file.includes('imx-')) {
-        const filePath = path.join(__dirname, imxDir, file);
+        const filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
         const baseName = path.parse(file).name;
         installArg += ['@', path.join(imxDir, baseName), '@', filePath, ' '].join('');
         console.log(filePath);
       } else if (file.includes('cadence-icon')) {
-        const filePath = path.join(__dirname, imxDir, file);
+        const filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
         installArg += [path.join('@elemental-ui', 'cadence-icon'), '@', filePath, ' '].join('');
         console.log(filePath);
       } else if (file.includes('core')) {
-        const filePath = path.join(__dirname, imxDir, file);
+        const filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
         installArg += [path.join('@elemental-ui', 'core'), '@', filePath, ' '].join('');
         console.log(filePath);
       }
@@ -61,7 +62,6 @@ function overwrite() {
     encoding: 'utf8',
     shell: true,
   });
-  console.log(child);
   if (child.status === 0) {
     console.log('Overwrite Finished');
   } else {
