@@ -12,7 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+      # Currently only can run ubuntu on github agents, windows isn't correctly installing packages
+        os: [ubuntu-latest]
         node-version: [20.x]
     
     steps:
@@ -30,3 +31,9 @@ jobs:
     - name: Build All
       working-directory: ./imxweb
       run: npm run nx:build-all
+      timeout-minutes: 20
+
+    - name: Test All
+      working-directory: ./imxweb
+      run: npm run nx:test-ci
+      timeout-minutes: 20
