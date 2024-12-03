@@ -1,12 +1,12 @@
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('upath');
+const path = require('path');
 
 const readline = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
 // --skip-dialog will auto overwrite feeds if imx-modules are present
 
-const isWin = process.platform === 'win32';
+let isWin = process.platform === 'win32';
 const imxDir = 'imx-modules';
 const question = (str) => new Promise((resolve) => readline.question(str, resolve));
 const steps = {
@@ -47,7 +47,7 @@ function overwrite() {
       filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
       if (file.includes('imx-')) {
         const baseName = path.parse(file).name;
-        installArg += ['@', path.join(imxDir, baseName), '@', filePath, ' '].join('');
+        installArg += ['@', imxDir, '/', baseName, '@', filePath, ' '].join('');
       } else if (file.includes('cadence-icon')) {
         installArg += ['@elemental-ui/cadence-icon@', filePath, ' '].join('');
       } else if (file.includes('core')) {
@@ -56,6 +56,7 @@ function overwrite() {
       console.log(filePath);
     });
 
+  console.log(`Running command npm i ${installArg} --save=false`);
   const child = child_process.spawnSync('npm', ['i', installArg, '--save=false'], {
     encoding: 'utf8',
     shell: true,
