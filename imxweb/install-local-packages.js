@@ -2,8 +2,6 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('upath');
 
-const path = require('upath');
-
 const readline = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
 // --skip-dialog will auto overwrite feeds if imx-modules are present
