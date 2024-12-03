@@ -1,6 +1,7 @@
 const child_process = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const path = require('upath');
+
 const readline = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
 // --skip-dialog will auto overwrite feeds if imx-modules are present
@@ -39,25 +40,25 @@ steps.start();
 function overwrite() {
   console.log('Overwriting with...');
   let installArg = '';
+  let filePath;
   fs.readdirSync(imxDir)
     .filter((file) => file.endsWith('.tgz'))
     .forEach((file) => {
       if (file.includes('imx-')) {
-        const filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
+        filePath = isWin ? imxDir + '/' + file : path.join(__dirname, imxDir, file);
         const baseName = path.parse(file).name;
         installArg += ['@', path.join(imxDir, baseName), '@', filePath, ' '].join('');
-        console.log(filePath);
       } else if (file.includes('cadence-icon')) {
-        const filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
-        installArg += [path.join('@elemental-ui', 'cadence-icon'), '@', filePath, ' '].join('');
-        console.log(filePath);
+        filePath = isWin ? imxDir + '/' + file : path.join(__dirname, imxDir, file);
+        installArg += ['@elemental-ui/cadence-icon@', filePath, ' '].join('');
       } else if (file.includes('core')) {
-        const filePath = isWin ? path.join(imxDir, file) : path.join(__dirname, imxDir, file);
-        installArg += [path.join('@elemental-ui', 'core'), '@', filePath, ' '].join('');
-        console.log(filePath);
+        filePath = isWin ? imxDir + '/' + file : path.join(__dirname, imxDir, file);
+        installArg += ['@elemental-ui/core@', filePath, ' '].join('');
       }
+      console.log(filePath);
     });
 
+  console.log(`Running command npm i ${installArg} --save=false`);
   const child = child_process.spawnSync('npm', ['i', installArg, '--save=false'], {
     encoding: 'utf8',
     shell: true,
