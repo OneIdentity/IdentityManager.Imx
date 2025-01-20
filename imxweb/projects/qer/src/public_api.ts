@@ -78,6 +78,7 @@ export { RequestInfoComponent } from './lib/itshop/request-info/request-info.com
 export { RequestParameterDataEntity } from './lib/itshop/request-info/request-parameter-data-entity.interface';
 export { ProductEntitlementsComponent } from './lib/itshop/request-info/service-item-detail/product-entitlements/product-entitlements.component';
 export { ServiceItemDetailComponent } from './lib/itshop/request-info/service-item-detail/service-item-detail.component';
+export { buildWorkingStepsOrdered } from './lib/itshop/request-info/step-helper';
 export { ShelfService } from './lib/itshop/shelf.service';
 export { WorkflowDataWrapper } from './lib/itshop/workflow-data-wrapper';
 export { ApprovalsModule } from './lib/itshopapprove/approvals.module';
@@ -129,6 +130,7 @@ export { ProjectConfigurationService } from './lib/project-configuration/project
 export { QerApiService } from './lib/qer-api-client.service';
 export { QerModule } from './lib/qer.module';
 export { QpmIntegrationModule } from './lib/qpm-integration/qpm-integration.module';
+export { QueueStatusComponent } from './lib/queue/queue-status/queue-status.component';
 export { RelatedApplicationsModule } from './lib/related-applications/related-applications.module';
 export { ItshopRequest } from './lib/request-history/itshop-request';
 export { RequestDisplayComponent } from './lib/request-history/request-display/request-display.component';
@@ -179,7 +181,6 @@ export { CartItemsExtensionService } from './lib/shopping-cart/cart-items-extens
 export { ICartItemsExtensionService } from './lib/shopping-cart/cart-items.model';
 export { RequestableProduct } from './lib/shopping-cart/requestable-product.interface';
 export { ShoppingCartModule } from './lib/shopping-cart/shopping-cart.module';
-export { QueueStatusComponent } from './lib/queue/queue-status/queue-status.component';
 export { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData } from './lib/sourcedetective/sourcedetective-sidesheet.component';
 export { SourceDetectiveType } from './lib/sourcedetective/sourcedetective-type.enum';
 export { SourceDetectiveComponent } from './lib/sourcedetective/sourcedetective.component';

@@ -112,6 +112,8 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
 
   public filters: DataSourceToolbarFilter[] = [];
 
+  public externalFilterId: string;
+
   /**
    * Holds a reference to the filter type enum for use in html
    */
@@ -143,7 +145,6 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
 
   private readonly subscriptions: Subscription[] = [];
   private formState: FilterFormState;
-  private filterTypeIndentifier: FilterTypeIdentifier = FilterTypeIdentifier.Predefined;
 
   /**
    * Value to specify the cutoff between a multi-x to a select-x field
@@ -172,6 +173,7 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
   ) {
     // this.hiddenFilters = ['namespace'];
     this.id = data?.id;
+    this.externalFilterId = 'externalFilter_' + this.data?.customIdentifier;
     this.settings = data?.settings ? Object.create(data.settings) : undefined;
     this.selectedFilters = data?.selectedFilters ?? [];
     this.filters = _.cloneDeep(data?.settings.filters) ?? [];

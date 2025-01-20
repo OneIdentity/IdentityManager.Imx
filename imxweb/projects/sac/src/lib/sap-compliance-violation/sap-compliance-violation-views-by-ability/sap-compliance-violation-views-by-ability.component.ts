@@ -139,7 +139,6 @@ export class SapComplianceViolationViewsByAbilityComponent {
         this.entitySchema.Columns.LowerLimit,
         this.entitySchema.Columns.UpperLimit,
         this.entitySchema.Columns.DisplaySapFunctionInstance,
-        this.entitySchema.Columns.DisplaySapTransaction,
       ],
       groupData: this.createGroupData(),
     };

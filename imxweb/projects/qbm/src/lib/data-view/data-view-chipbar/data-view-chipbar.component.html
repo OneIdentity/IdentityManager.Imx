@@ -10,7 +10,8 @@
     </mat-chip-option>
   </mat-chip-listbox>
 
-  <span *ngIf="!!predefinedFilters()?.length || !!customFilters()?.length || !!dataSource.filterTreeSelection()"
+  <span
+    *ngIf="!!predefinedFilters()?.length || !!externalFilters()?.length || !!customFilters()?.length || !!dataSource.filterTreeSelection()"
     >{{ '#LDS#Filters' | translate }}:</span
   >
   <!-- Custom filters -->
@@ -25,6 +26,24 @@
     </mat-chip-listbox>
   </ng-container>
 
+  <!-- External filters -->
+  <ng-container *ngIf="!!externalFilters()?.length">
+    <mat-chip-listbox *ngFor="let item of externalFilters()">
+      <mat-chip-option
+        color="primary"
+        class="imx-chip"
+        *ngIf="item.CurrentValue"
+        (removed)="removeFilterItem(item, this.dataSource.externalFilters)"
+        [selectable]="false"
+      >
+        <span class="tag-name">{{ item?.CurrentValue }}</span>
+        <button matChipRemove>
+          <eui-icon size="s" icon="close"></eui-icon>
+        </button>
+      </mat-chip-option>
+    </mat-chip-listbox>
+  </ng-container>
+
   <!-- Predefined filters -->
   <ng-container *ngIf="!!predefinedFilters()?.length">
     <mat-chip-listbox *ngFor="let item of predefinedFilters()">
@@ -32,10 +51,10 @@
         color="primary"
         class="imx-chip"
         *ngIf="item.CurrentValue"
-        (removed)="removePredefinedItem(item)"
+        (removed)="removeFilterItem(item, dataSource.predefinedFilters)"
         [selectable]="false"
       >
-        <span class="tag-name">{{ getPredefinedFilterDisplay(item) }}</span>
+        <span class="tag-name">{{ getFilterDisplay(item) }}</span>
         <button matChipRemove>
           <eui-icon size="s" icon="close"></eui-icon>
         </button>

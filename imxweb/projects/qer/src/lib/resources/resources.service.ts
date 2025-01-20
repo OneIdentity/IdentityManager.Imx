@@ -162,9 +162,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalAdminResourcesQerresource.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_admin_resources_qerresource_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalAdminResourcesQerresourceInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_admin_resources_qerresource_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -183,9 +183,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalRespQerresource.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_resp_qerresource_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalRespQerresourceInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_resp_qerresource_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -212,9 +212,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalAdminResourcesQerreuseus.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_admin_resources_qerreuseus_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalAdminResourcesQerreuseusInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_admin_resources_qerreuseus_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -232,9 +232,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalRespQerreuseus.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_resp_qerreuseus_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalRespQerreuseusInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_resp_qerreuseus_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -259,9 +259,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalAdminResourcesQerreuse.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_admin_resources_qerreuse_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalAdminResourcesQerreuseInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_admin_resources_qerreuse_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -279,9 +279,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalRespQerreuse.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_resp_qerreuse_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalRespQerreuseInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_resp_qerreuse_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -307,9 +307,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalAdminResourcesQerassign.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_admin_resources_qerassign_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalAdminResourcesQerassignInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_admin_resources_qerassign_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -327,9 +327,9 @@ export class ResourcesService {
         schema: this.api.typedClient.PortalRespQerassign.GetSchema(),
         dataModel: async (filter: FilterData[]) => this.api.client.portal_resp_qerassign_datamodel_get({ filter }),
         interactive: this.api.typedClient.PortalRespQerassignInteractive,
-        exportMethod: (navigationState: CollectionLoadParameters) => {
+        exportMethod: () => {
           return {
-            getMethod: (withProperties: string, PageSize?: number) => {
+            getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
               let method: MethodDescriptor<EntityCollectionData>;
               if (PageSize) {
                 method = factory.portal_resp_qerassign_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -344,13 +344,7 @@ export class ResourcesService {
     }
   }
 
-  public getExportMethod(
-    tableName: string,
-    isAdmin: boolean,
-    navigationState: CollectionLoadParameters,
-  ): DataSourceToolbarExportMethod | undefined {
-    return isAdmin
-      ? this.resourceMap.get(tableName)?.admin?.exportMethod?.(navigationState)
-      : this.resourceMap.get(tableName)?.resp?.exportMethod?.(navigationState);
+  public getExportMethod(tableName: string, isAdmin: boolean): DataSourceToolbarExportMethod | undefined {
+    return isAdmin ? this.resourceMap.get(tableName)?.admin?.exportMethod?.() : this.resourceMap.get(tableName)?.resp?.exportMethod?.();
   }
 }

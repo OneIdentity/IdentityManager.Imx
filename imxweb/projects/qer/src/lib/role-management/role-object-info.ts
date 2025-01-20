@@ -25,7 +25,7 @@
  */
 
 import { RoleExtendedDataWrite } from '@imx-modules/imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarExportMethod, HelpContextualValues } from 'qbm';
 import { IRoleRestoreHandler } from './restore/restore-handler';
 import { IRoleDataModel } from './role-data-model.interface';
@@ -76,7 +76,7 @@ export interface RoleObjectInfo {
   membership?: IRoleMembershipType;
   canUseRecommendations?: boolean;
   translateKeys?: RoleTranslateKeys;
-  exportMethod?: (navigationState: CollectionLoadParameters, isAdmin: boolean) => DataSourceToolbarExportMethod;
+  exportMethod?: (isAdmin: boolean) => DataSourceToolbarExportMethod;
 
   /** ID to inject into the HelpContextualService  */
   respHelpContextId?: HelpContextualValues;

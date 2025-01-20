@@ -35,7 +35,16 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { CdrModule, DataSourceToolbarModule, DataTableModule, DataViewModule, HelpContextualModule, SelectedElementsModule } from 'qbm';
+import {
+  CdrModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  ExtModule,
+  ExtService,
+  HelpContextualModule,
+  SelectedElementsModule,
+} from 'qbm';
 import { ObjectHyperviewModule } from 'qer';
 import { AttestationDisplayModule } from '../attestation-display/attestation-display.module';
 import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-snapshot.module';
@@ -62,6 +71,7 @@ import { MyAttestationCasesComponent } from './my-attestation-cases/my-attestati
     CdrModule,
     DataSourceToolbarModule,
     DataTableModule,
+    ExtModule,
     MatButtonModule,
     MatCardModule,
     MatMenuModule,
@@ -82,4 +92,10 @@ import { MyAttestationCasesComponent } from './my-attestation-cases/my-attestati
   ],
   providers: [AttestationHistoryService],
 })
-export class AttestationHistoryModule {}
+export class AttestationHistoryModule {
+  constructor(private readonly extService: ExtService) {
+    this.extService.register('externalFilter_attestationHistory', {
+      instance: AttestationHistoryFilterComponent,
+    });
+  }
+}

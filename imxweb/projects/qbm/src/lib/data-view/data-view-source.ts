@@ -63,6 +63,7 @@ import {
   ExecuteGroupFunction,
   GroupInfoRow,
   HightlightEntityFunction,
+  LocalDataViewInitParameters,
   SelectedFilter,
   SelectedFilterType,
   SelectionChangeFunction,
@@ -121,6 +122,7 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
   // Filters & settings
   public state: WritableSignal<CollectionLoadParameters> = signal({});
   public predefinedFilters: WritableSignal<DataSourceToolbarFilter[]> = signal([]);
+  public externalFilters: WritableSignal<DataSourceToolbarFilter[]> = signal([]);
   public selectedFilters: WritableSignal<SelectedFilter[]> = signal([]);
   public exportFunction: DataSourceToolbarExportMethod;
   public viewConfig: WritableSignal<DataSourceToolbarViewConfig | undefined> = signal(undefined);
@@ -176,6 +178,23 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
   public filterTree: FilterTreeParameter;
   public filterTreeData: WritableSignal<FilterTreeData> = signal({});
   public filterTreeSelection: WritableSignal<FilterTreeSelectionParameter | undefined> = signal(undefined);
+
+  public customIdentifier: string;
+
+  // Local behavior
+  /**
+   * Flag to set if we are going to use local functions instead of api calls for data
+   */
+  public isDataLocal = false;
+
+  /**
+   * Ground truth local data, not to be modified
+   */
+  private localData: T[];
+  /**
+   * Clone of local data, can be sorted, searched etc.
+   */
+  public localDataCopy: T[];
 
   private abortController = new AbortController();
   private subscription: Subscription;
@@ -250,6 +269,7 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
   public async init(initParameters: DataViewInitParameters<T>): Promise<void> {
     this.loading.set(true);
     this.log.info(this, 'Initializing data source');
+    this.customIdentifier = initParameters.customIdentifier || '';
     this.execute = initParameters.execute;
     this.collectionData.set({ totalCount: 0, Data: [] });
     this.entitySchema = signal({ ...initParameters.schema, LocalColumns: initParameters.schema.Columns });
@@ -280,6 +300,30 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
     }
     await this.updateState();
     this.columnsToDisplay.set(initParameters.columnsToDisplay);
+    this.loading.set(false);
+  }
+
+  /**
+   * Get a single page of data from a dataset.
+   * @param data all data we want only a single page slice from
+   * @returns an array that should be displayed as a single page
+   */
+  public getLocalPage(data: T[]): T[] {
+    return data.slice(this.state().StartIndex || 0, (this.state().StartIndex || 0) + (this.state().PageSize || 0));
+  }
+
+  /**
+   * initialize the local data variables
+   * @param initParameters
+   */
+  public initLocal(initParameters: LocalDataViewInitParameters<T>): void {
+    this.isDataLocal = true;
+    this.loading.set(true);
+    this.localData = initParameters.data.slice();
+    this.localDataCopy = initParameters.data.slice();
+    this.collectionData.set({ totalCount: initParameters.data.length, Data: this.getLocalPage(this.localDataCopy) });
+    this.entitySchema = signal({ ...initParameters.schema!, LocalColumns: initParameters.schema!.Columns });
+    if (initParameters.columnsToDisplay) this.columnsToDisplay.set(initParameters.columnsToDisplay);
     this.loading.set(false);
   }
 
@@ -326,7 +370,88 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
       this.state.update((state) => ({ ...state, OrderBy: undefined }));
     }
     this.log.debug(this, 'Sort change', sortState.active, sortState.direction);
-    this.updateState();
+    if (this.isDataLocal) this.sortLocally();
+    else this.updateState();
+  }
+
+  /**
+   * Sort the entire local data copy and update the collection data.
+   * @param applySearch toggle to apply search after reseting sort, defaults to true
+   */
+  private sortLocally(applySearch = true): void {
+    this.loading.set(true);
+    // Reset to beginning of index
+    this.state.update((state) => ({ ...state, StartIndex: 0 }));
+    const column = this.sortId();
+    const sortDirection = this.sortDirection();
+    if (column && ['asc', 'desc'].includes(sortDirection)) {
+      // Sort by the column in the specified direction
+      this.localDataCopy.sort((a, b) => {
+        const first = a.GetEntity().GetColumn(column).GetValue();
+        const second = b.GetEntity().GetColumn(column).GetValue();
+        if (sortDirection === 'asc') return first > second ? 1 : -1;
+        else return first > second ? -1 : 1;
+      });
+    } else {
+      // Reset the local data copy to the original data
+      this.localDataCopy = this.localData.slice();
+      const search = this.state().search;
+      let keywords = this.selectedFilters()
+        .filter((item) => item.type === SelectedFilterType.Keyword)
+        .map((item) => (item.value as string).trim());
+      // Apply search to reset data if we have search enabled, return to prevent double update
+      if ((search || keywords.length > 0) && applySearch) {
+        this.searchLocally(false);
+        return;
+      }
+    }
+    this.collectionData.update(() => ({
+      totalCount: this.localDataCopy.length,
+      Data: this.getLocalPage(this.localDataCopy),
+    }));
+    this.loading.set(false);
+  }
+
+  /**
+   * Search the local data copy and update the collection data.
+   * @param applySort toggle to apply sort after filtering by search, defaults to true
+   */
+  public searchLocally(applySort = true): void {
+    this.loading.set(true);
+    // Reset to beginning of index
+    this.state.update((state) => ({ ...state, StartIndex: 0 }));
+    const search = this.state().search;
+    let keywords = this.selectedFilters()
+      .filter((item) => item.type === SelectedFilterType.Keyword)
+      .map((item) => (item.value as string).trim());
+    if (search) keywords = [...keywords, ...search.split(' ')];
+    this.localDataCopy =
+      keywords.length === 0
+        ? // No keywords? return all data
+          this.localData.slice()
+        : // Search over all columns return if all keywords are contained in any column
+          this.localData.filter((entity) => {
+            return keywords.every((keyword) => {
+              return this.columnsToDisplay().some((column) => {
+                return entity
+                  .GetEntity()
+                  .GetColumn(column.ColumnName!)
+                  .GetValue()
+                  .toString()
+                  .toLocaleLowerCase()
+                  .includes(keyword.toLocaleLowerCase());
+              });
+            });
+          });
+    // Apply sort after search if we have sorting enabled
+    if (this.sortId() && applySort) this.sortLocally(false);
+    // Otherwise update directly
+    else
+      this.collectionData.update(() => ({
+        totalCount: this.localDataCopy.length,
+        Data: this.getLocalPage(this.localDataCopy),
+      }));
+    this.loading.set(false);
   }
 
   /**
@@ -356,7 +481,7 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
       this.filterTreeSelection.set(undefined);
       this.sortId.set(undefined);
       this.sortDirection.set('');
-      this.updateState();
+      if (!this.isDataLocal) this.updateState();
     }
   }
 
@@ -461,10 +586,12 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
 
     this.state.update((state) => ({ ...state, search: newKeywords.join(' '), StartIndex: undefined }));
     const noAction = alreadySearched && !keywords;
+    //
     if (noAction) {
       return;
     }
-    this.updateState();
+    if (this.isDataLocal) this.searchLocally();
+    else this.updateState();
   }
 
   /**
@@ -521,6 +648,7 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
    * @returns Column is sortable.
    */
   public isSortable(column: string | undefined): boolean {
+    if (this.isDataLocal) return true;
     if (!column || this?.dataModel() == null || !!this.groupByColumn()) {
       return false;
     }

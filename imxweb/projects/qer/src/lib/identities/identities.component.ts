@@ -296,9 +296,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
             signal,
           );
         },
-        exportFunction: this.isAdmin
-          ? this.identitiesService.exportAdminPerson(this.dataSource.state())
-          : this.identitiesService.exportPerson(this.dataSource.state()),
+        exportFunction: this.isAdmin ? this.identitiesService.exportAdminPerson() : this.identitiesService.exportPerson(),
         viewConfig: this.viewConfig,
         highlightEntity: (identity: PortalAdminPerson | PortalPersonReports) => {
           this.onIdentityChanged(identity);

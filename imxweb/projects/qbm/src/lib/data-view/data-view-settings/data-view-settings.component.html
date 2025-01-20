@@ -9,7 +9,12 @@
   <eui-icon icon="settings"></eui-icon>
 </button>
 <mat-menu #settingsMenu="matMenu">
-  <button *ngIf="!!dataSource.exportFunction" mat-menu-item (click)="openExportSidesheet()" data-imx-identifier="dst-menu-button-export">
+  <button
+    *ngIf="!!dataSource.exportFunction && !!dataSource.dataModel()?.Properties"
+    mat-menu-item
+    (click)="openExportSidesheet()"
+    data-imx-identifier="dst-menu-button-export"
+  >
     {{ '#LDS#Export data' | translate }}
   </button>
   <button

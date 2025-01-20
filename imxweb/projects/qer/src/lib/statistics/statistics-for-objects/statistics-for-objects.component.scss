@@ -11,7 +11,7 @@
   .cards-container {
     height: 100%;
     @include eui-elevation-1;
-    .eui-scroll{
+    .eui-scroll {
       overflow: hidden;
     }
   }
@@ -32,10 +32,6 @@
 
   .stat-card--disabled {
     background-color: transparent;
-  }
-
-  .stat-card--hidden {
-    display: none;
   }
 
   .card-no-data {

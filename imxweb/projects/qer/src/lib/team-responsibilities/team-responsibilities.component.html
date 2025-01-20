@@ -97,7 +97,7 @@
       <span translate>#LDS#Remove responsibilities</span>
     </button>
     <button
-      [disabled]="!tableSelection.length || isResponsibilitiesDeletable()"
+      [disabled]="!tableSelection.length || !isResponsibilitiesReassignable()"
       mat-flat-button
       color="primary"
       (click)="onReassignResponsibilities()"

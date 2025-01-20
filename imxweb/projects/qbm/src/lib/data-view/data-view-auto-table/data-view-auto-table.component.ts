@@ -101,6 +101,10 @@ export class DataViewAutoTableComponent {
    */
   @Input() public selectable = false;
   /**
+   * Indicates the selection type.
+   */
+  @Input() public singleSelection = false;
+  /**
    * If set to 'auto' (= default) the data table will check the 'displayedColumns' input field and build a visual presentation.
    * If set to 'manual' the data table render all the material columns in the content of the data view auto table component. In manual mode the additional columns also available.
    */
@@ -181,6 +185,9 @@ export class DataViewAutoTableComponent {
    * @param tableIndex The nested table index.
    */
   public onNestedSelectionChange(selection: any[], tableIndex: number): void {
+    if (this.singleSelection) {
+      this.dataSource.nestedSelection = new Map();
+    }
     this.dataSource.nestedSelection.set(tableIndex, selection);
     let nestedSelection: any[] = [];
     this.dataSource.nestedSelection.forEach((tableSelection) => {
@@ -206,5 +213,10 @@ export class DataViewAutoTableComponent {
       const newValue = value.filter((item) => !isEqual(item, selectedItem));
       this.dataSource.nestedSelection.set(key, newValue);
     });
+  }
+
+  public onSingleSelectionChange(selectedItem: any) {
+    this.dataSource.selection.setSelection([selectedItem]);
+    this.onRemoveSelection(selectedItem);
   }
 }

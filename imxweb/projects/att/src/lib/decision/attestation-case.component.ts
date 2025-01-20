@@ -33,6 +33,7 @@ import { Subscription } from 'rxjs';
 
 import { AttestationRelatedObject, PortalAttestationCaseHistory } from '@imx-modules/imx-api-att';
 import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
+import _ from 'lodash';
 import {
   AuthenticationService,
   BaseReadonlyCdr,
@@ -257,5 +258,9 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
 
   public onHyperviewOptionSelected(): void {
     this.setHyperviewObject(this.selectedOption);
+  }
+
+  public onAttestationApprove() {
+    this.attestationAction.checkForViolations([_.cloneDeep(this.case)]);
   }
 }

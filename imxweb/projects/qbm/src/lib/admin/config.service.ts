@@ -175,19 +175,20 @@ export class ConfigService {
     const overlay = this.busySvc.show();
 
     try {
-      const changeObj: { [id: string]: any } = {};
-      const changes = this.pendingChanges[this.appId];
       const key = isGlobal
         ? '#LDS#Your changes have been successfully saved. The changes apply to all API Server instances connected to the software update process. It may take some time for the changes to take effect.'
         : '#LDS#Your changes have been successfully saved. The changes only apply to this API Server and will be lost when you restart the server.';
 
-      for (const elem in changes) {
-        if (Object.prototype.hasOwnProperty.call(changes, elem)) {
-          changeObj[elem] = changes[elem].Value;
-        }
-      }
-
       for (let appId in this.pendingChanges) {
+
+        const changeObj: { [id: string]: any } = {};
+        const changes = this.pendingChanges[appId];
+        for (const elem in changes) {
+          if (Object.prototype.hasOwnProperty.call(changes, elem)) {
+            changeObj[elem] = changes[elem].Value;
+          }
+        }  
+        
         await this.session.Client.admin_apiconfig_post(appId, changeObj, { global: isGlobal });
       }
 

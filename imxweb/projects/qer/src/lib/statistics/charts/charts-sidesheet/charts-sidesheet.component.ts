@@ -30,7 +30,7 @@ import { ChartDisplayType, ChartDto } from '@imx-modules/imx-api-qer';
 import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { Chart, ChartOptions } from 'billboard.js';
 import { isBoolean } from 'lodash';
-import { CdrFactoryService, ColumnDependentReference, DataSourceToolbarSettings } from 'qbm';
+import { CdrFactoryService, ColumnDependentReference } from 'qbm';
 import { Subscription, fromEvent } from 'rxjs';
 import { ChartInfoTyped } from '../../statistics-home-page/chart-info-typed';
 import { StatisticsSidesheetResponse } from '../../statistics-home-page/statistics-cards-visuals/statistics-cards-visuals.component';
@@ -48,8 +48,6 @@ export class ChartsSidesheetComponent implements OnInit, OnDestroy {
   public chart: Chart;
   public chartOptions: ChartOptions;
   public cdrList: (ColumnDependentReference | undefined)[];
-
-  public dstSettings: DataSourceToolbarSettings;
 
   private subscriptions$: Subscription[] = [];
 

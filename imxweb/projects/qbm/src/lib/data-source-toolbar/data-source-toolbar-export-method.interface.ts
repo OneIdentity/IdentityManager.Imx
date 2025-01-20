@@ -24,11 +24,11 @@
  *
  */
 
-import { DataModelProperty, MethodDefinition } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, MethodDefinition } from '@imx-modules/imx-qbm-dbts';
 
 export interface DataSourceToolbarExportMethod {
   // This will define an api method that the dst can then call to make a download to the client
-  getMethod: (withProperties: string, PageSize?: number) => MethodDefinition<any>;
+  getMethod: (withProperties: string, navigationState?: CollectionLoadParameters, PageSize?: number) => MethodDefinition<any>;
   // inititalColumns will set the initial export columns, if not present then we will try to figure it out from the displayed columns
   initialColumns?: string[];
 }

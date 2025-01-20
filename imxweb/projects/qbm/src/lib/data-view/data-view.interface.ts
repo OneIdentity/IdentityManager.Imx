@@ -97,4 +97,17 @@ export interface DataViewInitParameters<T = any> {
   filterTree?: FilterTreeParameter;
   highlightEntity?: HightlightEntityFunction<T>;
   localSource?: boolean;
+  customIdentifier?: string;
+}
+
+/**
+ * Interface for initialize data view with local data.
+ */
+export interface LocalDataViewInitParameters<T = any> extends Partial<DataViewInitParameters<T>> {
+  /**
+   * Local data to display.
+   */
+  data: T[];
+  schema: EntitySchema;
+  columnsToDisplay: IClientProperty[];
 }

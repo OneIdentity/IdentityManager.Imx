@@ -40,6 +40,7 @@ import {
 } from '@imx-modules/imx-api-qer';
 import {
   ApiRequestOptions,
+  CollectionLoadParameters,
   DataModel,
   EntityCollectionData,
   EntitySchema,
@@ -104,14 +105,14 @@ export class ApprovalsService {
         };
   }
 
-  public exportApprovalRequests(parameters: ApprovalsLoadParameters): DataSourceToolbarExportMethod {
-    const params: ApprovalsLoadParameters = {
-      Escalation: this.isChiefApproval,
-      ...parameters,
-    };
+  public exportApprovalRequests(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
+        const params: ApprovalsLoadParameters = {
+          Escalation: this.isChiefApproval,
+          ...navigationState,
+        };
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
           method = factory.portal_itshop_approve_requests_get({ ...params, withProperties, PageSize, StartIndex: 0 });

@@ -287,7 +287,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
       schema: this.entitySchema,
       columnsToDisplay: this.displayedColumns,
       dataModel: this.dataModel,
-      exportFunction: !this.isArchivedRequests ? this.requestHistoryService.exportRequests(this.dataSource.state()) : undefined,
+      exportFunction: !this.isArchivedRequests ? this.requestHistoryService.exportRequests() : undefined,
       viewConfig: this.viewConfig,
       uniqueConfig: this.uniqueTableConfig,
       highlightEntity: (entity: ItshopRequest) => {

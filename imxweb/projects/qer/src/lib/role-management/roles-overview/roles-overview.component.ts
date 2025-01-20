@@ -346,7 +346,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
         schema: this.entitySchema,
         columnsToDisplay: this.displayColumns,
         dataModel: this.dataModel,
-        exportFunction: this.roleService.getExportMethod(this.ownershipInfo.TableName, this.isAdmin, this.dataSource.state()),
+        exportFunction: this.roleService.getExportMethod(this.ownershipInfo.TableName, this.isAdmin),
         viewConfig: this.viewConfig,
         highlightEntity: (entity: TypedEntity) => {
           this.showDetails(entity);

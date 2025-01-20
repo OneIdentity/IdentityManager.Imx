@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
-import { DataModel, DataModelProperty } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DataModelProperty } from '@imx-modules/imx-qbm-dbts';
 import _ from 'lodash';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 
@@ -38,6 +38,7 @@ export interface DSTExportState {
   isAllData?: boolean;
   columns?: FormControl[];
   columnOptions?: EuiSelectOption[];
+  navigationState: CollectionLoadParameters;
 }
 export interface FilteredColumnOption {
   value: string;
@@ -78,7 +79,11 @@ export class ExportColumnsService {
 
   // This function will check if the incoming data model is different from what exists.
   public setupExport(settings?: DataSourceToolbarSettings): void {
-    if (this.stashedState && this.checkDataModel(settings?.dataModel)) {
+    if (
+      this.stashedState &&
+      this.checkDataModel(settings?.dataModel) &&
+      _.isEqual(this.stashedState.navigationState, settings?.navigationState)
+    ) {
       // This is the same data model, don't need to do anything
       return;
     }
@@ -132,6 +137,7 @@ export class ExportColumnsService {
       isAllData: this.isAllData,
       selectedExport,
       exportOptions: this.exportOptions,
+      navigationState: settings?.navigationState ?? {},
     };
   }
 

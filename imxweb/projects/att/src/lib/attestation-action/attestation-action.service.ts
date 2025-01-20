@@ -29,7 +29,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { PortalAttestationApprove } from '@imx-modules/imx-api-att';
+import { AttestationCaseData, PortalAttestationApprove } from '@imx-modules/imx-api-att';
 import {
   CollectionLoadParameters,
   CompareOperator,
@@ -38,10 +38,12 @@ import {
   FilterType,
   FkProviderItem,
   MetaTableRelationData,
+  TypedEntity,
   ValType,
 } from '@imx-modules/imx-qbm-dbts';
 import {
   Action,
+  AuthenticationService,
   BaseCdr,
   BaseReadonlyCdr,
   calculateSidesheetWidth,
@@ -66,6 +68,7 @@ import { AttestationWorkflowService } from './attestation-workflow.service';
 })
 export class AttestationActionService {
   public readonly applied = new Subject<void>();
+  private uidUser: string;
   constructor(
     private readonly apiService: ApiService,
     private readonly justification: JustificationService,
@@ -80,7 +83,10 @@ export class AttestationActionService {
     private readonly extService: ExtService,
     private readonly userService: UserModelService,
     private readonly queueService: ProcessingQueueService,
-  ) {}
+    authentication: AuthenticationService,
+  ) {
+    authentication.onSessionResponse.subscribe((state) => (this.uidUser = state.UserUid ?? ''));
+  }
 
   public async directDecision(attestationCases: AttestationCase[], userUid: string): Promise<void> {
     const actionParameters = {
@@ -492,10 +498,12 @@ export class AttestationActionService {
         if (approve) {
           await attestationCase.commit(false /* avoid expensive reload */);
         }
+
         return this.attestationCases.makeDecision(attestationCase, {
           Reason: actionParameters.reason.column.GetValue(),
           UidJustification: actionParameters.justification?.column?.GetValue(),
           Decision: approve,
+          SubLevel: this.getSubLevel(attestationCase, attestationCase.data),
         });
       },
     });
@@ -600,5 +608,28 @@ export class AttestationActionService {
     if (this.busyService.overlayRefs.length === 0) {
       this.busyService.show();
     }
+  }
+
+  private getSubLevel(entity: TypedEntity, extended: AttestationCaseData | undefined): number {
+    //get all workflowsteps for the current decision level
+    const steps = extended?.WorkflowSteps?.Entities?.filter(
+      (elem) =>
+        elem?.Columns?.UID_QERWorkingMethod.Value === entity.GetEntity().GetColumn('UID_QERWorkingMethod').GetValue() &&
+        elem.Columns?.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue(),
+    );
+
+    // get the Workflow data that
+    // - belong to one of the current workflow steps
+    // - can be decided by the user
+    // - are not decided yet
+    const data = steps?.flatMap((step) =>
+      extended?.WorkflowData?.Entities?.filter(
+        (elem) =>
+          elem?.Columns?.UID_QERWorkingStep.Value === step?.Columns?.UID_QERWorkingStep.Value &&
+          elem?.Columns?.UID_PersonHead.Value === this.uidUser &&
+          elem?.Columns?.Decision?.Value === '',
+      ),
+    );
+    return data?.[0]?.Columns?.SubLevelNumber?.Value ?? 0; //return the sublevel number
   }
 }

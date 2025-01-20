@@ -174,7 +174,7 @@ export class ResourcesComponent implements OnInit, SideNavigationComponent {
       schema: this.entitySchema,
       columnsToDisplay: this.displayColumns,
       dataModel: this.dataModel,
-      exportFunction: this.resourceProvider.getExportMethod(this.tablename, this.isAdmin ?? false, this.dataSource.state()),
+      exportFunction: this.resourceProvider.getExportMethod(this.tablename, this.isAdmin ?? false),
       viewConfig: this.viewConfig,
       highlightEntity: (entity: TypedEntity) => {
         this.showDetails(entity);

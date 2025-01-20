@@ -1,37 +1,46 @@
-<eui-alert *ngIf="!captchaSvc.isReCaptchaV3" type="info" [condensed]="true">
-  <span>{{ LdsCaptchaInfo | translate }}</span>
-</eui-alert>
+@if (!captchaSvc.isReCaptchaV3) {
+  <eui-alert type="info" [condensed]="true">
+    <span>{{ LdsCaptchaInfo | translate }}</span>
+  </eui-alert>
+  <div class="captcha-container">
+    @if (captchaSvc.isBuiltIn) {
+      <img [src]="appConfig.BaseUrl + '/' + builtInCaptchaUrl + captchaSvc.builtInUrlParameter" />
+    } @else {
+      <p translate>The CAPTCHA configuration is unsupported.</p>
+    }
+    <mat-form-field>
+      <input
+        matInput
+        class="imx-input-login"
+        placeholder="{{ '#LDS#Enter characters from the image' | translate }}"
+        type="text"
+        [(ngModel)]="captchaSvc.Response"
+        [attr.data-imx-identifier]="'captcha-code'"
+        [required]="!captchaSvc.isReCaptchaV3"
+      />
+    </mat-form-field>
+  </div>
+}
 
-<div *ngIf="!captchaSvc.isReCaptchaV3" class="captcha-container">
-  <img *ngIf="captchaSvc.isBuiltIn" [src]="appConfig.BaseUrl + '/' + builtInCaptchaUrl + captchaSvc.builtInUrlParameter" />
-  <p *ngIf="!captchaSvc.isBuiltIn" translate>The CAPTCHA configuration is unsupported.</p>
-  <mat-form-field>
-    <input
-      matInput
-      class="imx-input-login"
-      placeholder="{{ '#LDS#Enter characters from the image' | translate }}"
-      type="text"
-      [(ngModel)]="captchaSvc.Response"
-      [attr.data-imx-identifier]="'captcha-code'"
-      [required]="!captchaSvc.isReCaptchaV3"
-    />
-  </mat-form-field>
-</div>
-
-<div class="buttonbar" *ngIf="showAllButtons">
-  <button mat-stroked-button *ngIf="!captchaSvc.isReCaptchaV3" (click)="captchaSvc.ReinitCaptcha()">
-    {{ '#LDS#Refresh image' | translate }}
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    class="imx-next-button"
-    [disabled]="captchaSvc.isReCaptchaV3 ? disableButton : disableButton || !captchaSvc.Response"
-    (click)="onNext()"
-  >
-    {{ '#LDS#Next' | translate }}
-  </button>
-  <button mat-stroked-button *ngIf="showBackButton" (click)="onBack()">
-    {{ '#LDS#Back' | translate }}
-  </button>
-</div>
+@if (showAllButtons) {
+  <div class="buttonbar">
+    @if (!captchaSvc.isReCaptchaV3) {
+      <button mat-flat-button (click)="captchaSvc.ReinitCaptcha()">
+        {{ '#LDS#Refresh image' | translate }}
+      </button>
+    }
+    <button
+      mat-flat-button
+      class="imx-next-button"
+      [disabled]="captchaSvc.isReCaptchaV3 ? disableButton : disableButton || !captchaSvc.Response"
+      (click)="onNext()"
+    >
+      {{ '#LDS#Next' | translate }}
+    </button>
+    @if (showBackButton) {
+      <button mat-flat-button (click)="onBack()">
+        {{ '#LDS#Back' | translate }}
+      </button>
+    }
+  </div>
+}

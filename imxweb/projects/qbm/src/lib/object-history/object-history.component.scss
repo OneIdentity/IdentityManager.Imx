@@ -16,6 +16,7 @@
   }
 }
 
+.imx-viewmode,
 .imx-timeline-from,
 .imx-timeline-to,
 .imx-viewmode-content-controls {
@@ -24,15 +25,12 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
-
-  .timeline-to-text {
-    margin-left: 1rem;
-  }
 }
 
-mat-button-toggle-group {
-  margin-left: auto;
+.imx-viewmode-content-controls{
+  gap: 16px;
 }
+
 .mdc-icon-button{
   line-height: 20px;
 }
@@ -49,4 +47,8 @@ mat-button-toggle-group {
   &-remove{
     color: $color-red-60;
   }
+}
+
+eui-date-picker{
+  width: 170px;
 }

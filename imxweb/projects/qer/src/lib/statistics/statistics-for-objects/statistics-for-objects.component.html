@@ -23,11 +23,6 @@
 <ng-template #allStats>
   <!-- Show tiles of statistics -->
   <mat-card class="cards-container">
-    <div class="checkbox-container">
-      <mat-checkbox color="primary" labelPosition="before" [(ngModel)]="hideEmpty">{{
-        '#LDS#Hide missing data?' | translate
-      }}</mat-checkbox>
-    </div>
     <eui-scroll [options]="{ alwaysShowTracks: true }">
       <div class="grid-container">
         <mat-card
@@ -35,7 +30,6 @@
           *ngFor="let chart of charts"
           [ngClass]="{
             'stat-card--disabled': !chartHasData(chart),
-            'stat-card--hidden': hideEmpty && !chartIsLoading(chart) && !chartHasData(chart)
           }"
           (click)="openStatistic(chart)"
         >

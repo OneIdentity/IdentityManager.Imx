@@ -62,7 +62,6 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   private dataModel: DataModel;
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'attestation/approve';
-  private candidatesEntitySchema: EntitySchema | undefined;
 
   constructor(
     private readonly sidesheetRef: EuiSidesheetRef,
@@ -91,7 +90,6 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
         this.dataManagementService.entityInteractive?.GetEntity()?.GetKeys()?.[0],
       );
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
-      this.candidatesEntitySchema = this.roleService.getMembershipEntitySchema();
     } finally {
       this.busyService.hide();
     }
@@ -180,17 +178,16 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     this.busyService.show();
-
     try {
       this.dstSettings =
-        this.candidatesEntitySchema == null
+        this.entitySchema == null
           ? undefined
           : {
               dataSource: await this.roleService.getCandidates(
                 this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(','),
                 this.navigationState,
               ),
-              entitySchema: this.candidatesEntitySchema,
+              entitySchema: this.entitySchema,
               navigationState: this.navigationState,
               displayedColumns: this.displayColumns,
               filters: this.dataModel.Filters,

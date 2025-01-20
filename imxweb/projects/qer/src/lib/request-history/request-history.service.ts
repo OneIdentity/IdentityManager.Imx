@@ -36,6 +36,7 @@ import {
   V2ApiClientMethodFactory,
 } from '@imx-modules/imx-api-qer';
 import {
+  CollectionLoadParameters,
   DataModel,
   EntityCollectionData,
   EntitySchema,
@@ -85,15 +86,15 @@ export class RequestHistoryService {
     };
   }
 
-  public exportRequests(parameters: RequestHistoryLoadParameters): DataSourceToolbarExportMethod {
+  public exportRequests(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_itshop_requests_get({ ...parameters, withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_itshop_requests_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_itshop_requests_get({ ...parameters, withProperties });
+          method = factory.portal_itshop_requests_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

@@ -8,25 +8,27 @@
   </div>
 
   <div class="imx-viewmode-content-controls">
-    <eui-select
-      class="small-multi-select"
-      [(ngModel)]="viewModeValue"
-      [hideClearButton]="true"
-      [options]="viewModes"
-      (selectionChange)="onViewModeChange()"
-      [inputControl]="viewModeControl"
-    >
-    </eui-select>
-    <button
-      mat-icon-button
-      color="primary"
-      [attr.data-imx-identifier]="'history-button-refresh'"
-      [disabled]="viewModeValue === viewModeStateComparison && compareDateFormControl.invalid"
-      (click)="refresh(true)"
-      matTooltip="{{ '#LDS#Refresh' | translate }}"
-    >
-      <eui-icon icon="sync"></eui-icon>
-    </button>
+    <div class="imx-viewmode">
+      <eui-select
+        class="small-multi-select"
+        [(ngModel)]="viewModeValue"
+        [hideClearButton]="true"
+        [options]="viewModes"
+        (selectionChange)="onViewModeChange()"
+        [inputControl]="viewModeControl"
+      >
+      </eui-select>
+      <button
+        mat-icon-button
+        color="primary"
+        [attr.data-imx-identifier]="'history-button-refresh'"
+        [disabled]="viewModeValue === viewModeStateComparison && compareDateFormControl.invalid"
+        (click)="refresh(true)"
+        matTooltip="{{ '#LDS#Refresh' | translate }}"
+      >
+        <eui-icon icon="sync"></eui-icon>
+      </button>
+    </div>
     <ng-container *ngIf="viewModeValue === viewModeStateOverview">
       <button
         mat-icon-button

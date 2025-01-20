@@ -102,13 +102,13 @@ export class PolicyViolationsComponent implements OnInit {
       this.entitySchema?.Columns.State,
       ...(!this.selectedCompanyPolicy
         ? [
-          {
-            ColumnName: 'actions',
-            Type: ValType.String,
-            afterAdditionals: true,
-            untranslatedDisplay: '#LDS#Approval decision',
-          },
-        ]
+            {
+              ColumnName: 'actions',
+              Type: ValType.String,
+              afterAdditionals: true,
+              untranslatedDisplay: '#LDS#Approval decision',
+            },
+          ]
         : []),
     ];
 
@@ -196,7 +196,7 @@ export class PolicyViolationsComponent implements OnInit {
       groupExecute: (column: string, params: CollectionLoadParameters, signal: AbortSignal) => {
         return this.policyViolationsService.getGroupInfo(this.getGroupParams(column, params), signal);
       },
-      exportFunction: this.policyViolationsService.exportPolicyViolations(this.dataSource.state()),
+      exportFunction: this.policyViolationsService.exportPolicyViolations(),
       viewConfig: this.viewConfig,
       highlightEntity: (identity: PolicyViolation) => {
         this.viewDetails(identity);

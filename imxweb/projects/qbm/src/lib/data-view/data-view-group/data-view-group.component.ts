@@ -47,11 +47,14 @@ export class DataViewGroupComponent implements OnInit {
       ...this.feedbackMessages,
       search: this.translateService.instant('#LDS#Search'),
     };
-    effect(() => {
-      if (!!this.dataSource.groupByColumn() && this.dataSource.groupByColumn()?.ColumnName !== this.formControl.value) {
-        this.formControl.setValue(this.dataSource.groupByColumn()?.ColumnName || '', { emitEvent: false });
-      }
-    });
+    effect(
+      () => {
+        if (!!this.dataSource.groupByColumn() && this.dataSource.groupByColumn()?.ColumnName !== this.formControl.value) {
+          this.formControl.setValue(this.dataSource.groupByColumn()?.ColumnName || '', { emitEvent: false });
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   ngOnInit(): void {
@@ -59,9 +62,10 @@ export class DataViewGroupComponent implements OnInit {
     this.formControl.valueChanges.subscribe((column) => {
       const selectedOption = this.dataSource.groupOptions.find((option) => option.value === column);
       this.dataSource.groupByColumn.set(selectedOption?.clientProperty);
+      this.dataSource.selection.clear();
+      this.dataSource.nestedSelection = new Map();
       if (column !== null) {
         this.dataSource.state.update((state) => ({ ...state, StartIndex: 0 }));
-        this.dataSource.selection.clear();
         this.dataSource.updateState();
       }
     });

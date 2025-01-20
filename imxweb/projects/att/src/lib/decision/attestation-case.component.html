@@ -162,7 +162,7 @@
       </button>
       <button
         mat-menu-item
-        *ngIf="case.canDelegateDecision(userUid)"
+        *ngIf="case.canDelegateDecision(isUserEscalationApprover ? '' : userUid)"
         (click)="attestationAction.delegateDecision([case])"
         data-imx-identifier="attestation-case-delegate-decision-button"
       >
@@ -225,12 +225,7 @@
       <eui-icon icon="ignore" size="24px"></eui-icon>
       <span translate>#LDS#Deny</span>
     </button>
-    <button
-      mat-flat-button
-      color="primary"
-      data-imx-identifier="attestation-case-button-approve"
-      (click)="attestationAction.checkForViolations([case])"
-    >
+    <button mat-flat-button color="primary" data-imx-identifier="attestation-case-button-approve" (click)="onAttestationApprove()">
       <eui-icon icon="check" size="24px"></eui-icon>
       <span translate>#LDS#Approve</span>
     </button>

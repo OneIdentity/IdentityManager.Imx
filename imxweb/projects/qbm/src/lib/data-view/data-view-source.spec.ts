@@ -27,7 +27,7 @@
 import { computed, signal } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { FilterTreeData, MethodDefinition, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, FilterTreeData, MethodDefinition, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { debounce } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -37,7 +37,7 @@ import { SelectionModelWrapper } from '../data-source-toolbar/selection-model-wr
 import { SettingsService } from '../settings/settings-service';
 import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
 import { DataViewSource } from './data-view-source';
-import { DataViewInitParameters, GroupInfoRow, WritableEntitySchema } from './data-view.interface';
+import { DataViewInitParameters, GroupInfoRow, LocalDataViewInitParameters, WritableEntitySchema } from './data-view.interface';
 export const FakeDataViewSource: Pick<DataViewSource, keyof DataViewSource> = {
   collectionData: signal({ totalCount: 0, Data: [] }),
   entitySchema: signal({ Columns: {}, LocalColumns: {} }),
@@ -65,9 +65,10 @@ export const FakeDataViewSource: Pick<DataViewSource, keyof DataViewSource> = {
   sortDirection: signal(''),
   state: signal({ undefined }),
   predefinedFilters: signal([]),
+  externalFilters: signal([]),
   selectedFilters: signal([]),
   exportFunction: {
-    getMethod: (withProperties: string, PageSize?: number) => ({}) as MethodDefinition<any>,
+    getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => ({}) as MethodDefinition<any>,
   },
   viewConfig: signal(undefined),
   showFilters: signal(false),
@@ -89,6 +90,7 @@ export const FakeDataViewSource: Pick<DataViewSource, keyof DataViewSource> = {
   filterTreeData: signal({}),
   filterTreeSelection: signal(undefined),
   settings: new SettingsService(),
+  customIdentifier: '',
   log: {
     debug: () => {},
     info: () => {},
@@ -105,6 +107,15 @@ export const FakeDataViewSource: Pick<DataViewSource, keyof DataViewSource> = {
     await this.updateState();
     return Promise.resolve();
   },
+  initLocal: async function (initParameters: LocalDataViewInitParameters<TypedEntity>): Promise<void> {
+    return Promise.resolve();
+  },
+  isDataLocal: false,
+  localDataCopy: [],
+  getLocalPage: function (data: TypedEntity[]): TypedEntity[] {
+    return [];
+  },
+  searchLocally: function (): void {},
   updateState: async function (): Promise<void> {
     let collectionData = await this.execute();
     console.log(collectionData);

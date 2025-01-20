@@ -28,6 +28,7 @@ import { Injectable } from '@angular/core';
 
 import { AttCaseDataRead, PortalAttestationCase, V2ApiClientMethodFactory } from '@imx-modules/imx-api-att';
 import {
+  CollectionLoadParameters,
   DataModel,
   EntityCollectionData,
   ExtendedTypedEntityCollection,
@@ -77,15 +78,15 @@ export class AttestationHistoryService {
     };
   }
 
-  public exportAttestation(loadParameters: AttestationCaseLoadParameters): DataSourceToolbarExportMethod {
+  public exportAttestation(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_attestation_case_get({ ...loadParameters, withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_attestation_case_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_attestation_case_get({ ...loadParameters, withProperties });
+          method = factory.portal_attestation_case_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

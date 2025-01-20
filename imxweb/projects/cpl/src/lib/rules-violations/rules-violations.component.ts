@@ -156,7 +156,7 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
       dataModel: this.dataModel,
       groupExecute: (column: string, params: CollectionLoadParameters, signal: AbortSignal) =>
         this.rulesViolationsService.getGroupInfo({ ...params, by: column }),
-      exportFunction: this.rulesViolationsService.exportRulesViolations(this.dataSource.state()),
+      exportFunction: this.rulesViolationsService.exportRulesViolations(),
       viewConfig: this.viewConfig,
       highlightEntity: (entity: RulesViolationsApproval) => {
         this.viewDetails(entity);

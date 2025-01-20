@@ -57,8 +57,6 @@ export class StatisticsForObjectsComponent implements OnInit, OnDestroy {
     [id: string]: ChartDetails;
   } = {};
 
-  public hideEmpty = true;
-
   private subscriptions$: Subscription[] = [];
 
   constructor(

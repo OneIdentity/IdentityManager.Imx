@@ -164,7 +164,7 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
       schema: this.entitySchema,
       columnsToDisplay: this.displayedColumns,
       dataModel: this.dataModel,
-      exportFunction: this.attestationCasesService.exportData(this.dataSource.state()),
+      exportFunction: this.attestationCasesService.exportData(),
       viewConfig: this.viewConfig,
       highlightEntity: (identity: AttestationCase) => {
         this.editCase(identity);

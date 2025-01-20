@@ -37,6 +37,7 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { BusyIndicatorModule } from '../../busy-indicator/busy-indicator.module';
 import { ClassloggerModule } from '../../classlogger/classlogger.module';
+import { ExtModule } from '../../ext/ext.module';
 import { LdsReplaceModule } from '../../lds-replace/lds-replace.module';
 import { CustomTreeControlComponent } from '../../sidenav-tree/custom-tree-control.component';
 import { SqlWizardModule } from '../../sqlwizard/sqlwizard.module';
@@ -52,6 +53,7 @@ import { PredefinedFilterComponent } from './predefined-filter/predefined-filter
     CommonModule,
     EuiCoreModule,
     EuiMaterialModule,
+    ExtModule,
     MatFormFieldModule,
     MatCardModule,
     MatListModule,

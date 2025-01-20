@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, Signal, computed } from '@angular/core';
+import { Component, Input, Signal, WritableSignal, computed } from '@angular/core';
 import { FilterType } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarFilter } from '../../data-source-toolbar/data-source-toolbar-filters.interface';
 import { DataViewSource } from '../data-view-source';
@@ -63,6 +63,27 @@ export class DataViewChipbarComponent {
       });
     return filters;
   });
+
+  /**
+   * Signal, that filtering the all the selected externalFilter.
+   */
+  public externalFilters: Signal<DataSourceToolbarFilter[]> = computed(() => {
+    let filters: DataSourceToolbarFilter[] = [];
+    this.dataSource
+      .externalFilters()
+      .filter((filter) => !!filter?.CurrentValue)
+      .map((filter) => {
+        if (!!filter.Delimiter) {
+          filter.CurrentValue?.split(filter.Delimiter).map((splitedValue) => {
+            filters.push({ ...filter, CurrentValue: splitedValue });
+          });
+        } else {
+          filters.push(filter);
+        }
+      });
+    return filters;
+  });
+
   /**
    * Signal, that filters all the search type filters.
    */
@@ -75,23 +96,33 @@ export class DataViewChipbarComponent {
   public customFilters: Signal<ExpressionFilter[]> = computed(
     () => this.dataSource.selectedFilters().filter((filter) => filter.type === SelectedFilterType.Custom) as ExpressionFilter[],
   );
+
   /**
    * Signal, that calculates the chip bar existence.
    */
   public showChipBar: Signal<boolean> = computed(
-    () => this.dataSource.selectedFilters()?.length > 0 || this.predefinedFilters().length > 0 || !!this.dataSource.filterTreeSelection(),
+    () =>
+      this.dataSource.selectedFilters()?.length > 0 ||
+      this.predefinedFilters().length > 0 ||
+      !!this.dataSource.filterTreeSelection() ||
+      this.dataSource.externalFilters().length > 0,
   );
 
   public showResetButton: Signal<boolean> = computed(
-    () => (this.keywords()?.length || 0) + (this.customFilters()?.length || 0) + (this.predefinedFilters()?.length || 0) > 1,
+    () =>
+      (this.keywords()?.length || 0) +
+        (this.customFilters()?.length || 0) +
+        (this.predefinedFilters()?.length || 0) +
+        (this.externalFilters()?.length || 0) >
+      1,
   );
 
   /**
-   * Return the predefined filter selected option display value.
-   * @param item selected predefined filter
-   * @returns The display of the predefined filter.
+   * Return the filter selected option display value.
+   * @param item selected filter
+   * @returns The display of the filter.
    */
-  public getPredefinedFilterDisplay(item: DataSourceToolbarFilter): string {
+  public getFilterDisplay(item: DataSourceToolbarFilter): string {
     if (item.CurrentValue == null) {
       return '';
     }
@@ -117,29 +148,31 @@ export class DataViewChipbarComponent {
         this.dataSource.state.update((state) => ({ ...state, filter: state.filter?.filter((filter) => filter.Value1 !== item.value) }));
         break;
     }
-    this.dataSource.updateState();
+    if (this.dataSource.isDataLocal) this.dataSource.searchLocally();
+    else this.dataSource.updateState();
   }
 
   /**
    * Remove the selected predefined filter from the DataViewSource predefinedFilters signal and from the DataViewSource state signal.
    * @param item The selected predefined filter.
    */
-  public removePredefinedItem(item: DataSourceToolbarFilter): void {
-    const updatedValue = !!item.Delimiter ? this.getUpdatedPredefinedFilterValue(item) : undefined;
+  public removeFilterItem(item: DataSourceToolbarFilter, source: WritableSignal<DataSourceToolbarFilter[]>): void {
+    const updatedValue = !!item.Delimiter ? this.getUpdatedFilterValue(item, source()) : undefined;
     this.dataSource.state.update((state) => {
       if (item.Name) {
         state[item.Name] = updatedValue;
       }
       return state;
     });
-    this.dataSource.predefinedFilters.update((predefinedFilters) =>
-      predefinedFilters.map((predefinedFilter) => ({
-        ...predefinedFilter,
-        CurrentValue: item.Name === predefinedFilter.Name ? updatedValue : predefinedFilter.CurrentValue,
+    source.update((filters) =>
+      filters.map((filter) => ({
+        ...filter,
+        CurrentValue: item.Name === filter.Name ? updatedValue : filter.CurrentValue,
       })),
     );
     this.dataSource.updateState();
   }
+
   /**
    * Remove the filter tree filter from the DataViewSource filterTreeSelection signal and from the DataViewSource state signal.
    */
@@ -170,13 +203,25 @@ export class DataViewChipbarComponent {
         return { ...filter, CurrentValue: undefined };
       }),
     );
+    this.dataSource.externalFilters.update((externalFilters) =>
+      externalFilters.map((externalFilter) => {
+        this.dataSource.state.update((state) => {
+          if (externalFilter.Name) {
+            state[externalFilter.Name] = undefined;
+          }
+          return state;
+        });
+        return { ...externalFilter, CurrentValue: undefined };
+      }),
+    );
     this.dataSource.filterTreeSelection.set(undefined);
-    this.dataSource.updateState();
+    if (this.dataSource.isDataLocal) this.dataSource.searchLocally();
+    else this.dataSource.updateState();
   }
 
-  private getUpdatedPredefinedFilterValue(item: DataSourceToolbarFilter): string | undefined {
+  private getUpdatedFilterValue(item: DataSourceToolbarFilter, source: DataSourceToolbarFilter[]): string | undefined {
     let updateValue: string | undefined;
-    const filter = this.dataSource.predefinedFilters().find((filter) => filter.Name === item.Name);
+    const filter = source.find((filter) => filter.Name === item.Name);
     if (!!filter && !!filter.Delimiter) {
       updateValue = filter?.CurrentValue?.split(filter.Delimiter)
         .filter((value) => value !== item.CurrentValue)

@@ -54,6 +54,7 @@ export class TeamResponsibilityAssignSidesheetComponent implements OnInit {
   public entitySchema: EntitySchema;
   public readonly DisplayedColumns = DisplayColumns;
   public selection: PortalPersonReports[] = [];
+  public singleSelection = false;
   private displayedColumns: IClientProperty[];
   private dataModel: DataModel;
   constructor(
@@ -69,6 +70,7 @@ export class TeamResponsibilityAssignSidesheetComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.singleSelection = !!this.data.responsibility[0].UID_SourceColumn.value;
     this.dataModel = await this.identitiesService.getDataModelAdmin();
 
     this.dataModel = { ...this.dataModel, Filters: this.dataModel.Filters?.filter((filter) => filter.Name !== 'isinactive') };
@@ -120,6 +122,6 @@ export class TeamResponsibilityAssignSidesheetComponent implements OnInit {
   }
 
   public get assignButtonEnabled(): boolean {
-    return this.data.responsibility[0].UID_SourceColumn.value ? this.selection.length === 1 : !!this.selection.length;
+    return !!this.selection.length;
   }
 }

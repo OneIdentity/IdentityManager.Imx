@@ -164,10 +164,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
         schema: this.entitySchemaUnsGroup,
         columnsToDisplay: this.displayedColumns,
         dataModel: this.dataModel,
-        exportFunction:
-          this.isAdmin || this.unsAccountIdFilter
-            ? this.groupsService.exportGroups(this.dataSource.state())
-            : this.groupsService.exportGroupsResp(this.dataSource.state()),
+        exportFunction: this.isAdmin || this.unsAccountIdFilter ? this.groupsService.exportGroups() : this.groupsService.exportGroupsResp(),
         viewConfig: this.viewConfig,
         highlightEntity: (identity: PortalTargetsystemUnsGroup | PortalRespUnsgroup) => {
           this.onGroupChanged(identity);

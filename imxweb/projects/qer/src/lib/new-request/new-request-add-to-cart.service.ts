@@ -127,19 +127,23 @@ export class NewRequestAddToCartService {
   private async addRequestablesToCart(requestableProductForPerson: RequestableProductForPerson[]): Promise<void> {
     if (requestableProductForPerson && requestableProductForPerson.length > 0) {
       const hasItems = await this.shelfService.setShops(requestableProductForPerson);
-      if (hasItems) {
-        if (this.busyIndicator.overlayRefs.length === 0) {
-          this.busyIndicator.show();
-        }
-        try {
-          this.copyShopInfoForDups(requestableProductForPerson);
-          const items = requestableProductForPerson.filter((item) => !!item.UidITShopOrg?.length);
-          const itemResult = await this.cartItemsProvider.addItems(items);
-          this.possibleItems = itemResult.possibleItems;
-          this.savedItems = itemResult.savedItems;
-        } finally {
-          this.busyIndicator.hide();
-        }
+      if (!hasItems) {
+        // We couldn't set the shop for some reason, force the success state to not pop by setting saved = 0, possible /= 0
+        this.savedItems = 0;
+        this.possibleItems = requestableProductForPerson.length;
+        return;
+      }
+      if (this.busyIndicator.overlayRefs.length === 0) {
+        this.busyIndicator.show();
+      }
+      try {
+        this.copyShopInfoForDups(requestableProductForPerson);
+        const items = requestableProductForPerson.filter((item) => !!item.UidITShopOrg?.length);
+        const itemResult = await this.cartItemsProvider.addItems(items);
+        this.possibleItems = itemResult.possibleItems;
+        this.savedItems = itemResult.savedItems;
+      } finally {
+        this.busyIndicator.hide();
       }
     }
   }

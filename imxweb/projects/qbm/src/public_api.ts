@@ -139,7 +139,13 @@ export { DataTileBadge } from './lib/data-source-toolbar/data-tile-badge.interfa
 export { FilterTreeDatabase } from './lib/data-source-toolbar/filter-tree/filter-tree-database';
 export { FilterTreeEntityWrapperService } from './lib/data-source-toolbar/filter-tree/filter-tree-entity-wrapper.service';
 export { FilterWizardComponent } from './lib/data-source-toolbar/filter-wizard/filter-wizard.component';
+export {
+  FilterFormState,
+  FilterTypeIdentifier,
+  FilterWizardSidesheetData,
+} from './lib/data-source-toolbar/filter-wizard/filter-wizard.interfaces';
 export { FilterWizardModule } from './lib/data-source-toolbar/filter-wizard/filter-wizard.module';
+export { FilterWizardService } from './lib/data-source-toolbar/filter-wizard/filter-wizard.service';
 export { buildAdditionalElementsString } from './lib/data-table/data-table-additional-info.model';
 export { DataTableColumnComponent } from './lib/data-table/data-table-column.component';
 export { DataTableGenericColumnComponent } from './lib/data-table/data-table-generic-column.component';

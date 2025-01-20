@@ -46,8 +46,13 @@ export class FilterWizardService {
     return this.sqlWizardSvc.implemented ?? false;
   }
 
-  public updateNavigation(id: string, params: CollectionLoadParameters, selectedFilters: DataSourceToolbarSelectedFilter[]): void {
-    this.navigationStateChanged.emit({ id: id, params: params, selectedFilters: selectedFilters });
+  public updateNavigation(
+    id: string,
+    params: CollectionLoadParameters,
+    selectedFilters: DataSourceToolbarSelectedFilter[],
+    externalFilters: DataSourceToolbarSelectedFilter[] = [],
+  ): void {
+    this.navigationStateChanged.emit({ id: id, params: params, selectedFilters: selectedFilters, externalFilters: externalFilters });
   }
 
   public applyFilters(): void {
@@ -71,4 +76,5 @@ export interface selectedFiltersParams {
   id: string;
   params: CollectionLoadParameters;
   selectedFilters: DataSourceToolbarSelectedFilter[];
+  externalFilters: DataSourceToolbarSelectedFilter[];
 }

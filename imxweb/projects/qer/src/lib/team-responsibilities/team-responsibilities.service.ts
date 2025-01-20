@@ -84,6 +84,7 @@ export class TeamResponsibilitiesService {
         PageSize: parameters.PageSize,
         filter: parameters.filter,
         withcount: true,
+        forinactive: parameters.forinactive,
       },
       { signal },
     );

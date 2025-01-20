@@ -12,7 +12,11 @@
   }
 
   ::ng-deep .mat-column-Progress {
-    min-width: 100px;
+    min-width: 150px;
+
+    .mat-mdc-progress-bar {
+      max-width: 70px;
+    }
   }
 }
 

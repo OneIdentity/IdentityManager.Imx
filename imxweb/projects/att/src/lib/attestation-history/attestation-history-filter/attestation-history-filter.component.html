@@ -1,6 +1,8 @@
-<ng-container *ngIf="identityCdr">
-  <p>
-    {{ '#LDS#Attestor' | translate }}
-  </p>
-  <imx-cdr-editor [cdr]="identityCdr" (valueChange)="updateSelectedEntity()"></imx-cdr-editor>
-</ng-container>
+<mat-card class="mat-elevation-z2">
+  <mat-card-content>
+    <mat-label>{{ '#LDS#Attestor' | translate }}</mat-label>
+    <ng-container *ngIf="identityCdr">
+      <imx-cdr-editor [cdr]="identityCdr" (valueChange)="updateSelectedEntity()"></imx-cdr-editor>
+    </ng-container>
+  </mat-card-content>
+</mat-card>

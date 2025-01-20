@@ -126,7 +126,11 @@ export class DataExportComponent implements OnInit, OnDestroy {
   // Update the request url
   public setUrl(): void {
     const withProperties = '-' + this.state.columns?.map((column) => column.value).join(',');
-    const method = this.settings?.exportMethod?.getMethod(withProperties, this.state.isAllData ? this.allDataCount : 0);
+    const method = this.settings?.exportMethod?.getMethod(
+      withProperties,
+      this.state.navigationState,
+      this.state.isAllData ? this.allDataCount : 0,
+    );
     this.downloadOptions = {
       ...this.downloadOptions,
       url: this.config.BaseUrl + (method?.path ?? ''),

@@ -68,6 +68,17 @@ export class DataViewPaginatorComponent {
    */
   public async onStateChanged(event: PageEvent): Promise<void> {
     this.dataSource.state.update((state) => ({ ...state, PageSize: event.pageSize, StartIndex: event.pageIndex * event.pageSize }));
-    await this.dataSource.updateState();
+    if (this.dataSource.isDataLocal) this.localPagination();
+    else await this.dataSource.updateState();
+  }
+
+  /**
+   * Paginate the local data copy and update the collection data.
+   */
+  private localPagination(): void {
+    this.dataSource.collectionData.update((collectionData) => ({
+      ...collectionData,
+      Data: this.dataSource.getLocalPage(this.dataSource.localDataCopy),
+    }));
   }
 }
