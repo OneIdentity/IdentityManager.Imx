@@ -52,6 +52,9 @@
     @if (fromDateControl.getErrors()['matDatepickerMin'] || fromDateControl.getErrors()['matDatepickerMax']) {
       <mat-error>{{ '#LDS#Specify a "From" date that lies before the "To" date.' | translate }}</mat-error>
     }
+    @if (fromDateControl.getErrors()['matDatepickerParse']) {
+      <mat-error>{{ '#LDS#The value you entered is not a valid date.' | translate }}</mat-error>
+    }
   </eui-date-picker>
   @if (isEnabledChangeType) {
     <eui-date-picker
@@ -64,6 +67,9 @@
     >
       @if (toDateControl.getErrors()['matDatepickerMin'] || toDateControl.getErrors()['matDatepickerMax']) {
         <mat-error>{{ '#LDS#Specify a "To" date that lies after the "From" date.' | translate }}</mat-error>
+      }
+      @if (toDateControl.getErrors()['matDatepickerParse']) {
+        <mat-error>{{ '#LDS#The value you entered is not a valid date.' | translate }}</mat-error>
       }
     </eui-date-picker>
   }

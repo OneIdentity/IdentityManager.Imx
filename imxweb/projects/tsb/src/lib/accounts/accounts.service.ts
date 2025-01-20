@@ -70,10 +70,10 @@ export class AccountsService {
     return this.tsbClient.typedClient.PortalTargetsystemUnsAccount.Get(navigationState, { signal });
   }
 
-  public exportAccounts(navigationState: CollectionLoadParameters): DataSourceToolbarExportMethod {
+  public exportAccounts(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
           method = factory.portal_targetsystem_uns_account_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });

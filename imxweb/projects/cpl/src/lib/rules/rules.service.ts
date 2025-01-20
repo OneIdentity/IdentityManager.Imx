@@ -64,15 +64,15 @@ export class RulesService {
     return this.apiservice.typedClient.PortalRules.Get(parameter, { signal });
   }
 
-  public exportRules(parameter: CollectionLoadParameters): DataSourceToolbarExportMethod {
+  public exportRules(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_rules_get({ ...parameter, withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_rules_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_rules_get({ ...parameter, withProperties });
+          method = factory.portal_rules_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

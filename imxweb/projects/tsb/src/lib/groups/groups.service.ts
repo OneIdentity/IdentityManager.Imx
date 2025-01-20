@@ -93,10 +93,10 @@ export class GroupsService {
     return this.tsbClient.typedClient.PortalTargetsystemUnsGroup.Get(navigationState, { signal });
   }
 
-  public exportGroups(navigationState: GetGroupsOptionalParameters): DataSourceToolbarExportMethod {
+  public exportGroups(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: GetGroupsOptionalParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
           method = factory.portal_targetsystem_uns_group_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -115,10 +115,10 @@ export class GroupsService {
     return this.tsbClient.typedClient.PortalRespUnsgroup.Get(navigationState, { signal });
   }
 
-  public exportGroupsResp(navigationState: GetGroupsOptionalParameters): DataSourceToolbarExportMethod {
+  public exportGroupsResp(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: GetGroupsOptionalParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
           method = factory.portal_resp_unsgroup_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });

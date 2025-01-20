@@ -1,4 +1,5 @@
 <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+<imx-ext [id]="externalFilterId" *ngIf="isLoading" />
 <ng-container *ngFor="let filter of filters; index as index">
   <div [ngClass]="{ hidden: isLoading }">
     <mat-card class="mat-elevation-z2" *ngIf="!hiddenFilterSet.has(filter.Name ?? '')">

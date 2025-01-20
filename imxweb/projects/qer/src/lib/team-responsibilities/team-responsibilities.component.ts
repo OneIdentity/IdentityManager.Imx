@@ -81,6 +81,13 @@ export class TeamResponsibilitiesComponent implements OnInit {
     return !!responsibility.UID_SourceColumn.value;
   }
 
+  public isResponsibilitiesReassignable(): boolean {
+    return (
+      this.tableSelection.every((selectedItem) => !!selectedItem.UID_SourceColumn.value) ||
+      this.tableSelection.every((selectedItem) => !selectedItem.UID_SourceColumn.value)
+    );
+  }
+
   public onCustomFilterChange(): void {
     this.dataSource.selection.clear();
     this.dataSource.updateState();
@@ -158,9 +165,6 @@ export class TeamResponsibilitiesComponent implements OnInit {
   private async setupDataSource(): Promise<void> {
     let dataModel = await this.teamResponsibilitiesService.getDataModel();
     dataModel = { ...dataModel, Filters: dataModel.Filters?.filter((filter) => filter.Name !== 'forinactive') };
-    this.dataSource.itemStatus = {
-      enabled: (entity: PortalRespTeamResponsibilities) => !entity.UID_SourceColumn.value,
-    };
     const dataViewInitParameters: DataViewInitParameters<PortalRespTeamResponsibilities> = {
       execute: async (
         params: CollectionLoadParameters,
@@ -185,7 +189,8 @@ export class TeamResponsibilitiesComponent implements OnInit {
       selectionChange: (selection: PortalRespTeamResponsibilities[]) => {
         this.tableSelection = selection;
       },
-      groupExecute: (column, params, signal) => this.teamResponsibilitiesService.getGroups(column, params, signal),
+      groupExecute: (column, params, signal) =>
+        this.teamResponsibilitiesService.getGroups(column, { ...params, forinactive: this.customFilterValue ? '1' : undefined }, signal),
     };
     this.dataSource.init(dataViewInitParameters);
   }

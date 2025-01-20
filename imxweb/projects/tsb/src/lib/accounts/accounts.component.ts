@@ -127,7 +127,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
         schema: this.entitySchemaUnsAccount,
         columnsToDisplay: this.displayedColumns,
         dataModel: this.dataModel,
-        exportFunction: this.accountsService.exportAccounts(this.dataSource.state),
+        exportFunction: this.accountsService.exportAccounts(),
         viewConfig: this.viewConfig,
         highlightEntity: (identity: PortalTargetsystemUnsAccount) => {
           this.onAccountChanged(identity);

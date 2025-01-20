@@ -31,7 +31,7 @@
     </ng-template>
   </mat-tab>
 
-  <mat-tab [label]="'#LDS#Heading Mitigating Controls' | translate">
+  <mat-tab [label]="'#LDS#Heading Mitigating Controls' | translate" *ngIf="data.hasRiskIndex">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
         <imx-mitigating-controls-policy

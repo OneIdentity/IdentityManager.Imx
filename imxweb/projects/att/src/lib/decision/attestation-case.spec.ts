@@ -26,6 +26,7 @@
 
 import { AttCaseDataRead, PortalAttestationApprove } from '@imx-modules/imx-api-att';
 import { IClientProperty, IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
+import { ParameterDataContainer } from 'qer';
 import { AttestationCase } from './attestation-case';
 
 describe('AttestationCase', () => {
@@ -65,8 +66,7 @@ describe('AttestationCase', () => {
 
       const approval = new AttestationCase(
         { GetEntity: () => entity } as PortalAttestationApprove,
-        false, // no chief approval
-        undefined,
+        {} as ParameterDataContainer,
         {} as { index: number } & AttCaseDataRead,
       );
 

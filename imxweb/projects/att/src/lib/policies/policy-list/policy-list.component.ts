@@ -333,7 +333,7 @@ export class PolicyListComponent implements OnInit {
       dataModel: this.dataModel,
       groupExecute: (column: string, params: CollectionLoadParameters, signal: AbortSignal) =>
         this.policyService.getGroupInfo({ ...params, by: column }),
-      exportFunction: this.policyService.exportPolicies(this.dataSource.state()),
+      exportFunction: this.policyService.exportPolicies(),
       viewConfig: this.viewConfig,
       highlightEntity: (policy: AttestationPolicy) => {
         this.editPolicy(policy);

@@ -59,9 +59,10 @@ export class DataViewGroupComponent implements OnInit {
     this.formControl.valueChanges.subscribe((column) => {
       const selectedOption = this.dataSource.groupOptions.find((option) => option.value === column);
       this.dataSource.groupByColumn.set(selectedOption?.clientProperty);
+      this.dataSource.selection.clear();
+      this.dataSource.nestedSelection = new Map();
       if (column !== null) {
         this.dataSource.state.update((state) => ({ ...state, StartIndex: 0 }));
-        this.dataSource.selection.clear();
         this.dataSource.updateState();
       }
     });

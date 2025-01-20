@@ -27,7 +27,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { ClientPropertyForTableColumns, DataSourceToolbarSettings } from 'qbm';
+import { ClientPropertyForTableColumns, DataViewSource } from 'qbm';
 import { ChartDataTyped } from '../chart-data-typed';
 import { ChartTableService } from './chart-table-service.service';
 
@@ -35,6 +35,7 @@ import { ChartTableService } from './chart-table-service.service';
   selector: 'imx-chart-table',
   templateUrl: './chart-table.component.html',
   styleUrls: ['./chart-table.component.scss'],
+  providers: [DataViewSource],
 })
 export class ChartTableComponent implements OnInit {
   @Input() public tableData: TypedEntityCollectionData<ChartDataTyped>;
@@ -42,10 +43,9 @@ export class ChartTableComponent implements OnInit {
 
   public pageSize = 50;
 
-  public dstSettings: DataSourceToolbarSettings;
-
   constructor(
     public chartTableService: ChartTableService,
+    public dataSource: DataViewSource<ChartDataTyped>,
     private translate: TranslateService,
   ) {}
 
@@ -63,14 +63,10 @@ export class ChartTableComponent implements OnInit {
     for await (const column of displayedColumns) {
       column.Display = column.Display == null ? '' : await this.translate.get(column.Display).toPromise();
     }
-    this.dstSettings = {
-      dataSource: this.tableData,
-      entitySchema: schema,
-      displayedColumns,
-      navigationState: {
-        StartIndex: 0,
-        PageSize: this.pageSize,
-      },
-    };
+    this.dataSource.initLocal({
+      data: this.tableData.Data,
+      schema,
+      columnsToDisplay: displayedColumns,
+    });
   }
 }

@@ -65,9 +65,9 @@ import { RunsService } from '../runs.service';
 })
 export class RunsGridComponent implements OnInit {
   public readonly categoryBadgeColor = {
-    Bad: 'red',
-    Mediocre: 'orange',
-    Good: 'white',
+    Bad: 'warn',
+    Mediocre: 'accent',
+    Good: 'primary',
   };
 
   public entitySchema: EntitySchema;
@@ -178,12 +178,12 @@ export class RunsGridComponent implements OnInit {
   public getExportMethod(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_attestation_run_get({ ...this.dataSource.state(), withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_attestation_run_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_attestation_run_get({ ...this.dataSource.state(), withProperties });
+          method = factory.portal_attestation_run_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

@@ -145,10 +145,10 @@ export class InitService {
       entitlements: new EsetEntitlements(this.api, this.translator),
       membership: new EsetMembership(this.api, this.session, this.translator),
       canUseRecommendations: true,
-      exportMethod: (navigationState: CollectionLoadParameters, isAdmin: boolean) => {
+      exportMethod: (isAdmin: boolean) => {
         const factory = new V2ApiClientMethodFactory();
         return {
-          getMethod: (withProperties: string, PageSize?: number) => {
+          getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
             let method: MethodDescriptor<EntityCollectionData>;
             if (PageSize) {
               method = isAdmin
@@ -190,7 +190,7 @@ export class InitService {
 
     this.dataExplorerRegistryService.registerFactory(
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
+        if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
           return undefined;
         }
         return {

@@ -24,7 +24,7 @@
  *
  */
 
-import { EntitySchema, DataModel, FilterData, CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
+import { DataModel, EntitySchema, FilterData } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarExportMethod } from 'qbm';
 
 export interface ResourceDataModel {
@@ -45,5 +45,5 @@ export interface ResourceInfoApiWrapper {
   schema?: EntitySchema;
   dataModel?: any;
   interactive?: any;
-  exportMethod?: (navigationState: CollectionLoadParameters) => DataSourceToolbarExportMethod;
+  exportMethod?: () => DataSourceToolbarExportMethod;
 }

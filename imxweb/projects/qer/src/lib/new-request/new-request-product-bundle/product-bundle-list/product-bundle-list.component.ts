@@ -106,7 +106,6 @@ import { NewRequestSelectionService } from '../../new-request-selection.service'
 })
 export class ProductBundleListComponent implements AfterViewInit, AfterContentInit, OnChanges, OnDestroy {
   //#region Private
-  private selectedProductBundles: any[] = [];
   private navigationState: CollectionLoadParameters;
   private subscriptions: Subscription[] = [];
   private searchEnabled = false;
@@ -138,7 +137,6 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
     public readonly selectionService: NewRequestSelectionService,
     settingsService: SettingsService,
   ) {
-    this.orchestration.productBundle = undefined;
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = patternItemService.PortalShopPatternRequestableSchema;
     this.displayedColumns = [
@@ -147,26 +145,9 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
         ColumnName: 'type',
         Type: ValType.String,
       },
-      // {
-      //   ColumnName: 'button',
-      //   Type: ValType.String,
-      // },
     ];
 
     this.subscriptions.push(this.orchestration.recipients$.subscribe((recipients: IWriteValue<string>) => (this.recipients = recipients)));
-
-    // CHECK Do we need this?
-    // this.subscriptions.push(
-    //   this.orchestration.selectedProductCandidates$.subscribe((productCandidates: any[]) => (this.selectedProductCandidates = productCandidates))
-    // );
-    // this.subscriptions.push(this.orchestration.productCandidatesAdded$.subscribe((added: boolean) => {
-    //   if (!added) {
-    //     return;
-    //   }
-
-    //   this.dst?.selection?.clear();
-
-    // }))
   }
 
   public ngAfterContentInit(): void {

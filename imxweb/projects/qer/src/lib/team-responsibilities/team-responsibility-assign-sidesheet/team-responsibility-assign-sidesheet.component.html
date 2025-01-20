@@ -8,6 +8,7 @@
       (matSortChange)="dataSource?.sortChange($event)"
       [matSortActive]="dataSource.sortId()"
       [selectable]="true"
+      [singleSelection]="singleSelection"
     >
       <ng-container [matColumnDef]="DisplayedColumns.DISPLAY_PROPERTYNAME">
         <th mat-header-cell *matHeaderCellDef>

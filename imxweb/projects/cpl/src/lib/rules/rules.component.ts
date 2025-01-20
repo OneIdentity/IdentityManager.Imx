@@ -177,7 +177,7 @@ export class RulesComponent implements OnInit {
       schema: this.ruleSchema,
       columnsToDisplay: this.displayedColumns,
       dataModel: this.dataModel,
-      exportFunction: this.rulesProvider.exportRules(this.dataSource.state()),
+      exportFunction: this.rulesProvider.exportRules(),
       viewConfig: this.viewConfig,
       highlightEntity: (identity: PortalRules) => {
         this.showDetails(identity);

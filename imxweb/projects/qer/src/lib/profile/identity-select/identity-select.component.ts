@@ -76,15 +76,16 @@ export class IdentitySelectComponent implements OnChanges {
     }
   }
 
-  public async onSelectionChange(value: string): Promise<void> {
+  public async onSelectionChange(selectedOptions: EuiSelectOption | EuiSelectOption[]): Promise<void> {
     if (this.confirmChange && !(await this.confirmChange.check())) {
       // revert change if not confirmed:
       this.control.setValue(this.selectedId, { emitEvent: false });
       return;
     }
 
-    this.selectedId = value;
-    this.selectionChange.emit(value);
+    const selectedOption: EuiSelectOption = Array.isArray(selectedOptions) ? selectedOptions[0] : selectedOptions;
+    this.selectedId = selectedOption.value;
+    this.selectionChange.emit(selectedOption.value);
   }
 
   public filter(option: EuiSelectOption, searchInputValue: string): boolean {

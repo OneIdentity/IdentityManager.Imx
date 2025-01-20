@@ -158,6 +158,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
     const dataViewInitParameters: DataViewInitParameters<AttestationHistoryCase> = {
       execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<AttestationHistoryCase>> =>
         this.historyService.getAttestations({ ...this.parameters, ...params }),
+      customIdentifier: 'attestationHistory',
       schema: this.entitySchema,
       columnsToDisplay: this.displayedColumns,
       dataModel: this.dataModel,
@@ -183,7 +184,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
         this.viewDetails(entity);
       },
       selectionChange: (selection: Array<AttestationHistoryCase>) => this.selectionChanged.emit(selection),
-      exportFunction: this.historyService.exportAttestation(this.dataSource.state()),
+      exportFunction: this.historyService.exportAttestation(),
     };
     this.dataSource.init(dataViewInitParameters);
   }

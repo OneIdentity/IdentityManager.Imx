@@ -24,76 +24,145 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { PortalPersonAll } from '@imx-modules/imx-api-qer';
 import { ValType } from '@imx-modules/imx-qbm-dbts';
+import {
+  BaseCdr,
+  ColumnDependentReference,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSelectedFilter,
+  DataSourceToolbarSettings,
+  EntityService,
+  FilterFormState,
+  FilterTypeIdentifier,
+  FilterWizardService,
+  FilterWizardSidesheetData,
+} from 'qbm';
 import { PersonService } from 'qer';
 
-import { TranslateService } from '@ngx-translate/core';
-import { BaseCdr, ColumnDependentReference, DataSourceToolbarComponent, DataSourceToolbarSelectedFilter, EntityService } from 'qbm';
-
+/**
+ * Shows a dropdown with identities to filter the attestation history by an attestator.
+ */
 @Component({
   selector: 'imx-attestation-history-filter',
   templateUrl: './attestation-history-filter.component.html',
   styleUrls: ['./attestation-history-filter.component.scss'],
 })
-export class AttestationHistoryFilterComponent implements OnInit {
-  @Input() public dst: DataSourceToolbarComponent;
-  @Output() public selectedFiltersChanged = new EventEmitter<string>();
-
-  public personData: PortalPersonAll[];
-  public selectedUid: string | undefined;
-  public dstFilterRef: DataSourceToolbarSelectedFilter;
+export class AttestationHistoryFilterComponent implements OnInit, OnDestroy {
   public identityCdr: ColumnDependentReference;
 
-  private skipSelectionEmitMode = false;
+  private selectedUid: string | undefined;
+  private dstFilterRef: DataSourceToolbarSelectedFilter;
+  private filter: DataSourceToolbarFilter;
+
+  private id: string | undefined;
+  private settings: DataSourceToolbarSettings;
+  private externalFilters: DataSourceToolbarSelectedFilter[] = [];
+
+  private formState: FilterFormState;
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(
-    private entityService: EntityService,
-    private translator: TranslateService,
-    private person: PersonService,
-  ) {}
+    private readonly entityService: EntityService,
+    private readonly filterService: FilterWizardService,
+    private readonly translator: TranslateService,
+    private readonly person: PersonService,
+    @Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData,
+  ) {
+    this.id = data?.id;
+    this.settings = data?.settings ? Object.create(data.settings) : undefined;
+    this.externalFilters = data?.externalFilters ?? [];
+    this.formState = { canClearFilters: this.externalFilters.length > 0, dirty: false, filterIdentifier: FilterTypeIdentifier.Predefined };
 
-  async ngOnInit(): Promise<void> {
+    this.filter = {
+      Name: 'uid_persondecision',
+    };
+
+    this.subscriptions.push(
+      this.filterService.applyFiltersEvent.subscribe(() => {
+        this.applyFilters();
+      }),
+    );
+
+    this.subscriptions.push(
+      this.filterService.clearFiltersEvent.subscribe(() => {
+        this.clearFilters();
+      }),
+    );
+  }
+
+  public async ngOnInit(): Promise<void> {
     this.identityCdr = await this.createCdrPerson();
+    this.filterService.formStatusChanged(this.formState);
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public updateSelectedEntity(): void {
     this.selectedUid = this.identityCdr.column.GetValue();
 
-    if (this.dst) {
-      // First clear any previosuly selected dst selectedFilter
-      this.clearPersonFilterSelection(false);
-      if (this.identityCdr.column.GetValue() && this.identityCdr.column.GetValue().length > 0) {
-        this.dstFilterRef = {
-          selectedOption: { Value: this.identityCdr.column.GetValue(), Display: this.identityCdr.column.GetDisplayValue() },
-          filter: { Name: 'UID_Person' },
-          isCustom: true,
-        };
-        this.dst.selectedFilters.push(this.dstFilterRef);
-      }
-    }
-    if (!this.skipSelectionEmitMode) {
-      // Trigger a new api call to reflect filter removal
-      this.selectedFiltersChanged.emit(this.selectedUid);
-    }
+    this.formState.dirty = true;
+    this.filterService.formStatusChanged(this.formState);
   }
 
-  public async clearPersonFilterSelection(clearSelectControl?: boolean): Promise<void> {
-    if (clearSelectControl) {
-      this.identityCdr.column.PutValue(undefined);
-    }
-    this.clearDstSelectedFilter(this.dstFilterRef);
-  }
-
-  public onCustomFilterClearedExternally(filter: DataSourceToolbarSelectedFilter): void {
+  /**
+   * @ignore Used internally.
+   * Is called internally when the clear all filters menu option is clicked
+   * Clears all selected filter values and updates and emits the new navigationState
+   */
+  private clearFilters(emit = true): void {
     this.selectedUid = undefined;
-    this.clearPersonFilterSelection(true);
-    this.selectedFiltersChanged.emit();
+    this.identityCdr.column.PutValue(undefined);
+    this.updateNavigateStateWithFilters(emit);
   }
 
-  private async createCdrPerson(): Promise<BaseCdr> {
+  private applyFilters(): void {
+    this.updateNavigateStateWithFilters();
+  }
+
+  /**
+   * @ignore Used internally
+   * Loops over the filters and adds any selected filters to the navigation state
+   * as query parameters, and emits a navigationStateChanged event to let calling code know of the change
+   *
+   * If the datasource is local, will apply the filters here and emit a settingsChanged signal instead of a navigationStateChanged
+   */
+  private updateNavigateStateWithFilters(emit = true): void {
+    if (this.filter.Name) {
+      delete this.settings.navigationState[this.filter.Name];
+      this.externalFilters.forEach((externalFilter, index) => {
+        // remove the previous filter
+        if (externalFilter.filter?.Name === this.filter.Name) this.externalFilters.splice(index, 1);
+      });
+    }
+
+    if (this.selectedUid) {
+      this.settings.navigationState[this.filter.Name || 'uid_persondecision'] = this.selectedUid;
+      this.dstFilterRef = {
+        selectedOption: { Value: this.selectedUid, Display: this.identityCdr.column.GetDisplayValue() },
+        filter: this.filter,
+        isCustom: true,
+      };
+      this.externalFilters.push(this.dstFilterRef);
+    }
+
+    this.settings.navigationState.StartIndex = 0;
+
+    if (!emit) {
+      return;
+    }
+    if (this.id) {
+      this.filterService.updateNavigation(this.id, this.settings.navigationState, this.data?.selectedFilters ?? [], this.externalFilters);
+    }
+  }
+
+  private createCdrPerson(): BaseCdr {
     const fkRelation = {
       ChildColumnName: 'UID_PersonRelated',
       ParentTableName: 'Person',
@@ -110,19 +179,7 @@ export class AttestationHistoryFilterComponent implements OnInit {
       },
       [this.person.createFkProviderItem(fkRelation)],
     );
-
-    const display = await this.translator.get('#LDS#Attestor').toPromise();
-    const ret = new BaseCdr(column, display);
-
-    return ret;
-  }
-
-  private clearDstSelectedFilter(selectedFilterRef: DataSourceToolbarSelectedFilter): void {
-    if (this.dst && selectedFilterRef) {
-      // Remove the 'isCustom' property to avoid an event being triggered in dst code
-      selectedFilterRef.isCustom = undefined;
-      // Then make call to remove selected filter
-      this.dst.removeSelectedFilter(selectedFilterRef.filter, false, selectedFilterRef.selectedOption?.Value, selectedFilterRef);
-    }
+    column.PutValue(this.data?.externalFilters?.find((filter) => filter.filter?.Name == this.filter.Name)?.filter?.CurrentValue);
+    return new BaseCdr(column, this.translator.instant('#LDS#Attestor'));
   }
 }

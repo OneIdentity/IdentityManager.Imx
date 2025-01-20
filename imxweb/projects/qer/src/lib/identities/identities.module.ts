@@ -135,7 +135,7 @@ export class IdentitiesModule {
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
       const items: MenuItem[] = [];
-      if (preProps.includes('ITSHOP') && (isPersonAdmin(features) || isPersonManager(features) || isAuditor(groups))) {
+      if (preProps.includes('ITSHOP') && (isPersonAdmin(features) || isAuditor(groups))) {
         items.push({
           id: 'QER_DataExplorer',
           navigationCommands: { commands: ['admin', 'dataexplorer'] },
@@ -159,7 +159,7 @@ export class IdentitiesModule {
   private init(): void {
     this.dataExplorerRegistryService.registerFactory(
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!isPersonAdmin(features) && !isPersonManager(features) && !isAuditor(groups)) {
+        if (!isPersonAdmin(features) && !isAuditor(groups)) {
           return;
         }
         return {

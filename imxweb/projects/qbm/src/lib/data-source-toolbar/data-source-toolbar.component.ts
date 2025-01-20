@@ -956,7 +956,11 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     }
 
     if (changes['disableSearch']) {
-      this.searchControl = new FormControl<string>({ value: '', disabled: this.disableSearch }, { nonNullable: true });
+      if (this.disableSearch) {
+        this.searchControl.disable();
+      } else {
+        this.searchControl.enable();
+      }
     }
   }
 

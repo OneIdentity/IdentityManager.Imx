@@ -106,15 +106,15 @@ export class PolicyViolationsService {
     };
   }
 
-  public exportPolicyViolations(polDecisionParameters: CollectionLoadParameters): DataSourceToolbarExportMethod {
+  public exportPolicyViolations(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_policies_violations_list_get({ ...polDecisionParameters, withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_policies_violations_list_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_policies_violations_list_get({ ...polDecisionParameters, withProperties });
+          method = factory.portal_policies_violations_list_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

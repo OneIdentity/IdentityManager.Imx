@@ -29,7 +29,7 @@ import { EuiSidesheetService } from '@elemental-ui/core';
 import { FilterType, SqlWizardExpression } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { calculateSidesheetWidth } from '../../base/sidesheet-helper';
-import { DataSourceToolbarSelectedFilter } from '../../data-source-toolbar/data-source-toolbar-filters.interface';
+import { DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from '../../data-source-toolbar/data-source-toolbar-filters.interface';
 import { FilterWizardComponent } from '../../data-source-toolbar/filter-wizard/filter-wizard.component';
 import { FilterWizardResult, FilterWizardSidesheetData } from '../../data-source-toolbar/filter-wizard/filter-wizard.interfaces';
 import { FilterWizardService } from '../../data-source-toolbar/filter-wizard/filter-wizard.service';
@@ -71,9 +71,23 @@ export class DataViewFilterComponent {
         selectedOption: { Value: item.CurrentValue },
       }),
     );
-
     return selectedFilters;
   });
+
+  /**
+   * Signal, that computed the selected external filters from DataViewSource externalFilters signal.
+   */
+  private getSelectedExternalFilters: Signal<DataSourceToolbarSelectedFilter[]> = computed(() => {
+    let selectedFilters: DataSourceToolbarSelectedFilter[] = [];
+    this.dataSource.externalFilters().forEach((item) =>
+      selectedFilters.push({
+        filter: item,
+        selectedOption: { Value: item.CurrentValue },
+      }),
+    );
+    return selectedFilters;
+  });
+
   private filterType: Signal<string> = computed(() => this.dataSource.filterTreeData().Description || '');
 
   constructor(
@@ -81,7 +95,7 @@ export class DataViewFilterComponent {
     private readonly sidesheetService: EuiSidesheetService,
     readonly translate: TranslateService,
   ) {
-    // Updates the predefined filters from the filterWizardService
+    // Updates the predefined and external filters from the filterWizardService
     this.filterService.navigationStateChanged.subscribe((state) => {
       if (state.id === this.id) {
         this.dataSource.state.set(state.params);
@@ -91,6 +105,15 @@ export class DataViewFilterComponent {
             CurrentValue: state.selectedFilters?.find((filter) => filter.filter?.Name === predefinedFilter.Name)?.filter?.CurrentValue,
           })),
         );
+        const extFilters: DataSourceToolbarFilter[] = state.externalFilters.map((extFilter) => {
+          const filter = state.externalFilters?.find((filter) => filter.isCustom);
+          return {
+            ...extFilter,
+            CurrentValue: filter?.selectedOption?.Display,
+            Name: filter?.filter?.Name,
+          };
+        });
+        this.dataSource.externalFilters.update(() => extFilters);
       }
     });
   }
@@ -101,6 +124,7 @@ export class DataViewFilterComponent {
   public async onShowFilterWizard(): Promise<void> {
     const componentData: FilterWizardSidesheetData = {
       id: this.id,
+      customIdentifier: this.dataSource.customIdentifier,
       settings: {
         dataSource: this.dataSource.collectionData(),
         navigationState: this.dataSource.state(),
@@ -110,6 +134,7 @@ export class DataViewFilterComponent {
       },
       filterExpression: this.filterExpressions(),
       selectedFilters: this.getSelectedPredefinedFilters(),
+      externalFilters: this.getSelectedExternalFilters(),
       isDataSourceLocal: false,
       filterTreeParameter: {
         filterTreeParameter: this.dataSource.filterTree,

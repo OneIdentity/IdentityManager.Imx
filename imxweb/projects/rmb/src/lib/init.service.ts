@@ -146,10 +146,10 @@ export class InitService {
       membership: new OrgMembership(this.api, this.session, this.translator),
       canUseRecommendations: true,
       restore,
-      exportMethod: (navigationState: CollectionLoadParameters, isAdmin: boolean) => {
+      exportMethod: (isAdmin: boolean) => {
         const factory = new V2ApiClientMethodFactory();
         return {
-          getMethod: (withProperties: string, PageSize?: number) => {
+          getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
             let method: MethodDescriptor<EntityCollectionData>;
             if (PageSize) {
               method = isAdmin

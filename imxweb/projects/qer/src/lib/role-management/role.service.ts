@@ -185,9 +185,9 @@ export class RoleService {
     );
 
     // Add export methods to Dept, Loc, Bus for resp since
-    localityRoleObject.exportMethod = (navigationState: CollectionLoadParameters) => {
+    localityRoleObject.exportMethod = () => {
       return {
-        getMethod: (withProperties: string, PageSize?: number) => {
+        getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
           let method: MethodDescriptor<EntityCollectionData>;
           if (PageSize) {
             method = this.factory.portal_resp_locality_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -267,9 +267,9 @@ export class RoleService {
     );
 
     // Add export methods to Dept, Loc, Bus for resp since
-    profitCenterRoleObject.exportMethod = (navigationState: CollectionLoadParameters) => {
+    profitCenterRoleObject.exportMethod = () => {
       return {
-        getMethod: (withProperties: string, PageSize?: number) => {
+        getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
           let method: MethodDescriptor<EntityCollectionData>;
           if (PageSize) {
             method = this.factory.portal_resp_profitcenter_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -355,9 +355,9 @@ export class RoleService {
     );
 
     // Add export methods to Dept, Loc, Bus for resp since
-    departmentRoleObject.exportMethod = (navigationState: CollectionLoadParameters) => {
+    departmentRoleObject.exportMethod = () => {
       return {
-        getMethod: (withProperties: string, PageSize?: number) => {
+        getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
           let method: MethodDescriptor<EntityCollectionData>;
           if (PageSize) {
             method = this.factory.portal_resp_department_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -408,9 +408,9 @@ export class RoleService {
     aeRoleObject.respHelpContextId = HELP_CONTEXTUAL.MyResponsibilitiesAERoleRoleEntitlements;
 
     // Add export methods to Dept, Loc, Bus for resp since
-    aeRoleObject.exportMethod = (navigationState: CollectionLoadParameters) => {
+    aeRoleObject.exportMethod = () => {
       return {
-        getMethod: (withProperties: string, PageSize?: number) => {
+        getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
           let method: MethodDescriptor<EntityCollectionData>;
           if (PageSize) {
             method = this.factory.portal_resp_aerole_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -471,16 +471,12 @@ export class RoleService {
       : await this.targetMap.get(tableName)?.resp?.Get(navigationState ?? {});
   }
 
-  public getExportMethod(
-    tableName: string | undefined,
-    isAdmin: boolean,
-    navigationState: CollectionLoadParameters,
-  ): DataSourceToolbarExportMethod | undefined {
+  public getExportMethod(tableName: string | undefined, isAdmin: boolean): DataSourceToolbarExportMethod | undefined {
     const roleObject = tableName == null ? undefined : this.targetMap.get(tableName);
     if (!roleObject || !roleObject.exportMethod) {
       return;
     }
-    return roleObject.exportMethod(navigationState, isAdmin);
+    return roleObject.exportMethod(isAdmin);
   }
 
   public async getRecommendations(roletype: string, uidRole: string): Promise<RoleRecommendationResult> {

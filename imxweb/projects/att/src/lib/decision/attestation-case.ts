@@ -60,7 +60,6 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
 
   constructor(
     private readonly baseObject: PortalAttestationApprove,
-    private readonly isChiefApproval: boolean,
     private readonly parameterDataContainer: ParameterDataContainer,
     extendedCollectionData: { index: number } & AttCaseDataRead,
   ) {
@@ -122,7 +121,7 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
   public canDenyApproval(userUid: string): boolean {
     // TODO later: not(IsReadOnly())
 
-    return !this.IsReserved.value && !this.isChiefApproval && this.workflowWrapper?.canDenyDecision(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && this.workflowWrapper?.canDenyDecision(userUid, this.DecisionLevel.value);
   }
 
   public getLevelNumbers(userUid: string): number[] {
@@ -130,15 +129,19 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
   }
 
   public canRerouteDecision(userUid: string): boolean {
-    return !this.isChiefApproval && this.workflowWrapper?.getDirectSteps(userUid, this.DecisionLevel.value)?.some((value) => value !== 0);
+    return this.workflowWrapper?.getDirectSteps(userUid, this.DecisionLevel.value)?.some((value) => value !== 0);
   }
 
   public canAddApprover(userUid: string): boolean {
-    return !this.IsReserved.value && !this.isChiefApproval && this.workflowWrapper?.isAdditionalAllowed(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && this.workflowWrapper?.isAdditionalAllowed(userUid, this.DecisionLevel.value);
   }
 
   public canDelegateDecision(userUid: string): boolean {
-    return !this.IsReserved.value && !this.isChiefApproval && this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
+    const instead =
+      userUid === ''
+        ? this.workflowWrapper?.isInsteadOfAllowedForEscalation(this.UID_QERWorkingMethod.value, this.DecisionLevel.value)
+        : this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && instead;
   }
 
   public hasAskedLastQuestion(userUid: string): boolean {
@@ -146,7 +149,7 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
   }
 
   public canWithdrawAddApprover(userUid: string): boolean {
-    return !this.isChiefApproval && this.workflowWrapper?.canRevokeAdditionalApprover(userUid, this.DecisionLevel.value);
+    return this.workflowWrapper?.canRevokeAdditionalApprover(userUid, this.DecisionLevel.value);
   }
 
   public canEscalateDecision(userUid: string): boolean {

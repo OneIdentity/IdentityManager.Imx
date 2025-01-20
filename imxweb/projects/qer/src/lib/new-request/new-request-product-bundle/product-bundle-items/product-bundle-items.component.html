@@ -32,7 +32,7 @@
     </button>
   </div>
 </div>
-<ng-container *ngIf="!!dst">
+<ng-container *ngIf="!!dst; else nonSelected">
   <imx-data-table
     #dataTable
     *ngIf="orchestration.productBundle; else nonSelected"

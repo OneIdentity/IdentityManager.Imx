@@ -335,12 +335,12 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         if (this.additionalParameter.uid_attestationhelper) {
           newParams.uid_attestationhelper = this.additionalParameter.uid_attestationhelper;
         }
-        return this.attestationCases.get(newParams, this.isUserEscalationApprover, signal);
+        return this.attestationCases.get(newParams, signal);
       },
       schema: this.entitySchema,
       columnsToDisplay: displayedColumns,
       dataModel: this.dataModel,
-      exportFunction: this.attestationCases.exportData(this.dataSource.state()),
+      exportFunction: this.attestationCases.exportData(),
       viewConfig: this.viewConfig,
       highlightEntity: (identity: AttestationCase) => {
         this.edit(identity);
@@ -372,21 +372,18 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
     try {
       attestationCaseWithPolicy = (
-        await this.attestationCases.get(
-          {
-            Escalation: this.isUserEscalationApprover,
-            uidpolicy: attestationCase.UID_AttestationPolicy.value,
-            filter: [
-              {
-                ColumnName: 'UID_AttestationCase',
-                Type: FilterType.Compare,
-                CompareOp: CompareOperator.Equal,
-                Value1: attestationCase.GetEntity().GetKeys()[0],
-              },
-            ],
-          },
-          this.isUserEscalationApprover,
-        )
+        await this.attestationCases.get({
+          Escalation: this.viewEscalation,
+          uidpolicy: attestationCase.UID_AttestationPolicy.value,
+          filter: [
+            {
+              ColumnName: 'UID_AttestationCase',
+              Type: FilterType.Compare,
+              CompareOp: CompareOperator.Equal,
+              Value1: attestationCase.GetEntity().GetKeys()[0],
+            },
+          ],
+        })
       ).Data[0];
       // Add additional violation data to this case
       if (attestationCaseWithPolicy?.data) {

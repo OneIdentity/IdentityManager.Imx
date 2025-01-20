@@ -144,6 +144,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   private savedCandidates: Candidate[] | undefined | null;
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
+  private loadingError = false;
 
   @ViewChild('autocomplete') private autocomplete: MatAutocomplete;
   /**
@@ -176,7 +177,12 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * Initializes the candidate list, after the 'OnInit' hook is triggered.
    */
   public async ngOnInit(): Promise<void> {
-    return this.initCandidates();
+    try {
+      await this.initCandidates();
+    } catch (error) {
+      this.loadingError = false;
+      this.errorHandler.handleError(error);
+    }
     // Unfortunately this is mandatory, to decide, if the component is hierarchical or not
   }
 
@@ -200,6 +206,10 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * Reinitialize the candidate list, if the input is focused.
    */
   public async inputFocus(): Promise<void> {
+    if (this.loadingError) {
+      this.loadingError = false;
+      return;
+    }
     if (!this.candidates?.length && !this.loading) {
       await this.initCandidates();
     }
@@ -531,6 +541,9 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
           this.candidates = newCandidates;
           this.savedCandidates = this.candidates;
         }
+      } catch (error) {
+        this.loadingError = true;
+        throw error;
       } finally {
         this.loading = false;
         this.changeDetectorRef.detectChanges();

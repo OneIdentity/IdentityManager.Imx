@@ -80,6 +80,10 @@ export class DataViewNestedTableComponent implements OnInit {
    */
   @Input() selectable: boolean;
   /**
+   * Inherited table row selection type.
+   */
+  @Input() singleSelection: boolean;
+  /**
    * Use selection setter/getter to update the data source selection if the user uncheck some rows in the show selected only table.
    */
   @Input() set selection(selection: any[]) {
@@ -206,5 +210,9 @@ export class DataViewNestedTableComponent implements OnInit {
     }
 
     this.dataSource.selection.select(this.dataSource.getAllSelectableEntities());
+  }
+
+  public onSingleSelectionChange(selection: any): void {
+    this.dataSource.selection.setSelection([selection]);
   }
 }

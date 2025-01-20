@@ -156,7 +156,7 @@ export class InquiriesComponent implements OnInit, OnDestroy {
       schema: this.entitySchema,
       columnsToDisplay: this.displayedColumns,
       dataModel: this.dataModel,
-      exportFunction: this.approvalsService.exportApprovalRequests(this.dataSource.state()),
+      exportFunction: this.approvalsService.exportApprovalRequests(),
       viewConfig: this.viewConfig,
       highlightEntity: (approval: Approval) => {
         this.editPwo(approval);

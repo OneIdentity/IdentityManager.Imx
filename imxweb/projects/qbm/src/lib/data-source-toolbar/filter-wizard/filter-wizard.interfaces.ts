@@ -34,8 +34,10 @@ export interface FilterWizardSidesheetData {
   filterExpression: SqlWizardExpression;
   settings: DataSourceToolbarSettings;
   selectedFilters: DataSourceToolbarSelectedFilter[];
+  externalFilters?: DataSourceToolbarSelectedFilter[];
   isDataSourceLocal: boolean;
   filterTreeParameter: FilterTreeParameterData;
+  customIdentifier?: string;
 }
 
 export interface FilterFormState {

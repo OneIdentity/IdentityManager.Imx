@@ -125,15 +125,15 @@ export class RulesViolationsService {
     };
   }
 
-  public exportRulesViolations(parameters?: CollectionLoadParameters, signal?: AbortSignal): DataSourceToolbarExportMethod {
+  public exportRulesViolations(signal?: AbortSignal): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState?: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_rules_violations_get({ ...parameters, withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_rules_violations_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 }, { signal });
         } else {
-          method = factory.portal_rules_violations_get({ ...parameters, withProperties });
+          method = factory.portal_rules_violations_get({ ...navigationState, withProperties }, { signal });
         }
         return new MethodDefinition(method);
       },

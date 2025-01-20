@@ -126,10 +126,10 @@ export class IdentitiesService {
     return (await this.qerClient.typedClient.PortalPersonUid.Get(uid, navigationState)).Data[0];
   }
 
-  public exportAdminPerson(navigationState?: CollectionLoadParameters): DataSourceToolbarExportMethod {
+  public exportAdminPerson(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
           method = factory.portal_admin_person_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
@@ -141,10 +141,10 @@ export class IdentitiesService {
     };
   }
 
-  public exportPerson(navigationState?: CollectionLoadParameters): DataSourceToolbarExportMethod {
+  public exportPerson(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
           method = factory.portal_person_reports_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });

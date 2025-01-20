@@ -1,11 +1,11 @@
 <div class="imx-progress-bar-container">
- <div class="imx-progress-bar-line">
-    <mat-progress-bar mode="determinate" [value]="progress * 100" color="primary"></mat-progress-bar>
-    <div class="imx-progress-bar-texts imx-margin-left-15">{{percentage}}</div>
+  <div class="imx-progress-bar-line">
+    <mat-progress-bar mode="determinate" [value]="percentage" color="primary"></mat-progress-bar>
+    <div class="imx-progress-bar-texts imx-margin-left-15">{{ progress | percent }}</div>
   </div>
 
-    <!-- TODO Later: Add tooltip ?
-        {{ '#LDS#Progress so far: {0} of {1} attestation cases ({2}%)' | translate |
-        ldsReplace:attestationRun.ClosedCases.value:totalNumberOfCases:percentage }}
-    -->
+  <!-- TODO Later: Add tooltip ?
+  {{ '#LDS#Progress so far: {0} of {1} attestation cases ({2}%)' | translate |
+  ldsReplace:attestationRun.ClosedCases.value:totalNumberOfCases:percentage }}
+  -->
 </div>

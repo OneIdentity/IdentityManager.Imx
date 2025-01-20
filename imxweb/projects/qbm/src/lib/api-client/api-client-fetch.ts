@@ -119,6 +119,10 @@ export class ApiClientFetch implements ApiClient {
       if (response.status >= 200 && response.status <= 299) {
         if (method.responseType === 'blob') return <any>response.blob();
 
+        if (actualContentType && 'text/plain' == getFirstContentType()){
+          throw new Error(await response.text());
+        }
+
         if (actualContentType && 'application/json' != getFirstContentType()) {
           throw new Error(this.append(this.UnexpectedTypeErrorText, response.statusText));
         }

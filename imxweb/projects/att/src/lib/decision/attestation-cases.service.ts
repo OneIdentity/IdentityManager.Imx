@@ -89,16 +89,10 @@ export class AttestationCasesService {
 
   public async get(
     attDecisionParameters?: AttestationDecisionLoadParameters,
-    isUserEscalationApprover = false,
     signal?: AbortSignal,
   ): Promise<TypedEntityCollectionData<AttestationCase>> {
-    const navigationState = {
-      ...attDecisionParameters,
-      Escalation:
-        ((attDecisionParameters?.uid_attestationcase ?? '') !== '' && isUserEscalationApprover) || attDecisionParameters?.Escalation,
-    };
-
-    const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(navigationState, { signal });
+    const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(attDecisionParameters, { signal });
+    if (!collection) return { totalCount: 0, Data: [] };
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
@@ -110,20 +104,20 @@ export class AttestationCasesService {
           (treefilterparameter) => this.getFilterTree(treefilterparameter),
         );
 
-        return new AttestationCase(item, this.isChiefApproval, parameterDataContainer, { ...collection.extendedData, ...{ index } });
+        return new AttestationCase(item, parameterDataContainer, { ...collection?.extendedData, ...{ index } });
       }),
     };
   }
 
-  public exportData(attDecisionParameters: AttestationDecisionLoadParameters): DataSourceToolbarExportMethod {
+  public exportData(): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_attestation_approve_get({ ...attDecisionParameters, withProperties, PageSize, StartIndex: 0 });
+          method = factory.portal_attestation_approve_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_attestation_approve_get({ ...attDecisionParameters, withProperties });
+          method = factory.portal_attestation_approve_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

@@ -28,6 +28,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { ComplianceFeatureConfig, PortalRules } from '@imx-modules/imx-api-cpl';
 import { CollectionLoadParameters, EntitySchema, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { calculateSidesheetWidth, DataModelWrapper, DataSourceToolbarSettings, DataSourceWrapper, DataTableGroupedData } from 'qbm';
 import { RulesViolationsApproval } from '../../../rules-violations/rules-violations-approval';
@@ -106,9 +107,16 @@ export class ViolationsPerRuleComponent implements OnInit {
    * @param rule The selected rule from the Rule Violations list
    */
   public async showRulesViolationsDetail(entity: TypedEntity) {
+    this.rulesViolationsService.handleOpenLoader();
     const rule = entity as RulesViolationsApproval;
-    const complianceRule = await this.rulesViolationsService.getComplianceRuleByUId(rule);
-    const config = await this.rulesViolationsService.featureConfig();
+    let complianceRule: PortalRules;
+    let config: ComplianceFeatureConfig;
+    try {
+      complianceRule = await this.rulesViolationsService.getComplianceRuleByUId(rule);
+      config = await this.rulesViolationsService.featureConfig();
+    } finally {
+      this.rulesViolationsService.handleCloseLoader();
+    }
     await this.sidesheet
       .open(RulesViolationsDetailsComponent, {
         title: await this.translate.get('#LDS#Heading View Rule Violation Details').toPromise(),

@@ -95,14 +95,19 @@ export class PolicyService {
     };
   }
 
-  public exportPolicies(parameters: PolicyLoadParameters): DataSourceToolbarExportMethod {
+  public exportPolicies(): DataSourceToolbarExportMethod {
     return {
-      getMethod: (withProperties: string, PageSize?: number) => {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = this.apiClientMethodFactory.portal_attestation_policy_get({ ...parameters, withProperties, PageSize, StartIndex: 0 });
+          method = this.apiClientMethodFactory.portal_attestation_policy_get({
+            ...navigationState,
+            withProperties,
+            PageSize,
+            StartIndex: 0,
+          });
         } else {
-          method = this.apiClientMethodFactory.portal_attestation_policy_get({ ...parameters, withProperties });
+          method = this.apiClientMethodFactory.portal_attestation_policy_get({ ...navigationState, withProperties });
         }
         return new MethodDefinition(method);
       },

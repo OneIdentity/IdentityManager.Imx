@@ -54,7 +54,7 @@ import { ProjectConfigurationService } from '../project-configuration/project-co
 import { UserModelService } from '../user/user-model.service';
 import { DelegationService } from './delegation.service';
 
-import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DateFormat } from '@imx-modules/imx-qbm-dbts';
 import moment from 'moment';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
 
@@ -471,6 +471,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
     const schema = this.delegationService.getDelegationSchema();
     this.cdrTimeSpan = [schema.Columns.InsertValidFrom, schema.Columns.InsertValidUntil].map((property) => {
       property.IsReadOnly = false;
+      property.DateFormat = DateFormat.DateTime;
       return new BaseCdr(this.entityService.createLocalEntityColumn(property, undefined, { ValueConstraint: { MinValue: moment() } }));
     });
   }
