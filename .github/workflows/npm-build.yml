@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
       # Currently only can run ubuntu on github agents, windows isn't correctly installing packages
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
         node-version: [20.x]
     
     steps:
