@@ -31,7 +31,15 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { PortalAdminPerson, PortalPersonAll, PortalPersonReports, ProjectConfig, ViewConfigData } from 'imx-api-qer';
-import { CollectionLoadParameters, DataModel, DataModelProperty, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DataModelProperty,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+} from 'imx-qbm-dbts';
 import {
   AuthenticationService,
   BusyService,
@@ -254,14 +262,18 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
     await this.navigate();
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupData = this.groupData[groupKey];
-      groupData.data = this.isAdmin
-        ? await this.identitiesService.getAllPersonAdmin(groupData.navigationState)
-        : await this.identitiesService.getReportsOfManager(groupData.navigationState);
+      const groupData = this.groupData[groupInfo.key];
+      if (groupInfo.isInitial) {
+        groupData.data = { totalCount: 0, Data: [] };
+      } else {
+        groupData.data = this.isAdmin
+          ? await this.identitiesService.getAllPersonAdmin(groupData.navigationState)
+          : await this.identitiesService.getReportsOfManager(groupData.navigationState);
+      }
       groupData.settings = {
         displayedColumns: this.displayedInnerColumns,
         dataSource: groupData.data,
@@ -341,13 +353,13 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
         }
       }
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
-      await this.navigate();
+      await this.navigate(true);
     } finally {
       isBusy.endBusy();
     }
   }
 
-  private async navigate(): Promise<void> {
+  private async navigate(isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
       this.logger.debug(this, `Retrieving person list`);
@@ -370,9 +382,18 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
       }
 
       this.entitySchemaPersonReports = this.identitiesService.personReportsSchema;
-      const data = this.isAdmin
-        ? await this.identitiesService.getAllPersonAdmin(this.navigationState)
-        : await this.identitiesService.getReportsOfManager(this.navigationState);
+
+      let data: TypedEntityCollectionData<PortalAdminPerson> | TypedEntityCollectionData<PortalPersonReports>;
+      if (isInitialLoad) {
+        data = {
+          totalCount: 0,
+          Data: [],
+        };
+      } else {
+        data = this.isAdmin
+          ? await this.identitiesService.getAllPersonAdmin(this.navigationState)
+          : await this.identitiesService.getReportsOfManager(this.navigationState);
+      }
 
       if (data) {
         const exportMethod: DataSourceToolbarExportMethod = this.isAdmin

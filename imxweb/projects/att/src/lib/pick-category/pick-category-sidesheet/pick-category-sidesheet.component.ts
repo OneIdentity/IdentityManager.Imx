@@ -33,6 +33,7 @@ import { CollectionLoadParameters, DisplayColumns, TypedEntity } from 'imx-qbm-d
 
 import {
   BaseCdr,
+  BusyService,
   ClassloggerService,
   ConfirmationService,
   DataSourceToolbarSettings,
@@ -55,6 +56,7 @@ export class PickCategorySidesheetComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public selectedPickedItems: PortalPickcategoryItems[] = [];
   public displayNameCdr: any;
+  public busyService = new BusyService();
 
   @ViewChild(DataTableComponent) private table: DataTableComponent<TypedEntity>;
 
@@ -75,7 +77,10 @@ export class PickCategorySidesheetComponent implements OnInit {
     const entitySchema = this.pickCategoryService.pickcategoryItemsSchema;
 
     this.dstWrapper = new DataSourceWrapper(
-      (state, requestOpts) => this.pickCategoryService.getPickCategoryItems(this.uidPickCategory, state, requestOpts),
+      (state, requestOpts, isInitial) =>
+        isInitial
+          ? Promise.resolve({ totalCount: 0, Data: [] })
+          : this.pickCategoryService.getPickCategoryItems(this.uidPickCategory, state, requestOpts),
       [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
       entitySchema
     );
@@ -85,18 +90,22 @@ export class PickCategorySidesheetComponent implements OnInit {
     this.uidPickCategory = this.data.pickCategory.GetEntity()?.GetKeys()?.join(',');
     this.displayNameCdr = new BaseCdr(this.data.pickCategory.DisplayName.Column, '#LDS#Display name');
     this.displayNameCdr.minLength = 1;
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
-    this.pickCategoryService.handleOpenLoader();
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
+    const isBusy = this.busyService.beginBusy();
     try {
-      const dstSettings = await this.dstWrapper.getDstSettings(newState, { signal: this.pickCategoryService.abortController.signal });
+      const dstSettings = await this.dstWrapper.getDstSettings(
+        newState,
+        { signal: this.pickCategoryService.abortController.signal },
+        isInitialLoad
+      );
       if (dstSettings) {
         this.dstSettings = dstSettings;
       }
     } finally {
-      this.pickCategoryService.handleCloseLoader();
+      isBusy.endBusy();
     }
   }
 

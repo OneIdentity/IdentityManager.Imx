@@ -112,8 +112,10 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
 
       const entitySchema = this.adminMode ? this.patternService.itshopPatternAdminSchema : this.patternService.itshopPatternPrivateSchema;
       this.dstWrapper = new DataSourceWrapper(
-        (state, requestOpts) =>
-          this.adminMode
+        (state, requestOpts, isInitial) =>
+          isInitial
+            ? Promise.resolve({ totalCount: 0, Data: [] })
+            : this.adminMode
             ? this.patternService.getPublicPatterns(state, requestOpts)
             : this.patternService.getPrivatePatterns(state, requestOpts),
         [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME], entitySchema.Columns.UID_Person, entitySchema.Columns.IsPublicPattern],
@@ -124,7 +126,7 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     } finally {
       isBusy.endBusy();
     }
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
   public ngOnDestroy(): void {
@@ -170,14 +172,18 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {    
+  public async getData(parameter?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
       const parameters = {
         ...parameter,
         ...{ OrderBy: 'Ident_ShoppingCartPattern asc' },
       };
-      const dstSettings = await this.dstWrapper.getDstSettings(parameters, { signal: this.patternService.abortController.signal });
+      const dstSettings = await this.dstWrapper.getDstSettings(
+        parameters,
+        { signal: this.patternService.abortController.signal },
+        isInitialLoad
+      );
       if (dstSettings) {
         this.dstSettings = dstSettings;
       }

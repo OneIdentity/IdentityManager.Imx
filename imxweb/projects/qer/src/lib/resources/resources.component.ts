@@ -87,7 +87,7 @@ export class ResourcesComponent implements OnInit, SideNavigationComponent {
     private readonly busy: EuiLoadingService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly translate: TranslateService,
-    private readonly logger: ClassloggerService,
+    private readonly logger: ClassloggerService
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -118,7 +118,7 @@ export class ResourcesComponent implements OnInit, SideNavigationComponent {
     } finally {
       isBusy.endBusy();
     }
-    await this.navigate();
+    await this.navigate(true);
   }
 
   public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
@@ -180,13 +180,15 @@ export class ResourcesComponent implements OnInit, SideNavigationComponent {
     });
   }
 
-  private async navigate(): Promise<void> {
+  private async navigate(isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     const exportMethod = this.resourceProvider.getExportMethod(this.tablename, this.isAdmin, this.navigationState);
     exportMethod.initialColumns = this.displayColumns.map((col) => col.ColumnName);
     try {
       this.dstSettings = {
-        dataSource: await this.resourceProvider.get(this.tablename, this.isAdmin, this.navigationState),
+        dataSource: isInitialLoad
+          ? { totalCount: 0, Data: [] }
+          : await this.resourceProvider.get(this.tablename, this.isAdmin, this.navigationState),
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,

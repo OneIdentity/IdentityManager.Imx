@@ -24,8 +24,7 @@
  *
  */
 
-import { Component, Input, ViewChild } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { Component, Input } from '@angular/core';
 import { ByAbilityResult, SAPUserFunctionSrcFLD } from 'imx-api-sac';
 import {
   CollectionLoadParameters,
@@ -92,8 +91,8 @@ export class SapComplianceViolationViewsByAbilityComponent {
    * Updates the selected group data. Called when group action is emitted.
    * @param groupKey selected grouping key
    */
-  public onGroupingChange(groupKey: string): void {
-    const groupedData = this.groupData[groupKey];
+  public onGroupingChange(groupInfo: { key: string; isInitial: boolean }): void {
+    const groupedData = this.groupData[groupInfo.key];
     let filter = groupedData.navigationState?.filter;
     groupedData.data = this.getFilteredData(filter[0]);
     groupedData.settings = {

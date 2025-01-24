@@ -101,13 +101,13 @@ export class ListReportViewerComponent implements OnInit {
    * Updates the grouping navigation state and navigates
    * @param groupKey the gouping keyword
    */
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupedData = this.groupData[groupKey];
+      const groupedData = this.groupData[groupInfo.key];
       const navigationState = { ...groupedData.navigationState };
-      groupedData.data = await this.dataService.get(navigationState);
+      groupedData.data = groupInfo.isInitial ? { totalCount: 0, Data: [] } : await this.dataService.get(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,

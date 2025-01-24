@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, OnChanges } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -164,7 +164,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
     private readonly requestHistoryService: RequestHistoryService,
     private viewConfigService: ViewConfigService,
     private readonly session: imx_SessionService,
-    private readonly settingsService: SettingsService,
+    readonly settingsService: SettingsService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly ext: ExtService
@@ -304,7 +304,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
 
       // We check here if we have a default config, if so then we will skip the init data to save time
       let data: ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>;
-      if (isInit && this.viewConfigService.isDefaultConfigSet()) {
+      if (isInit) {
         // We don't waste time on the call as the view config hasn't been set yet.
         data = {
           totalCount: 0,

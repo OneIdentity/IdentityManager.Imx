@@ -38,6 +38,11 @@ export interface DataSourceToolbarGroupData {
   groups?: DataSourceToolBarGroup[];
 
   /**
+   * If a group is expanded. 
+   */
+  isExpanded?: boolean;
+
+  /**
    * The currently selected group
    */
   currentGrouping?: {

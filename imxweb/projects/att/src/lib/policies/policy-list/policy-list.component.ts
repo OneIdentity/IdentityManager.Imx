@@ -125,7 +125,7 @@ export class PolicyListComponent implements OnInit {
     } finally {
       isBusy.endBusy();
     }
-    await this.navigate();
+    await this.navigate(true);
   }
 
   public async updateConfig(config: ViewConfigData): Promise<void> {
@@ -159,12 +159,14 @@ export class PolicyListComponent implements OnInit {
     return this.navigate();
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.policyService.getPolicies(groupedData.navigationState);
+      const groupedData = this.groupedData[groupInfo.key];
+      groupedData.data = groupInfo.isInitial
+        ? { totalCount: 0, Data: [] }
+        : await this.policyService.getPolicies(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,
@@ -367,11 +369,11 @@ export class PolicyListComponent implements OnInit {
     }
   }
 
-  private async navigate(): Promise<void> {
+  private async navigate(isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const policies = await this.policyService.getPolicies(this.navigationState);
+      const policies = isInitialLoad ? { totalCount: 0, Data: [] } : await this.policyService.getPolicies(this.navigationState);
       if (policies) {
         const exportMethod = this.policyService.exportPolicies(this.navigationState);
         this.logger.trace(this, 'interactive policy loaded', policies);

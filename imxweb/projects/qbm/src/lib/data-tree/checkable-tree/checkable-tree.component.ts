@@ -117,14 +117,11 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     this.checklistSelection = new SelectionModel<TreeNode>(this.withMultiSelect);
-    if (changes['navigationState']) {
-      this.reload();
-    }
     if (changes['database']) {
       this.logger.debug(this, `initialize the treeDatasource`);
       this.treeDataSource = new TreeDatasource(this.treeControl, this.database);
       this.treeDataSource.emptyNodeCaption = this.emptyNodeCaption;
-      this.treeDataSource.init(await this.database?.initialize(this.navigationState));
+      this.treeDataSource.init(await this.database?.initialize(this.navigationState, !changes['database'].firstChange));
       this.subscriptions.push(
         this.treeDataSource.dataChange.subscribe((elem) => {
           this.treeRendered.emit();

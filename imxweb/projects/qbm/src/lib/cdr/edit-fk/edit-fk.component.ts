@@ -79,21 +79,6 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   public readonly updateRequested = new Subject<void>();
 
   /**
-   * Indicator that the component is loading data from the server, or has a candidate list.
-   */
-  public get hasCandidatesOrIsLoading(): boolean {
-    return (
-      this.candidatesTotalCount > 0 ||
-      // make sure the user can change selectedTable even if there are no available candidates
-      // in the first candidate table
-      this.columnContainer?.fkRelations?.length > 1 ||
-      this.parameters?.search?.length > 0 ||
-      this.parameters?.filter != null ||
-      this.loading
-    );
-  }
-
-  /**
    * The form control associated with the editor.
    */
   public readonly control = new UntypedFormControl(undefined);

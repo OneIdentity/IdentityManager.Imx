@@ -132,7 +132,7 @@ export class ViewDevicesComponent implements OnInit, OnDestroy, SideNavigationCo
     }
 
     this.dstWrapper = new DataSourceWrapper(
-      (state) => this.viewDevicesService.get(state),
+      (state, requestOpts, isInitial) => (isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.viewDevicesService.get(state)),
       [
         this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         this.entitySchema.Columns.UID_HardwareType,
@@ -144,22 +144,23 @@ export class ViewDevicesComponent implements OnInit, OnDestroy, SideNavigationCo
     );
 
     this.dstWrapperHardwareType = new DataSourceWrapper(
-      (state) => this.viewDevicesService.getPortalCandidatesHardwaretype(state),
+      (state, requestOpts, isInitial) =>
+        isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.viewDevicesService.getPortalCandidatesHardwaretype(state),
       [this.entitySchemaHardwareType.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
       this.entitySchemaHardwareType,
       this.hardwareTypeDataModelWrapper,
       'hardware-type'
     );
 
-    this.getData();
+    this.getData(undefined, true);
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     const isbusy = this.busyService.beginBusy();
     try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
+      this.dstSettings = await this.dstWrapper.getDstSettings(newState, undefined, isInitialLoad);
 
-      const dstSettingsHardwareType = await this.dstWrapperHardwareType.getDstSettings(newState);
+      const dstSettingsHardwareType = await this.dstWrapperHardwareType.getDstSettings(newState, undefined, isInitialLoad);
       if (dstSettingsHardwareType) {
         this.dstSettingsHardwareType = dstSettingsHardwareType;
         this.deviceModelValueStruct = this.dstSettingsHardwareType.dataSource.Data.map((d) => {

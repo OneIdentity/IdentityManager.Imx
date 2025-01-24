@@ -6,14 +6,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  .imx-product-bundle-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    .imx-info-button-caption {
-      @include imx-text();
-    }
-  }
   .imx-product-bundle-container {
     height: 100%;
     display: flex;

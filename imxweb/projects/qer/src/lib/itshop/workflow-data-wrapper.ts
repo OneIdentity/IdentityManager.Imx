@@ -25,6 +25,7 @@
  */
 
 import { EntityCollectionData, EntityData, MultiValue } from 'imx-qbm-dbts';
+import { buildWorkingStepsOrdered } from './request-info/step-helper';
 
 export class WorkflowDataWrapper {
   constructor(
@@ -71,21 +72,38 @@ export class WorkflowDataWrapper {
 
   public isInsteadOfAllowed(userUid: string, decisionLevel: number): boolean {
     const workflowDataItem = this.getWorkflowDataItem(userUid, decisionLevel);
+    if (!workflowDataItem) return false;
 
-    if (workflowDataItem) {
-      const workflowStep = this.getWorkflowStep(workflowDataItem);
+    const workflowStep = this.getWorkflowStep(workflowDataItem);
+    if (!workflowStep) return false;
 
-      if (workflowStep) {
-        return (
-          !workflowDataItem.Columns.IsFromDelegation?.Value &&
-          !workflowDataItem.Columns.UID_PersonAdditional?.Value?.length &&
-          !workflowDataItem.Columns.UID_PersonInsteadOf?.Value?.length &&
-          workflowStep.Columns.IsInsteadOfAllowed?.Value
-        );
-      }
-    }
+    return (
+      !workflowDataItem.Columns.IsFromDelegation?.Value &&
+      !workflowDataItem.Columns.UID_PersonAdditional?.Value?.length &&
+      !workflowDataItem.Columns.UID_PersonInsteadOf?.Value?.length &&
+      workflowStep.Columns.IsInsteadOfAllowed?.Value
+    );
+  }
 
-    return false;
+  public isInsteadOfAllowedForEscalation(qerWorkingMethode: string, decisionLevel: number): boolean {
+    const currentStep = buildWorkingStepsOrdered(decisionLevel,qerWorkingMethode,this.data.WorkflowSteps).filter(elem=>elem.order === 1).pop();
+    if(!currentStep) return false;
+
+
+    const workflowDataItem = this.data.WorkflowData?.Entities.filter((item) => item.Columns.UID_QERWorkingStep.Value === currentStep.uidWorkingStep).pop();
+    if (!workflowDataItem) return false;
+
+    const workflowStep = this.data.WorkflowSteps?.Entities.filter((item) => item.Columns.UID_QERWorkingStep.Value === currentStep.uidWorkingStep).pop();
+    if (!workflowStep) return false;
+
+    this.getWorkflowStep(workflowDataItem);
+
+    return (
+      !workflowDataItem.Columns.IsFromDelegation?.Value &&
+      !workflowDataItem.Columns.UID_PersonAdditional?.Value?.length &&
+      !workflowDataItem.Columns.UID_PersonInsteadOf?.Value?.length &&
+      workflowStep.Columns.IsInsteadOfAllowed?.Value
+    );
   }
 
   public isAdditionalAllowed(userUid: string, decisionLevel: number): boolean {

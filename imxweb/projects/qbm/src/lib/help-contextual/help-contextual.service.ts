@@ -25,9 +25,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../appConfig/appConfig.service';
-import { ContextualHelpItem } from 'imx-api-qbm';
 import { TranslateService } from '@ngx-translate/core';
+import { ContextualHelpItem } from 'imx-api-qbm';
+import { AppConfigService } from '../appConfig/appConfig.service';
 
 /**
  * Contains all the methods for help context.
@@ -37,10 +37,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class HelpContextualService {
   private helpContextId: HelpContextualValues;
-  constructor(
-    private appConfigService: AppConfigService,
-    private translateService: TranslateService,
-  ) {}
+  constructor(private appConfigService: AppConfigService, private translateService: TranslateService) {}
 
   /**
    * The call returns the selected contextual help item.
@@ -93,9 +90,6 @@ export const HELP_CONTEXTUAL = {
   Default: 'default',
   StatisticsPage: 'statistics-page',
   NewRequest: 'new-request',
-  NewRequestRecommendedProduct: 'new-request-recommended-product',
-  NewRequestReferenceUser: 'new-request-reference-user',
-  NewRequestProductBundle: 'new-request-product-bundle',
   ShoppingCart: 'shopping-cart',
   ShoppingCartEmpty: 'shopping-cart-empty',
   ShoppingCartForLater: 'shopping-cart-for-later',

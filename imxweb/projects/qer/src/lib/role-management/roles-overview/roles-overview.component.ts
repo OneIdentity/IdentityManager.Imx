@@ -179,7 +179,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     } finally {
       isBusy.endBusy();
     }
-    await this.navigate();
+    await this.navigate(true);
   }
 
   public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
@@ -321,27 +321,32 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     }
   }
 
-  private async navigate(): Promise<void> {
+  private async navigate(isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      this.useTree ? await this.navigateInTree() : await this.navigateWithTable();
+      this.useTree ? await this.navigateInTree(isInitialLoad) : await this.navigateWithTable(isInitialLoad);
     } finally {
       isBusy.endBusy();
     }
   }
 
-  private async navigateInTree(): Promise<void> {
+  private async navigateInTree(isInitialLoad: boolean): Promise<void> {
+    if (isInitialLoad) {
+      return;
+    }
     await this.treeDatabase.prepare(this.roleService.getRoleEntitySchema(this.ownershipInfo.TableName), true);
   }
 
-  private async navigateWithTable(): Promise<void> {
+  private async navigateWithTable(isInitialLoad: boolean): Promise<void> {
     if (this.dataModel) {
       this.exportMethod = this.roleService.getExportMethod(this.ownershipInfo.TableName, this.isAdmin, this.navigationState);
     }
     if (this.exportMethod) {
       this.exportMethod.initialColumns = this.displayColumns.map((col) => col.ColumnName);
     }
-    const dataSource = await this.roleService.get(this.ownershipInfo.TableName, this.isAdmin, this.navigationState);
+    const dataSource = isInitialLoad
+      ? { totalCount: 0, Data: [] }
+      : await this.roleService.get(this.ownershipInfo.TableName, this.isAdmin, this.navigationState);
     if (dataSource) {
       this.dstSettings = {
         dataSource: dataSource,

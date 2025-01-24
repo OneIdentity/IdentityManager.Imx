@@ -65,12 +65,12 @@ export abstract class TreeDatabase {
   protected rootNodes: TreeNode[];
 
   /** Initial data from database */
-  public async initialize(navigationState: CollectionLoadParameters = {}): Promise<TreeNode[]> {
+  public async initialize(navigationState: CollectionLoadParameters = {}, isInitial: boolean = false): Promise<TreeNode[]> {
     // load the root entities
     const isBusy = this.busyService?.beginBusy();
     let entities: TreeNodeResultParameter;
     try {
-      entities = await this.getData(true, { ...navigationState, ...{ ParentKey: '' } });
+      entities = isInitial ? null : await this.getData(true, { ...navigationState, ...{ ParentKey: '' } });
     } finally {
       isBusy?.endBusy();
     }

@@ -30,23 +30,27 @@ import { AttestationConfig } from 'imx-api-att';
 import { ApiService } from './api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AttestationFeatureGuardService implements CanActivate {
-
-  constructor(
-    private attService: ApiService,
-    private readonly router: Router
-  ) { }
+  constructor(private attService: ApiService, private readonly router: Router) {}
+  private config: AttestationConfig;
 
   public async getAttestationConfig(): Promise<AttestationConfig> {
-    return this.attService.client.portal_attestation_config_get();
+    if (!this.config) {
+      await this.setAttestationConfig();
+    }
+    return this.config;
+  }
+
+  public async setAttestationConfig(): Promise<void> {
+    this.config = await this.attService.client.portal_attestation_config_get();
   }
 
   public async canActivate(): Promise<boolean> {
-    const attestationConfig = await this.getAttestationConfig();
+    await this.setAttestationConfig();
 
-    const featureEnabled = attestationConfig?.IsAttestationEnabled;
+    const featureEnabled = this.config?.IsAttestationEnabled;
     if (featureEnabled) {
       return featureEnabled;
     }

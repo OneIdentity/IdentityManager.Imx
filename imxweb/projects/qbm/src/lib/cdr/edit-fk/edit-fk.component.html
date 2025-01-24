@@ -1,5 +1,5 @@
 <mat-form-field appearance="outline"
-  *ngIf="hasCandidatesOrIsLoading && columnContainer?.canEdit; else noCandidatesAvailOrReadonly">
+  *ngIf="columnContainer?.canEdit; else noCandidatesAvailOrReadonly">
   <mat-label>
     {{ columnContainer?.display | translate }}
     <ng-container *ngIf="selectedTable && columnContainer?.fkRelations?.length > 1 && !isHierarchical">

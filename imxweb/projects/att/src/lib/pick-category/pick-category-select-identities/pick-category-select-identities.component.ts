@@ -36,25 +36,23 @@ import {
   FilterData,
   FilterType,
   IClientProperty,
-  TypedEntity
+  TypedEntity,
 } from 'imx-qbm-dbts';
 
-import { DataSourceToolbarSettings, DataSourceWrapper, MetadataService } from 'qbm';
+import { BusyService, DataSourceToolbarSettings, DataSourceWrapper, MetadataService } from 'qbm';
 import { IdentitiesService } from 'qer';
-import { PickCategoryService } from '../pick-category.service';
 
 @Component({
   selector: 'imx-pick-category-select-identities',
   templateUrl: './pick-category-select-identities.component.html',
   styleUrls: ['./pick-category-select-identities.component.scss'],
 })
-
 export class PickCategorySelectIdentitiesComponent implements OnInit {
-
   public readonly dstWrapper: DataSourceWrapper<PortalPersonAll>;
   public dstSettings: DataSourceToolbarSettings;
   public displayColumns: IClientProperty[];
-  public selection: TypedEntity[];
+  public selection: TypedEntity[];  
+  public busyService = new BusyService();
 
   @Input() public embeddedMode = false;
 
@@ -62,33 +60,33 @@ export class PickCategorySelectIdentitiesComponent implements OnInit {
     @Inject(EUI_SIDESHEET_DATA) public selectedItems: PortalPickcategoryItems[],
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly identityService: IdentitiesService,
-    private readonly pickCategoryService: PickCategoryService,
-    private readonly metadataService: MetadataService,
+    private readonly metadataService: MetadataService
   ) {
     const entitySchema = this.identityService.personAllSchema;
 
     this.dstWrapper = new DataSourceWrapper(
-      state => this.identityService.getAllPerson(state),
+      (state, requestOpts, isInitial) =>
+        isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.identityService.getAllPerson(state),
       [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
       entitySchema
     );
   }
 
   public async ngOnInit(): Promise<void> {
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
-  public async getData(navigationState?: CollectionLoadParameters): Promise<void> {
-    this.pickCategoryService.handleOpenLoader();
+  public async getData(navigationState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
+    const isBusy = this.busyService.beginBusy();
 
     try {
       navigationState = {
         ...navigationState,
-        ... { filter: await this.getFilter() }
+        ...{ filter: await this.getFilter() },
       };
-      this.dstSettings = await this.dstWrapper.getDstSettings(navigationState);
+      this.dstSettings = await this.dstWrapper.getDstSettings(navigationState, undefined, isInitialLoad);
     } finally {
-      this.pickCategoryService.handleCloseLoader();
+      isBusy.endBusy();
     }
   }
 
@@ -102,21 +100,19 @@ export class PickCategorySelectIdentitiesComponent implements OnInit {
 
   private async getFilter(): Promise<FilterData[]> {
     if (this.selectedItems && this.selectedItems.length > 0) {
-
       const tableName = DbObjectKey.FromXml(this.selectedItems[0].ObjectKeyItem.value).TableName;
       await this.metadataService.updateNonExisting([tableName]);
 
       const tableMetadata = this.metadataService.tables[tableName];
 
-      return this.selectedItems.map(item => {
+      return this.selectedItems.map((item) => {
         return {
           ColumnName: tableMetadata.PrimaryKeyColumns[0],
           Type: FilterType.Compare,
           CompareOp: CompareOperator.NotEqual,
-          Value1: DbObjectKey.FromXml(item.ObjectKeyItem.value).Keys[0]
+          Value1: DbObjectKey.FromXml(item.ObjectKeyItem.value).Keys[0],
         };
       });
     }
   }
-
 }

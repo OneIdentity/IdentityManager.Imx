@@ -127,17 +127,19 @@ export class EntitlementsService {
 
   public async getEntitlementsForApplication(application: PortalApplication, collectionLoadParameters: CollectionLoadParameters = {}):
     Promise<TypedEntityCollectionData<PortalEntitlement>> {
+
+    const filter =[...collectionLoadParameters.filter ?? [],
+    {
+      ColumnName: 'UID_AOBApplication',
+      Type: FilterType.Compare,
+      CompareOp: CompareOperator.Equal,
+      Value1: application.UID_AOBApplication.value
+    }];
+
     return this.get({
       ...collectionLoadParameters,
       ...{
-        filter: [
-          {
-            ColumnName: 'UID_AOBApplication',
-            Type: FilterType.Compare,
-            CompareOp: CompareOperator.Equal,
-            Value1: application.UID_AOBApplication.value
-          }
-        ]
+        filter
       }
     });
   }

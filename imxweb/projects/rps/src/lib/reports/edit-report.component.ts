@@ -40,7 +40,7 @@ import {
   SnackBarService,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL
+  HELP_CONTEXTUAL,
 } from 'qbm';
 import { Subscription } from 'rxjs';
 import { EditReportSidesheetComponent } from './edit-report-sidesheet/edit-report-sidesheet.component';
@@ -78,25 +78,30 @@ export class EditReportComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     const isRpsAdmin = await this.rpsPermissionService.isRpsAdmin();
     this.dstWrapper = new DataSourceWrapper(
-      (state) => (isRpsAdmin ? this.reportService.getAllReports(state) : this.reportService.getReportsOwnedByUser(state)),
+      (state, requestOpts, isInitial) =>
+        isInitial
+          ? Promise.resolve({ totalCount: 0, Data: [] })
+          : isRpsAdmin
+          ? this.reportService.getAllReports(state)
+          : this.reportService.getReportsOwnedByUser(state),
       [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
       this.entitySchema
     );
 
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {
+  public async getData(parameter?: CollectionLoadParameters, isInitialLoad: boolean = true): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
       const parameters = {
         ...parameter,
       };
-      this.dstSettings = await this.dstWrapper.getDstSettings(parameters);
+      this.dstSettings = await this.dstWrapper.getDstSettings(parameters, undefined, isInitialLoad);
     } finally {
       isBusy.endBusy();
     }
@@ -116,7 +121,7 @@ export class EditReportComponent implements OnInit, OnDestroy {
     }
 
     if (report) {
-      await this.openSidesheet(report, true,false);
+      await this.openSidesheet(report, true, false);
     }
   }
 
@@ -129,9 +134,8 @@ export class EditReportComponent implements OnInit, OnDestroy {
       this.busy.hide(overlay);
     }
 
-
     if (report) {
-      await this.openSidesheet(report, false,selectedReport.IsOob.value);
+      await this.openSidesheet(report, false, selectedReport.IsOob.value);
     }
   }
 
@@ -153,9 +157,9 @@ export class EditReportComponent implements OnInit, OnDestroy {
         data: {
           report,
           isNew,
-          isReadonly
+          isReadonly,
         },
-        headerComponent: HelpContextualComponent
+        headerComponent: HelpContextualComponent,
       })
       .afterClosed()
       .toPromise();

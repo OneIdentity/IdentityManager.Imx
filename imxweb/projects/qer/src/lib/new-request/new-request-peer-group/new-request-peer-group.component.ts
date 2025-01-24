@@ -32,18 +32,18 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { PortalItshopPeergroupMemberships, PortalShopServiceitems } from 'imx-api-qer';
 import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue } from 'imx-qbm-dbts';
 
-import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, HELP_CONTEXTUAL, SettingsService } from 'qbm';
-import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
-import { NewRequestProductApiService } from '../new-request-product/new-request-product-api.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { ItshopService } from '../../itshop/itshop.service';
-import { ServiceItemParameters } from '../new-request-product/service-item-parameters';
+import { CurrentProductSource } from '../current-product-source';
+import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
+import { NewRequestCategoryApiService } from '../new-request-product/new-request-category-api.service';
+import { NewRequestProductApiService } from '../new-request-product/new-request-product-api.service';
 import { ProductDetailsService } from '../new-request-product/product-details-sidesheet/product-details.service';
+import { ServiceItemParameters } from '../new-request-product/service-item-parameters';
 import { SelectedProductSource } from '../new-request-selected-products/selected-product-item.interface';
 import { NewRequestSelectionService } from '../new-request-selection.service';
-import { CurrentProductSource } from '../current-product-source';
-import { MatDialog } from '@angular/material/dialog';
 import { PeerGroupDiscardSelectedComponent } from './peer-group-discard-selected.component';
-import { NewRequestCategoryApiService } from '../new-request-product/new-request-category-api.service';
 
 @Component({
   selector: 'imx-new-request-peer-group',
@@ -73,7 +73,6 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
   public peerGroupSize = 0;
   public SelectedProductSource = SelectedProductSource;
   public selectedSource: SelectedProductSource;
-  public contextId = HELP_CONTEXTUAL.NewRequestRecommendedProduct;
   //#endregion
 
   constructor(
@@ -86,7 +85,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
     private readonly settingService: SettingsService,
     private readonly cd: ChangeDetectorRef,
     public readonly busyService: BusyService,
-    private readonly dialog: MatDialog,
+    private readonly dialog: MatDialog
   ) {
     this.orchestration.selectedView = SelectedProductSource.PeerGroupProducts;
     this.orchestration.searchApi$.next(this.searchApi);
@@ -121,7 +120,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
           this.subscriptions.push(
             this.selectionService.selectedProducts$.subscribe(() => {
               this.orchestration.preselectBySource(SelectedProductSource.PeerGroupProducts, this.productDst);
-            }),
+            })
           );
           this.subscriptions.push(
             this.productDst.searchResults$.subscribe((data) => {
@@ -135,7 +134,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
                 this.orchestration.dstSettingsPeerGroupProducts = this.productDstSettings;
               }
               this.busy.endBusy(true);
-            }),
+            })
           );
         }
 
@@ -147,7 +146,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
           this.subscriptions.push(
             this.selectionService.selectedProducts$.subscribe(() => {
               this.orchestration.preselectBySource(SelectedProductSource.PeerGroupOrgs, this.membershipDst);
-            }),
+            })
           );
           this.subscriptions.push(
             this.membershipDst.searchResults$.subscribe((data) => {
@@ -161,10 +160,10 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
                 this.orchestration.dstSettingsPeerGroupOrgs = this.membershipDstSettings;
               }
               this.busy.endBusy(true);
-            }),
+            })
           );
         }
-      }),
+      })
     );
 
     this.subscriptions.push(
@@ -179,20 +178,20 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
           this.membershipDstSettings.displayedColumns = this.displayedMembershipColumns;
           await this.getMembershipData();
         }
-      }),
+      })
     );
 
     this.subscriptions.push(
       this.orchestration.recipients$.subscribe((recipients: IWriteValue<string>) => {
         this.getData();
-      }),
+      })
     );
 
     this.subscriptions.push(
       this.selectionService.selectedProductsCleared$.subscribe(() => {
         this.productDst?.clearSelection();
         this.membershipDst?.clearSelection();
-      }),
+      })
     );
 
     //#endregion
@@ -328,10 +327,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
         data.Data?.sort((a, b) => {
           if (a?.CountInPeerGroup?.value < b?.CountInPeerGroup.value) return 1;
           if (a?.CountInPeerGroup?.value > b?.CountInPeerGroup.value) return -1;
-          return a
-            ?.GetEntity()
-            .GetDisplay()
-            .localeCompare(b?.GetEntity().GetDisplay());
+          return a?.GetEntity().GetDisplay().localeCompare(b?.GetEntity().GetDisplay());
         });
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize | 0;
@@ -368,10 +364,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
         data.Data?.sort((a, b) => {
           if (a?.CountInPeerGroup?.value < b?.CountInPeerGroup.value) return 1;
           if (a?.CountInPeerGroup?.value > b?.CountInPeerGroup.value) return -1;
-          return a
-            ?.GetEntity()
-            .GetDisplay()
-            .localeCompare(b?.GetEntity().GetDisplay());
+          return a?.GetEntity().GetDisplay().localeCompare(b?.GetEntity().GetDisplay());
         });
 
         this.orchestration.disableSearch = data.totalCount < 1;
@@ -391,7 +384,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
   }
 
   private getCollectionLoadParamaters(
-    navigationState: CollectionLoadParameters | ServiceItemParameters,
+    navigationState: CollectionLoadParameters | ServiceItemParameters
   ): CollectionLoadParameters | ServiceItemParameters {
     return {
       ...navigationState,

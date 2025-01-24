@@ -83,6 +83,7 @@ export { ServiceItemDetailComponent } from './lib/itshop/request-info/service-it
 export { ShelfService } from './lib/itshop/shelf.service';
 export { WorkflowDataWrapper } from './lib/itshop/workflow-data-wrapper';
 export { ApprovalsModule } from './lib/itshopapprove/approvals.module';
+export { buildWorkingStepsOrdered } from './lib/itshop/request-info/step-helper';
 export { ApprovalWorkFlowModule } from './lib/approval-workflows/approval-workflows.module';
 export { DecisionStepSevice } from './lib/itshopapprove/decision-step.service';
 export { RecommendationSidesheetComponent } from './lib/itshopapprove/recommendation-sidesheet/recommendation-sidesheet.component';

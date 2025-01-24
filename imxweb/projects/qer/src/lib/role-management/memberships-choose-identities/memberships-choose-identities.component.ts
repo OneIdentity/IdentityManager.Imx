@@ -37,7 +37,7 @@ import {
   DataSourceToolbarSettings,
   DataSourceToolbarViewConfig,
   ISessionState,
-  SnackBarService
+  SnackBarService,
 } from 'qbm';
 import { UserModelService } from '../../user/user-model.service';
 import { ViewConfigService } from '../../view-config/view-config.service';
@@ -90,11 +90,10 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
       this.dataModel = await this.roleService.getCandidatesDataModel(this.dataManagementService.entityInteractive.GetEntity().GetKeys()[0]);
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
       this.candidatesEntitySchema = this.roleService.getMembershipEntitySchema('candidates');
-    }
-    finally {
+    } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
-    await this.navigate();
+    await this.navigate(true);
   }
 
   public onSelectionChanged(selection: TypedEntity[]): void {
@@ -119,7 +118,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
       return;
     }
 
-    const entity = this.dataManagementService.entityInteractive.GetEntity()
+    const entity = this.dataManagementService.entityInteractive.GetEntity();
     this.busyService.show();
     try {
       const notRequestableMemberships = await this.identityService.addMemberships(
@@ -133,14 +132,15 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
           data: {
             notRequestableMemberships,
             entitySchema: this.entitySchema,
-            membershipName: entity.GetDisplay()
-          }
+            membershipName: entity.GetDisplay(),
+          },
         });
 
         await dialogRef.beforeClosed().toPromise();
       }
 
-      if (notRequestableMemberships.length < this.selection.length) { // there is at least one membership added
+      if (notRequestableMemberships.length < this.selection.length) {
+        // there is at least one membership added
         await this.userService.reloadPendingItems();
         this.snackbar.open({
           key: '#LDS#The membership for "{0}" has been successfully added to the shopping cart.',
@@ -169,25 +169,24 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     return buildAdditionalElementsString(entity.GetEntity(), properties);
   }
 
-  private async navigate(): Promise<void> {
+  private async navigate(isInitialLoad: boolean = false): Promise<void> {
     this.busyService.show();
 
     try {
       this.dstSettings = {
-        dataSource: await this.roleService.getCandidates(
-          this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
-          {
-            ...this.navigationState,
-            // exclude candidate identities that already have an assignment request (XOrigin.Ordered)
-            xorigin: XOrigin.Ordered
-          }
-        ),
+        dataSource: isInitialLoad
+          ? { totalCount: 0, Data: [] }
+          : await this.roleService.getCandidates(this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','), {
+              ...this.navigationState,
+              // exclude candidate identities that already have an assignment request (XOrigin.Ordered)
+              xorigin: XOrigin.Ordered,
+            }),
         entitySchema: this.candidatesEntitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,
         filters: this.dataModel.Filters,
         dataModel: this.dataModel,
-        viewConfig: this.viewConfig
+        viewConfig: this.viewConfig,
       };
     } finally {
       this.busyService.hide();

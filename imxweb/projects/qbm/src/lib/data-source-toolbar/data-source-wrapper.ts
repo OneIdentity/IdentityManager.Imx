@@ -46,7 +46,7 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
   private readonly groupData: DataSourceToolbarGroupData;
 
   constructor(
-    private readonly getData: (parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions) => Promise<ExtendedTypedEntityCollection<TEntity, TExtendedData>>,
+    private readonly getData: (parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions, isInitialLoad?: boolean) => Promise<ExtendedTypedEntityCollection<TEntity, TExtendedData>>,
     private readonly displayedColumns: ClientPropertyForTableColumns[],
     private readonly entitySchema: EntitySchema,
     dataModelWrapper?: DataModelWrapper,
@@ -61,13 +61,13 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
     }
   }
 
-  public async getDstSettings(parameters?: CollectionLoadParameters, requestOpts?: ApiRequestOptions ): Promise<DataSourceToolbarSettings> {
+  public async getDstSettings(parameters?: CollectionLoadParameters, requestOpts?: ApiRequestOptions, isInitialLoad: boolean = false ): Promise<DataSourceToolbarSettings> {
     this.parameters = {
       ...this.parameters,
       ...parameters
     };
 
-    const dataSource = await this.getData(this.parameters, requestOpts);
+    const dataSource = await this.getData(this.parameters, requestOpts, isInitialLoad);
 
     this.extendedData = dataSource?.extendedData;
 
@@ -86,11 +86,11 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
     return undefined;
   }
 
-  public async getGroupDstSettings(parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions): Promise<DataSourceToolbarSettings> {
+  public async getGroupDstSettings(parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions, isInitial: boolean = false): Promise<DataSourceToolbarSettings> {
     return {
       displayedColumns: this.displayedColumns,
       dataModel: this.dataModel,
-      dataSource: await this.getData(parameters, requestOpts),
+      dataSource: await this.getData(parameters, requestOpts, isInitial),
       entitySchema: this.entitySchema,
       navigationState: parameters
     };

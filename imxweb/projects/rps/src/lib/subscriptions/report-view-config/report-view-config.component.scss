@@ -33,7 +33,14 @@
 
   .imx-flex-card {
     margin-top: 20px;
+    overflow: hidden;
   }
+
+  @media only screen and (max-height: 870px) {
+  .imx-flex-card {
+    overflow: visible;
+  }
+}
 
   .mat-radio-group {
     margin-bottom: 10px;
@@ -47,7 +54,8 @@
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: auto;
+    overflow-x: hidden;
 
     imx-report-selector {
       flex: 0 0 auto;

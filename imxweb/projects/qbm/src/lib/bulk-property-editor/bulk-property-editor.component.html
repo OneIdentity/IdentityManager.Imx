@@ -1,13 +1,14 @@
-<mat-accordion data-imx-identifier="bulk-accordion">
+<mat-accordion>
   <form [formGroup]="formGroup">
-    <imx-bulk-item *ngFor="let entity of entities, let i = index"
-      data-imx-identifier="'bulk-item' + i"
+    <imx-bulk-item
+      *ngFor="let entity of entities; let i = index"
       [bulkItem]="entity"
       (saveItem)="handleAction($event, true)"
       (skipItem)="handleAction($event, false)"
       [hideButtons]="hideButtons"
       (validationStateChanged)="validationStateChanged.emit($event)"
-      (controlCreated)="formGroup.addControl('bulk-item' + i, $event)">
+      (controlCreated)="formGroup.addControl('bulk-item' + i, $event)"
+    >
     </imx-bulk-item>
   </form>
 </mat-accordion>

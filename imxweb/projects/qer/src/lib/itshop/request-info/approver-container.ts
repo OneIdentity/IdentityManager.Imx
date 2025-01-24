@@ -28,6 +28,7 @@ import { EntityCollectionData, EntityData, MultiValueProperty } from 'imx-qbm-db
 
 import { ClassloggerService } from 'qbm';
 import { OrderedWorkingStep } from './ordered-working-step.interface';
+import { buildWorkingStepsOrdered } from './step-helper';
 
 export class ApproverContainer {
   public readonly isInWorkflow: boolean;
@@ -133,7 +134,10 @@ export class ApproverContainer {
           ? []
           : this.request.pwoData.WorkflowData.Entities.filter(
               (data) =>
-                !this.isDecided(data,this.request.pwoData.WorkflowData.Entities.filter((elem) => elem.Columns.Decision?.Value !== '')) &&
+                !this.isDecided(
+                  data,
+                  this.request.pwoData.WorkflowData.Entities.filter((elem) => elem.Columns.Decision?.Value !== '')
+                ) &&
                 data.Columns.UID_PersonHead.Value &&
                 currentSteps.some((step) => data.Columns.UID_QERWorkingStep.Value === step.uidWorkingStep) &&
                 this.request.approvers.includes(data.Columns.UID_PersonHead.Value)
@@ -160,7 +164,7 @@ export class ApproverContainer {
   /*
    *  Checks, if a workflowData item is already decided (by any person in the same sub step)
    */
-  private isDecided(data: EntityData, decidedEntries:EntityData[]): boolean {
+  private isDecided(data: EntityData, decidedEntries: EntityData[]): boolean {
     return decidedEntries.some(
       (elem) =>
         elem.Columns.LevelNumber.Value === data.Columns.LevelNumber.Value &&
@@ -172,91 +176,6 @@ export class ApproverContainer {
     if (this.request == null || this.request.pwoData == null || this.request.pwoData.WorkflowSteps == null) {
       return [];
     }
-
-    let orderedSteps: OrderedWorkingStep[] = [];
-    const currentLevel = this.request.decisionLevel;
-    const workingMethod = this.request.qerWorkingMethod;
-
-    const stepsForWorkingMethod = this.request.pwoData.WorkflowSteps.Entities.filter(
-      (elem) => elem.Columns.UID_QERWorkingMethod.Value === workingMethod
-    );
-    this.logger?.trace(this, `calculate steps for method ${workingMethod}`, stepsForWorkingMethod);
-
-    const startSteps = stepsForWorkingMethod.filter(
-      (n, i, arr) => arr.findIndex((elem) => elem.Keys[0] === n.Keys[0] && elem.Columns.LevelNumber.Value === currentLevel) === i
-    );
-
-    this.logger?.trace(this, 'starting with step', startSteps);
-
-    if (startSteps.length === 0) {
-      this.logger?.debug(this, 'no steps to approve');
-      return [];
-    }
-
-    orderedSteps.push(
-      ...startSteps.map((elem) => ({
-        uidWorkingStep: elem.Keys[0],
-        decisionLevel: currentLevel,
-        positiveSteps: elem.Columns.PositiveSteps.Value,
-        order: 1,
-      }))
-    );
-
-    this.logger?.debug(this, 'first working steps are added');
-
-    let goOn = true;
-    while (goOn) {
-      goOn = false;
-      const joined = this.joinOrderedStepsWithOthers(stepsForWorkingMethod, orderedSteps);
-      this.logger?.trace(this, 'joined list between possible items and added items is calculated as', joined);
-
-      const filteredJoin = joined.filter(
-        (join) =>
-          join.orderedStep != null &&
-          join.orderedStep.positiveSteps !== 0 &&
-          orderedSteps.findIndex((workunit) => workunit.uidWorkingStep === join.workingStep.Keys[0]) === -1
-      );
-      this.logger?.debug(this, 'new steps has been filtered');
-
-      if (filteredJoin != null && filteredJoin.length > 0) {
-        goOn = true;
-        this.logger?.debug(this, 'at least one new step has been calculated');
-        orderedSteps = orderedSteps.concat(
-          filteredJoin.map((join) => ({
-            decisionLevel: join.workingStep.Columns.LevelNumber.Value,
-            order: join.orderedStep.order + 1,
-            positiveSteps: join.workingStep.Columns.PositiveSteps.Value,
-            uidWorkingStep: join.workingStep.Keys[0],
-          }))
-        );
-        this.logger?.trace(this, 'new step list', orderedSteps);
-      }
-    }
-    return orderedSteps;
-  }
-
-  private joinOrderedStepsWithOthers(
-    workingSteps: EntityData[],
-    orderedSteps: OrderedWorkingStep[]
-  ): { orderedStep: OrderedWorkingStep; workingStep: EntityData }[] {
-    let join: { orderedStep: OrderedWorkingStep; workingStep: EntityData }[] = [];
-    for (const workingStep of workingSteps) {
-      this.logger?.trace(this, 'working step for join', workingStep);
-
-      const filteredOrderedSteps = orderedSteps.filter(
-        (step) => workingStep.Columns.LevelNumber.Value === step.decisionLevel + step.positiveSteps
-      );
-      this.logger?.trace(this, 'filtered order steps', filteredOrderedSteps);
-
-      if (filteredOrderedSteps != null && filteredOrderedSteps.length > 0) {
-        join = join.concat(
-          filteredOrderedSteps.map((orderedStep) => ({
-            orderedStep,
-            workingStep,
-          }))
-        );
-      }
-    }
-    return join;
+    return buildWorkingStepsOrdered(this.request.decisionLevel,this.request.qerWorkingMethod, this.request.pwoData.WorkflowSteps);
   }
 }

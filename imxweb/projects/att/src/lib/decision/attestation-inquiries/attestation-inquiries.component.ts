@@ -43,11 +43,9 @@ import {
 } from 'imx-qbm-dbts';
 import {
   DataSourceToolbarSettings,
-  ClassloggerService,
   AuthenticationService,
   DataTableComponent,
   SettingsService,
-  SnackBarService,
   UserMessageService,
   ClientPropertyForTableColumns,
   BusyService,
@@ -95,10 +93,8 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
     private viewConfigService: ViewConfigService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly messageService: UserMessageService,
-    private readonly logger: ClassloggerService,
     private readonly busyServiceElemental: EuiLoadingService,
     private readonly translate: TranslateService,
-    snackbar: SnackBarService,
     settingsService: SettingsService,
     authentication: AuthenticationService
   ) {
@@ -159,7 +155,7 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
     } finally {
       isBusy.endBusy();
     }
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
   public ngOnDestroy(): void {
@@ -168,7 +164,7 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  public async getData(parameters?: CollectionLoadParameters): Promise<void> {
+  public async getData(parameters?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     if (parameters) {
       this.navigationState = parameters;
     }
@@ -176,7 +172,9 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      this.attestationCasesCollection = await this.attestationCasesService.get(this.navigationState);
+      this.attestationCasesCollection = isInitialLoad
+        ? { totalCount: 0, Data: [] }
+        : await this.attestationCasesService.get(this.navigationState);
       this.hasData = this.attestationCasesCollection.totalCount > 0 || (this.navigationState.search ?? '') !== '';
       this.updateTable();
     } finally {

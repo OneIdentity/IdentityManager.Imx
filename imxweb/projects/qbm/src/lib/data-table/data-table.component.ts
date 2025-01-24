@@ -59,6 +59,11 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { debounce } from 'lodash';
 import { ColumnOptions } from '../data-source-toolbar/column-options';
 
+export interface GroupObject {
+  key: string;
+  isInitial: boolean;
+}
+
 /**
  * A data table component with a detail view specialized on typed entities.
  * Collaborates with a DST (datasource toolbar).
@@ -264,7 +269,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
   /**
    * An emitted event that contains information on the group that was selected/interacted with
    */
-  @Output() public groupDataChanged = new EventEmitter<string>();
+  @Output() public groupDataChanged = new EventEmitter<GroupObject>();
 
   /**
    * Used to prevent unintended multiple signal firing
@@ -564,9 +569,13 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       // Toggle if group is expanded in view or not
       groupData.isExpanded = !groupData.isExpanded;
 
+      if (this.dst.settings.groupData) {
+        this.dst.settings.groupData.isExpanded = groupData.isExpanded;
+      }
+
       this.propagateNavigationSettingsToGroups(true);
       if (groupData.isExpanded) {
-        this.groupDataChanged.emit(groupingDisplay);
+        this.groupDataChanged.emit({ key: groupingDisplay, isInitial: true });
       }
     }
   }
@@ -605,7 +614,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
   public onNavigationStateChanged(groupKey: string, newState: CollectionLoadParameters): void {
     // Raise event to allow group data to be updated
     this.groupData[groupKey].navigationState = newState;
-    this.groupDataChanged.emit(groupKey);
+    this.groupDataChanged.emit({ key: groupKey, isInitial: false });
   }
 
   /**
@@ -682,6 +691,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       this.propagateNavigationSettingsToGroups(false, groupByChanged);
 
       this.updateGroupingState(currentGrouping, { ...this.settings.navigationState, ...{ StartIndex: 0 } });
+    } else if (groupByChanged && !currentGrouping) {
+      this.dst.navigationStateChanged.emit(this.settings.navigationState);
     }
 
     this.highlightedEntity = null;

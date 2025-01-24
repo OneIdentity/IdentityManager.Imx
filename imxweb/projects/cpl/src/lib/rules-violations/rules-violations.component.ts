@@ -115,7 +115,10 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModelWrapper.dataModel, this.viewConfigPath);
 
       this.dstWrapper = new DataSourceWrapper(
-        (state, requestOpts) => this.rulesViolationsService.getRulesViolationsApprove(state, requestOpts),
+        (state, requestOpts, isInitial) =>
+          isInitial
+            ? Promise.resolve({ totalCount: 0, Data: [] })
+            : this.rulesViolationsService.getRulesViolationsApprove(state, requestOpts),
         [
           entitySchema.Columns.UID_Person,
           entitySchema.Columns.UID_NonCompliance,
@@ -137,7 +140,7 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
     } finally {
       isBusy.endBusy();
     }
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
   public ngOnDestroy(): void {
@@ -156,10 +159,14 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
     this.dstSettings.viewConfig = this.viewConfig;
   }
 
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {
+  public async getData(parameter?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      const dstSettings = await this.dstWrapper.getDstSettings(parameter, { signal: this.rulesViolationsService.abortController.signal });
+      const dstSettings = await this.dstWrapper.getDstSettings(
+        parameter,
+        { signal: this.rulesViolationsService.abortController.signal },
+        isInitialLoad
+      );
       if (dstSettings) {
         this.dstSettings = dstSettings;
         this.dstSettings.exportMethod = this.rulesViolationsService.exportRulesViolations(parameter);
@@ -220,12 +227,14 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.rulesViolationsService.getRulesViolationsApprove(groupedData.navigationState);
+      const groupedData = this.groupedData[groupInfo.key];
+      groupedData.data = groupInfo.isInitial
+        ? { totalCount: 0, Data: [] }
+        : await this.rulesViolationsService.getRulesViolationsApprove(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,

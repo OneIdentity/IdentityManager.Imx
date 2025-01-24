@@ -4,8 +4,9 @@
   </imx-cdr-editor>
   <mat-card class="imx-table-container" *ngIf="dstWrapper && dstSettings">
     <span>{{'#LDS#Assigned identities' | translate}}</span>
-    <imx-data-source-toolbar #dst [options]="['search']" [settings]="dstSettings" (search)="onSearch($event )"
-      (navigationStateChanged)="getData($event)" data-imx-identifier="pick-category-sidesheet-dst">
+    <imx-data-source-toolbar #dst [options]="['search']" [settings]="dstSettings" [busyService]="busyService"
+      (search)="onSearch($event )" (navigationStateChanged)="getData($event)"
+      data-imx-identifier="pick-category-sidesheet-dst">
     </imx-data-source-toolbar>
     <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual"
       [selectable]="data.pickCategory?.IsManual?.value" [showSelectedItemsMenu]="false"

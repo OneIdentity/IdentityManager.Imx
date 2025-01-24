@@ -24,9 +24,8 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -88,7 +87,7 @@ export class InquiriesComponent implements OnInit, OnDestroy {
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
-    this.displayedColumns = [
+    (this.displayedColumns = [
       {
         ColumnName: 'query',
         Type: ValType.String,
@@ -110,18 +109,18 @@ export class InquiriesComponent implements OnInit, OnDestroy {
         Type: ValType.String,
         untranslatedDisplay: '#LDS#Actions',
       },
-    ],
-    this.subscriptions.push(
-      this.actionService.applied.subscribe(async () => {
-        if (this.dstSettings.dataSource.totalCount === 1) {
-          snackbar.open({
-            key: '#LDS#There are currently no inquiries.',
-          });
-        }
-        this.getData();
-        this.table.clearSelection();
-      })
-    );
+    ]),
+      this.subscriptions.push(
+        this.actionService.applied.subscribe(async () => {
+          if (this.dstSettings.dataSource.totalCount === 1) {
+            snackbar.open({
+              key: '#LDS#There are currently no inquiries.',
+            });
+          }
+          this.getData();
+          this.table.clearSelection();
+        })
+      );
     this.approvalsService.isChiefApproval = false;
     this.subscriptions.push(authentication.onSessionResponse.subscribe((session) => (this.userUid = session.UserUid)));
   }
@@ -134,7 +133,7 @@ export class InquiriesComponent implements OnInit, OnDestroy {
       this.dataModel = await this.approvalsService.getApprovalDataModel();
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
 
-      await this.getData();
+      await this.getData(undefined, true);
     } finally {
       isBusy.endBusy();
     }
@@ -146,7 +145,7 @@ export class InquiriesComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  public async getData(parameters?: ApprovalsLoadParameters): Promise<void> {
+  public async getData(parameters?: ApprovalsLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     if (parameters) {
       this.navigationState = parameters;
     }
@@ -154,8 +153,8 @@ export class InquiriesComponent implements OnInit, OnDestroy {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      this.approvalsCollection = await this.approvalsService.get(this.navigationState);
-      this.hasData = this.approvalsCollection.totalCount > 0 || (this.navigationState.search ?? '') !== '';
+      this.approvalsCollection = isInitialLoad ? { totalCount: 0, Data: [] } : await this.approvalsService.get(this.navigationState);
+      this.hasData = this.approvalsCollection?.totalCount > 0 || (this.navigationState.search ?? '') !== '';
       this.updateTable();
     } finally {
       isBusy.endBusy();
@@ -246,16 +245,16 @@ export class InquiriesComponent implements OnInit, OnDestroy {
   private updateTable(): void {
     if (this.approvalsCollection) {
       const exportMethod = this.approvalsService.exportApprovalRequests(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
+      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
       this.dstSettings = {
         dataSource: this.approvalsCollection,
-        extendedData: this.approvalsCollection.extendedData.Data,
+        extendedData: this.approvalsCollection?.extendedData?.Data,
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayedColumns,
         dataModel: this.dataModel,
         viewConfig: this.viewConfig,
-        exportMethod
+        exportMethod,
       };
     } else {
       this.dstSettings = undefined;

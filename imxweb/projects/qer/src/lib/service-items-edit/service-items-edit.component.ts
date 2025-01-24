@@ -53,13 +53,14 @@ export class ServiceItemsEditComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly sideSheet: EuiSidesheetService,
     private readonly translate: TranslateService,
-    private readonly messageService: UserMessageService,
+    private readonly messageService: UserMessageService
   ) {
     this.isAdmin = this.route.snapshot.url[0].path === 'admin';
     const entitySchema = this.serviceItemsEditService.serviceitemsSchema;
 
     this.dstWrapper = new DataSourceWrapper(
-      (state) => this.serviceItemsEditService.get(state),
+      (state, requestOpts, isInitial) =>
+        isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.serviceItemsEditService.get(state),
       [
         entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         {
@@ -76,13 +77,13 @@ export class ServiceItemsEditComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
+      this.dstSettings = await this.dstWrapper.getDstSettings(newState, undefined, isInitialLoad);
     } finally {
       isBusy.endBusy();
     }

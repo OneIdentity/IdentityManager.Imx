@@ -25,7 +25,6 @@
  */
 
 import { Component } from '@angular/core';
-import { HELP_CONTEXTUAL } from 'qbm';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
 import { SelectedProductSource } from '../new-request-selected-products/selected-product-item.interface';
 
@@ -35,7 +34,6 @@ import { SelectedProductSource } from '../new-request-selected-products/selected
   styleUrls: ['./new-request-product-bundle.component.scss'],
 })
 export class NewRequestProductBundleComponent {
-  public contextId = HELP_CONTEXTUAL.NewRequestProductBundle;
   constructor(public readonly orchestration: NewRequestOrchestrationService) {
     this.orchestration.selectedView = SelectedProductSource.ProductBundles;
   }

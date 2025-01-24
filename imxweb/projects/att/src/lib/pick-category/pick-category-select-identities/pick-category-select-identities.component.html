@@ -8,7 +8,7 @@
     <ng-container *ngTemplateOutlet="table">
     </ng-container>
   </div>
-  <div eui-sidesheet-actions  *ngIf="!embeddedMode">
+  <div eui-sidesheet-actions *ngIf="!embeddedMode">
     <p class="imx-selected-items">
       <span>
         {{'#LDS#Selected identities' | translate}}
@@ -27,9 +27,9 @@
 <ng-template #table>
   <ng-container *ngIf="dstWrapper && dstSettings">
     <imx-data-source-toolbar #dst data-imx-identifier="pick-category-select-identities-dst" [settings]="dstSettings"
-      [options]="['search', 'filter', 'groupBy']"
-      [searchBoxText]="'#LDS#Search' | translate"
-      (navigationStateChanged)="getData($event)" (search)="getData({ search: $event, StartIndex: 0 })">
+      [options]="['search', 'filter', 'groupBy']" [searchBoxText]="'#LDS#Search' | translate"
+      [busyService]="busyService" (navigationStateChanged)="getData($event)"
+      (search)="getData({ search: $event, StartIndex: 0 })">
     </imx-data-source-toolbar>
 
     <imx-data-table #dataTable data-imx-identifier="pick-category-select-identities-table" [dst]="dst"

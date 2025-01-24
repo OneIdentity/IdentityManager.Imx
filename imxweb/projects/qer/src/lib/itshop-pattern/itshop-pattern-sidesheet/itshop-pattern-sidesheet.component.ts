@@ -127,7 +127,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {
+  public async getData(parameter?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
       const filteredState: CollectionLoadParameters = {
@@ -145,7 +145,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
         ...parameter,
         ...filteredState,
       };
-      const dstSettings = await this.dstWrapper.getDstSettings(parameters, { signal: this.patternService.abortController.signal });
+      const dstSettings = await this.dstWrapper.getDstSettings(parameters, { signal: this.patternService.abortController.signal }, isInitialLoad);
       if (dstSettings) {
         this.dstSettings = dstSettings;
       }
@@ -159,7 +159,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
 
     if (this.selectedTabIndex === 1) {
       // load data for the product-tab
-      await this.getData();
+      await this.getData(undefined, true);
     }
   }
 
@@ -293,7 +293,8 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   private setupProductsTab(): void {
     const entitySchema = this.patternService.itshopPatternItemSchema;
     this.dstWrapper = new DataSourceWrapper(
-      (state, requestOpts) => this.patternService.getPatternItems(state, requestOpts),
+      (state, requestOpts, isInitial) =>
+        isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.patternService.getPatternItems(state, requestOpts),
       [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
       entitySchema
     );

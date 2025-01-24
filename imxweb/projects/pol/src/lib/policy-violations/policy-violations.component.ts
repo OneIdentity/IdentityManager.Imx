@@ -142,7 +142,7 @@ export class PolicyViolationsComponent implements OnInit {
     } finally {
       isBusy.endBusy();
     }
-    return this.getData();
+    return this.getData(undefined, true);
   }
 
   public async viewDetails(selectedPolicyViolation: PolicyViolation): Promise<void> {
@@ -189,11 +189,13 @@ export class PolicyViolationsComponent implements OnInit {
     this.dstSettings.viewConfig = this.viewConfig;
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.policyViolationsService.get(this.approveOnly, groupedData.navigationState);
+      const groupedData = this.groupedData[groupInfo.key];
+      groupedData.data = groupInfo.isInitial
+        ? { totalCount: 0, Data: [] }
+        : await this.policyViolationsService.get(this.approveOnly, groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,
@@ -206,7 +208,7 @@ export class PolicyViolationsComponent implements OnInit {
     }
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     if (newState) {
       this.navigationState = newState;
     }
@@ -219,7 +221,9 @@ export class PolicyViolationsComponent implements OnInit {
         this.navigationState.uid_qerpolicy = selectedCompanyPolicyKey;
         this.filterOptions = this.filterOptions.filter((filter) => filter.Name !== 'uid_qerpolicy');
       }
-      const dataSource = await this.policyViolationsService.get(this.approveOnly, this.navigationState);
+      const dataSource = isInitialLoad
+        ? { totalCount: 0, Data: [] }
+        : await this.policyViolationsService.get(this.approveOnly, this.navigationState);
       if (dataSource) {
         const exportMethod = this.policyViolationsService.exportPolicyViolations(this.navigationState);
         exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);

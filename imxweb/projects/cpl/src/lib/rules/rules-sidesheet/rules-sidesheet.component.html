@@ -23,7 +23,7 @@
     </ng-template>
   </mat-tab>
 
-  <mat-tab *ngIf="data" [label]="'#LDS#Heading Mitigating Controls' | translate">
+  <mat-tab *ngIf="data?.hasRiskIndex" [label]="'#LDS#Heading Mitigating Controls' | translate">
     <ng-template matTabContent>
       <imx-mitigating-controls-rules
         [isMControlPerViolation]="data.isMControlPerViolation"

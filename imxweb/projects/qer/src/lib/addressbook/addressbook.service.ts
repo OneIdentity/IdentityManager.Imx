@@ -49,7 +49,8 @@ export class AddressbookService {
     displayedColumns.unshift(entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]);
 
     return new DataSourceWrapper(
-      (state, requestOpts) => this.personService.getAll(state, requestOpts),
+      (state, requestOpts, isInitial) =>
+        isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.personService.getAll(state, requestOpts),
       displayedColumns,
       entitySchema,
       {

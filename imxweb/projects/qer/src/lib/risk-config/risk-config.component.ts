@@ -31,13 +31,14 @@ import { EuiSidesheetService } from '@elemental-ui/core';
 import { PortalRiskFunctions } from 'imx-api-qer';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
 import {
-  BusyService, DataModelWrapper,
+  BusyService,
+  DataModelWrapper,
   DataSourceToolbarSettings,
   DataSourceWrapper,
   SnackBarService,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL
+  HELP_CONTEXTUAL,
 } from 'qbm';
 import { RiskConfigSidesheetComponent } from './risk-config-sidesheet/risk-config-sidesheet.component';
 import { RiskConfigService } from './risk-config.service';
@@ -73,7 +74,7 @@ export class RiskConfigComponent implements OnInit {
       };
 
       this.dstWrapper = new DataSourceWrapper(
-        (state) => this.riskConfigService.get(state),
+        (state, requestOpts, isInitial) => (isInitial ? Promise.resolve({ totalCount: 0, Data: [] }) : this.riskConfigService.get(state)),
         [
           this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
           this.entitySchema.Columns.TargetTable,
@@ -90,13 +91,13 @@ export class RiskConfigComponent implements OnInit {
       isBusy.endBusy();
     }
 
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
+      this.dstSettings = await this.dstWrapper.getDstSettings(newState, undefined, isInitialLoad);
     } finally {
       isBusy.endBusy();
     }
@@ -121,7 +122,7 @@ export class RiskConfigComponent implements OnInit {
               riskFunction: extendedEntity.Data[0],
               extendedData: extendedEntity.extendedData,
             },
-            headerComponent: HelpContextualComponent
+            headerComponent: HelpContextualComponent,
           })
           .afterClosed()
           .toPromise();

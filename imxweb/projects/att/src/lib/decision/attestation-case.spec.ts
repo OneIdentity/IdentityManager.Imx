@@ -33,45 +33,43 @@ describe('AttestationCase', () => {
     return {
       GetMetadata: () => ({ CanEdit: () => true }),
       GetValue: () => value,
-      GetDisplayValue: () => ''
+      GetDisplayValue: () => '',
     } as IEntityColumn;
   }
 
   function createEntitySchema(columnNames) {
     const clientProperties = {};
-    columnNames.forEach(name =>
-      clientProperties[name] = {} as IClientProperty
-    );
+    columnNames.forEach((name) => (clientProperties[name] = {} as IClientProperty));
     return { Columns: clientProperties };
   }
 
   function createEntity(columns: { [name: string]: IEntityColumn } = {}, key?) {
     return {
       GetDisplay: () => '',
-      GetColumn: name => columns[name] || createColumn(),
+      GetColumn: (name) => columns[name] || createColumn(),
       GetKeys: () => [key],
-      GetSchema: () => createEntitySchema(Object.keys(columns ?? {}))
+      GetSchema: () => createEntitySchema(Object.keys(columns ?? {})),
     } as IEntity;
   }
 
   [
     { value: true, expected: 1 },
     { value: false, expected: 0 },
-    { value: undefined, expected: 0 }
-  ].forEach(testcase =>
-  it('adds IsCrossFunctional to propertyInfo only if it is "true"', () => {
-    const entity = createEntity({
-      IsCrossFunctional: createColumn(testcase.value),
-      UiText: createColumn('some ui text')
-    });
+    { value: undefined, expected: 0 },
+  ].forEach((testcase) =>
+    it('adds IsCrossFunctional to propertyInfo only if it is "true"', () => {
+      const entity = createEntity({
+        IsCrossFunctional: createColumn(testcase.value),
+        UiText: createColumn('some ui text'),
+      });
 
-    const approval = new AttestationCase(
-      { GetEntity: () => entity } as PortalAttestationApprove,
-      false, // no chief approval
-      undefined,
-      {} as { index: number } & AttCaseDataRead
-    );
+      const approval = new AttestationCase(
+        { GetEntity: () => entity } as PortalAttestationApprove,
+        undefined,
+        {} as { index: number } & AttCaseDataRead
+      );
 
-    expect(approval.propertyInfo.length).toEqual(testcase.expected);
-  }));
+      expect(approval.propertyInfo.length).toEqual(testcase.expected);
+    })
+  );
 });

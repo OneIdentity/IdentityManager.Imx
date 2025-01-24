@@ -29,10 +29,12 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
 
+import { AttestationConfig, EntitlementLossDto, RecommendationEnum } from 'imx-api-att';
+import { ViewConfigData } from 'imx-api-qer';
 import { CollectionLoadParameters, CompareOperator, DataModel, FilterType, TypedEntity, ValType } from 'imx-qbm-dbts';
 import {
   AuthenticationService,
@@ -47,20 +49,18 @@ import {
   SettingsService,
   UserMessageService,
 } from 'qbm';
-import { AttestationCasesService } from './attestation-cases.service';
-import { AttestationCaseComponent } from './attestation-case.component';
-import { AttestationActionService } from '../attestation-action/attestation-action.service';
-import { AttestationCase } from './attestation-case';
-import { Approvers } from './approvers.interface';
-import { AttestationDecisionAction, AttestationDecisionLoadParameters } from './attestation-decision-load-parameters';
+import { PendingItemsType, RecommendationSidesheetComponent, UserModelService, ViewConfigService } from 'qer';
 import { ApiService } from '../api.service';
-import { createGroupData } from '../datamodel/datamodel-helper';
+import { AttestationActionService } from '../attestation-action/attestation-action.service';
 import { AttestationFeatureGuardService } from '../attestation-feature-guard.service';
-import { EntitlementLossDto, RecommendationEnum } from 'imx-api-att';
+import { createGroupData } from '../datamodel/datamodel-helper';
+import { Approvers } from './approvers.interface';
+import { AttestationCase } from './attestation-case';
+import { AttestationCaseComponent } from './attestation-case.component';
+import { AttestationCasesService } from './attestation-cases.service';
+import { AttestationDecisionAction, AttestationDecisionLoadParameters } from './attestation-decision-load-parameters';
 import { LossPreviewDialogComponent } from './loss-preview-dialog/loss-preview-dialog.component';
 import { LossPreview } from './loss-preview.interface';
-import { PendingItemsType, RecommendationSidesheetComponent, UserModelService, ViewConfigService } from 'qer';
-import { ViewConfigData } from 'imx-api-qer';
 @Component({
   templateUrl: './attestation-decision.component.html',
   styleUrls: ['./attestation-decision.component.scss'],
@@ -124,6 +124,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'attestation/approve';
+  private attestationConfig: AttestationConfig;
 
   constructor(
     public readonly attestationAction: AttestationActionService,
@@ -156,11 +157,6 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         this.attestationCases.isChiefApproval = false;
       })
     );
-
-    this.attFeatureService.getAttestationConfig().then((config) => {
-      this.isUserEscalationApprover = config.IsUserInChiefApprovalTeam;
-      this.mitigatingControlsPerViolation = config.MitigatingControlsPerViolation;
-    });
   }
 
   get isMobile(): boolean {
@@ -189,12 +185,14 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
       isBusy = this.busyService.beginBusy();
     });
     try {
-      const config = await this.attService.client.portal_attestation_config_get();
+      this.attestationConfig = await this.attFeatureService.getAttestationConfig();
+      this.isUserEscalationApprover = this.attestationConfig.IsUserInChiefApprovalTeam;
+      this.mitigatingControlsPerViolation = this.attestationConfig.MitigatingControlsPerViolation;
       const pendingItems: PendingItemsType = await this.usermodelService.getPendingItems();
       this.hasInquiries = pendingItems.OpenInquiriesAttestation > 0;
       const params = await this.activatedRoute.queryParams.pipe(first()).toPromise();
-      this.approvalThreshold = config.ApprovalThreshold;
-      this.autoRemovalScope = config.AutoRemovalScope;
+      this.approvalThreshold = this.attestationConfig.ApprovalThreshold;
+      this.autoRemovalScope = this.attestationConfig.AutoRemovalScope;
       this.lossPreview = {
         LossPreviewItems: [],
         LossPreviewHeaders: ['Display', 'ObjectDisplay', 'Person'],
@@ -211,7 +209,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
       await this.initDataModel(true);
 
       await this.parseParams();
-      await this.getData();
+      await this.getData(undefined, true);
       this.handleDecision();
     } finally {
       setTimeout(() => {
@@ -293,7 +291,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     return this.getData({ ...this.navigationState, ...{ search } });
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     if (newState) {
       this.navigationState = newState;
     }
@@ -305,7 +303,9 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         ...this.navigationState,
         Escalation: this.attestationCases.isChiefApproval,
       };
-      const dataSource = await this.attestationCases.get(this.navigationState, this.isUserEscalationApprover);
+      const dataSource = isInitialLoad
+        ? { totalCount: 0, Data: [] }
+        : await this.attestationCases.get(this.navigationState);
       if (dataSource) {
         const exportMethod = this.attestationCases.exportData(this.navigationState);
         this.dstSettings = {
@@ -344,13 +344,15 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupedData = this.groupedData[groupKey];
+      const groupedData = this.groupedData[groupInfo.key];
       const navigationState = { ...groupedData.navigationState, Escalation: this.viewEscalation };
-      groupedData.data = await this.attestationCases.get(navigationState, this.isUserEscalationApprover);
+      groupedData.data = groupInfo.isInitial
+        ? { totalCount: 0, Data: [] }
+        : await this.attestationCases.get(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,
@@ -376,21 +378,18 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
     try {
       attestationCaseWithPolicy = (
-        await this.attestationCases.get(
-          {
-            Escalation: this.isUserEscalationApprover,
-            uidpolicy: attestationCase.UID_AttestationPolicy.value,
-            filter: [
-              {
-                ColumnName: 'UID_AttestationCase',
-                Type: FilterType.Compare,
-                CompareOp: CompareOperator.Equal,
-                Value1: attestationCase.GetEntity().GetKeys()[0],
-              },
-            ],
-          },
-          this.isUserEscalationApprover
-        )
+        await this.attestationCases.get({
+          Escalation: this.viewEscalation,
+          uidpolicy: attestationCase.UID_AttestationPolicy.value,
+          filter: [
+            {
+              ColumnName: 'UID_AttestationCase',
+              Type: FilterType.Compare,
+              CompareOp: CompareOperator.Equal,
+              Value1: attestationCase.GetEntity().GetKeys()[0],
+            },
+          ],
+        })
       ).Data[0];
       // Add additional violation data to this case
       attestationCaseWithPolicy.data.CanSeeComplianceViolations = attestationCase.data.CanSeeComplianceViolations;

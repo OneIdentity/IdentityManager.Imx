@@ -43,10 +43,7 @@ import { NotRequestableMembershipsEntity } from './not-requestable-memberships/n
   providedIn: 'root',
 })
 export class IdentitiesService {
-  constructor(
-    private readonly api: QerApiService,
-    private readonly roles: RoleService
-  ) { }
+  constructor(private readonly api: QerApiService, private readonly roles: RoleService) {}
 
   public getSchema(): EntitySchema {
     return this.api.typedClient.PortalPersonAll.GetSchema();
@@ -64,13 +61,10 @@ export class IdentitiesService {
     id: string,
     navigationState?: CollectionLoadParameters
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    const candidates = await this.api.client.portal_roles_config_membership_Locality_UID_Person_candidates_get(
-      id,
-      {
-        ...navigationState,
-        xorigin: 0,
-      }
-    );
+    const candidates = await this.api.client.portal_roles_config_membership_Locality_UID_Person_candidates_get(id, {
+      ...navigationState,
+      xorigin: 0,
+    });
 
     const builder = new TypedEntityBuilder(PortalPersonAll);
     return builder.buildReadWriteEntities(candidates, PortalPersonAll.GetEntitySchema());
@@ -79,6 +73,8 @@ export class IdentitiesService {
   public async getDataModel(): Promise<DataModel> {
     return this.api.client.portal_person_all_datamodel_get(null);
   }
+
+  /** @deprecated Will be removed. Please load the data model first.*/
   public async getFilterOptions(): Promise<DataModelFilter[]> {
     return (await this.getDataModel()).Filters;
   }
@@ -99,8 +95,7 @@ export class IdentitiesService {
 
       try {
         await this.api.typedClient.PortalCartitem.Post(entity);
-      }
-      catch (exception) {
+      } catch (exception) {
         // 6053005 == The membership cannot be requested for this identity.
         if (exception?.dataItems.length && exception.dataItems[0].Number === 6053005) {
           notRequestableMemberships.push(new NotRequestableMembershipsEntity(member.GetEntity(), exception.dataItems[0]));

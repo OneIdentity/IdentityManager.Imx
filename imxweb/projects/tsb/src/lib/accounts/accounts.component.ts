@@ -117,8 +117,8 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
     const isBusy = this.busyService.beginBusy();
 
     try {
-      this.filterOptions = await this.accountsService.getFilterOptions();
-      this.dataModel = await this.accountsService.getDataModel();
+      this.dataModel = await this.accountsService.getDataModel();      
+      this.filterOptions = this.dataModel.Filters;
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
     } finally {
       isBusy.endBusy();
@@ -142,7 +142,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
         managerDiscrepencyFilter.InitialValue = '1';
       }
     }
-    await this.navigate();
+    await this.navigate(true);
   }
 
   public ngOnDestroy(): void {
@@ -226,7 +226,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
     });
   }
 
-  private async navigate(): Promise<void> {
+  private async navigate(isInitialLoad: boolean = false): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     const getParams: GetAccountsOptionalParameters = this.navigationState;
 
@@ -238,7 +238,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
       getParams.system = tsUid ? tsUid : undefined;
       getParams.container = cUid ? cUid : undefined;
 
-      const data = await this.accountsService.getAccounts(getParams);
+      const data = isInitialLoad ? { totalCount: 0, Data: [] } :  await this.accountsService.getAccounts(getParams);
       if (data) {
         const exportMethod: DataSourceToolbarExportMethod = this.accountsService.exportAccounts(this.navigationState);
         exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
@@ -264,7 +264,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
           exportMethod,
         };
         this.tableName = data.tableName;
-        this.logger.debug(this, `Head at ${data?.Data.length + this.navigationState?.StartIndex} of ${data.totalCount} item(s)`);
+        this.logger.debug(this, `Head at ${data?.Data?.length + this.navigationState?.StartIndex} of ${data?.totalCount} item(s)`);
       }
     } finally {
       isBusy.endBusy();

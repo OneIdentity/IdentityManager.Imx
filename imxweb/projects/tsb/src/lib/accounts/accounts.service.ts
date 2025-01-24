@@ -93,6 +93,7 @@ export class AccountsService {
     return (await this.dynamicMethod.getById(AccountTypedEntity, { dbObjectKey, columnName })) as AccountTypedEntity;
   }
 
+     /** @deprecated Will be removed. Please load the data model first.*/
   public async getFilterOptions(): Promise<DataModelFilter[]> {
     return (await this.getDataModel()).Filters;
   }

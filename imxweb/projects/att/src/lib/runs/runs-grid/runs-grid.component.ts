@@ -152,7 +152,7 @@ export class RunsGridComponent implements OnInit {
       });
     }
 
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
   public async updateConfig(config: ViewConfigData): Promise<void> {
@@ -167,7 +167,7 @@ export class RunsGridComponent implements OnInit {
     this.dstSettings.viewConfig = this.viewConfig;
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
+  public async getData(newState?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     if (newState) {
       const filter = this.filter.filter.concat(newState.filter ?? []);
       this.navigationState = { ...newState, filter };
@@ -177,7 +177,7 @@ export class RunsGridComponent implements OnInit {
     setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-      const data = await this.runsService.getAttestationRuns(this.navigationState);
+      const data = isInitialLoad ? { totalCount: 0, Data: [] } : await this.runsService.getAttestationRuns(this.navigationState);
       if (data) {
         this.runs = data.Data;
         this.dstSettings = {
@@ -252,13 +252,15 @@ export class RunsGridComponent implements OnInit {
     await this.getData();
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     let overlayRef: OverlayRef;
     setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.runsService.getAttestationRuns(groupedData.navigationState);
+      const groupedData = this.groupedData[groupInfo.key];
+      groupedData.data = groupInfo.isInitial
+        ? { totalCount: 0, Data: [] }
+        : await this.runsService.getAttestationRuns(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,

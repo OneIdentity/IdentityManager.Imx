@@ -27,10 +27,9 @@
 import { Component, ErrorHandler, Input, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalPasswordquestions, UserConfig } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalPasswordquestions } from 'imx-api-qer';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
 import { BusyService, ConfirmationService, DataSourceToolbarSettings, DataSourceWrapper, LdsReplacePipe, SnackBarService } from 'qbm';
-import { UserModelService } from '../../user/user-model.service';
 import { PasswordQuestionService, PasswordQuestionType } from './password-question.service';
 import { PasswordQuestionsSidesheetComponent } from './password-questions-sidesheet/password-questions-sidesheet.component';
 
@@ -41,12 +40,10 @@ import { PasswordQuestionsSidesheetComponent } from './password-questions-sidesh
 })
 export class PasswordQuestionsComponent implements OnInit {
   @Input() public passwordQuestionType: PasswordQuestionType = 'passwordreset';
-  public items: ExtendedTypedEntityCollection<PortalPasswordquestions, unknown>;
   public navigationState: CollectionLoadParameters = {
     PageSize: 1000,
     StartIndex: 0,
   };
-  public totalCount = 0;
   public dstWrapper: DataSourceWrapper<PortalPasswordquestions>;
   public dstSettings: DataSourceToolbarSettings;
   public selectedQuestions: PortalPasswordquestions[] = [];
@@ -70,18 +67,18 @@ export class PasswordQuestionsComponent implements OnInit {
     const entitySchema = this.passwordQuestionService.getSchema();
     this.entitySchema = entitySchema;
     const isBusy = this.busyService.beginBusy();
-    try{
-    this.passwordQuestionService.setPasswordQuestionType(this.passwordQuestionType);
-    this.requiredPasswordQuestions = await this.passwordQuestionService.getRequiredPasswordQuestion();
+    try {
+      this.passwordQuestionService.setPasswordQuestionType(this.passwordQuestionType);
+      this.requiredPasswordQuestions = await this.passwordQuestionService.getRequiredPasswordQuestion();
 
-    this.dstWrapper = new DataSourceWrapper(
-      (state) => this.passwordQuestionService.get(state),
-      [entitySchema.Columns.PasswordQuery, entitySchema.Columns.IsLocked],
-      entitySchema,
-      undefined,
-      'password-questions'
-    );
-    }finally {
+      this.dstWrapper = new DataSourceWrapper(
+        (state) => this.passwordQuestionService.get(state),
+        [entitySchema.Columns.PasswordQuery, entitySchema.Columns.IsLocked],
+        entitySchema,
+        undefined,
+        'password-questions'
+      );
+    } finally {
       isBusy.endBusy();
     }
 
@@ -122,9 +119,7 @@ export class PasswordQuestionsComponent implements OnInit {
   public async getData(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      this.items = await this.passwordQuestionService.get(this.navigationState);
-      this.totalCount = this.items.totalCount;
-      this.dstSettings = await this.dstWrapper.getDstSettings(this.navigationState);
+      this.dstSettings = await this.dstWrapper.getDstSettings(this.navigationState, undefined);
     } finally {
       isBusy.endBusy();
     }
@@ -198,7 +193,7 @@ export class PasswordQuestionsComponent implements OnInit {
   }
 
   private async getDeleteMessage(itemsToDelete: number): Promise<string> {
-    const numberOfQuestionsAfterDeletion = this.totalCount - itemsToDelete;
+    const numberOfQuestionsAfterDeletion = this.dstSettings?.dataSource?.totalCount - itemsToDelete;
     return numberOfQuestionsAfterDeletion < this.requiredPasswordQuestions
       ? this.ldsReplace.transform(
           await this.translate

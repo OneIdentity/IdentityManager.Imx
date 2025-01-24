@@ -81,7 +81,8 @@ export class AddressbookComponent implements OnInit {
       this.addressbookService.abortCall();
       this.dstSettings = await this.dstWrapper.getDstSettings(
         { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 },
-        { signal: this.addressbookService.abortController.signal }
+        { signal: this.addressbookService.abortController.signal },
+        true
       );
     } finally {
       isBusy.endBusy();
@@ -102,12 +103,12 @@ export class AddressbookComponent implements OnInit {
     }
   }
 
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupData = this.groupData[groupKey];
-      groupData.settings = await this.dstWrapper.getGroupDstSettings(groupData.navigationState);
+      const groupData = this.groupData[groupInfo.key];
+      groupData.settings = await this.dstWrapper.getGroupDstSettings(groupData.navigationState, undefined, groupInfo.isInitial);
       groupData.settings.dataModel = this.dstSettings.dataModel;
       groupData.settings.entitySchema = this.dstSettings.entitySchema;
       groupData.data = groupData.settings.dataSource;

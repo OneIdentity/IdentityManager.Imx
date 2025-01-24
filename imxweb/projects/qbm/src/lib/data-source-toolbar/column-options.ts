@@ -246,13 +246,12 @@ export class ColumnOptions {
   public initColumnsAndAdditionalInformation(): void {
     this.initOptionalColumns();
 
-    if (this.shownClientProperties.length === 0) {
-      this.initShownClientProperties();
-    }
-
     this.initAdditionalListElements();
 
-    this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload: true });
+    if (this.shownClientProperties.length === 0) {
+      this.initShownClientProperties();
+      this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload: false });
+    }
   }
 
   private initOptionalColumns(): void {

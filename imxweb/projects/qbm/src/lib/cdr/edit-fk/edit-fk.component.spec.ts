@@ -46,9 +46,9 @@ function createColumnStub(
   value: ValueStruct<string>,
   canEdit = true,
   candidateCollections?: EntityCollectionData[],
-  minLength = 0,
+  minLength = 0
 ): IEntityColumn {
-  const getFki = (c) => ({ Get: (_) => Promise.resolve(c) }) as IForeignKeyInfo;
+  const getFki = (c) => ({ Get: (_) => Promise.resolve(c) } as IForeignKeyInfo);
 
   return new EntityColumnStub(value.DataValue, value.DisplayValue, {
     GetFkRelations: () =>
@@ -111,6 +111,7 @@ describe('EditFkComponent', () => {
         GetMinLength: () => metadataMinLength,
         GetFkRelations: () => [{} as IForeignKeyInfo] as ReadonlyArray<IForeignKeyInfo>,
         GetLimitedValues: () => undefined,
+        GetDisplay: () => 'display',
       } as IValueMetadata);
 
       // Act
@@ -124,7 +125,7 @@ describe('EditFkComponent', () => {
       expect(component.columnContainer.value).toEqual(columnStub.GetValue());
       expect(component.columnContainer.canEdit).toEqual(testcase.expected.canEdit, 'canEdit');
       expect(metadataServiceStub.updateNonExisting).toHaveBeenCalled();
-    }),
+    })
   );
 
   it('is readonly when the cdr is missing', () => {
@@ -192,7 +193,7 @@ describe('EditFkComponent', () => {
         expect(component.control.value).toEqual(start);
         expect(component.columnContainer.value).toEqual(start.DataValue);
       }
-    })),
+    }))
   );
 
   it('should revert to previous value if leaving autocomplete', () => {
@@ -284,7 +285,7 @@ describe('EditFkComponent', () => {
         DisplayValue: mockValues[0].DisplayValue,
       },
       true,
-      [candidateCollection, { Entities: [], TotalCount: 0 }],
+      [candidateCollection, { Entities: [], TotalCount: 0 }]
     );
     component.bind({
       column,
@@ -296,7 +297,6 @@ describe('EditFkComponent', () => {
 
     expect(component.candidates[0].DataValue).toEqual(candidateCollection.Entities[0].Columns.XObjectKey.Value);
     expect(component.candidates[0].DisplayValue).toEqual(candidateCollection.Entities[0].Display);
-    expect(component.hasCandidatesOrIsLoading).toEqual(true);
   });
 
   [
@@ -322,6 +322,6 @@ describe('EditFkComponent', () => {
       } else {
         expect(component.control.errors).toBeNull();
       }
-    }),
+    })
   );
 });

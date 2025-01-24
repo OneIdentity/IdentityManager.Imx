@@ -65,11 +65,13 @@ export class ViolationsPerRuleComponent implements OnInit {
     };
 
     this.dstWrapper = new DataSourceWrapper(
-      (state, requestOpts) =>
-        this.rulesViolationsService.getRulesViolationsApprove(
-          { ...state, ...{ uid_compliancerule: this.uidRule, approvable: undefined } },
-          requestOpts
-        ),
+      (state, requestOpts, isInitial) =>
+        isInitial
+          ? Promise.resolve({ totalCount: 0, Data: [] })
+          : this.rulesViolationsService.getRulesViolationsApprove(
+              { ...state, ...{ uid_compliancerule: this.uidRule, approvable: undefined } },
+              requestOpts
+            ),
       [
         this.entitySchema.Columns.UID_Person,
         this.entitySchema.Columns.State,
@@ -80,18 +82,20 @@ export class ViolationsPerRuleComponent implements OnInit {
       this.dataModelWrapper
     );
 
-    await this.getData();
+    await this.getData(undefined, true);
   }
 
   /**
    * Handles grouping changes with reload
    * @param groupKey The key of the group
    */
-  public async onGroupingChange(groupKey: string): Promise<void> {
+  public async onGroupingChange(groupInfo: { key: string; isInitial: boolean }): Promise<void> {
     this.rulesViolationsService.handleOpenLoader();
     try {
-      const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.rulesViolationsService.getRulesViolationsApprove(groupedData.navigationState);
+      const groupedData = this.groupedData[groupInfo.key];
+      groupedData.data = groupInfo.isInitial
+        ? { totalCount: 0, Data: [] }
+        : await this.rulesViolationsService.getRulesViolationsApprove(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataModel: this.dstSettings.dataModel,
@@ -132,10 +136,14 @@ export class ViolationsPerRuleComponent implements OnInit {
    * Loads the dstSettings with load parameters
    * @param parameter Load parameter
    */
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {
+  public async getData(parameter?: CollectionLoadParameters, isInitialLoad: boolean = false): Promise<void> {
     this.rulesViolationsService.handleOpenLoader();
     try {
-      const dstSettings = await this.dstWrapper.getDstSettings(parameter, { signal: this.rulesViolationsService.abortController.signal });
+      const dstSettings = await this.dstWrapper.getDstSettings(
+        parameter,
+        { signal: this.rulesViolationsService.abortController.signal },
+        isInitialLoad
+      );
       if (dstSettings) {
         this.dstSettings = dstSettings;
       }

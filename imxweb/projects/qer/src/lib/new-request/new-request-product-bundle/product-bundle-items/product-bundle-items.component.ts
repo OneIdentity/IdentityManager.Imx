@@ -103,7 +103,10 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
       this.entitySchema.Columns.Description,
     ];
     this.dstWrapper = new DataSourceWrapper(
-      (state, requestOpts) => this.patternItemService.getPatternItemList(this.selectedProductBundle, state, requestOpts),
+      (state, requestOpts, isInitial) =>
+        isInitial
+          ? Promise.resolve({ totalCount: 0, Data: [] })
+          : this.patternItemService.getPatternItemList(this.selectedProductBundle, state, requestOpts),
       this.displayedColumns,
       this.entitySchema
     );
@@ -170,14 +173,14 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.navigationState = { StartIndex: 0 };
-    await this.getData();
+    await this.getData(true);
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  public async getData(): Promise<void> {
+  public async getData(isInitialLoad: boolean = false): Promise<void> {
     if (!this.selectedProductBundle) {
       this.orchestration.disableSearch = true;
       return;
@@ -186,7 +189,11 @@ export class ProductBundleItemsComponent implements OnInit, OnDestroy {
     const busy = this.myBusyService.beginBusy();
     try {
       this.orchestration.abortCall();
-      this.dstSettings = await this.dstWrapper.getDstSettings(this.navigationState, { signal: this.orchestration.abortController.signal });
+      this.dstSettings = await this.dstWrapper.getDstSettings(
+        this.navigationState,
+        { signal: this.orchestration.abortController.signal },
+        isInitialLoad
+      );
       this.orchestration.dstSettingsProductBundles = this.dstSettings;
     } finally {
       busy.endBusy();
