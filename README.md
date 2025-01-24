@@ -4,6 +4,25 @@
 
 ## Change log
 
+### January 24, 2025
+- 474473: Fixes an issue, with filter data on an application's entitlements page.
+- 474693: Fixes an issue with mitigating controls for policy details.
+- 443363: Fixes some issues, with entity synchronization in case of an error.
+- 474430: Fixes the UI for selected reports on zoomed windows.
+- 474754: Fixes an error, when clicking on a compliance rule.
+- 472847: Fixes incorrect property binding in the bulk editor.
+- 472278: Fixes an issue with the search control on the data source toolbar.
+- 472805: Fixes an issue which caused the details of a pending attestation case to change erroneously.
+- 458750: Provides a context-sensitive help with better text on the new request page.
+- 469219: Fixes filtering issues on the My Pending Requests page.
+- 469349: Fixes issues with duplicated requests on data tables.
+- 469379: Fixes the number of rows in the attestation run overview.
+- 470237: Fixes synchronization issues within the data source toolbar.
+- 472616: Fixes grouping for attestation cases.
+- 472268: Fixes an issue in the foreign-key property editor, in case of an error.
+- 469356: Fixes an issue with delegating attestation case approvals for the Chief Approval Team.
+- 473249: Fixes a looping issue in the date-time property editor in case of an error.
+
 ### December 11, 2024
 - 430843: Fixes an inconsistency in the Attestation History when an approver is defined in multiple sublevels.
 - 467451: Fixes some issues with the „Show attestation cases to be approved by chief approval team“ toggle on the Pending Attestation page.
