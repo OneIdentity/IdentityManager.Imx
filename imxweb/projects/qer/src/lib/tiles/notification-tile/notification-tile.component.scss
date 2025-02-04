@@ -1,4 +1,11 @@
+@import "variables.scss";
+
 
 .mat-button{
     text-transform: uppercase;
+}
+
+
+.mat-button.mat-primary{
+    color:$CCC_Main;
 }

@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
+@import 'variables';
 
 $material_icons_font_path: "~node_modules/@elemental-ui/core/assets/MaterialIcons";
 $cadence_font_path: "~node_modules/@elemental-ui/core/assets/Cadence";
@@ -116,3 +117,319 @@ imx-data-explorer-accounts {
   }
 }
 
+//--------------------------------------------------------custom styles------------------------------------------------------------
+
+
+//header
+header.eui-masthead{
+    background-color: $CCC_Main;
+  }
+  
+  
+  imx-root .mat-button.mat-primary{
+    color:$CCC_Main;
+  }
+
+  mat-card-actions .mat-button.mat-primary:hover{
+    background-color:lighten($CCC_Main , 40%);
+  }
+
+  mat-card .mat-button.mat-primary:hover{
+    background-color:lighten($CCC_Main , 40%);
+  }
+  
+  
+  //loading page
+  .splash-screen-container{
+    background-color: $CCC_Main   !important;
+  }
+  
+  
+  //spinner
+  body .mat-progress-spinner circle, body .mat-spinner circle{
+    stroke:$CCC_Main;
+  }
+  
+  
+  //new request page
+  imx-help-contextual .mat-icon-button.mat-primary{
+    color:$CCC_Main;
+  }
+  
+  //recipeints name
+  mat-card  .imx-content span{
+    color:$CCC_Main !important;
+  }
+  
+    
+  
+  //product icons
+  .imx-request-col-image .colored-icon{
+    color:$CCC_Main  !important;
+  }
+  
+  
+  //folders icons
+  .imx-tree-root .colored-icon{
+    color:$CCC_Main  !important;
+  }
+  
+  imx-data-source-toolbar .eui-search-icon {
+    color:$CCC_Main !important;
+  }
+  
+  
+  
+  body .mat-raised-button.mat-primary{
+    background-color: $CCC_Main;
+  }
+  
+  
+  eui-search .imx-data-source-toolbar-search:focus{
+    border-color: $CCC_Main;
+  }
+  
+  
+  body .mat-step-header .mat-step-icon-selected{
+    background-color: $CCC_Main;
+  }
+  
+  imx-data-table .mat-row:hover{
+    background-color: lighten($CCC_Main , 40%) !important;
+  }
+  
+  .eui-sidesheet .mat-toolbar {
+    background-color: darken($CCC_Main, 20%)  !important;
+  }
+  
+  body .mat-expansion-indicator:after {
+    color: $CCC_Main;
+  }
+  
+  img{
+    filter: brightness(0) saturate(100%) invert(43%) sepia(41%) saturate(4922%) hue-rotate(2deg) brightness(105%) contrast(103%);
+  }
+  
+  body .mat-tab-nav-bar.mat-primary .mat-ink-bar{
+    background-color: $CCC_Main;
+  }
+  
+   .mat-card.imx-card:hover {
+    border:1px solid $CCC_Main !important; 
+  }
+  
+  
+  mat-dialog-container  .mat-flat-button.mat-primary{
+    background-color: $CCC_Main;
+  }
+  
+  mat-dialog-content  .dialog-content__links a{
+    color:$CCC_Main !important;
+    
+  }
+  
+  mat-dialog-content  .dialog-content__links a:hover{
+    color:lighten($CCC_Main , 20%) !important;
+  }
+  
+  mat-tree-node .mat-tree-node--selected{
+    border-color: lighten($CCC_Main , 20%) !important;
+  }
+  
+  mat-card .snavigation-side-content{
+    background-color: lighten($CCC_Main , 40%) !important;
+    border-color:lighten($CCC_Main , 20%) !important;
+  }
+  
+  
+  .eui-top-navigation-desktop .eui-top-navigation .mat-button.eui-top-navigation-item-active {
+    border-bottom: 2px solid $CCC_Main !important;
+  }
+  
+  
+  .mat-chip-list-wrapper .mat-chip.mat-focus-indicator.mat-primary.mat-standard-chip.mat-chip-selected{
+    background-color:$CCC_Main !important;
+  }
+  
+  
+  //new request>all products>entities per page
+  mat-option.mat-selected.mat-active .mat-option-text{
+    color:$CCC_Main !important;
+  }
+  
+  
+  //new request>product bundles data title
+  .imx-product-bundle-list-header .imx-product-bundle-list-header-text{
+    color:$CCC_Main !important;
+  }
+  
+  
+  //new request>product bundles data field
+  imx-product-bundle-list mat-card.mat-card.mat-focus-indicator.imx-table-container imx-data-table{
+    background-color: lighten($CCC_Main , 40%);
+  }
+  
+  mat-card.imx-table-container {
+    border-color:lighten($CCC_Main , 20%) !important;
+  }
+  
+  //search field focus border
+  .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick{
+    color: lighten($CCC_Main , 20%) !important ;
+  }
+  
+  
+  button.mat-stroked-button.mat-primary{
+    color:$CCC_Main;
+  }
+  
+  
+  .eui-alert.eui-alert-type--info .eui-alert-icon{
+    color:$CCC_Main  !important;
+  }
+  
+  eui-alert .eui-alert.eui-alert-type--info.eui-alert-colored{
+    background-color: lighten($CCC_Main , 40%);
+  }
+  
+  
+  //Responsibilities> delegation >dates icons
+  button.mat-calendar-body-cell.mat-calendar-body-active .mat-calendar-body-selected{
+    background-color: $CCC_Main;
+  }
+  
+   button.mat-calendar-body-cell .mat-calendar-body-cell-content.mat-focus-indicator:hover{
+    background-color: lighten($CCC_Main , 40%);
+  }
+  
+  //Responsibilities> delegation> states-are-done
+  mat-step-header.mat-step-header .mat-step-icon-state-done{
+    background-color: $CCC_Main;
+  }
+  
+  .mat-tab-group.mat-primary .mat-tab-list mat-ink-bar.mat-ink-bar{
+    background-color: $CCC_Main;
+  }
+  
+  .mat-form-field.mat-focused .mat-form-field-label{
+    color:$CCC_Main !important;
+  }
+   
+  
+  //responsibilities>my responsibilities >sidenav
+  mat-sidenav.mat-sidenav.mat-drawer-side.mat-drawer-opened .snavigation-item.snavigation-item--selected{
+    background-color: $CCC_Main !important;
+  }
+  
+  mat-sidenav.mat-sidenav.mat-drawer-side.mat-drawer-opened .snavigation-item:hover{
+    background-color: lighten($CCC_Main , 40%) !important;
+  }
+
+  //welcome-page number of things for example attestations 
+  mat-card.mat-card .imx-generic-tile-content div{
+    color:$CCC_Main !important;
+    background-color: lighten($CCC_Main , 40%) !important;
+  }
+  
+  //responsibilities>my responsibilities>devices title 
+  mat-card.data-explorer .data-explorer-card-header .data-explorer-card-header-bg {
+    background-color: lighten($CCC_Main , 40%) ;
+  }
+
+  mat-card.data-explorer .data-explorer-card-header{
+    border-color:$CCC_Main;
+  }
+
+  mat-card.data-explorer .data-explorer-card-header .data-explorer-card-header-bg .eui-icon{
+    color:$CCC_Main;
+  }
+
+  imx-filter-wizard .mat-flat-button.mat-primary{
+    background-color: $CCC_Main;
+  }
+
+  //new request >filter 
+  mat-list.mat-list li.expression-container:hover{
+    border-color:$CCC_Main;
+    div.expression-container-header{
+        background-color: $CCC_Main;
+        color:white;
+    }
+  }
+
+  mat-list.mat-list li.expression-container{
+    div.expression-container-header{
+        background-color: lighten($CCC_Main , 40%);
+        color:$CCC_Main;
+    }
+  }
+
+  .selected-logical-op{
+    color:$CCC_Main;
+  }
+
+  mat-form-field.mat-focused.mat-form-field.mat-focused.mat-primary .mat-select-arrow{
+    color:$CCC_Main;
+  }
+
+  //new request > title 
+  imx-new-request-header {
+    background-color: lighten($CCC_Main , 40%);
+  }
+
+  //new request > left bar navigation hover
+  mat-tree-node .mat-button.mat-primary .mat-button-focus-overlay{
+    background-color: lighten($CCC_Main , 5%);
+  }
+
+  mat-sidenav.mat-sidenav .expand-control-button:not(.mat-icon-button){
+    background-color: lighten($CCC_Main , 40%) !important;
+    border-color: $CCC_Main !important;
+  }
+
+  //calendar 
+  button.mat-focus-indicator.mat-icon-button.mat-button-base.mat-datepicker-toggle-active{
+    color:$CCC_Main;
+  }
+
+  button.mat-flat-button.mat-primary{
+    background-color: $CCC_Main;
+  }
+
+  imx-calendar .mat-button.mat-primary{
+    color:$CCC_Main;
+  }
+
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover{
+    .mat-calendar-body-cell-content{
+        background-color: lighten($CCC_Main , 40%) !important;
+    }
+    
+  }
+
+  .mat-calendar-body-cell-content.mat-calendar-body-selected{
+    background-color: $CCC_Main;
+  }
+
+  .cdk-program-focused .mat-calendar-body-active{
+    .mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){
+            background-color: $CCC_Main !important;
+            color:white;
+    }
+  }
+
+  table.mat-table .mat-row.imx-data-table-row-highlighted{
+    background-color:lighten($CCC_Main , 40%) ;
+  }
+
+
+
+  
+
+
+
+  
+
+
+
+  

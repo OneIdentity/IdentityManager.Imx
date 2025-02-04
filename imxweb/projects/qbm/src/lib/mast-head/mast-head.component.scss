@@ -1,5 +1,11 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import "variables.scss";
+
+.mat-toolbar.mat-primary{
+  background-color: $CCC_Main;
+}
+
 
 :host {
   .imx-masthead-app-name {
@@ -7,6 +13,8 @@
     margin-left: 10px;
     margin-right: 5px;
   }
+
+  
 
   .imx-masthead-space {
     flex: 1 1 auto;
@@ -43,14 +51,19 @@
   cursor: pointer;
 }
 
+
+
+
 @media only screen and (max-width: 768px) {
   :host {
     eui-masthead {
+
       .mat-toolbar {
         .mat-toolbar-row {
           width: unset !important;
           justify-content: center;
         }
+
 
         .imx-masthead-space,
         .imx-masthead--controls {

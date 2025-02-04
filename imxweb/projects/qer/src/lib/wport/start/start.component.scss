@@ -1,4 +1,11 @@
 @import '../../../../../qbm/src/lib/tile/tile-variables.scss';
+@import "variables.scss";
+
+
+.mat-button.mat-primary{
+  color:$CCC_Main;
+}
+
 
 :host {
   display: flex;
@@ -21,6 +28,8 @@
   cursor: pointer;
 }
 
+
+
 .imx-tilebar-columns {
   display: flex;
   column-gap: 20px;
@@ -34,6 +43,8 @@
 .mat-button{
   text-transform: uppercase;
 }
+
+
 
 .mat-button ::ng-deep eui-icon{
   margin-left: 15px;

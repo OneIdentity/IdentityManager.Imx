@@ -1,9 +1,14 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @import "../../../../../qbm/src/lib/tile/tile-variables.scss";
+@import "variables.scss";
 
 :host {
   display: flex;
   flex-wrap: wrap;
+}
+
+.mat-button.mat-primary{
+  color:$CCC_Main;
 }
 
 .imx-valuelist {
