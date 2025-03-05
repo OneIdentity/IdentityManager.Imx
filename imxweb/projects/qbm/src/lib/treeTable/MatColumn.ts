@@ -25,8 +25,17 @@
  */
 
 import {
-  Component, Input, OnDestroy, OnInit, Optional, ViewChild,
-  ContentChild, TemplateRef, ElementRef, Output, EventEmitter
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  ViewChild,
+  ContentChild,
+  TemplateRef,
+  ElementRef,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { MatSortHeader } from '@angular/material/sort';
 import { MatColumnDef, MatTable } from '@angular/material/table';
@@ -36,17 +45,19 @@ import { ImxExpandableItem } from './imx-data-source';
 @Component({
   selector: 'imx-column',
   templateUrl: './MatColumn.html',
-  styleUrls: ['./MatColumn.scss']
+  styleUrls: ['./MatColumn.scss'],
 })
 export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
   @Input()
-  get field(): string { return this.name; }
+  get field(): string {
+    return this.name;
+  }
   set field(name: string) {
     this.name = name;
   }
 
   @Input() public title: string;
-  @Input() public dataAccessor: ((data: T, index: number, name: string) => string);
+  @Input() public dataAccessor: (data: T, index: number, name: string) => string;
 
   @Input() public align: 'before' | 'after' = 'before';
 
@@ -62,22 +73,26 @@ export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
   @Output() public itemCollapsed = new EventEmitter<ImxExpandableItem<T>>();
   @Input() public isFirstColumn = true;
 
-  public hasChildrenProvider: ((data: T) => boolean);
+  public hasChildrenProvider: (data: T) => boolean;
 
   private name: string;
 
-  constructor(private sanitizer: DomSanitizer, @Optional() public table: MatTable<any>) { }
+  constructor(private sanitizer: DomSanitizer, @Optional() public table: MatTable<any>) {}
 
   public ButtonClass(data: ImxExpandableItem<T>): string {
-    if (data.data == null) { return 'k-icon k-i-collapse'; }
+    if (data.data == null) {
+      return 'k-icon k-i-collapse';
+    }
     const res = data.level === 0 || (this.hasChildrenProvider ? this.hasChildrenProvider(data.data) : false);
-    return !res ? 'imx-small-right-margin k-sprite' : data.isExpanded
-      ? 'imx-small-right-margin cux-icon cux-icon--caret-down'    // TODO replace cux-icon (TFS 806274)
-      : 'imx-small-right-margin cux-icon cux-icon--caret-right';   // TODO replace cux-icon (TFS 806274)
+    return !res
+      ? 'imx-small-right-margin k-sprite'
+      : data.isExpanded
+      ? 'imx-small-right-margin cux-icon cux-icon--caret-down' // TODO replace cux-icon (TFS 806274)
+      : 'imx-small-right-margin cux-icon cux-icon--caret-right'; // TODO replace cux-icon (TFS 806274)
   }
 
-  public getMargin(data: any): SafeStyle {
-    return this.sanitizer.bypassSecurityTrustStyle((data.level ? data.level : .0) * 20 + 'px');
+  public getMargin(data: any): string {
+    return (20 * (data.level ? data.level : 0.0)).toString() + 'px';
   }
 
   public ngOnInit(): void {
@@ -96,7 +111,6 @@ export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
   public getData(data: ImxExpandableItem<T>, index: number): any {
     return this.dataAccessor ? this.dataAccessor(data.data, index, this.field) : (data.data as any)[this.field];
   }
-
 
   public buttonClicked(data: ImxExpandableItem<T>): void {
     data.isExpanded = !data.isExpanded;

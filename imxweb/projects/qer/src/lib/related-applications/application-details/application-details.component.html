@@ -1,3 +1,4 @@
 <div class="imx-application-details">
-    <iframe width="100%" height="100%" frameBorder="0" [src]="urlSafe" *ngIf="urlSafe"></iframe>
+  <!-- Safely set src from ts -->
+  <iframe #iFrame width="100%" height="100%" frameBorder="0"></iframe>
 </div>

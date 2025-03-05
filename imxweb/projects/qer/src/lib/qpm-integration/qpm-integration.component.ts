@@ -24,53 +24,50 @@
  *
  */
 
-import { Component } from "@angular/core";
-import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
-import { Router } from "@angular/router";
-import { QpmIntegrationLinks } from "imx-api-qer";
-import { ProjectConfigurationService } from "../project-configuration/project-configuration.service";
-import { QerApiService } from "../qer-api-client.service";
+import { Component, ElementRef, OnInit, SecurityContext, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { QpmIntegrationLinks } from 'imx-api-qer';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
+import { QerApiService } from '../qer-api-client.service';
 
 @Component({
-  templateUrl: "./qpm-integration.component.html",
-  styleUrls: ['./qpm-integration.component.scss']
+  templateUrl: './qpm-integration.component.html',
+  styleUrls: ['./qpm-integration.component.scss'],
 })
-export class QpmIntegrationComponent {
+export class QpmIntegrationComponent implements OnInit {
+  @ViewChild('passwordLink') private passwordLink: ElementRef;
+  @ViewChild('qaLink') private qaLink: ElementRef;
+  @ViewChild('alterLink') private alertLink: ElementRef;
 
-  constructor(private readonly router: Router,
+  constructor(
     private readonly qerApiService: QerApiService,
     private readonly projConfig: ProjectConfigurationService,
-    private readonly sanitizer: DomSanitizer) { }
+    private readonly sanitizer: DomSanitizer
+  ) {}
 
   dataReady: boolean;
   links: QpmIntegrationLinks;
-  profileText = '#LDS#Configure your personal Questions and Answers profile that will allow you to reset your forgotten password or unlock your account in the future.';
+  profileText =
+    '#LDS#Configure your personal Questions and Answers profile that will allow you to reset your forgotten password or unlock your account in the future.';
   alertText = '#LDS#Select events that you want to be notified about, such as when your password was changed or your account was locked.';
 
   ngOnInit() {
-    this.projConfig.getConfig().then(config => {
+    this.projConfig.getConfig().then((config) => {
       if (config.PasswordConfig.QpmBaseUrl) {
-        this.qerApiService.client.portal_password_qpmlinks_get().then(links => {
+        this.qerApiService.client.portal_password_qpmlinks_get().then((links) => {
           this.links = links;
           this.dataReady = true;
+          this.passwordLink.nativeElement.href = this.sanitizeUrl(this.links.ChangePassword || '');
+          this.qaLink.nativeElement.href = this.sanitizeUrl(this.links.EditProfile || '');
+          this.alertLink.nativeElement.href = this.sanitizeUrl(this.links.ChangeSettings || '');
         });
-      }
-      else {
+      } else {
         this.dataReady = true;
       }
-    })
+    });
   }
 
-  public getManagePasswordsUrl(): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.links.ChangePassword);
+  private sanitizeUrl(url: string): string {
+    return this.sanitizer.sanitize(SecurityContext.URL, url)!;
   }
-
-  public getQAProfileUrl(): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.links.EditProfile);
-  }
-
-  public getAlertsUrl(): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.links.ChangeSettings);
-  }
-
 }

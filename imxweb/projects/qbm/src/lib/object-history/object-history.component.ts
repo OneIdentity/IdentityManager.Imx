@@ -157,8 +157,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
   }
 
   private getFilteredHistoryData() {
-    if (this.historyData && this.viewModeValue === this.viewModeGrid)
-      this.filteredHistoryData = this.filterByTime(this.historyData);
+    if (this.historyData && this.viewModeValue === this.viewModeGrid) this.filteredHistoryData = this.filterByTime(this.historyData);
   }
 
   public async onViewModeChange(): Promise<void> {
@@ -189,6 +188,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
           uid,
         };
         this.filteredHistoryData = this.historyData = await this.historyService.get(parameters, fetchRemote);
+        this.getFilteredHistoryData();
       } else if (this.viewModeValue === this.viewModeStateOverview) {
         const stateOverviewItems = await this.historyService.getStateOverviewItems(table, uid);
         if (stateOverviewItems) {

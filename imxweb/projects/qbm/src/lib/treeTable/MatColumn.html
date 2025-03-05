@@ -7,8 +7,8 @@
         <div *ngIf="!headerTemplate">{{title || field}}</div>
     </mat-header-cell>
     <mat-cell *matCellDef="let data; let index = index"  class="imx_ColumnCell">
-        <a *ngIf="isFirstColumn" [style.margin-left]="getMargin(data)" [class]="ButtonClass(data)" (click)="buttonClicked(data)">
-            
+        <a *ngIf="isFirstColumn" [ngStyle]="{'margin-left': getMargin(data)}" [class]="ButtonClass(data)" (click)="buttonClicked(data)">
+
         </a>
         <!-- Use cellTemplate, if available-->
         <ng-container style="display: inline-block;" *ngIf="cellTemplate" [ngTemplateOutlet]="cellTemplate" [ngTemplateOutletContext]="{$implicit:data.data, rowIndex:index}"></ng-container>

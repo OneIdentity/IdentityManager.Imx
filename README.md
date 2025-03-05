@@ -4,6 +4,20 @@
 
 ## Change log
 
+### February 20,2025
+- Fixes some package-vulnerabilities
+- 474749: Fixes an issue with showing the wrong sublevel when the same person can approve again in the same level
+- 476037: Fixes an issue with data time validation in the shopping cart. The error was thrown infinitely.
+- 479743: Fixes an issue with duplicated requests
+
+### February 6, 2025
+- 474722: Fixes an issue with ignored filter settings after refreshing the history on an object.
+- 476117: Fixes an issue with updating the edit origin component when changing the condition type was changed.
+- 475616: Fixes an issue while navigating directly to the attestation page if a user is not authenticated.
+- 477620: Fixes an issue with deleting shopping cart items after a canceled request.
+- 476051: Fixes a (possibly) unsafe use of bypassSecurityTrustResourceUrl.
+- 475790: Fixes an issue with updating the table after a policy collection is deleted from the button in the sidesheet.
+
 ### January 24, 2025
 - 474473: Fixes an issue, with filter data on an application's entitlements page.
 - 474693: Fixes an issue with mitigating controls for policy details.

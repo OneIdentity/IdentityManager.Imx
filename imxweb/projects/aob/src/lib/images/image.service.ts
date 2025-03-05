@@ -24,30 +24,31 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 import { ApiClientService } from 'qbm';
 import { QerApiService } from 'qer';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageService {
   constructor(
     private readonly qerClient: QerApiService,
     private readonly sanitizer: DomSanitizer,
-    private readonly apiProvider: ApiClientService) { }
+    private readonly apiProvider: ApiClientService
+  ) {}
 
   /**
    * Gets the person image URL converted to a SafeUrl
    */
-  public async getPersonImageUrl(uid: string): Promise<SafeUrl> {
+  public async getPersonImageUrl(uid: string): Promise<string> {
     if (uid && uid.length > 0) {
       const imageData = await this.apiProvider.request(() => this.qerClient.client.portal_person_image_get(uid));
 
       if (imageData != null && imageData.size > 0 && ['image/png', 'image/jpeg', 'image/gif'].includes(imageData.type)) {
-        return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(imageData));
+        return this.sanitizer.sanitize(SecurityContext.URL, URL.createObjectURL(imageData));
       }
     }
 

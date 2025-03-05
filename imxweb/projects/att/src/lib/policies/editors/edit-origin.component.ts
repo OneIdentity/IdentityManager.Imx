@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -36,10 +36,9 @@ import { FilterElementModel } from './filter-element-model';
 @Component({
   templateUrl: './edit-origin.component.html',
   selector: 'imx-edit-origin',
-  styleUrls: ['./edit-origin.component.scss']
+  styleUrls: ['./edit-origin.component.scss'],
 })
-export class EditOriginComponent implements OnInit, OnDestroy {
-
+export class EditOriginComponent implements OnChanges, OnDestroy {
   public candidates: ParmOpt[];
   public readonly control = new UntypedFormArray([]);
 
@@ -52,10 +51,9 @@ export class EditOriginComponent implements OnInit, OnDestroy {
   private selectedParameter: string[];
   private valueChangedSubscription: Subscription;
 
-  constructor(private readonly logger: ClassloggerService) { }
+  constructor(private readonly logger: ClassloggerService) {}
 
-  public ngOnInit(): void {
-
+  public ngOnChanges(): void {
     if (this.filterElementModel == null) {
       return;
     }
@@ -63,7 +61,8 @@ export class EditOriginComponent implements OnInit, OnDestroy {
 
     this.selectedParameter = this.splitStringAndRemoveQuotes(this.filterElementModel?.parameterValue, ',');
 
-    this.candidates.forEach(elem => {
+    this.control.clear();
+    this.candidates.forEach((elem) => {
       this.control.push(new UntypedFormControl(this.isSelected(elem)));
       this.logger.trace(this, 'control added for candidate', elem);
     });
@@ -71,7 +70,7 @@ export class EditOriginComponent implements OnInit, OnDestroy {
     this.valueChangedSubscription = this.control.valueChanges.subscribe(() =>
       this.valueChanged.emit({
         ParameterValue: this.buildNewParameterValue(),
-        displays: this.buildDisplay()
+        displays: this.buildDisplay(),
       })
     );
   }
@@ -113,7 +112,6 @@ export class EditOriginComponent implements OnInit, OnDestroy {
 
   private splitStringAndRemoveQuotes(listString: string, separator: string): string[] {
     const splitted = listString.split(separator);
-    return splitted.map(str => str.substring(1, str.length - 1));
+    return splitted.map((str) => str.substring(1, str.length - 1));
   }
-
 }

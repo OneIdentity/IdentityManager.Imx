@@ -24,35 +24,33 @@
  *
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, ElementRef, OnInit, SecurityContext, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ApplicationDialogComponent } from '../application-dialog/application-dialog.component';
 
 @Component({
   selector: 'imx-application-details',
   templateUrl: './application-details.component.html',
-  styleUrls: ['./application-details.component.scss']
+  styleUrls: ['./application-details.component.scss'],
 })
 export class ApplicationDetailsComponent implements OnInit {
-  public urlSafe: SafeResourceUrl;
-  constructor(public sanitizer: DomSanitizer,
-    private dialog: MatDialog) { }
+  @ViewChild('iFrame') private iFrame: ElementRef;
+  constructor(public sanitizer: DomSanitizer, private dialog: MatDialog) {}
 
   public ngOnInit(): void {
     if (history.state.data) {
-       if (history.state.data.DisplayType == 'NR') {
-         this.urlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(history.state.data.Url);
-       } else {
+      if (history.state.data.DisplayType == 'NR') {
+        this.iFrame.nativeElement.src = this.sanitizer.sanitize(SecurityContext.URL, history.state.data.Url);
+      } else {
         const dialogConfig = {
           width: 'min(700px,50%)',
           data: {
-            url: history.state.data.Url
-          }
+            url: history.state.data.Url,
+          },
         };
         this.dialog.open(ApplicationDialogComponent, dialogConfig);
       }
     }
   }
-
 }

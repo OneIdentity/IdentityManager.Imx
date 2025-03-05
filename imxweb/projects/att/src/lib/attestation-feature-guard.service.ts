@@ -27,13 +27,14 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AttestationConfig } from 'imx-api-att';
+import { AuthenticationService } from 'qbm';
 import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AttestationFeatureGuardService implements CanActivate {
-  constructor(private attService: ApiService, private readonly router: Router) {}
+  constructor(private attService: ApiService, private readonly router: Router, private readonly authentication: AuthenticationService) {}
   private config: AttestationConfig;
 
   public async getAttestationConfig(): Promise<AttestationConfig> {
@@ -48,13 +49,15 @@ export class AttestationFeatureGuardService implements CanActivate {
   }
 
   public async canActivate(): Promise<boolean> {
-    await this.setAttestationConfig();
+    let sessionState = this.authentication.onSessionResponse.getValue();
+    if (sessionState.IsLoggedIn) {
+      await this.setAttestationConfig();
 
-    const featureEnabled = this.config?.IsAttestationEnabled;
-    if (featureEnabled) {
-      return featureEnabled;
+      const featureEnabled = this.config?.IsAttestationEnabled;
+      if (featureEnabled) {
+        return featureEnabled;
+      }
     }
-
     this.router.navigate(['']);
     return false;
   }

@@ -24,6 +24,7 @@
  *
  */
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { MethodDefinition, MethodDescriptor, ApiClient, Globals } from 'imx-qbm-dbts';
 import { ServerExceptionError } from '../base/server-exception-error';
 import { ServerError } from '../base/server-error';
@@ -85,7 +86,8 @@ export class ApiClientFetch implements ApiClient {
         } catch (e) {
           if (opts?.signal?.aborted) {
             this.logger.info(this, 'Request was aborted', opts.signal);
-            return;
+            // Use 419 status code because it's unique
+            throw new HttpErrorResponse({ status: 419 });
           }
             throw new ServerError(await this.GetUnexpectedErrorText());
         }
@@ -98,7 +100,7 @@ export class ApiClientFetch implements ApiClient {
 
             // empty response, but success
             if (response.status === 204) {
-                return null;
+                return undefined as T;
             }
 
             const actualContentType = response.headers.get('Content-Type');

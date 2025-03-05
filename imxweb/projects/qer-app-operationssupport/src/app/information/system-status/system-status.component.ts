@@ -44,7 +44,6 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
 
   public isAdmin = false;
 
-
   public get iconClassDb(): string {
     return this.status == null ? this.cssClassError : this.status.IsDbSchedulerDisabled ? this.cssClassWarning : this.cssClassOk;
   }
@@ -57,8 +56,8 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
     return this.status == null
       ? this.cssClassError
       : this.status.IsInMaintenanceMode || this.status.IsCompilationRequired
-        ? this.cssClassWarning
-        : this.cssClassOk;
+      ? this.cssClassWarning
+      : this.cssClassOk;
   }
 
   public get iconClassMaintenance(): string {
@@ -74,9 +73,6 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
     return this._columnCount;
   }
 
-  public get listWidth(): SafeStyle {
-    return this.sanitizer.bypassSecurityTrustStyle(this._columnCount * 369 + 'px');
-  }
   private refreshTimer: Subscription;
   private sub = new Subject<any>();
 
@@ -93,11 +89,7 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
    */
   private subscriptions: Subscription[] = [];
 
-  constructor(
-    private readonly sanitizer: DomSanitizer,
-    private readonly statusService: SystemStatusService,
-    private readonly confirmationService: ConfirmationService
-  ) { }
+  constructor(private readonly statusService: SystemStatusService, private readonly confirmationService: ConfirmationService) {}
 
   public async ngOnInit(): Promise<void> {
     this.isAdmin = await this.statusService.isSystemAdmin();
@@ -106,7 +98,7 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.refreshTimer.unsubscribe();
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public async toggleDbQueue(): Promise<void> {
@@ -115,11 +107,13 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Start DBQueue',
-      Message: '#LDS#Are you sure you want to start the DBQueue?',
-      identifier: 'system-status-confirm-start-dbqueue'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Start DBQueue',
+        Message: '#LDS#Are you sure you want to start the DBQueue?',
+        identifier: 'system-status-confirm-start-dbqueue',
+      })
+    ) {
       this.changeIsDbServiceDisabled();
     }
   }
@@ -130,37 +124,45 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Start Job Queue',
-      Message: '#LDS#Are you sure you want to start the Job queue?',
-      identifier: 'system-status-confirm-start-jobqueue'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Start Job Queue',
+        Message: '#LDS#Are you sure you want to start the Job queue?',
+        identifier: 'system-status-confirm-start-jobqueue',
+      })
+    ) {
       this.changeIsJobServiceDisabled();
     }
   }
 
   private changeIsJobServiceDisabled(): void {
     const observer = this.statusService.setStatus(!this.status.IsJobServiceDisabled, this.status.IsDbSchedulerDisabled);
-    this.subscriptions.push(observer.subscribe(res => {
-      this.sub.next('foo');
-    }));
+    this.subscriptions.push(
+      observer.subscribe((res) => {
+        this.sub.next('foo');
+      })
+    );
   }
 
   private initServerObserver(): void {
     let statusObserver: Observable<SystemStatusInformation>;
     statusObserver = this.sub.pipe(switchMap((term: any) => this.statusService.getStatus()));
-    this.subscriptions.push(statusObserver.subscribe(res => {
-      this.status = res as SystemStatusInformation;
-    }));
+    this.subscriptions.push(
+      statusObserver.subscribe((res) => {
+        this.status = res as SystemStatusInformation;
+      })
+    );
 
     this.sub.next('foo');
-    this.refreshTimer = interval(30000).subscribe(x => this.sub.next('foo'));
+    this.refreshTimer = interval(30000).subscribe((x) => this.sub.next('foo'));
   }
 
   private changeIsDbServiceDisabled(): void {
     const observer = this.statusService.setStatus(this.status.IsJobServiceDisabled, !this.status.IsDbSchedulerDisabled);
-    this.subscriptions.push(observer.subscribe(res => {
-      this.sub.next('foo');
-    }));
+    this.subscriptions.push(
+      observer.subscribe((res) => {
+        this.sub.next('foo');
+      })
+    );
   }
 }

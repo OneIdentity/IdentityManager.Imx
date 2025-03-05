@@ -26,12 +26,11 @@
 
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { UserConfig, ProjectConfig, QerProjectConfig } from 'imx-api-qer';
 import { UserModelService } from '../../user/user-model.service';
 import { PendingItemsType } from '../../user/pending-items-type.interface';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
-import { AppConfigService, imx_SessionService, SystemInfoService } from 'qbm';
+import { AppConfigService, imx_SessionService, SplashService, SystemInfoService } from 'qbm';
 import { SystemInfo } from 'imx-api-qbm';
 import { DashboardService } from './dashboard.service';
 import { MethodDescriptor, TimeZoneInfo } from 'imx-qbm-dbts';
@@ -73,11 +72,12 @@ export class StartComponent implements OnInit {
     private readonly sessionService: imx_SessionService,
     private readonly detectRef: ChangeDetectorRef,
     private readonly projectConfigurationService: ProjectConfigurationService,
-    private readonly config : AppConfigService
+    private readonly config : AppConfigService,
+    private readonly splash: SplashService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
-    this.dashboardService.busyStateChanged.subscribe(busy => {
+    this.dashboardService.busyStateChanged.subscribe((busy) => {
       this.viewReady = !busy;
       this.detectRef.detectChanges();
     });
@@ -92,6 +92,7 @@ export class StartComponent implements OnInit {
       this.BannerMethod()
       
     } finally {
+      this.splash.close();
       busy.endBusy();
     }
   }
@@ -133,7 +134,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToItShopApprovalInquiries(): void {
-    this.router.navigate(['itshop', 'approvals'], {queryParams: {inquiries:true}});
+    this.router.navigate(['itshop', 'approvals'], { queryParams: { inquiries: true } });
   }
 
   public GoToMyProcesses(): void {

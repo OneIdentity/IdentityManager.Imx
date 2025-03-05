@@ -44,7 +44,19 @@ export class DecisionStepSevice {
         elem.Columns.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue()
     );
 
-    const step = steps.find((elem) => this.isFitting(extended.WorkflowData?.Entities, elem));
+    //add sublevel to steps
+    const stepsWithSubLevel: { subLevel: number; column: any }[] = [];
+    steps
+      .filter((elem) => this.isFitting(extended.WorkflowData?.Entities, elem))
+      .forEach((element) => {
+        const subLevel = extended.WorkflowData.Entities.find(
+          (data) => data.Columns.UID_QERWorkingStep.Value === element.Columns.UID_QERWorkingStep.Value
+        );
+        stepsWithSubLevel.push({ subLevel: subLevel.Columns.SubLevelNumber.Value, column: element });
+      });
+
+      //Sort steps and get step with lowest sub level
+    const step = stepsWithSubLevel.sort((x, y) => x.subLevel - y.subLevel)[0].column;
 
     return step?.Columns.Ident_PWODecisionStep == null
       ? null
@@ -59,7 +71,8 @@ export class DecisionStepSevice {
     return workflowData.some(
       (elem) =>
         elem?.Columns?.UID_QERWorkingStep.Value === step?.Columns?.UID_QERWorkingStep.Value &&
-        elem?.Columns?.UID_PersonHead.Value === this.uidUser
+        elem?.Columns?.UID_PersonHead.Value === this.uidUser &&
+        (elem?.Columns?.Decision.Value ?? '') === ''
     );
   }
 }

@@ -34,20 +34,14 @@ import { IssueItem } from '../service-issues/service-issues.models';
 @Component({
   selector: 'imx-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.scss', '../issue-tiles.scss']
+  styleUrls: ['./notifications.component.scss', '../issue-tiles.scss'],
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
   public get Notifications(): IssueItem[] {
     return this.notifications.items;
   }
-  public get listWidth(): SafeStyle {
-    return this.domSanitizer.bypassSecurityTrustStyle('726px');
-  }
 
-  constructor(
-    private domSanitizer: DomSanitizer,
-    public notifications: NotificationsService,
-    private appConfigService: AppConfigService) { }
+  constructor(public notifications: NotificationsService, private appConfigService: AppConfigService) {}
 
   public ngOnInit(): void {
     this.notifications.subscribe(this.appConfigService.Config.NotificationUpdateInterval);

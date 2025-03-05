@@ -75,6 +75,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
+  private previousValue: Moment | undefined;
   /**
    * We need to track error states incase external validation scripts are erroring on the current value.
    * i.e original value is now invalid as too much time has passed while being in the shopping cart
@@ -179,9 +180,10 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
    * @param value The Moment object, that is used as the new value for the control.
    */
   private async writeValue(value: Moment): Promise<void> {
-    if (this.control.errors) {
+    if (this.control.errors || value?.isSame(this.previousValue)) {
       return;
     }
+    this.previousValue = value;
     const date = value == null ? undefined : value.toDate();
     const resetDate = new Date(this.columnContainer.value);
     const resetMoment = moment(resetDate);

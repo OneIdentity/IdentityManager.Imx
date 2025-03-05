@@ -79,7 +79,7 @@ describe('EditOriginComponent', () => {
             { Display: 'Three', Uid: '3' },
         ];
         component.filterElementModel = buildFilterModel(options, '"1","2"');
-        component.ngOnInit();
+        component.ngOnChanges();
 
         expect(component.control.controls.length).toEqual(3);
         expect(component.control.controls[0].value).toBeTruthy();
@@ -95,7 +95,7 @@ describe('EditOriginComponent', () => {
         ];
 
         component.filterElementModel = buildFilterModel(options, '\'2\',\'3\'')
-        component.ngOnInit();
+        component.ngOnChanges();
 
         const spy = spyOn(component.valueChanged, 'emit');
 

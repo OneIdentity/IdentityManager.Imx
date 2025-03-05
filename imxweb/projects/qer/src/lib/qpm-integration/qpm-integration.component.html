@@ -17,7 +17,8 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <a mat-raised-button color="primary" [href]="getManagePasswordsUrl()">{{ '#LDS#Manage my passwords' | translate }}</a>
+        <!-- Safely set href from ts -->
+        <a #passwordLink mat-raised-button color="primary">{{ '#LDS#Manage my passwords' | translate }}</a>
       </mat-card-actions>
     </mat-card>
 
@@ -34,7 +35,8 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <a mat-raised-button color="primary" [href]="getQAProfileUrl()">{{ '#LDS#Manage my Q&A profile' | translate }}</a>
+        <!-- Safely set href from ts -->
+        <a #qaLink mat-raised-button color="primary">{{ '#LDS#Manage my Q&A profile' | translate }}</a>
       </mat-card-actions>
     </mat-card>
 
@@ -51,7 +53,8 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <a mat-raised-button color="primary" [href]="getAlertsUrl()">{{ '#LDS#Manage my alerts' | translate }}</a>
+        <!-- Safely set href from ts -->
+        <a #alertLink mat-raised-button color="primary">{{ '#LDS#Manage my alerts' | translate }}</a>
       </mat-card-actions>
     </mat-card>
   </ng-container>

@@ -578,6 +578,7 @@ export class AttestationActionService {
           elem?.Columns?.Decision?.Value === ''
       )
     );
-    return data[0]?.Columns?.SubLevelNumber?.Value ?? 0; //return the sublevel number
+    const sorted = data.sort((x,y) =>x.Columns?.SubLevelNumber?.Value-y.Columns?.SubLevelNumber?.Value); // Sort by SubLevelNumber, use smallest
+    return sorted[0]?.Columns?.SubLevelNumber?.Value ?? 0; //return the sublevel number
   }
 }

@@ -46,8 +46,15 @@ export class GlobalErrorHandler implements ErrorHandler {
     this.checkInjectedServices();
 
     if (error instanceof HttpErrorResponse) {
-      this.handleHttpErrorResponse(error);
+      if (error.status !== 419) {
+        this.handleHttpErrorResponse(error);
+      }
+    } else if (error.name === 'AbortError') {
+      return;
     } else if (error instanceof Error) {
+      if (error.message.indexOf('"status":419') >=0 ) {
+        return;
+      }
       if (error.message != null && error.message.indexOf('\n') !== -1) {
         this.messageService.subject.next({
           text: error.message.substring(0, error.message.indexOf('\n')).replace('Uncaught (in promise):', ''),
