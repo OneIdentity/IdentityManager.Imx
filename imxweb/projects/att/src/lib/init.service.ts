@@ -163,26 +163,26 @@ export class InitService {
 
         return menu;
       },
-      function (preProps: string[], __: string[], projectConfig: QerProjectConfig & ProjectConfig) {
-        const deviceEnabled = projectConfig.DeviceConfig.VI_Hardware_Enabled;
-        if (!preProps.includes('MAC') || !preProps.includes('ITSHOP') || ! deviceEnabled) {
-          return null;
-        }
+      // function (preProps: string[], __: string[], projectConfig: QerProjectConfig & ProjectConfig) {
+      //   const deviceEnabled = projectConfig.DeviceConfig.VI_Hardware_Enabled;
+      //   if (!preProps.includes('MAC') || !preProps.includes('ITSHOP') || ! deviceEnabled) {
+      //     return null;
+      //   }
 
-        return {
-          id: 'ROOT_Responsibilities',
-          title: '#LDS#Responsibilities',
-          sorting: '30',
-          items: [
-            {
-              id: 'QER_Responsibilities_AssignDevice',
-              route: 'claimdevice',
-              title: '#LDS#Menu Entry Device ownership',
-              sorting: '30-20',
-            },
-          ],
-        };
-      }
+      //   return {
+      //     id: 'ROOT_Responsibilities',
+      //     title: '#LDS#Responsibilities',
+      //     sorting: '30',
+      //     items: [
+      //       {
+      //         id: 'QER_Responsibilities_AssignDevice',
+      //         route: 'claimdevice',
+      //         title: '#LDS#Menu Entry Device ownership',
+      //         sorting: '30-20',
+      //       },
+      //     ],
+      //   };
+      // }
     );
   }
 }

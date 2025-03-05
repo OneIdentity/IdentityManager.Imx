@@ -1,7 +1,7 @@
 <imx-badge-tile
   data-imx-identifier="start-tile-att-approvals"
   [caption]="'#LDS#Heading Pending Attestations' | translate"
-  *ngIf="attEnabled && 0 < pendingItems?.OpenAttestation"
+  *ngIf="attEnabled && 0 <= pendingItems?.OpenAttestation"
   [value]="pendingItems?.OpenAttestation"
   [identifier]="'att-approvals'"
   (actionClick)="router.navigate(['attestation', 'decision'])"

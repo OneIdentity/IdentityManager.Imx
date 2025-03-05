@@ -1,0 +1,24 @@
+<div class="mysidesheet">
+  <eui-alert type="warning" colored="true" *ngIf="dateproblem" dismissable="true" (dismissed)="showSnackBar('my message')" class="mybanner">Invalid Date</eui-alert>
+  <h3>Identity Details</h3>
+  <p><strong>UID_Person:</strong>{{employeeUID_Person}}</p>
+  <hr>
+  <mat-form-field appearance="outline">
+    <mat-label>Custom Property01 Value</mat-label>
+    <input type="text" matInput placeholder="Placeholder" autocomplete="no" [(ngModel)]="customProperty" />
+  </mat-form-field>
+      
+    
+  <eui-date-picker [dateControl]="date4" placeholder="Select a date"  class="mydatepicker"> </eui-date-picker>
+      
+      
+  
+  <button class="mybutton" (click)="update()">Apply</button>
+  <div class="myspinner">
+    <mat-spinner diameter="100" *ngIf="isLoading"  ></mat-spinner>
+  </div>
+</div>
+
+ 
+  
+

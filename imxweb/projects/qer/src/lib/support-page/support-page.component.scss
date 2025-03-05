@@ -1,0 +1,32 @@
+@import '../../../../../shared/assets/variables.scss';
+.support-title{
+  color:#333333;
+  font-size: 26px;
+  padding-bottom: 25px;
+  font-weight:500;
+}
+
+.highlight{
+  font-size:18px;
+  color:$CCC_Main;
+  margin-top:15px;
+  margin-bottom:15px;
+}
+
+.support-links{
+  font-size:16px;
+  color:#05AADB;
+}
+
+.other-text{
+  font-size:16px;
+  color:#666666;
+}
+
+.together p{
+  margin:0;
+}
+
+.together{
+  margin-bottom:15px;
+}

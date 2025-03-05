@@ -422,6 +422,17 @@ header.eui-masthead{
     background-color:lighten($CCC_Main , 40%) ;
   }
 
+imx-start eui-alert .eui-alert.eui-alert-type--info:not(.eui-alert-colored) {
+    border-left: 5px solid $CCC_Main !important;
+    margin-bottom: 25px;
+}
+
+
+.mat-form-field.mat-focused .mat-form-field-underline .mat-form-field-ripple{
+  background-color: $CCC_Main ;
+}
+
+
 
 
   

@@ -290,7 +290,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     try {
-      const personUid = this.uidRecipientRequester || this.requestHistoryFilters?.selectedUid;
+      const personUid = this.uidRecipientRequester || this.requestHistoryFilters?.selectedUid  ;
       if (personUid) {
         this.navigationState.UID_Person = personUid;
 

@@ -242,14 +242,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       this.selectedIdentity = (await this.person.getMasterdataInteractive(userUid)).Data[0].GetEntity();
 
-      this.cdrList = (this.columns ?? []).map(columnName => {
+      this.cdrList = (this.columns ?? [])
+        .map(columnName => {
         const column = this.selectedIdentity.GetColumn(columnName);
-        return {
-          column,
-          isReadOnly: () => !column.GetMetadata().CanEdit(),
-          hint: this.hints[columnName]
-        };
+          return {
+            column,
+            isReadOnly: () => !column.GetMetadata().CanEdit(),
+            hint: this.hints[columnName]
+          };
+        
       });
+
+      this.cdrList=this.cdrList.filter(cdr =>cdr.column.GetMetadata().GetDisplay() !="Room");
+      
+      //edited
+      this.cdrList.forEach(cdr=>{
+        if(cdr.column.GetMetadata().GetDisplay() ==="Contact email address"){
+          cdr.isReadOnly = () => false ; 
+        }else{
+          cdr.isReadOnly = () => true ; 
+        }
+      })
 
       this.mailInfo = await this.mailSvc.getMailsThatCanBeUnsubscribed(userUid);
       this.hasMailSubscriptions = this.mailInfo.length > 0;

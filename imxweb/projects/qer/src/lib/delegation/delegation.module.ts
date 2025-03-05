@@ -92,36 +92,36 @@ export class DelegationModule {
     logger: ClassloggerService
   ) {
     logger.info(this, '▶️ DelegationModule loaded');
-    this.setupMenu();
+    // this.setupMenu();
   }
 
-  private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+  // private setupMenu(): void {
+  //   this.menuService.addMenuFactories(
+  //     (preProps: string[], features: string[]) => {
 
-        const items: MenuItem[] = [];
+  //       const items: MenuItem[] = [];
 
-        if (preProps.includes('ITSHOP') && preProps.includes('DELEGATION')) {
-          items.push(
-            {
-              id: 'QER_Responsibilities_Delegation',
-              route: 'delegation',
-              title: '#LDS#Menu Entry Delegation',
-              sorting: '30-10',
-            },
-          );
-        }
+  //       if (preProps.includes('ITSHOP') && preProps.includes('DELEGATION')) {
+  //         items.push(
+  //           {
+  //             id: 'QER_Responsibilities_Delegation',
+  //             route: 'delegation',
+  //             title: '#LDS#Menu Entry Delegation',
+  //             sorting: '30-10',
+  //           },
+  //         );
+  //       }
 
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Responsibilities',
-          title: '#LDS#Responsibilities',
-          sorting: '30',
-          items
-        };
-      },
-    );
-  }
+  //       if (items.length === 0) {
+  //         return null;
+  //       }
+  //       return {
+  //         id: 'ROOT_Responsibilities',
+  //         title: '#LDS#Responsibilities',
+  //         sorting: '30',
+  //         items
+  //       };
+  //     },
+  //   );
+  // }
 }

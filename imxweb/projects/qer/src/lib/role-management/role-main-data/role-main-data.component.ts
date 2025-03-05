@@ -75,6 +75,7 @@ export class RoleMainDataComponent implements OnInit {
     try {
       this.entity = this.dataManagementService.entityInteractive;
       this.editableFields = await this.roleService.getEditableFields(this.roleService.ownershipInfo.TableName, this.dataManagementService.entityInteractive.GetEntity());
+      
 
       const config = await this.projectConfig.getConfig();
 
@@ -83,6 +84,8 @@ export class RoleMainDataComponent implements OnInit {
         : config.RoleMgmtConfig.Allow_Roles_Split_By_Business_Owner)
         && this.roleService.getRoleTypeInfo().canBeSplitSource;
       this.setCdrs();
+      
+
 
       // can we compare this role to another role?
       this.canCompare = await this.roleService.canCompare()
@@ -116,7 +119,7 @@ export class RoleMainDataComponent implements OnInit {
 
   private setCdrs(): void {
        const entity = this.entity.GetEntity();
-    this.properties = this.cdrfactoryService.buildCdrFromColumnList(entity,this.editableFields);
+    this.properties = this.cdrfactoryService.buildCdrFromColumnList(entity,this.editableFields,true);
  
   }
 

@@ -79,29 +79,29 @@ export class TeamResponsibilitiesModule {
     logger: ClassloggerService
   ) {
     logger.info(this, '▶️ TeamResponsibilitiesModule loaded');
-    this.setupMenu();
+    // this.setupMenu();
     this.extService.register('Dashboard-SmallTiles', { instance:TeamResponsibilityTileComponent});
   }
 
-  private async setupMenu(): Promise<void> {
-    this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+  // private async setupMenu(): Promise<void> {
+  //   this.menuService.addMenuFactories(
+  //     (preProps: string[], groups: string[]) => {
 
-        const items: MenuItem[] = [];
-        if (isPersonManager(groups)) {
-          return {
-            id: 'ROOT_Responsibilities',
-            title: '#LDS#Responsibilities',
-            sorting: '30',
-            items: [{
-              id: 'QER_Team_Responsibilities',
-              navigationCommands: { commands: ['teamresponsibilities'] },
-              title: '#LDS#Menu Entry Responsibilities of my reports',
-              sorting: '30-10',
-            }]
-          };
-        }
-      },
-    );
-  }
+  //       const items: MenuItem[] = [];
+  //       if (isPersonManager(groups)) {
+  //         return {
+  //           id: 'ROOT_Responsibilities',
+  //           title: '#LDS#Responsibilities',
+  //           sorting: '30',
+  //           items: [{
+  //             id: 'QER_Team_Responsibilities',
+  //             navigationCommands: { commands: ['teamresponsibilities'] },
+  //             title: '#LDS#Menu Entry Responsibilities of my reports',
+  //             sorting: '30-10',
+  //           }]
+  //         };
+  //       }
+  //     },
+  //   );
+  // }
 }

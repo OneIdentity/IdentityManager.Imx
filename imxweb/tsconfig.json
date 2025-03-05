@@ -32,6 +32,8 @@
       "o3t/*": ["dist/o3t/*"],
       "aad": ["dist/aad"],
       "aad/*": ["dist/aad/*"],
+      "sample-plugin": ["dist/sample-plugin"],
+      "sample-plugin/*": ["dist/sample-plugin/*"],
       "apc": ["dist/apc"],
       "apc/*": ["dist/apc/*"]
     },

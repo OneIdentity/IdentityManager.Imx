@@ -1,0 +1,45 @@
+
+
+.mysidesheet{
+  margin:20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner{
+  margin-bottom:15px;
+}
+
+
+
+.mydatepicker .mat-form-field{
+  width:100% !important;
+}
+
+.mybutton{
+  background-color: #ff6200;
+  color:white;
+  border-radius: 3px;
+  height:40px;
+  border:none;
+}
+.mybutton:hover{
+  background-color:lighten(#ff6200 , 20%);
+}
+
+:host ::ng-deep .mat-form-field{
+  display:block;
+}
+
+
+.myspinner{
+  position: absolute;
+  top:50%;
+  left: 45%;
+  margin: 15px 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}

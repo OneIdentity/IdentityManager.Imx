@@ -85,40 +85,40 @@ export class EditReportModule {
   constructor(
     private readonly menuService: MenuService,
   ) {
-    this.setupMenu();
+    // this.setupMenu();
   }
 
-  private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+  // private setupMenu(): void {
+  //   this.menuService.addMenuFactories(
+  //     (preProps: string[], features: string[]) => {
 
-        const items: MenuItem[] = [];
+  //       const items: MenuItem[] = [];
 
-        if (preProps.includes('REPORT_SUBSCRIPTION')) {
-          items.push(
-            {
-              id: 'RPS_Reports',
-              navigationCommands: {
-                commands: ['reports']
-              },
-              title: '#LDS#Menu Entry Reports',
-              sorting: '60-70',
-            },
-          );
-        }
+  //       if (preProps.includes('REPORT_SUBSCRIPTION')) {
+  //         items.push(
+  //           {
+  //             id: 'RPS_Reports',
+  //             navigationCommands: {
+  //               commands: ['reports']
+  //             },
+  //             title: '#LDS#Menu Entry Reports',
+  //             sorting: '60-70',
+  //           },
+  //         );
+  //       }
 
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Setup',
-          title: '#LDS#Setup',
-          sorting: '60',
-          items
-        };
-      },
-    );
-  }
+  //       if (items.length === 0) {
+  //         return null;
+  //       }
+  //       return {
+  //         id: 'ROOT_Setup',
+  //         title: '#LDS#Setup',
+  //         sorting: '60',
+  //         items
+  //       };
+  //     },
+  //   );
+  // }
 
 
 

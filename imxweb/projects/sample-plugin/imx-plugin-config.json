@@ -1,0 +1,8 @@
+{
+  "qer-app-portal": [
+    {
+      "Container": "sample-plugin",
+      "Name": "SamplePluginModule"
+    }
+  ]
+}

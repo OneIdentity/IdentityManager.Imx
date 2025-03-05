@@ -1,4 +1,8 @@
-<h2 class="mat-headline">{{ '#LDS#Welcome' | translate }}</h2>
+
+<eui-alert *ngIf="IsInDepartment && IsParamEnabled">{{Message}}</eui-alert>
+
+<h2 class="mat-headline">{{ '#LDS#Welcome' | translate }}, {{firstName}}  </h2>
+
 
 <imx-busy-indicator *ngIf="!viewReady"></imx-busy-indicator>
 
@@ -7,7 +11,7 @@
     <imx-badge-tile
       data-imx-identifier="start-tile-shopping-cart"
       [caption]="'#LDS#Heading Products in Shopping Cart' | translate"
-      *ngIf="userConfig?.IsITShopEnabled && GetCountProductsinShoppingCart() > 0"
+      *ngIf="userConfig?.IsITShopEnabled && GetCountProductsinShoppingCart() >= 0"
       [value]="GetCountProductsinShoppingCart()"
       [identifier]="'shopping-cart'"
       (actionClick)="GoToShoppingCart()"
@@ -18,7 +22,7 @@
       data-imx-identifier="start-tile-it-shop-approvals"
       [caption]="'#LDS#Heading Pending Requests' | translate"
       [tooltip]="'#LDS#Shows the pending requests you can approve or deny.' | translate"
-      *ngIf="userConfig?.IsITShopEnabled && GetCountPendingRequests() > 0"
+      *ngIf="userConfig?.IsITShopEnabled && GetCountPendingRequests() >= 0"
       [value]="GetCountPendingRequests()"
       [identifier]="'it-shop-approvals'"
       (actionClick)="GoToItshopApprovals()"
@@ -136,6 +140,42 @@
         </button>
       </ng-template>
     </imx-icon-tile>
+
+
+    <!-- request history tile -->
+    <!-- <imx-icon-tile
+    data-imx-identifier="start-tile-request-history"
+    [caption]="'#LDS#Request History ' | translate"
+    [subtitle]="'#LDS#Go to the Request History' | translate"
+    [image]="'request'"
+    [identifier]="'history-page-tile'"
+  >
+    <ng-template #ActionTemplate>
+      <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-request-history'" (click)="GoToRequestHistory()">
+        <span>{{ '#LDS#See request history' | translate }}</span>
+        <eui-icon size="m" icon="forward"></eui-icon>
+      </button>
+    </ng-template>
+  </imx-icon-tile> -->
+
+    <!-- added -->
+    <imx-icon-tile
+      data-imx-identifier="start-tile-support"
+      [caption]="'#LDS#Support ' | translate"
+      [subtitle]="'#LDS#You can find the answer in your issue.' | translate"
+      [image]="'help'"
+      [identifier]="'support-page'"
+    >
+      <ng-template #ActionTemplate>
+        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-new-request'" (click)="GoToSupportPage()">
+          <span>{{ '#LDS#Find support' | translate }}</span>
+          <eui-icon size="m" icon="forward"></eui-icon>
+        </button>
+      </ng-template>
+    </imx-icon-tile>
+
+    
+
     <imx-ext id="Dashboard-MediumTiles"></imx-ext>
   </div>
   <div class="imx-flexible-tile-row">

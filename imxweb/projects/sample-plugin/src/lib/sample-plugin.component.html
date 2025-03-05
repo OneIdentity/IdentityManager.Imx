@@ -1,0 +1,12 @@
+
+<imx-badge-tile 
+  *ngIf="thereAreEmployees"
+  [value]="howManyEmployees"
+  data-imx-identifier="start-tile-employees"
+  [caption]="'#LDS#Employees' | translate"
+  [identifier]="'another identifier'"
+  (actionClick)="GoToRequestHistory()"
+>
+</imx-badge-tile>
+
+
