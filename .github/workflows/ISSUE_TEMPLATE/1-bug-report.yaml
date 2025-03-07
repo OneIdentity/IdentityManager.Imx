@@ -1,0 +1,66 @@
+name: Issue Report
+description: Report an issue for the One Identity Manager HTML5 Web Frontends
+
+body:
+  - type: dropdown
+    id: is-regression
+    attributes:
+      label: Is this a regression? (This used to work and it doesn't anymore)
+      options:
+        - 'Yes'
+        - 'No'
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: affected-branch
+    attributes:
+      label: Please provide the branch(es) you discovered this issue in
+      options:
+        - v93
+        - v92
+        - v91
+        - v90
+      multiple: true
+    validations:
+      required: true
+
+  - type: input
+    id: reproduction
+    attributes:
+      label: Please provide a minimal set of steps to reproduce the issue
+      placeholder: |
+        1. First step
+        2. Second step
+        3. and so on...
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Describe the issue you encountered
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-vs-actual-behavior
+    attributes:
+      label: Describe what you expected to happen versus what actually happened
+      placeholder: |
+        I would expect that...
+        Instead, what I see...
+    validations:
+      required: true
+
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Add a screenshot(s) if that helps illustrate the problem
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Anything else? (proposed solution can go here)
