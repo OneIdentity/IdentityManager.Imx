@@ -51,7 +51,7 @@ import { ObjectOverviewContainer, FeatureConfigService  } from 'qer';
 import { HyperviewService } from './hyperview/hyperview.service';
 import { ObjectOverviewService } from './object-overview.service';
 import { PersonDbQueueInfo } from './person-db-queue-info';
-import { PersonJobQueueInfo } from './person-job-queue-Info';
+import { PersonJobQueueInfo } from './person-job-queue-info';
 
 @Component({
   templateUrl: './object-overview.component.html',
