@@ -168,60 +168,68 @@ describe('EntitlementsComponent', () => {
     mockEntitlementNotPublished,
     {
       IsInActive: { value: true },
-      XTouched: { value: "some date" },
+      IsDynamic: { value: false },
+      XTouched: { value: 'some date' },
       ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
-        value: null, GetMetadata: () => ({
-          CanEdit: () => true
-        })
+        value: null,
+        GetMetadata: () => ({
+          CanEdit: () => true,
+        }),
       },
       UID_AOBApplication: mockApplication.UID_AOBApplication,
       GetEntity: () => ({
-        GetDisplay: () => 'name2'
-      })
+        GetDisplay: () => 'name2',
+      }),
     },
     {
       IsInActive: { value: true },
-      XTouched: { value: "some date" },
+      IsDynamic: { value: false },
+      XTouched: { value: 'some date' },
       ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
-        value: null, GetMetadata: () => ({
-          CanEdit: () => true
-        })
+        value: null,
+        GetMetadata: () => ({
+          CanEdit: () => true,
+        }),
       },
       UID_AOBApplication: mockApplication.UID_AOBApplication,
       GetEntity: () => ({
-        GetDisplay: () => 'name3'
-      })
+        GetDisplay: () => 'name3',
+      }),
     },
     {
       IsInActive: { value: true },
-      XTouched: { value: "some date" },
+      IsDynamic: { value: false },
+      XTouched: { value: 'some date' },
       ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
-        value: null, GetMetadata: () => ({
-          CanEdit: () => true
-        })
+        value: null,
+        GetMetadata: () => ({
+          CanEdit: () => true,
+        }),
       },
       UID_AOBApplication: mockApplication.UID_AOBApplication,
       GetEntity: () => ({
-        GetDisplay: () => 'name4'
-      })
+        GetDisplay: () => 'name4',
+      }),
     },
     {
       IsInActive: { value: false },
-      XTouched: { value: "some date" },
+      IsDynamic: { value: false },
+      XTouched: { value: 'some date' },
       ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
-        value: null, GetMetadata: () => ({
-          CanEdit: () => true
-        })
+        value: null,
+        GetMetadata: () => ({
+          CanEdit: () => true,
+        }),
       },
       UID_AOBApplication: mockApplication.UID_AOBApplication,
       GetEntity: () => ({
-        GetDisplay: () => 'some other'
-      })
-    }
+        GetDisplay: () => 'some other',
+      }),
+    },
   ];
 
   const mockEntitlementsService = {
@@ -561,60 +569,110 @@ describe('EntitlementsComponent', () => {
   [
     {
       description: 'selection undefined',
-      state: { unassignedDisabled: true, publishDisabled: true, unpublishDisabled: true }
+      state: { unassignedDisabled: true, publishDisabled: true, unpublishDisabled: true },
     },
     {
       description: 'selection emtpy',
       selection: [],
-      state: { unassignedDisabled: true, publishDisabled: true, unpublishDisabled: true }
+      state: { unassignedDisabled: true, publishDisabled: true, unpublishDisabled: true },
     },
     {
       description: 'notPublished',
       selection: [
-        { IsInActive: { value: true }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } }
+        {
+          IsDynamic: { value: false },
+          IsInActive: { value: true },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
       ],
-      state: { unassignedDisabled: false, publishDisabled: false, unpublishDisabled: true }
+      state: { unassignedDisabled: false, publishDisabled: false, unpublishDisabled: true },
     },
     {
       description: 'willBePublished',
       selection: [
-        { IsInActive: { value: true }, ActivationDate: { value: getDateWithOffset(DbVal.MinDate, 1) }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } }
+        {
+          IsDynamic: { value: false },
+          IsInActive: { value: true },
+          ActivationDate: { value: getDateWithOffset(DbVal.MinDate, 1) },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
       ],
-      state: { unassignedDisabled: false, publishDisabled: false, unpublishDisabled: false }
+      state: { unassignedDisabled: false, publishDisabled: false, unpublishDisabled: false },
     },
     {
       description: 'published',
       selection: [
-        { IsInActive: { value: false }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } }
+        {
+          IsInActive: { value: false },
+          IsDynamic: { value: false },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
       ],
-      state: { unassignedDisabled: false, publishDisabled: true, unpublishDisabled: false }
+      state: { unassignedDisabled: false, publishDisabled: true, unpublishDisabled: false },
     },
     {
       description: 'notPublished, willBePublished',
       selection: [
-        { IsInActive: { value: true }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } },
-        { IsInActive: { value: true }, ActivationDate: { value: getDateWithOffset(DbVal.MinDate, 1) }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } }
+        {
+          IsInActive: { value: true },
+          IsDynamic: { value: false },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
+        {
+          IsInActive: { value: true },
+          IsDynamic: { value: false },
+          ActivationDate: { value: getDateWithOffset(DbVal.MinDate, 1) },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
       ],
-      state: { unassignedDisabled: false, publishDisabled: false, unpublishDisabled: true }
+      state: { unassignedDisabled: false, publishDisabled: false, unpublishDisabled: true },
     },
     {
       description: 'notPublished, published',
       selection: [
-        { IsInActive: { value: true }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } },
-        { IsInActive: { value: false }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } }
+        {
+          IsInActive: { value: true },
+          IsDynamic: { value: false },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
+        {
+          IsInActive: { value: false },
+          IsDynamic: { value: false },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
       ],
-      state: { unassignedDisabled: false, publishDisabled: true, unpublishDisabled: true }
+      state: { unassignedDisabled: false, publishDisabled: true, unpublishDisabled: true },
     },
     {
       description: 'notPublished, willBePublished, published',
       selection: [
-        { IsInActive: { value: true }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } },
-        { IsInActive: { value: true }, ActivationDate: { value: getDateWithOffset(DbVal.MinDate, 1) }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } },
-        { IsInActive: { value: false }, ActivationDate: { value: null }, Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) } }
+        {
+          IsInActive: { value: true },
+          IsDynamic: { value: false },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
+        {
+          IsInActive: { value: true },
+          IsDynamic: { value: false },
+          ActivationDate: { value: getDateWithOffset(DbVal.MinDate, 1) },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
+        {
+          IsInActive: { value: false },
+          IsDynamic: { value: false },
+          ActivationDate: { value: null },
+          Ident_AOBEntitlement: { GetMetadata: () => ({ CanEdit: () => true }) },
+        },
       ],
-      state: { unassignedDisabled: false, publishDisabled: true, unpublishDisabled: true }
-    }
-  ].forEach(testcase => {
+      state: { unassignedDisabled: false, publishDisabled: true, unpublishDisabled: true },
+    },
+  ].forEach((testcase) => {
     it('onSelectionChanged (' + testcase.description + ')', () => {
       component.onSelectionChanged(testcase.selection as PortalEntitlement[]);
       expect(component.unassignedDisabled).toEqual(testcase.state.unassignedDisabled);
