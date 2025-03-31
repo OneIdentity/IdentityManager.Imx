@@ -4,6 +4,16 @@
 
 ## Change log
 
+### March 31, 2025
+- The branch v90 is now up to date with the 9.0 CU4 of Identity Manager.
+- The repository has been updated with fixes for the following issues. 
+  -  449889: Fixes an issue with broken paging in system entitlement memberships.
+  -  450101: Security fixes: Path traversal in webpack-dev-middleware.
+  -  449955: Fixes an issue with grouping on the pending attestations page -> a second request showed results for the first one.
+  -  439884: Fixes an issue with synchronizing typescript entities in case of an error.
+  -  442735: Fixing an issue with changing the publish state of automatically assigned entitlements.
+  -  447268: Fixing an issue with report subscription -> does not save parameter value in the DB.
+
 ### December 7, 2023
 - The branch v90 is now up to date with the 9.0 CU3 of Identity Manager.
 - The repository has been updated with fixes for the following issues. 
