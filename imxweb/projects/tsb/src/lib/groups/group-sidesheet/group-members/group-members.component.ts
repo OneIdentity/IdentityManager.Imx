@@ -32,14 +32,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PortalTargetsystemUnsDirectmembers, PortalTargetsystemUnsGroupServiceitem, PortalTargetsystemUnsNestedmembers } from 'imx-api-tsb';
-import {
-  CollectionLoadParameters,
-  EntitySchema,
-  IClientProperty,
-  TypedEntity,
-  TypedEntityCollectionData,
-  ValType
-} from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData, ValType } from 'imx-qbm-dbts';
 import {
   ConfirmationService,
   DataSourceToolbarSettings,
@@ -47,7 +40,7 @@ import {
   FkAdvancedPickerComponent,
   ClientPropertyForTableColumns,
   SettingsService,
-  SnackBarService
+  SnackBarService,
 } from 'qbm';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, SourceDetectiveType } from 'qer';
 import { DbObjectKeyBase } from '../../../target-system/db-object-key-wrapper.interface';
@@ -57,10 +50,9 @@ import { NewMembershipService } from './new-membership/new-membership.service';
 @Component({
   selector: 'imx-group-members',
   templateUrl: './group-members.component.html',
-  styleUrls: ['./group-members.component.scss']
+  styleUrls: ['./group-members.component.scss'],
 })
 export class GroupMembersComponent implements OnInit {
-
   @Input() public groupDirectMembershipData: TypedEntityCollectionData<PortalTargetsystemUnsDirectmembers>;
   @Input() public groupNestedMembershipData: TypedEntityCollectionData<PortalTargetsystemUnsNestedmembers>;
   @Input() public unsGroupDbObjectKey: DbObjectKeyBase;
@@ -87,10 +79,11 @@ export class GroupMembersComponent implements OnInit {
 
   public readonly itemStatus = {
     enabled: (item: PortalTargetsystemUnsDirectmembers): boolean => {
-      return !item.IsFromDynamic?.value
-        && ((item.UID_PersonWantsOrg.value !== '' && item.IsRequestCancellable.value)
-          || item.XOrigin.value === 1);
-    }
+      return (
+        !item.IsFromDynamic?.value &&
+        ((item.UID_PersonWantsOrg.value !== '' && item.IsRequestCancellable.value) || item.XOrigin.value === 1)
+      );
+    },
   };
 
   private displayedColumns: ClientPropertyForTableColumns[] = [];
@@ -108,7 +101,7 @@ export class GroupMembersComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
     private readonly membershipService: NewMembershipService,
     private readonly translate: TranslateService,
-    private readonly settingsService: SettingsService,
+    private readonly settingsService: SettingsService
   ) {
     this.entitySchemaGroupDirectMemberships = groupsService.UnsGroupDirectMembersSchema;
     this.entitySchemaGroupNestedMemberships = groupsService.UnsGroupNestedMembersSchema;
@@ -136,8 +129,8 @@ export class GroupMembersComponent implements OnInit {
       {
         Type: ValType.String,
         ColumnName: 'details',
-        afterAdditionals: true
-      }
+        afterAdditionals: true,
+      },
     ];
     this.nestedDisplayColumns = [
       this.entitySchemaGroupNestedMemberships.Columns.UID_Person,
@@ -146,8 +139,8 @@ export class GroupMembersComponent implements OnInit {
       {
         Type: ValType.String,
         ColumnName: 'details',
-        afterAdditionals: true
-      }
+        afterAdditionals: true,
+      },
     ];
 
     this.groupId = this.unsGroupDbObjectKey.Keys[0];
@@ -164,16 +157,23 @@ export class GroupMembersComponent implements OnInit {
   }
 
   public canUnsubscribeSelected(): boolean {
-    return this.selectedItems != null
-      && this.selectedItemsCount > 0
-      && this.selectedItems.every(elem => elem.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue() !== ''
-        && elem.GetEntity().GetColumn('IsRequestCancellable').GetValue());
+    return (
+      this.selectedItems != null &&
+      this.selectedItemsCount > 0 &&
+      this.selectedItems.every(
+        (elem) =>
+          elem.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue() !== '' &&
+          elem.GetEntity().GetColumn('IsRequestCancellable').GetValue()
+      )
+    );
   }
 
   public canDeleteSelected(): boolean {
-    return this.selectedItems != null
-      && this.selectedItemsCount > 0
-      && this.selectedItems.every(elem => elem.GetEntity().GetColumn('XOrigin').GetValue() === 1);
+    return (
+      this.selectedItems != null &&
+      this.selectedItemsCount > 0 &&
+      this.selectedItems.every((elem) => elem.GetEntity().GetColumn('XOrigin').GetValue() === 1)
+    );
   }
 
   public async onToggleChanged(change: MatButtonToggleChange): Promise<void> {
@@ -181,8 +181,7 @@ export class GroupMembersComponent implements OnInit {
     this.selectedItems = [];
     if (this.selectedMembershipView === 'direct') {
       return this.onDirectNavigationStateChanged({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
-    }
-    else {
+    } else {
       return this.onNestedNavigationStateChanged({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
     }
   }
@@ -202,16 +201,19 @@ export class GroupMembersComponent implements OnInit {
   }
 
   public async deleteMembers(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Memberships',
-      Message: '#LDS#The deletion of memberships may take some time. The displayed data may differ from the actual state. Are you sure you want to delete the selected memberships?',
-      identifier: 'group-members-confirm-delete-memberships'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Delete Memberships',
+        Message:
+          '#LDS#The deletion of memberships may take some time. The displayed data may differ from the actual state. Are you sure you want to delete the selected memberships?',
+        identifier: 'group-members-confirm-delete-memberships',
+      })
+    ) {
       this.handleOpenLoader();
       try {
         await this.groupsService.deleteGroupMembers(
           this.unsGroupDbObjectKey,
-          this.selectedItems.map(i => i.GetEntity().GetColumn('UID_UNSAccount').GetValue())
+          this.selectedItems.map((i) => i.GetEntity().GetColumn('UID_UNSAccount').GetValue())
         );
         this.membersTable.clearSelection();
         this.snackBarService.open({ key: '#LDS#The memberships have been successfully removed.' }, '#LDS#Close');
@@ -231,13 +233,13 @@ export class GroupMembersComponent implements OnInit {
       icon: 'usergroup',
       data: {
         fkRelations: this.membershipService.getFKRelation(),
-        isMultiValue: true
-      }
+        isMultiValue: true,
+      },
     });
 
     const result = await sidesheetRef.afterClosed().toPromise();
 
-    if (result && result.candidates.length > 0 && await this.membershipService.requestMembership(result.candidates, serviceItem)) {
+    if (result && result.candidates.length > 0 && (await this.membershipService.requestMembership(result.candidates, serviceItem))) {
       this.snackBarService.open({
         key: '#LDS#The memberships for "{0}" have been successfully added to the shopping cart.',
         parameters: [serviceItem.GetEntity().GetDisplay()],
@@ -250,23 +252,26 @@ export class GroupMembersComponent implements OnInit {
   }
 
   public async unsubscribeMembership(): Promise<void> {
-
     // if there is at least 1 item, that is not unsubscribable, show a warning instead
-    const notSubscribable = this.selectedItems.some(entity => entity.GetEntity().GetColumn('IsRequestCancellable').GetValue() === false);
+    const notSubscribable = this.selectedItems.some((entity) => entity.GetEntity().GetColumn('IsRequestCancellable').GetValue() === false);
     if (notSubscribable) {
       this.showUnsubscribeWarning = true;
       this.membersTable.clearSelection();
       return;
     }
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Unsubscribe Memberships',
-      Message: '#LDS#Are you sure you want to unsubscribe the selected memberships?',
-      identifier: 'group-members-confirm-unsubscribe-membership'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Unsubscribe Memberships',
+        Message: '#LDS#Are you sure you want to unsubscribe the selected memberships?',
+        identifier: 'group-members-confirm-unsubscribe-membership',
+      })
+    ) {
       this.handleOpenLoader();
       try {
-        await Promise.all(this.selectedItems.map((entity => this.membershipService.unsubscribeMembership(entity))));
-        this.snackBarService.open({ key: '#LDS#The memberships have been successfully unsubscribed. It may take some time for the changes to take effect. The displayed data may differ from the actual state.' });
+        await Promise.all(this.selectedItems.map((entity) => this.membershipService.unsubscribeMembership(entity)));
+        this.snackBarService.open({
+          key: '#LDS#The memberships have been successfully unsubscribed. It may take some time for the changes to take effect. The displayed data may differ from the actual state.',
+        });
       } finally {
         this.handleCloseLoader();
         this.membersTable.clearSelection();
@@ -275,16 +280,14 @@ export class GroupMembersComponent implements OnInit {
     }
   }
 
-
   public async onShowDetails(item: PortalTargetsystemUnsDirectmembers): Promise<void> {
-
     const uidPerson = item.UID_Person.value;
 
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfSystemEntitlement,
       UID: this.unsGroupDbObjectKey.Keys[0],
-      TableName: this.unsGroupDbObjectKey.TableName
+      TableName: this.unsGroupDbObjectKey.TableName,
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
@@ -305,7 +308,7 @@ export class GroupMembersComponent implements OnInit {
         displayedColumns: this.displayedColumns,
         dataSource: this.groupDirectMembershipData,
         entitySchema: this.entitySchemaGroupDirectMemberships,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
     } finally {
       this.handleCloseLoader();
@@ -316,12 +319,12 @@ export class GroupMembersComponent implements OnInit {
     this.showUnsubscribeWarning = false;
     this.handleOpenLoader();
     try {
-      this.groupNestedMembershipData = await this.groupsService.getGroupNestedMembers(this.groupId, this.navigationState);
+      this.groupNestedMembershipData = await this.groupsService.getGroupNestedMembers(this.groupId, this.nestedNavigationState);
       this.dstNestedGroupSettings = {
         displayedColumns: this.nestedDisplayColumns,
         dataSource: this.groupNestedMembershipData,
         entitySchema: this.entitySchemaGroupNestedMemberships,
-        navigationState: this.nestedNavigationState
+        navigationState: this.nestedNavigationState,
       };
     } finally {
       this.handleCloseLoader();
@@ -343,13 +346,15 @@ export class GroupMembersComponent implements OnInit {
     }
   }
 
-  public LdsNotUnsubscribableHint = "#LDS#There is at least one membership you cannot unsubscribe. You can only unsubscribe memberships you have requested.";
+  public LdsNotUnsubscribableHint =
+    '#LDS#There is at least one membership you cannot unsubscribe. You can only unsubscribe memberships you have requested.';
 
-  public LdsDirectlyAssignedHint = "#LDS#Here you can get an overview of members assigned to the system entitlement itself.";
+  public LdsDirectlyAssignedHint = '#LDS#Here you can get an overview of members assigned to the system entitlement itself.';
 
-  public LdsIndirectlyAssignedHint = "#LDS#Here you can get an overview of members not assigned to the system entitlement itself, but to a child system entitlement.";
+  public LdsIndirectlyAssignedHint =
+    '#LDS#Here you can get an overview of members not assigned to the system entitlement itself, but to a child system entitlement.';
 
-  public LdsDirectlyAssigned = "#LDS#Direct memberships";
+  public LdsDirectlyAssigned = '#LDS#Direct memberships';
 
-  public LdsIndirectlyAssigned = "#LDS#Inherited memberships";
+  public LdsIndirectlyAssigned = '#LDS#Inherited memberships';
 }

@@ -38,20 +38,14 @@ import {
   ContentChildren,
   QueryList,
   OnDestroy,
-  AfterViewInit
+  AfterViewInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable, MatColumnDef, MatTableDataSource } from '@angular/material/table';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import {
-  TypedEntity,
-  IClientProperty,
-  EntitySchema,
-  CollectionLoadParameters,
-  GroupInfo
-} from 'imx-qbm-dbts';
+import { TypedEntity, IClientProperty, EntitySchema, CollectionLoadParameters, GroupInfo } from 'imx-qbm-dbts';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { DataTableColumnComponent } from './data-table-column.component';
 import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
@@ -88,12 +82,16 @@ import { RowHighlight } from './data-table-row-highlight.interface';
       state('expanded', style({ height: '*' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
-  ]
+  ],
 })
 export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
-  public get numOfSelectedItems(): number { return this.dst.numOfSelectedItems; }
+  public get numOfSelectedItems(): number {
+    return this.dst.numOfSelectedItems;
+  }
 
-  public get numOfSelectableRows(): number { return this.dst.numOfSelectableItems; }
+  public get numOfSelectableRows(): number {
+    return this.dst.numOfSelectableItems;
+  }
 
   /**
    * @ignore Used internally in components template.
@@ -291,7 +289,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
     public translateProvider: ImxTranslationProviderService,
     public dialog: MatDialog,
     private readonly busyService: EuiLoadingService
-  ) { }
+  ) {}
 
   public get isGroupingApplied(): boolean {
     let result = false;
@@ -307,10 +305,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    */
   public ngAfterViewInit(): void {
     setTimeout(async () => {
-
       if (this.dst && this.dst.settings) {
-
-
         this.settings = this.dst.settings;
         await this.dstHasChanged();
       }
@@ -323,31 +318,33 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    * Listens for changes of data table inputs e.g. checks it the datasource has changed.
    */
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-
     if (changes['mode'] && changes['mode'].currentValue) {
       if (this.mode === 'auto') {
         if (this.dst.dataSourceChanged && this.columnDefs) {
-          this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
+          this.columnDefs.forEach((colDef) => this.table.removeColumnDef(colDef));
         }
       }
     }
 
     if (changes['dst'] && changes['dst'].currentValue) {
+      this.subscriptions.push(
+        this.dst.settingsChanged.subscribe(async (value: DataSourceToolbarSettings) => {
+          if (this.dst.dataSourceHasChanged) {
+            this.settings = value;
+            await this.dstHasChanged();
+          }
+        })
+      );
 
-      this.subscriptions.push(this.dst.settingsChanged.subscribe(async (value: DataSourceToolbarSettings) => {
-        if (this.dst.dataSourceHasChanged) {
-          this.settings = value;
+      this.subscriptions.push(
+        this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) => this.selectionChanged.emit(event.source.selected))
+      );
+
+      this.subscriptions.push(
+        this.dst.shownColumnsSelectionChanged.subscribe(async (value) => {
           await this.dstHasChanged();
-        }
-      }));
-
-      this.subscriptions.push(this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) =>
-        this.selectionChanged.emit(event.source.selected)
-      ));
-
-      this.subscriptions.push(this.dst.shownColumnsSelectionChanged.subscribe(async value => {
-        await this.dstHasChanged();
-      }));
+        })
+      );
     }
   }
 
@@ -356,7 +353,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    * Unsubscribes all listeners.
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public isSelectable(item: TypedEntity): boolean {
@@ -405,7 +402,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
     let displayedColumnNames = [];
 
     if (this.displayedColumns && this.displayedColumns.length > 0) {
-      displayedColumnNames = this.displayedColumns.map(item => item.ColumnName);
+      displayedColumnNames = this.displayedColumns.map((item) => item.ColumnName);
     }
 
     if (this.selectable) {
@@ -475,19 +472,21 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    */
   public onGroupExpanded(group: GroupInfo): void {
     if (group && group.Count > 0) {
-      const groupingDisplay = group.Display[0].Display;
-      if (!this.groupData[groupingDisplay]) {
-        this.groupData[groupingDisplay] = {
+      const groupKey = this.getGroupKey(group);
+      if (!this.groupData[groupKey]) {
+        this.groupData[groupKey] = {
           data: undefined,
           settings: undefined,
-          navigationState: undefined
+          navigationState: undefined,
         };
       }
-      const groupData = this.groupData[groupingDisplay];
+      const groupData = this.groupData[groupKey];
       if (!groupData.navigationState) {
         groupData.navigationState = {
-          PageSize: 25, StartIndex: 0, filter: group.Filters, withProperties:
-            this.dst?.settings?.navigationState?.withProperties
+          PageSize: 25,
+          StartIndex: 0,
+          filter: group.Filters,
+          withProperties: this.dst?.settings?.navigationState?.withProperties,
         };
       }
 
@@ -496,7 +495,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
 
       this.propagateNavigationSettingsToGroups(true);
       if (groupData.isExpanded) {
-        this.groupDataChanged.emit(groupingDisplay);
+        this.groupDataChanged.emit(groupKey);
       }
     }
   }
@@ -510,8 +509,8 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
 
     setTimeout(() => {
       if (groupingData.selected) {
-        groupingData.selected.forEach(selectedItem => {
-          if (!items.find(item => this.getId(item) === this.getId(selectedItem))) {
+        groupingData.selected.forEach((selectedItem) => {
+          if (!items.find((item) => this.getId(item) === this.getId(selectedItem))) {
             this.unChecked(selectedItem);
           }
         });
@@ -519,7 +518,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
 
       groupingData.selected = [];
 
-      items.forEach(item => {
+      items.forEach((item) => {
         groupingData.selected.push(item);
         this.checked(item);
       });
@@ -536,6 +535,10 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
     // Raise event to allow group data to be updated
     this.groupData[groupKey].navigationState = newState;
     this.groupDataChanged.emit(groupKey);
+  }
+
+  protected getGroupKey(group: GroupInfo): string {
+    return group?.Display[0].Display + (group?.Filters?.[0]?.Value1 ?? group?.Filters?.[0]?.Values[0]);
   }
 
   /**
@@ -571,7 +574,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       this.propagateNavigationSettingsToGroups(false, groupByChanged);
 
       let busyIndicator: OverlayRef;
-      setTimeout(() => busyIndicator = this.busyService.show());
+      setTimeout(() => (busyIndicator = this.busyService.show()));
 
       try {
         this.groupedDataSource = new MatTableDataSource<GroupInfo>(await currentGrouping.getData());
@@ -583,14 +586,12 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
     this.highlightedEntity = null;
 
     if (this.columnDefs) {
-      this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
+      this.columnDefs.forEach((colDef) => this.table.removeColumnDef(colDef));
     }
-
 
     if ((this.dst.dataSourceChanged || this.dst.shownColumnsSelectionChanged) && this.mode === 'manual') {
       this.displayedColumns = [];
-      this.additional = (this.dst == null || this.dst.additionalColumns?.length === 0)
-        ? this.parentAdditionals : this.dst.additionalColumns;
+      this.additional = this.dst == null || this.dst.additionalColumns?.length === 0 ? this.parentAdditionals : this.dst.additionalColumns;
 
       if (this.manualColumns == null && this.manualGenericColumns == null) {
         return;
@@ -599,12 +600,11 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       this.columnDefs = [];
 
       if (this.manualColumns && this.table) {
-
         let mcolumns = this.manualColumns;
         if (mcolumns.length === 0 && this.parentManualColumns) {
           mcolumns = this.parentManualColumns;
         }
-        mcolumns.forEach(column => {
+        mcolumns.forEach((column) => {
           this.table.addColumnDef(column.columnDef);
           this.columnDefs.push(column.columnDef);
         });
@@ -615,20 +615,18 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
         if (gcolumns.length === 0 && this.parentManualGenericColumns) {
           gcolumns = this.parentManualGenericColumns;
         }
-        gcolumns.forEach(column => {
+        gcolumns.forEach((column) => {
           this.table.addColumnDef(column.columnDef);
           this.columnDefs.push(column.columnDef);
         });
       }
-
     }
 
-    if (this.dst && this.dst.shownClientProperties?.filter(elem => elem != null)?.length > 0 && !this.nested) {
-      this.displayedColumns = this.dst.shownClientProperties.filter(elem => elem != null);
+    if (this.dst && this.dst.shownClientProperties?.filter((elem) => elem != null)?.length > 0 && !this.nested) {
+      this.displayedColumns = this.dst.shownClientProperties.filter((elem) => elem != null);
     } else {
       if (this.settings && this.settings.displayedColumns) {
-        this.displayedColumns = this.settings.displayedColumns
-          .concat(this.additional);
+        this.displayedColumns = this.settings.displayedColumns.concat(this.additional);
       }
     }
 
@@ -663,7 +661,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
         if (groupByChanged) {
           grouping.isExpanded = false;
         }
-        
+
         if (grouping.isExpanded || skipNavigationChange) {
           const preservedGroupingFilter = grouping.navigationState.filter;
           grouping.navigationState = JSON.parse(JSON.stringify(this.settings.navigationState));
