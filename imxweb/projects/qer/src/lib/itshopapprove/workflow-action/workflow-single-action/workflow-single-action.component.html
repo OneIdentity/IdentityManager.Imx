@@ -2,7 +2,10 @@
   <mat-card-title>{{ request.GetEntity()?.GetDisplay() }}</mat-card-title>
   <mat-card-subtitle>{{ request.OrderState.Column.GetDisplayValue() }}</mat-card-subtitle>
   <mat-card-content>
-    <imx-cdr-editor *ngFor="let cdr of columns; let i = index" [cdr]="cdr"
+    <imx-cdr-editor
+      *ngFor="let cdr of columns; let i = index"
+      [cdr]="cdr"
+      [validateOnlyOnChange]="true"
       (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
       [attr.data-imx-identifier]="'column_' + cdr.column.ColumnName + '_' + i">
     </imx-cdr-editor>

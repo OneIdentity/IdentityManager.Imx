@@ -44,7 +44,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 
-import { ValType, IClientProperty, TypedEntity, GroupInfo, IEntity } from 'imx-qbm-dbts';
+import { ValType, IClientProperty, TypedEntity, GroupInfo, IEntity, CompareOperator, FilterType } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { DataTableComponent } from './data-table.component';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
@@ -222,8 +222,11 @@ describe('DataTableComponent', () => {
   describe('onGroupExpanded() tests', () => {
     let propagateNavSettingsSpy: jasmine.Spy;
     let groupDataChangedSpy: jasmine.Spy;
-    const groupKey = 'TestGroup';
-    const mockGroup: GroupInfo = { Display: [{Display: groupKey}], Filters: [], Count: 5 };
+    const groupDisplay = 'TestGroup';
+    const groupValue = 'uid-123';
+    const groupKey = groupDisplay+groupValue;
+    const mockGroup: GroupInfo = { Display: [{Display: groupDisplay}], Filters: [{ 
+      Value1: groupValue, CompareOp: CompareOperator.Equal, Type: FilterType.Compare }], Count: 5 };
     beforeEach(() => {
       propagateNavSettingsSpy = spyOn<any>(component, 'propagateNavigationSettingsToGroups');
       groupDataChangedSpy = spyOn(component.groupDataChanged, 'emit');

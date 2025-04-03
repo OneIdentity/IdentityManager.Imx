@@ -44,7 +44,7 @@ import { DateParser } from './date-parser';
 @Component({
   selector: 'imx-date',
   templateUrl: './date.component.html',
-  styleUrls: ['./date.component.scss']
+  styleUrls: ['./date.component.scss'],
 })
 export class DateComponent implements OnInit, OnDestroy {
   // ######################################################################################################
@@ -114,6 +114,8 @@ export class DateComponent implements OnInit, OnDestroy {
    */
   @Input() public withTime = true;
 
+  @Input() validateOnlyOnChange: boolean = false;
+
   /**
    * @ignore only public because of databinding in template
    *
@@ -156,6 +158,8 @@ export class DateComponent implements OnInit, OnDestroy {
    */
   private result: Moment;
 
+  private isUpdated: boolean = false;
+
   /**
    * @ignore
    *
@@ -168,15 +172,14 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * The text <-> moment date and time parser.
    */
-  private parser !: DateParser;
+  private parser!: DateParser;
 
   /**
    * Creates a new date editor component.
    *
    * @param logger The logger service to be injected.
    */
-  constructor(private logger: ClassloggerService) {
-  }
+  constructor(private logger: ClassloggerService) {}
 
   /**
    * @ignore only public because of databinding in template
@@ -214,17 +217,22 @@ export class DateComponent implements OnInit, OnDestroy {
     this.setupValidators();
     this.handleControlChanged();
 
-    this.subscriptions.push(this.control.valueChanges.subscribe(x => this.handleControlChanged()));
-    this.subscriptions.push(this.shadowText.valueChanges.subscribe(x => this.handleShadowTextChanged()));
-    this.subscriptions.push(this.shadowTime.valueChanges.subscribe(x => this.handleShadowTimeChanged()));
-    this.subscriptions.push(this.shadowDate.valueChanges.subscribe(x => this.handleShadowDateChanged()));
+    this.subscriptions.push(
+      this.control.valueChanges.subscribe((x) => {
+        this.isUpdated = true;
+        this.handleControlChanged();
+      })
+    );
+    this.subscriptions.push(this.shadowText.valueChanges.subscribe((x) => this.handleShadowTextChanged()));
+    this.subscriptions.push(this.shadowTime.valueChanges.subscribe((x) => this.handleShadowTimeChanged()));
+    this.subscriptions.push(this.shadowDate.valueChanges.subscribe((x) => this.handleShadowDateChanged()));
   }
 
   /**
    * @ignore OnDestroy lifecycle hook
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   /**
@@ -320,7 +328,7 @@ export class DateComponent implements OnInit, OnDestroy {
 
     if (this.shadowDate.value) {
       const d = moment(this.shadowDate.value);
-      value = moment({year: d.year(), month: d.month(), day: d.date()});
+      value = moment({ year: d.year(), month: d.month(), day: d.date() });
     }
 
     if (this.shadowTime.value) {
@@ -456,6 +464,9 @@ export class DateComponent implements OnInit, OnDestroy {
    * validation method: validates the moment representation of a date (and time)
    */
   private validateMomentInDateRange(date: Moment): ValidationErrors | null {
+    if (!this.isUpdated && this.validateOnlyOnChange) {
+      return null;
+    }
     if (date && !date.isValid()) {
       return { matDatepickerParse: true };
     }
@@ -467,6 +478,7 @@ export class DateComponent implements OnInit, OnDestroy {
     if (this.max && date > moment(this.max)) {
       return { matDatepickerMax: true };
     }
-  }
 
+    return null;
+  }
 }

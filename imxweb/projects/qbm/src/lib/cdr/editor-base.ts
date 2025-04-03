@@ -169,12 +169,12 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     } finally {
       this.isBusy = false;
       this.isWriting = false;
-      if (this.control.value !== this.columnContainer.value) {
+      if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
         this.logger.debug(this, 'form control value is set to', this.control.value);
       }
-    }
-
+    }    
+    
     this.valueHasChanged.emit({ value, forceEmit: true });
   }
 }
