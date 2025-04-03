@@ -50,6 +50,11 @@ export class CdrEditorComponent implements OnChanges {
    */
   @Input() public cdr: ColumnDependentReference;
 
+  /**
+   * Determines, if the control should only be validated after the value has been changed
+   */
+  @Input() public validateOnlyOnChange: boolean;
+
   @Output() public controlCreated = new EventEmitter<AbstractControl>();
   @Output() public readonly valueChange = new EventEmitter<any>();
   @Output() public readonly readOnlyChanged = new EventEmitter<boolean>();
@@ -92,6 +97,7 @@ export class CdrEditorComponent implements OnChanges {
         this.controlCreated.emit(ref.instance.control);
         this.elementRef.nativeElement.setAttribute('data-imx-identifier', `cdr-editor-${this.cdr.column.ColumnName}`);
         this.editor = ref.instance;
+        this.editor.validateOnlyOnChange = this.validateOnlyOnChange;
       } catch (e) {
         this.logger.error(this, 'Failed to create editor for column dependent reference.', e);
       }

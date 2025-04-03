@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnChanges, Output } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -38,7 +38,7 @@ import { FilterElementModel } from './filter-element-model';
   selector: 'imx-edit-origin',
   styleUrls: ['./edit-origin.component.scss']
 })
-export class EditOriginComponent implements OnInit, OnDestroy {
+export class EditOriginComponent implements OnChanges, OnDestroy {
 
   public candidates: ParmOpt[];
   public readonly control = new FormArray([]);
@@ -54,7 +54,7 @@ export class EditOriginComponent implements OnInit, OnDestroy {
 
   constructor(private readonly logger: ClassloggerService) { }
 
-  public ngOnInit(): void {
+  public ngOnChanges(): void {
 
     if (this.filterElementModel == null) {
       return;
@@ -63,6 +63,7 @@ export class EditOriginComponent implements OnInit, OnDestroy {
 
     this.selectedParameter = this.splitStringAndRemoveQuotes(this.filterElementModel?.parameterValue, ',');
 
+    this.control.clear();
     this.candidates.forEach(elem => {
       this.control.push(new FormControl(this.isSelected(elem)));
       this.logger.trace(this, 'control added for candidate', elem);

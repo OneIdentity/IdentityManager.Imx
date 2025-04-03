@@ -775,10 +775,12 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   /**
    * clears the tree filter and emits the filterTreeSelectionChanged event
    */
-  public clearTreeFilter(): void {
+  public clearTreeFilter(emit = true): void {
     this.currentFilterData = [];
     this.currentFilterDisplayData = '';
-    this.filterTreeSelectionChanged.emit([]);
+    if (emit) {
+      this.filterTreeSelectionChanged.emit([]);
+    }
   }
 
   /**

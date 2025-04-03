@@ -34,6 +34,12 @@ for (const name of [
     delete data.dependencies[name];
     anyChanges = true;
   }
+
+  const nodeModuleName = 'node_modules/' + name;
+  if (data.packages[nodeModuleName]) {
+    delete data.packages[nodeModuleName];
+    anyChanges = true;
+  }
 }
 
 if (!anyChanges) {

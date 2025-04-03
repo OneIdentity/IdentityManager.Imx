@@ -30,17 +30,21 @@ export class ParameterDataContainer {
   public readonly columns: IEntityColumn[] = [];
 
   constructor(private readonly parameterCategoryColumns: { [key: string]: IEntityColumn[] }) {
-    Object.keys(parameterCategoryColumns).forEach(key => parameterCategoryColumns[key].forEach(column => this.columns.push(column)));
+    Object.keys(parameterCategoryColumns).forEach((key) => parameterCategoryColumns[key].forEach((column) => this.columns.push(column)));
   }
 
   public getEntityWriteDataColumns(): { [key: string]: EntityWriteDataColumn[][] } {
-    const extendedData: { [key: string]: EntityWriteDataColumn[][] } = { };
-    Object.keys(this.parameterCategoryColumns).forEach(key => {
+    const extendedData: { [key: string]: EntityWriteDataColumn[][] } = {};
+    Object.keys(this.parameterCategoryColumns).forEach((key) => {
       extendedData[key] = [[]];
-      this.parameterCategoryColumns[key].forEach(column => extendedData[key][0].push({
-        Name: column.ColumnName,
-        Value: column.GetValue()
-      }));
+      this.parameterCategoryColumns[key]
+        .filter((elem) => elem.GetMetadata().CanEdit())
+        .forEach((column) =>
+          extendedData[key][0].push({
+            Name: column.ColumnName,
+            Value: column.GetValue(),
+          })
+        );
     });
     return extendedData;
   }

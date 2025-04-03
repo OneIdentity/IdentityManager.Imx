@@ -49,10 +49,15 @@ export interface ValueHasChangedEventArg {
  * Interface for an editor of a column dependent reference.
  */
 export interface CdrEditor {
-    /**
-     * The abstract control associated with the editor.
-     */
-    control: AbstractControl;
+  /**
+   * The abstract control associated with the editor.
+   */
+  control: AbstractControl;
+
+  /**
+   * Determines, if the control should only be validated after the value has been changed
+   */
+  validateOnlyOnChange?: boolean;
 
     /**
      * An event, that is emmited, if the value of the cdr has changed.
