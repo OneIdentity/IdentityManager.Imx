@@ -49,7 +49,7 @@
     "@angular/forms": "18.2.13",
     "@angular/material-moment-adapter": "18.2.14",
     "@angular/material": "18.2.14",
-    "@angular/platform-browser-dynamic": "18.2.13",
+    "@angular/platform-browser-dynamic": "19.2.8",
     "@angular/platform-browser": "18.2.13",
     "@angular/router": "18.2.13",
     "@ngx-translate/core": "15.0.0",
