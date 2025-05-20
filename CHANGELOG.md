@@ -1,3 +1,24 @@
+### May 20, 2025
+- 486313: Fixes an issue with scroll bars in the View Report side sheet.
+- 483185 *(483102)*: Fixes an issue with deep links in the mail body of send inquiries.
+- 468349: Fixes an issue with direct re-assignment of product owner memberships.
+- 488906 *(488905)*: Fixes an issue with a too early closed tag.
+- 459188: Fixes an issue with missing Attestor filters.
+- 487103 *(486602)*: Fixes an issue with editing old-style request property values by an approver.
+- 463958: Fixes an issue with wrong value formatting.
+- 488888 *(485595)*: Fixes an issue with error messages, that were shown with quotes.
+- 486986: Fixes an issue with clearing checkboxes.
+- 481878: Adds more information for the approver to know exactly which violation needs to be exceptionally accepted
+- 489728: Fixes an issue with editing UINT based parameter in the attestation wizard.
+- 486921 *(486644)*: Fixes an issue while loading the  Business Roles > Entitlements > Request Entitlements page.
+- 490279 *(489994)*: Adds sorting, additional columns and export to list report viewer.
+- 487535: Fixes an issue with error handling on the identity history page.
+- 481958: Fixes another issue with duplicated HTTP Requests
+- 490344 *(481171)*: Fixes an issue with the sorting of additional columns.
+- 490276: Fixes an issue with the calculation of risk index analysis for DEC functions.
+- 491848 *(489974)*: Fixes an issue with the editing of request properties that contains at least on read-only property (Github issue).
+- 492128 *(489184)*: Fixes an issue with saving the reason while canceling the reservation (was not displayed anywhere).
+
 ### April 16, 2025
 - Main work item ID added in brackets if it differs from the current one
 - 486926 *(460757)*: Approval parameters are read/written interactively. **Important**: This fix requires the server-side fix 486926 to be installed.
