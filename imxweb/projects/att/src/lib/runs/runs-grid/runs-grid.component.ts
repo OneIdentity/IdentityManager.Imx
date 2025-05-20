@@ -54,6 +54,7 @@ import { ViewConfigData } from '@imx-modules/imx-api-qer';
 import { ViewConfigService } from 'qer';
 import { PermissionsService } from '../../admin/permissions.service';
 import { ApiService } from '../../api.service';
+import { AttestationFeatureGuardService } from '../../attestation-feature-guard.service';
 import { RunSidesheetComponent } from '../run-sidesheet.component';
 import { RunsService } from '../runs.service';
 
@@ -88,6 +89,7 @@ export class RunsGridComponent implements OnInit {
 
   constructor(
     private runsService: RunsService,
+    private readonly attFeatureService: AttestationFeatureGuardService,
     private viewConfigService: ViewConfigService,
     private busyService: EuiLoadingService,
     private sideSheet: EuiSidesheetService,
@@ -101,7 +103,7 @@ export class RunsGridComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    const config = await this.attService.client.portal_attestation_config_get();
+    const config = await this.attFeatureService.getAttestationConfig();
     this.attestationRunConfig = config.AttestationRunConfig;
     this.progressCalcThreshold = config.ProgressCalculationThreshold;
     this.canSeeAttestationPolicies = await this.permissions.canSeeAttestationPolicies();

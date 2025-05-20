@@ -274,20 +274,20 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   public onCheckboxFilterChanged(filter: DataSourceToolbarFilter, option: DataModelFilterOption, event: MatCheckboxChange): void {
-    let selectedFilterData: DataSourceToolbarSelectedFilter;
-    if (event.checked) {
-      if (filter.Delimiter) {
-        this.setDelimitedFilterCurrentValue(filter, option);
-      } else {
-        filter.CurrentValue = option.Value;
-      }
-      selectedFilterData = { selectedOption: option, filter };
-      if (this.internalSelectedFilters.every((filter) => filter.filter?.Name !== selectedFilterData.filter?.Name)) {
-        this.internalSelectedFilters.push(selectedFilterData);
-      }
+    if (filter.Delimiter) {
+      this.setDelimitedFilterCurrentValue(filter, option, event.checked);
     } else {
-      this.removeSelectedFilter(filter, false, option.Value);
+      // This is a single checkbox, so we use the event to set the current value
+      filter.CurrentValue = event.checked ? option.Value : undefined;
     }
+    const selectedFilterData: DataSourceToolbarSelectedFilter = { selectedOption: option, filter };
+    const index = this.findSelectedFilterIndex(filter.Name);
+    if (index >= 0) {
+      this.internalSelectedFilters[index] = selectedFilterData;
+    } else {
+      this.internalSelectedFilters.push(selectedFilterData);
+    }
+
     this.formState.dirty = true;
     this.filterService.formStatusChanged(this.formState);
   }
@@ -508,11 +508,19 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
    * @ignore Used internally in components template.
    * Updates the filters current value to add supplied option delimited when needed
    */
-  private setDelimitedFilterCurrentValue(filter: DataSourceToolbarFilter, option: DataModelFilterOption): void {
-    if (filter.CurrentValue && filter.CurrentValue.length) {
-      filter.CurrentValue = filter.CurrentValue += `${filter.Delimiter}${option.Value}`;
+  private setDelimitedFilterCurrentValue(filter: DataSourceToolbarFilter, option: DataModelFilterOption, isAdd: boolean): void {
+    if (isAdd) {
+      if (filter.CurrentValue && filter.CurrentValue.length) {
+        filter.CurrentValue = filter.CurrentValue += `${filter.Delimiter}${option.Value}`;
+      } else {
+        filter.CurrentValue = option.Value;
+      }
     } else {
-      filter.CurrentValue = option.Value;
+      // We remove the current option with the deliminator
+      filter.CurrentValue = filter.CurrentValue?.replace(`${filter.Delimiter}${option.Value}`, '');
+      filter.CurrentValue = filter.CurrentValue?.replace(`${option.Value}${filter.Delimiter}`, '');
+      filter.CurrentValue = filter.CurrentValue?.replace(`${option.Value}`, '');
+      if (filter.CurrentValue === '') filter.CurrentValue = undefined;
     }
   }
 

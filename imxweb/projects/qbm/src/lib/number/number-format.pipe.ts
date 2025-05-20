@@ -24,13 +24,24 @@
  *
  */
 
-import { ColumnDependentReference } from 'qbm';
+import { Injectable, Pipe, PipeTransform } from '@angular/core';
+import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 
-export interface WorkflowActionParameters {
-  maxReasonType?: number;
-  reason?: ColumnDependentReference;
-  justification?: ColumnDependentReference;
-  uidPerson?: ColumnDependentReference;
-  validFrom?: ColumnDependentReference;
-  validUntil?: ColumnDependentReference;
+@Injectable({
+  providedIn: 'root',
+})
+@Pipe({
+  name: 'formatNumber',
+  standalone: true,
+})
+export class NumberFormatPipe implements PipeTransform {
+  private readonly currentCulture: string;
+
+  constructor(private readonly translationProviderService: ImxTranslationProviderService) {
+    this.currentCulture = this.translationProviderService.CultureFormat;
+  }
+
+  public transform(value: number | string): string {
+    return Intl.NumberFormat(this.currentCulture).format(+value);
+  }
 }

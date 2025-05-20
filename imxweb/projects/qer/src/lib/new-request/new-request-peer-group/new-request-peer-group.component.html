@@ -50,7 +50,7 @@
       <ng-template let-prod>
         <div class="imx-progress-column imx-request-col-text imx-progress-bar">
           <mat-progress-bar mode="determinate" [value]="getCIPGCurrentValue(prod)"></mat-progress-bar>
-          <span>{{ getCIPGCurrentValue(prod).toFixed(2) }}%</span>
+          <span>{{ getCIPGCurrentValue(prod).toFixed(2) | formatNumber }}%</span>
           <span>({{ prod.CountInPeerGroup?.value }})</span>
         </div>
       </ng-template>
@@ -131,7 +131,7 @@
       <ng-template let-prod>
         <div class="imx-progress-column imx-request-col-text imx-progress-bar">
           <mat-progress-bar mode="determinate" [value]="getCIPGCurrentValue(prod)"></mat-progress-bar>
-          <span>{{ getCIPGCurrentValue(prod).toFixed(2) }}%</span>
+          <span>{{ getCIPGCurrentValue(prod).toFixed(2) | formatNumber }}%</span>
           <span>({{ prod.CountInPeerGroup?.value }})</span>
         </div>
       </ng-template>

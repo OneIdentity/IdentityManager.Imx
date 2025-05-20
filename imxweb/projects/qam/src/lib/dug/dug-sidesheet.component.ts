@@ -25,28 +25,30 @@
  */
 
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, UntypedFormArray } from '@angular/forms';
+import { FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatTab, MatTabChangeEvent } from '@angular/material/tabs';
 import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
-import { DbObjectKey, ValType } from '@imx-modules/imx-qbm-dbts';
+import { DbObjectKey, DisplayColumns, EntitySchema, ExtendedTypedEntityCollection, IClientProperty, IReadValue, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import {
   BaseCdr,
   BusyService,
+  calculateSidesheetWidth,
   CdrFactoryService,
   ColumnDependentReference,
   ConfirmationService,
+  DataSourceToolbarSettings,
   EntityService,
   ExtService,
   SnackBarService,
   SystemInfoService,
   TabItem,
-  calculateSidesheetWidth,
 } from 'qbm';
 import { RiskAnalysisSidesheetComponent, WorkflowActionComponent } from 'qer';
 import { Subscription } from 'rxjs';
 import { DugOverviewService } from '../dug-overview/dug-overview.service';
-import { ChangeRequestType, DgeConfigData, PortalDgeResourcesActivity, PortalDgeResourcesbyid } from '../TypedClient';
+import { DugOwnershipService } from '../dug-ownership/dug-ownership.service';
+import { ChangeRequestType, DgeConfigData, PortalDgeResourcesActivity, PortalDgeResourcesbyid, PortalDgeResourcesPerceivedowners } from '../TypedClient';
 
 interface DugResourceFormGroup {
   array: UntypedFormArray;
@@ -76,9 +78,19 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
   public dugResourceFormGroup = new FormGroup<DugResourceFormGroup>({ array: new UntypedFormArray([]) });
   public dugResourceConditionsFormGroup = new FormGroup<DugResourceFormGroup>({ array: new UntypedFormArray([]) });
   public cdrList: (ColumnDependentReference | undefined)[] = [];
+  public cdrOwnerShip: (ColumnDependentReference | undefined)[] = [];
   public isLoading = true;
   public dynamicTabs: TabItem[] = [];
   public readonly parameters: { objecttable: string; objectuid: string };
+  public isAssignedOwner?: string;
+  public dstSettings: DataSourceToolbarSettings;
+  public entitySchema: EntitySchema;
+  private displayedColumns: IClientProperty[] = [];
+  public readonly DisplayColumns = DisplayColumns;
+  public perceivedOwners: ExtendedTypedEntityCollection<PortalDgeResourcesPerceivedowners, unknown>;;
+  public selectedOwner: IReadValue<string> | null = null;
+  public ldsChooseAnotherEmployee =
+    '#LDS#If the given accounts are not sufficient, Click here to choose another employee who should be owner of this resource.';
 
   public get saveDisabled(): boolean {
     return (
@@ -95,8 +107,9 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
   @ViewChild('accessTab') private accessTab: MatTab;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: { uid: string },
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: { uid: string, identifier: string },
     private readonly dugOverviewProvider: DugOverviewService,
+    private readonly ownershipService: DugOwnershipService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly loadingService: EuiLoadingService,
     private readonly systemInfoService: SystemInfoService,
@@ -113,6 +126,16 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
       objecttable: dugOverviewProvider.DugResourceSchema.TypeName ?? '',
       objectuid: data.uid,
     };
+
+    this.entitySchema = this.ownershipService.DugPerceivedOwnersSchema;
+    this.displayedColumns = [
+      this.entitySchema.Columns.UID_PersonPerceivedOwner,
+      this.entitySchema.Columns.PerceptionScore,
+      {
+        ColumnName: "assignOwner",
+        Type: ValType.String
+      }
+    ];
 
     this.subscriptions.push(
       this.busyService.busyStateChanged.subscribe((state: boolean) => {
@@ -143,6 +166,30 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
       this.dug = await this.dugOverviewProvider.getDugResourceById(this.data.uid);
       this.supportsActivity = this.dug.UID_QAMResourceType.value != 'QAM-A2EB93DC78054195837671623098181F';
       this.isShare = this.dug.UID_QAMResourceType.value == 'QAM-52F4B02EFBCAEB7A2EE35B8A4636FAEA';
+      if (this.isPerceivedOwner()) {
+        this.perceivedOwners = await this.ownershipService.getPerceivedowners(this.data.uid);
+        this.dstSettings = {
+          displayedColumns: this.displayedColumns,
+          dataSource: this.perceivedOwners,
+          entitySchema: this.entitySchema,
+          navigationState: {},
+        };
+
+        this.cdrOwnerShip = this.cdrFactory
+          .buildCdrFromColumnList(this.dug.GetEntity(), [
+            'UID_PersonResponsible',
+          ])
+          .filter((elem) => elem);
+      }
+
+      if (this.isAssignOwnership()) {
+
+        this.cdrOwnerShip = this.cdrFactory
+          .buildCdrFromColumnList(this.dug.GetEntity(), [
+            'UID_PersonResponsible',
+          ])
+          .filter((elem) => elem);
+      }
 
       this.cdrList = this.cdrFactory
         .buildCdrFromColumnList(this.dug.GetEntity(), [
@@ -161,9 +208,9 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
           'RequiresOwnership',
           'UID_QAMClassificationLevelMan',
           'IsSecurityInheritanceBlocked',
+          'IsForITShop',
         ])
         .filter((elem) => elem);
-
       this.cdrListOrderConditions = this.cdrFactory
         .buildCdrFromColumnList(this.dug.GetEntity(), ['InProfitCenter', 'InDepartment', 'InAERole', 'InLocality', 'InOrg'])
         .filter((elem) => elem);
@@ -184,6 +231,67 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptions?.forEach((elem) => elem?.unsubscribe());
+  }
+
+  public onAssignSelectionChange(uidPersonPerceivedOwner: IReadValue<string>): void {
+    // Check if the event is a change event
+    const uidPersonResponsible = uidPersonPerceivedOwner.value; // Use the string directly
+    // Check if the clicked radio button is already selected
+    if (this.selectedOwner === uidPersonPerceivedOwner) {
+      // If the same radio button is clicked, deselect it
+      this.selectedOwner = null;
+      return;
+    }
+
+    this.selectedOwner = uidPersonPerceivedOwner; // Update the selected owner
+
+    // Access the form array
+    const formArray = this.dugResourceFormGroup.get('array') as UntypedFormArray;
+
+    // Check if the UID_PersonResponsible already exists in the array
+    const existingIndex = formArray.controls.findIndex((control) => control.value.Name === 'UID_PersonResponsible');
+
+    if (existingIndex !== -1) {
+      // Update the existing entry
+      formArray.at(existingIndex).patchValue({
+        Name: 'UID_PersonResponsible',
+        OldValue: '',
+        Value: uidPersonResponsible
+      });
+    } else {
+      // Add a new entry
+      formArray.push(
+        new UntypedFormGroup({
+          Name: new UntypedFormControl('UID_PersonResponsible'),
+          OldValue: new UntypedFormControl(''),
+          Value: new UntypedFormControl(uidPersonResponsible),
+        })
+      );
+    }
+
+    // Update the entity with the new value
+    this.dug.GetEntity().GetColumn('UID_PersonResponsible').PutValue(uidPersonResponsible);
+    this.dugResourceFormGroup.markAsDirty(); // Mark the form as dirty
+    this.changeDetector.detectChanges(); // Trigger change detection to update the UI
+  }
+
+  public async assignOwner(): Promise<void> {
+    const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
+      title: this.translate.instant('#LDS#Heading Assign OwnerShip'),
+      width: calculateSidesheetWidth(),
+      disableClose: true,
+      padding: '0',
+      testId: 'assign-dug-owner-sidesheet',
+      data: { uid: this.dug.UID_QAMDuG.value, identifier: 'dug-assign-ownership' },
+    });
+  }
+
+  public isAssignOwnership(): boolean {
+    return this.data.identifier === 'dug-assign-ownership';
+  }
+
+  public isPerceivedOwner(): boolean {
+    return this.data.identifier === 'perceivedOwner';
   }
 
   public async save(): Promise<void> {

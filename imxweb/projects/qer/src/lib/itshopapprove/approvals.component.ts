@@ -45,6 +45,7 @@ export class ApprovalsComponent implements OnInit {
   public tabIndex = 0;
   public hasInquiries = false;
   public viewReady = false;
+  public uidHelperPwo: string | undefined = undefined;
   public dataSource: DataViewSource<Approval, PwoExtendedData | undefined>;
   @ViewChild('approvalsTableComponent', { static: false }) public approvalsTableComponent: ApprovalsTableComponent;
 
@@ -67,6 +68,7 @@ export class ApprovalsComponent implements OnInit {
       }
 
       this.params = result;
+      this.uidHelperPwo = this.params.uid_pwohelperpwo;
 
       if (this.params.inquiries) {
         this.tabIndex = 1;

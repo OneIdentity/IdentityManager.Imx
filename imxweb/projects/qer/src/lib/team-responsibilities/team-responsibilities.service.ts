@@ -24,7 +24,7 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import {
@@ -43,8 +43,7 @@ import {
   ExtendedTypedEntityCollection,
   GroupInfoData,
 } from '@imx-modules/imx-qbm-dbts';
-import { TranslateService } from '@ngx-translate/core';
-import { LdsReplacePipe, SnackBarService } from 'qbm';
+import { SnackBarService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { CartItemsService } from '../shopping-cart/cart-items.service';
 import { UserModelService } from '../user/user-model.service';
@@ -59,10 +58,9 @@ export class TeamResponsibilitiesService {
     private readonly snackbar: SnackBarService,
     private readonly cartItemService: CartItemsService,
     private readonly userModelService: UserModelService,
-    private readonly translateService: TranslateService,
-    private readonly ldsReplacePipe: LdsReplacePipe,
     private readonly dialogService: MatDialog,
     private readonly router: Router,
+    private readonly errorHandler: ErrorHandler,
   ) {}
 
   public get responsibilitySchema(): EntitySchema {
@@ -182,8 +180,17 @@ export class TeamResponsibilitiesService {
   ): Promise<void> {
     for (let index = 0; index < responsibilities.length; index++) {
       try {
-        await this.assignResponsibility(responsibilities[index], identities, extendedData[index], true);
-      } catch {}
+        if (
+          responsibilities.findIndex((responsibility) => responsibility.XObjectKey.value === responsibilities[index].XObjectKey.value) ==
+          index
+        ) {
+          await this.assignResponsibility(responsibilities[index], identities, extendedData[index], true);
+        } else {
+          await this.removeResponsibilities([responsibilities[index]], true);
+        }
+      } catch (error) {
+        this.errorHandler.handleError(error);
+      }
     }
     const requestableResponsibilities = extendedData.filter((data) => data?.IsRequestable).length;
     const reassignResponsibilities = extendedData.filter((data) => !data?.IsRequestable).length;
@@ -208,6 +215,7 @@ export class TeamResponsibilitiesService {
           data: {
             reassignedResponsibilities: reassignResponsibilities,
             cartResponsibilities: requestableResponsibilities,
+            newResponsibilities: identities.length,
           },
         })
         .afterClosed()

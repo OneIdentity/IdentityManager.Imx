@@ -26,7 +26,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AppConfigService, RouteGuardService } from 'qbm';
+import { AppConfigService, CacheService, RouteGuardService } from 'qbm';
 import { ApiService } from './api.service';
 import { AttestationFeatureGuardService } from './attestation-feature-guard.service';
 
@@ -41,6 +41,10 @@ describe('AttestationFeatureGuardService', () => {
 
   const routeGuardServiceStub = {
     canActivate: jasmine.createSpy('canActivate').and.returnValue(Promise.resolve(true)),
+  };
+
+  const cacheServiceStub = {
+    buildCache: jasmine.createSpy('buildCache').and.returnValue(Promise.resolve(true)),
   };
 
   beforeEach(() => {
@@ -66,6 +70,10 @@ describe('AttestationFeatureGuardService', () => {
               },
             },
           },
+        },
+        {
+          provide: CacheService,
+          useValue: cacheServiceStub,
         },
       ],
     });

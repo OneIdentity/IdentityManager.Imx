@@ -6,7 +6,7 @@
     <div>{{ reassignInfo | translate | ldsReplace: data.reassignedResponsibilities }}</div>
   }
   <div>
-    {{ shoppingCartInfo | translate | ldsReplace: data.cartResponsibilities }}
+    {{ shoppingCartInfo | translate | ldsReplace: data.cartResponsibilities : data.newResponsibilities }}
   </div>
 </mat-dialog-content>
 

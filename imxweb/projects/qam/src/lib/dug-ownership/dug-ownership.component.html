@@ -1,0 +1,40 @@
+<mat-card class="imx-data-tree-container">
+  <div class="imx-card-data-explorer-header">
+      <div class="imx-card-data-explorer-header-bg">
+          <h3>{{'#LDS#Assign ownership' | translate}}</h3>
+          @if (contextId) {
+            <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+            }
+      </div>
+  </div>
+  <div class="imx-card-content">
+      <div class="imx-table-container">
+          <mat-card class="imx-card-fill">
+              <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search']"
+                  [busyService]="busyService" (navigationStateChanged)="onNavigationStateChanged($event)"
+                  (search)="onSearch($event)">
+              </imx-data-source-toolbar>
+              <imx-data-table [dst]="dst" 
+                  [detailViewVisible]="false" mode="manual">
+                  <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+                      <ng-template let-item>
+                          <div>{{ item.GetEntity().GetDisplay() }}</div>
+                          <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
+                      </ng-template>
+                  </imx-data-table-column>
+                  <imx-data-table-generic-column columnName="assignOwner" columnLabel="Action">
+                      <ng-template let-data>
+                          <button mat-stroked-button color="primary" (click)="perceivedOwner(data)"> {{
+                              '#LDS#Assign' | translate }}</button>
+                      </ng-template>
+                  </imx-data-table-generic-column>
+                  <imx-data-table-column
+                      [entityColumn]="entitySchema.Columns.RequiresOwnership"></imx-data-table-column>
+                  <imx-data-table-column
+                      [entityColumn]="entitySchema.Columns.RiskIndexCalculated"></imx-data-table-column>
+              </imx-data-table>
+              <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+          </mat-card>
+      </div>
+  </div>
+</mat-card>

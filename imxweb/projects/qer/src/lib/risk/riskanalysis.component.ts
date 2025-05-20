@@ -137,7 +137,12 @@ export class RiskAnalysisComponent implements OnInit {
     const topLevel = this.riskObject;
     const v1 = topLevel
       .filter((x) => !['MX1', 'AV1'].includes(x.TypeOfCalculation || ''))
-      .map((x) => x.SourceValue * x.Weight)
+      .map((x) => {
+        let weight = x.Weight;
+        // negative weight applies here
+        if (x.TypeOfCalculation == 'DEC') weight = 0 - weight;
+        return x.SourceValue * weight;
+      })
       .reduce((x, y) => x + y, 0);
 
     const v2 = topLevel

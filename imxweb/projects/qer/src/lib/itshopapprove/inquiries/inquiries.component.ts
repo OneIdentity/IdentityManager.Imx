@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -45,6 +45,7 @@ import {
   calculateSidesheetWidth,
   ClassloggerService,
   ClientPropertyForTableColumns,
+  ConfirmationService,
   DataSourceToolbarViewConfig,
   DataViewInitParameters,
   DataViewSource,
@@ -67,6 +68,8 @@ import { WorkflowActionService } from '../workflow-action/workflow-action.servic
 export class InquiriesComponent implements OnInit, OnDestroy {
   public readonly entitySchema: EntitySchema;
 
+  @Input() public uidHelperPwo: string;
+  private isInitialLoadedWithServer = false;
   private displayedColumns: ClientPropertyForTableColumns[];
   private readonly subscriptions: Subscription[] = [];
   private dataModel: DataModel;
@@ -87,6 +90,7 @@ export class InquiriesComponent implements OnInit, OnDestroy {
     snackbar: SnackBarService,
     authentication: AuthenticationService,
     public dataSource: DataViewSource<Approval, PwoExtendedData | undefined>,
+    private confirmation: ConfirmationService,
   ) {
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
     (this.displayedColumns = [
@@ -152,7 +156,7 @@ export class InquiriesComponent implements OnInit, OnDestroy {
         params: CollectionLoadParameters,
         signal: AbortSignal,
       ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> =>
-        this.approvalsService.get({ ...params, forinquiry: true }, { signal }),
+        this.getDataFromService(params, signal),
       schema: this.entitySchema,
       columnsToDisplay: this.displayedColumns,
       dataModel: this.dataModel,
@@ -163,6 +167,23 @@ export class InquiriesComponent implements OnInit, OnDestroy {
       },
     };
     this.dataSource.init(dataViewInitParameters);
+  }
+
+  /**
+   * Extracts the server communication, because if the data is loaded for the first time, a special check is needed
+   * @returns Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData>>
+   */
+  private async getDataFromService(
+    state: CollectionLoadParameters,
+    signal: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> {
+    const result = await this.approvalsService.get({ ...state, forinquiry: true, uid_pwohelperpwo: this.uidHelperPwo }, { signal });
+    if (this.uidHelperPwo && result?.Data.length === 0 && !this.isInitialLoadedWithServer) {
+      this.confirmation.confirm({ Message: '#LDS#This request has already been approved or denied.' });
+    }
+    // checks, if the data is loaded from the server for the first time
+    this.isInitialLoadedWithServer = true;
+    return result;
   }
 
   public async updateConfig(config: ViewConfigData): Promise<void> {

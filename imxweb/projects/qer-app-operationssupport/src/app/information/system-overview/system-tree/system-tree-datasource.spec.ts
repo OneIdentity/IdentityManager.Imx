@@ -31,7 +31,7 @@ import { Subject } from 'rxjs';
 import { SystemTreeDatabase } from './system-tree-database';
 import { SystemTreeDataSource } from './system-tree-datasource';
 import { SystemTreeNode } from './system-tree-node';
--describe('SystemTreeDataSource', () => {
+describe('SystemTreeDataSource', () => {
   let dataSource: SystemTreeDataSource;
   let flatTreeMock: FlatTreeControl<SystemTreeNode>;
   let database: SystemTreeDatabase;

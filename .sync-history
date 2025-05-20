@@ -1,0 +1,9 @@
+b9847957e 2025-05-13 Merged PR 79293: DGE: Unable to assign ownership on governed data ownership page.
+32b972e06 2025-05-07 Merged PR 79130: Bug fixes for QAM Angular.
+3bd17e9b6 2025-05-05 Merged PR 79010: Adding a translatable text
+fef289859 2025-04-30 Merged PR 78908: Removed spaces and changed type from any
+d4f1c7396 2025-04-28 Merged PR 78852: File changes as per the comments on PR
+82e2940f4 2025-04-28 Merge branch 'feature/bugfixes_angular_ss' of https://dev.azure.com/1id/Identity%20Manager/_git/One%20Identity%20Manager into feature/bugfixes_angular_ss
+a278108f3 2025-04-28 Merged PR 78851: Changes related to comments
+58804cb37 2025-04-24 Merged PR 78726: QAM IMXWEB functionality added and bug fixes.
+75d145102 2025-04-22 Merged PR 78634: 9.3 Polaris fixes

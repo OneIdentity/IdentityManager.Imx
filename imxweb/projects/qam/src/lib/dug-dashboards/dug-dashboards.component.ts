@@ -47,7 +47,13 @@ export class DugDashboardsComponent implements OnInit {
     const over = this.loadingServiceEui.show();
     try {
       const test = await this.dashboardsService.getDashboards();
-      this.stats = test.Data ?? [];
+      this.stats =
+        test.Data?.map((elem) => {
+          if (elem.Data?.[0]) {
+            elem.Data[0].Name = elem.Data[0].Name + '(' + (elem.Data[0]?.ObjectDisplay ?? '') + ')';
+          }
+          return elem;
+        }) ?? [];
       this.info = ChartInfoTyped.buildEntities((test.Charts ?? []).map((elem) => ChartInfoTyped.buildEntityData(elem))).Data;
       console.log(this.info, this.stats);
     } finally {

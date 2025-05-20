@@ -66,22 +66,9 @@ export class DugAccessDetailComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.charts = (
       await Promise.all([
-        this.getChart(
-          'QAM_AccessAnalysis_Department',
-          '#LDS#Access analysis by department',
-          '#LDS#Analysis of access rights, grouped by department, is currently unavailable.',
-        ),
-        this.getChart(
-          'QAM_AccessAnalysis_PrimaryRoleTitle',
-          '#LDS#Access analysis by primary role title',
-          '#LDS#Analysis of access rights, grouped by primary role title, is currently unavailable.',
-          'ORG',
-        ),
-        this.getChart(
-          'QAM_AccessAnalysis_Location',
-          '#LDS#Access analysis by location',
-          '#LDS#Analysis of access rights, grouped by location, is currently unavailable.',
-        ),
+        this.getChart('QAM_AccessAnalysis_Department', '#LDS#Access analysis by department', '#LDS#Data unavailable.'),
+        this.getChart('QAM_AccessAnalysis_PrimaryRoleTitle', '#LDS#Access analysis by primary role title', '#LDS#Data unavailable.', 'ORG'),
+        this.getChart('QAM_AccessAnalysis_Location', '#LDS#Access analysis by location', '#LDS#Data unavailable.'),
       ])
     ).filter((x) => x != null);
   }

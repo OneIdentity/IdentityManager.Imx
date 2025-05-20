@@ -32,7 +32,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-import { EntitlementLossDto, RecommendationEnum } from '@imx-modules/imx-api-att';
+import { AttestationConfig, EntitlementLossDto, RecommendationEnum } from '@imx-modules/imx-api-att';
 import { ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
@@ -57,7 +57,6 @@ import {
   setFilterDisplay,
 } from 'qbm';
 import { PendingItemsType, RecommendationSidesheetComponent, UserModelService, ViewConfigService } from 'qer';
-import { ApiService } from '../api.service';
 import { AttestationActionService } from '../attestation-action/attestation-action.service';
 import { AttestationFeatureGuardService } from '../attestation-feature-guard.service';
 import { Approvers } from './approvers.interface';
@@ -143,6 +142,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   private additionalParameter: { uid_attestationhelper?: string; uid_attestationcase?: string } = {};
   private readonly subscriptions: Subscription[] = [];
 
+  private attestationConfig: AttestationConfig;
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'attestation/approve';
 
@@ -156,7 +156,6 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     private readonly noCaseDialog: MatDialog,
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    private readonly attService: ApiService,
     private readonly attFeatureService: AttestationFeatureGuardService,
     private viewConfigService: ViewConfigService,
     private readonly usermodelService: UserModelService,
@@ -176,11 +175,6 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         this.attestationCases.isChiefApproval = false;
       }),
     );
-
-    this.attFeatureService.getAttestationConfig().then((config) => {
-      this.isUserEscalationApprover = config.IsUserInChiefApprovalTeam;
-      this.mitigatingControlsPerViolation = config.MitigatingControlsPerViolation;
-    });
   }
 
   public get viewEscalation(): boolean {
@@ -197,12 +191,14 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const config = await this.attService.client.portal_attestation_config_get();
+      this.attestationConfig = await this.attFeatureService.getAttestationConfig();
       const pendingItems: PendingItemsType = await this.usermodelService.getPendingItems();
       this.hasInquiries = pendingItems.OpenInquiriesAttestation > 0;
       const params = await this.activatedRoute.queryParams.pipe(first()).toPromise();
-      this.approvalThreshold = config.ApprovalThreshold;
-      this.autoRemovalScope = config.AutoRemovalScope;
+      this.approvalThreshold = this.attestationConfig.ApprovalThreshold;
+      this.autoRemovalScope = this.attestationConfig.AutoRemovalScope;
+      this.isUserEscalationApprover = this.attestationConfig.IsUserInChiefApprovalTeam;
+      this.mitigatingControlsPerViolation = this.attestationConfig.MitigatingControlsPerViolation;
       this.lossPreview = {
         LossPreviewItems: [],
         LossPreviewHeaders: ['Display', 'ObjectDisplay', 'Person'],

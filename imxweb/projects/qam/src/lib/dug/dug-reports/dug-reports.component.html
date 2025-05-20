@@ -4,6 +4,7 @@
     </imx-data-source-toolbar>
     <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
       <imx-data-table-column [entityColumn]="entitySchema.Columns.ReportDisplayName"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.Description"></imx-data-table-column>
       <imx-data-table-generic-column columnName="action">
         <ng-template let-item>
           <imx-ext class="preset-report-extension" id="presetReportButton" [referrer]="item.reportInfo"></imx-ext>

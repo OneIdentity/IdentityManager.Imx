@@ -134,24 +134,20 @@ export class TeamResponsibilitiesComponent implements OnInit {
   }
 
   public onReassignResponsibilities(): void {
-    const responsibilities: PortalRespTeamResponsibilities[] = [];
-    this.tableSelection.map((responsibility, index) => {
-      if (responsibilities.every((resp) => resp.XObjectKey.value !== responsibility.XObjectKey.value)) {
-        responsibilities.push(responsibility);
-      }
-    });
-    const extendedData: (ResponsibilityData | undefined)[] = responsibilities.map((responsibility) => this.getExtendedData(responsibility));
+    const extendedData: (ResponsibilityData | undefined)[] = this.tableSelection.map((responsibility) =>
+      this.getExtendedData(responsibility),
+    );
     this.sideSheet
       .open(TeamResponsibilityAssignSidesheetComponent, {
         title: this.translateService.instant(
-          responsibilities.length > 1 ? '#LDS#Heading Reassign Responsibilities' : '#LDS#Heading Reassign Responsibility',
+          this.tableSelection.length > 1 ? '#LDS#Heading Reassign Responsibilities' : '#LDS#Heading Reassign Responsibility',
         ),
-        subTitle: responsibilities.length > 1 ? undefined : responsibilities[0].GetEntity().GetDisplay(),
+        subTitle: this.tableSelection.length > 1 ? undefined : this.tableSelection[0].GetEntity().GetDisplay(),
         icon: 'forward',
         padding: '0',
         width: calculateSidesheetWidth(600, 0.4),
         testId: 'team-responsibilities-assign-sidesheet',
-        data: { responsibility: responsibilities, reassign: true, extendedData },
+        data: { responsibility: this.tableSelection, reassign: true, extendedData },
       })
       .afterClosed()
       .subscribe((result: boolean) => {
@@ -177,7 +173,6 @@ export class TeamResponsibilitiesComponent implements OnInit {
         data.Data.map((item, index) => {
           this.extendedData.set(item.GetEntity().GetKeys().join(','), data.extendedData?.Data?.[index]);
         });
-        data.extendedData;
         return data;
       },
       schema: this.entitySchema,

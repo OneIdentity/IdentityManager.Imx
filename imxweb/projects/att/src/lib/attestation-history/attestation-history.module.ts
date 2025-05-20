@@ -41,7 +41,6 @@ import {
   DataTableModule,
   DataViewModule,
   ExtModule,
-  ExtService,
   HelpContextualModule,
   SelectedElementsModule,
 } from 'qbm';
@@ -92,10 +91,4 @@ import { MyAttestationCasesComponent } from './my-attestation-cases/my-attestati
   ],
   providers: [AttestationHistoryService],
 })
-export class AttestationHistoryModule {
-  constructor(private readonly extService: ExtService) {
-    this.extService.register('externalFilter_attestationHistory', {
-      instance: AttestationHistoryFilterComponent,
-    });
-  }
-}
+export class AttestationHistoryModule {}

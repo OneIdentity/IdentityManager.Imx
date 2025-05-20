@@ -1,25 +1,5 @@
-<mat-card>
-  <div class="imx-table-container">
-    <imx-data-source-toolbar
-      #dst
-      [settings]="dstSettings"
-      [busyService]="busyService"
-      data-imx-identifier="list-report-viewer-toolbar"
-      [options]="['search', 'filter']"
-      (search)="onSearch($event)"
-      (navigationStateChanged)="onNavigationStateChanged($event)"
-    >
-    </imx-data-source-toolbar>
-
-    <imx-data-table
-      [dst]="dst"
-      [detailViewVisible]="false"
-      mode="auto"
-      data-imx-identifier="list-report-viewer-table"
-      [groupData]="groupedData"
-      (groupDataChanged)="onGroupingChange($event)"
-    >
-    </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="list-report-viewer-paginator" [dst]="dst"> </imx-data-source-paginator>
-  </div>
+<mat-card class="imx-card-fill imx-margin-right-3 imx-margin-bottom-3">
+  <imx-data-view-toolbar [dataSource]="dataSource"></imx-data-view-toolbar>
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="auto"></imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>

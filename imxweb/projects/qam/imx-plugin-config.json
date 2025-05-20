@@ -1,6 +1,7 @@
 {
   "qer-app-portal": [
       {
+		  "Condition": "QAM",
           "Container": "qam",
           "Name": "QamConfigModule"
       }

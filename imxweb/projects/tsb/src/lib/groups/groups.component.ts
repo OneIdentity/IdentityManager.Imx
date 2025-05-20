@@ -144,10 +144,9 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
     const isBusy = this.busyService.beginBusy();
 
     try {
-      this.filterOptions = await this.groupsService.getFilterOptions(this.isAdmin);
-
       this.dataSource.itemStatus = this.itemStatus;
       this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
+      this.filterOptions = this.dataModel.Filters ?? [];
       this.viewConfigPath = this.isAdmin || this.unsAccountIdFilter ? 'targetsystem/uns/group' : 'resp/unsgroup';
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
       const dataViewInitParameters: DataViewInitParameters<PortalTargetsystemUnsGroup | PortalRespUnsgroup> = {

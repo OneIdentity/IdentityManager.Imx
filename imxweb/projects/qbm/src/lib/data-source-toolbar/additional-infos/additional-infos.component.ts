@@ -111,9 +111,6 @@ export class AdditionalInfosComponent implements OnInit {
   }
 
   private static compareNames(column1: IClientProperty, column2: IClientProperty): number {
-    if (column1.Display == null || column2?.Display == null) {
-      return column1.ColumnName?.localeCompare(column2.ColumnName ?? '') ?? 0;
-    }
-    return column1.ColumnName?.localeCompare(column2.ColumnName ?? '') ?? 0;
+    return (column1.Display || column1.ColumnName)?.localeCompare(column2.Display || column2.ColumnName || '') ?? 0;
   }
 }

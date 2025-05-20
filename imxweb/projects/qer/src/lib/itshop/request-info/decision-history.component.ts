@@ -28,6 +28,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { EntityData } from '@imx-modules/imx-qbm-dbts';
 import { DecisionHistoryService } from '../decision-history.service';
 
+import { TranslateService } from '@ngx-translate/core';
 import { ApproverContainer } from './approver-container';
 import { WorkflowHistoryItemWrapper } from './workflow-history-item-wrapper';
 
@@ -40,14 +41,23 @@ export class DecisionHistoryComponent implements OnChanges {
   @Input() public approverContainer: ApproverContainer;
   @Input() public workflow: WorkflowHistoryItemWrapper[];
 
+  public approverAdditionalInfo: { [key: string]: { [key: string]: { string } } } = {};
+
   public approverNow: { display: string; data: EntityData[] }[] = [];
   public approverFuture: { display: string; data: EntityData[] }[] = [];
-  constructor(public readonly decisionHistory: DecisionHistoryService) {}
+  constructor(
+    public readonly decisionHistory: DecisionHistoryService,
+    public translate: TranslateService,
+  ) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.approverContainer) {
       this.approverFuture = this.approverContainer?.getApproverSortedByStep();
       this.approverNow = this.approverContainer?.getApproverSortedByStep(false);
+      this.approverAdditionalInfo = this.approverContainer?.getApproverAdditionalInfo(
+        this.approverNow,
+        this.translate.instant('#LDS#Compliance rule'),
+      );
     }
   }
 }

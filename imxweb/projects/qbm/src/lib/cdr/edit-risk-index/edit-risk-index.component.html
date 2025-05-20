@@ -1,6 +1,6 @@
 <div *ngIf="columnContainer?.canEdit; else isReadonly">
   <div class="imx-slider-label-container">
-    <label class="slider-label__main">{{ columnContainer.display | translate }}: {{ control.value }}</label>
+    <label class="slider-label__main">{{ columnContainer.display | translate }}: {{ control.value | formatNumber }}</label>
     <div class="imx-suffix-container" *ngIf="isBusy">
       <mat-spinner diameter="30"></mat-spinner>
     </div>

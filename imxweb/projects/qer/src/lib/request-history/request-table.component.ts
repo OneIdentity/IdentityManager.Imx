@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -67,7 +67,7 @@ import { RequestHistoryService } from './request-history.service';
   selector: 'imx-request-table',
   providers: [DataViewSource],
 })
-export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
+export class RequestTableComponent implements OnInit, OnDestroy {
   public additional: IClientProperty[] = [];
   public get entitySchema(): EntitySchema {
     return this.requestHistoryService.PortalItshopRequestsSchema;
@@ -181,12 +181,6 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
         this.dataSource.updateState();
       }),
     );
-  }
-
-  ngOnChanges() {
-    if (this.uidRecipient) {
-      this.getData();
-    }
   }
 
   public async ngOnInit(): Promise<void> {

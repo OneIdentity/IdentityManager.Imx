@@ -24,15 +24,15 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ListReportViewerComponent } from './list-report-viewer.component';
-import { DataSourceToolbarModule, DataTableModule } from 'qbm';
+import { NgModule } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { DataViewModule } from 'qbm';
+import { ListReportViewerComponent } from './list-report-viewer.component';
 
 @NgModule({
   declarations: [ListReportViewerComponent],
-  imports: [CommonModule, MatCardModule, DataSourceToolbarModule, DataTableModule],
+  imports: [CommonModule, MatCardModule, DataViewModule],
   exports: [ListReportViewerComponent],
 })
 export class ListReportViewerModule {}

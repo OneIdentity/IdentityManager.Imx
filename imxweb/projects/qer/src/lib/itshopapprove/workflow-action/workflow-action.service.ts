@@ -370,7 +370,8 @@ export class WorkflowActionService {
             }
             return true;
           },
-          message: '#LDS#The validity period you specified is not valid. The validity end date lies before the validity start date, or vice versa. Change the validity period.',
+          message:
+            '#LDS#The validity period you specified is not valid. The validity end date lies before the validity start date, or vice versa. Change the validity period.',
         },
       },
       apply: async (request: Approval) => {
@@ -390,7 +391,7 @@ export class WorkflowActionService {
 
         await request.commit();
         await this.approvalsService.makeDecision(request, {
-          Reason: actionParameters.reason.column.GetValue(),
+          Reason: actionParameters.reason?.column.GetValue(),
           UidJustification: actionParameters.justification?.column?.GetValue(),
           Decision: true,
         });
@@ -429,7 +430,7 @@ export class WorkflowActionService {
         customValidation: itShopConfig?.VI_ITShop_ApproverReasonMandatoryOnDeny
           ? {
               validate: () => {
-                const reasonValue = actionParameters.reason.column.GetValue();
+                const reasonValue = actionParameters.reason?.column.GetValue();
                 const justificationValue = actionParameters.justification?.column?.GetValue();
                 return (reasonValue != null && reasonValue.length > 0) || (justificationValue != null && justificationValue.length > 0);
               },
@@ -441,7 +442,7 @@ export class WorkflowActionService {
         try {
           await request.GetEntity().Commit(true);
           await this.approvalsService.makeDecision(request, {
-            Reason: actionParameters.reason.column.GetValue(),
+            Reason: actionParameters.reason?.column.GetValue(),
             UidJustification: actionParameters.justification?.column?.GetValue(),
             Decision: false,
           });
@@ -470,18 +471,14 @@ export class WorkflowActionService {
   }
 
   public async resetReservation(requests: TypedEntity[]): Promise<void> {
-    const actionParameters = {
-      reason: this.createCdrReason(),
-    };
-
     return this.editAction({
       title: '#LDS#Heading Cancel Reservation',
       message: '#LDS#The reservation has been successfully canceled.',
       data: {
-        actionParameters,
+        actionParameters: {},
         requests,
       },
-      apply: (request: Approval) => this.approvalsService.resetReservation(request, { Reason: actionParameters.reason.column.GetValue() }),
+      apply: (request: Approval) => this.approvalsService.resetReservation(request, { Reason: '' }),
     });
   }
 

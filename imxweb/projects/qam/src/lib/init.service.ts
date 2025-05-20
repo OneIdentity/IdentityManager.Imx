@@ -26,13 +26,16 @@
 
 import { Injectable } from '@angular/core';
 import { Route, Router } from '@angular/router';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { ExtService, HELP_CONTEXTUAL, MenuService } from 'qbm';
-import { CartItemsExtensionService, MyResponsibilitiesRegistryService } from 'qer';
+import { CartItemsExtensionService, DataExplorerRegistryService, MyResponsibilitiesRegistryService } from 'qer';
 import { AccessRequestService } from './access-request/access-request.service';
 import { AccessComponent } from './access/access.component';
 import { UserAccessComponent } from './access/user-access.component';
 import { DugOverviewComponent } from './dug-overview/dug-overview.component';
+import { DugOwnershipComponent } from './dug-ownership/dug-ownership.component';
 import { IdentityComponent } from './identity/identity.component';
+import { QamApiService } from './qam-api-client.service';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -44,6 +47,8 @@ export class InitService {
     private readonly cartItemExtService: CartItemsExtensionService,
     private readonly menuService: MenuService,
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
+    private readonly dataExplorerRegistryService: DataExplorerRegistryService,
+    private readonly qamClientService: QamApiService
   ) {}
 
   public onInit(routes: Route[]): void {
@@ -98,8 +103,46 @@ export class InitService {
         TableName: this.dgeTag,
         Count: 0,
       },
-      contextId: HELP_CONTEXTUAL.Default, //ToDo Indian Team: DGE Provide context help
+      contextId: HELP_CONTEXTUAL.GovernedData,
     }));
+
+    this.dataExplorerRegistryService.registerFactory(
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[],) => {
+       if (!this.qamClientService.isPersonDGEAdmin(groups)) {
+         return;
+       }
+       return {
+         instance: DugOverviewComponent,
+         sortOrder: 1,
+         name: this.dgeTag,
+         caption: '#LDS#Governed Data Overview',
+         data: {
+           TableName: this.dgeTag,
+           Count: 0,
+         },
+         contextId: HELP_CONTEXTUAL.GovernedDataOverview,
+       };
+     },
+   );
+
+   this.dataExplorerRegistryService.registerFactory(
+    (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[],) => {
+     if (!this.qamClientService.isPersonDGEAdmin(groups)) {
+       return;
+     }
+     return {
+      instance: DugOwnershipComponent,
+      sortOrder: 8,
+      name: 'QAMDuGOWNER',
+      caption: '#LDS#Governed Data Ownership',
+      data: {
+        TableName: this.dgeTag,
+        Count: 0,
+      },
+      contextId: HELP_CONTEXTUAL.GovernedDataOwnership,
+     };
+   },
+ );
 
     this.addRoutes(routes);
   }

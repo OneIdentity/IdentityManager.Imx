@@ -77,7 +77,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     } else {
       this.messageService.subject.next({
         // TODO: do we really want the full error JSON shown to the user?
-        text: JSON.stringify(error),
+        text: typeof error === 'string' ? error : JSON.stringify(error),
         target: this.target,
         type: 'error',
       });

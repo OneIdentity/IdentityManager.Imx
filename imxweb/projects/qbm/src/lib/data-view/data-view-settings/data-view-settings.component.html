@@ -38,7 +38,12 @@
   >
     <span>{{ '#LDS#Saved views' | translate }}</span>
   </button>
-  <button mat-menu-item (click)="onResetViewAndTree()" *ngIf="dataSource.viewConfig()" data-imx-identifier="dst-menu-button-reset-view">
+  <button
+    mat-menu-item
+    (click)="onResetViewAndTree()"
+    *ngIf="dataSource.viewConfig() || !!dataSource.optionalColumns()?.length"
+    data-imx-identifier="dst-menu-button-reset-view"
+  >
     <span>{{ '#LDS#Reset view' | translate }}</span>
   </button>
 </mat-menu>

@@ -79,4 +79,9 @@ export class QamApiService {
   public getTrusteeTypes(): Promise<{ [id: number]: string }> {
     return this.cachedTrusteeTypes.get();
   }
+
+  public isPersonDGEAdmin(groups: string[]): boolean {
+    const isDGEAdminReal = groups.find((item) => item.toUpperCase() === 'VI_4_QAM_ADMIN') != null;
+    return isDGEAdminReal;
+  }
 }

@@ -283,6 +283,7 @@ export { HelpContextualModule } from './lib/help-contextual/help-contextual.modu
 export { HELP_CONTEXTUAL, HelpContextualService, HelpContextualValues } from './lib/help-contextual/help-contextual.service';
 export { HyperViewNavigation, HyperViewNavigationEnum } from './lib/hyperview/hyperview-types';
 export { MessageDialogService } from './lib/message-dialog/message-dialog.service';
+export { NumberFormatPipe } from './lib/number/number-format.pipe';
 export { SelectedElementsComponent } from './lib/selected-elements/selected-elements.component';
 export { SelectedElementsModule } from './lib/selected-elements/selected-elements.module';
 export { DynamicDataApiControls, DynamicDataSource } from './lib/sidenav-tree/sidenav-tree-dynamic-extension';

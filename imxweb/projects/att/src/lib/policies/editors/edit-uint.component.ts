@@ -29,6 +29,7 @@ import { UntypedFormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { FilterChangedArgument } from './filter-changed-argument.interface';
 import { FilterElementModel } from './filter-element-model';
 
@@ -57,7 +58,10 @@ export class EditUintComponent implements OnInit, OnDestroy {
 
     this.valueChangedSubscription = this.control.valueChanges.subscribe(() =>
       this.valueChanged.emit({
-        ParameterValue: this.control.value,
+        ParameterValue:
+          this.filterElementModel.columnForFilter.GetType() === ValType.String
+            ? this.control.value.toLocaleString(this.translateService.currentLang)
+            : this.control.value, // if ValType is actually a string, we need to convert it to a string
         displays: [this.control.value.toLocaleString(this.translateService.currentLang)],
       }),
     );

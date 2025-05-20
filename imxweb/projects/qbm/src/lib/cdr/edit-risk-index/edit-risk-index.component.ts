@@ -27,6 +27,8 @@
 import { Component } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatSliderDragEvent } from '@angular/material/slider';
+import { ClassloggerService } from '../../classlogger/classlogger.service';
+import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 import { EditorBase } from '../editor-base';
 
 /**
@@ -45,14 +47,23 @@ export class EditRiskIndexComponent extends EditorBase<number> {
    * The form control associated with the editor.
    */
   public readonly control = new UntypedFormControl(undefined, { updateOn: 'submit' });
-
+  private currentCulture: string;
   /**
    * Converts a number value to a string in the current language.
    * @param value The number value, that should be formatted.
    * @returns A local representation of the number value.
    */
-  public formatLabel(value: number): string {
-    return value.toLocaleString();
+  public formatLabel = (value: number) => value.toLocaleString();
+
+  constructor(
+    public readonly translationProviderService: ImxTranslationProviderService,
+    protected readonly logger: ClassloggerService,
+  ) {
+    super(logger);
+    this.translationProviderService.GetCultures().then(() => {
+      this.currentCulture = this.translationProviderService.CultureFormat;
+      this.formatLabel = (value: number) => value.toLocaleString(this.currentCulture);
+    });
   }
 
   onDragEnd($event: MatSliderDragEvent): void {

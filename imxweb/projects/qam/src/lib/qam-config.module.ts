@@ -57,6 +57,7 @@ import { UserAccessComponent } from './access/user-access.component';
 import { DugActivitiesComponent } from './dug-activities/dug-activities.component';
 import { DugDashboardsComponent } from './dug-dashboards/dug-dashboards.component';
 import { DugOverviewComponent } from './dug-overview/dug-overview.component';
+import { DugOwnershipComponent } from './dug-ownership/dug-ownership.component';
 import { AccessComparisonComponent } from './dug/access-comparison.component';
 import { DugAccessAnalysisComponent } from './dug/dug-access-analysis.component';
 import { DugAccessDetailComponent } from './dug/dug-access-detail.component';
@@ -87,6 +88,7 @@ const routes: Routes = [
     UserAccessComponent,
     AccessComparisonComponent,
     DugOverviewComponent,
+    DugOwnershipComponent,
     DugReportsComponent,
     DugDashboardsComponent,
     DugActivitiesComponent,

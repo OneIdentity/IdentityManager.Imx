@@ -36,6 +36,7 @@ export class WorkflowHistoryItemWrapper {
   constructor(
     public readonly approveHistory: PortalItshopApproveHistory,
     public readonly decisionHistory: DecisionHistoryService,
+    public readonly complianceRule?: string,
   ) {
     (this.approver = this.createApproverCdr(this.approveHistory)), (this.columns = this.createCdrList(this.approveHistory));
   }

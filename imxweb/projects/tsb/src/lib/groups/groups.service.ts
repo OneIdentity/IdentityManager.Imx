@@ -200,6 +200,7 @@ export class GroupsService {
     return this.tsbClient.typedClient.PortalTargetsystemUnsGroupmembers.Get(groupId, navigationState);
   }
 
+  /** @deprecated Will be removed. Please load the data model first.*/
   public async getFilterOptions(forAdmin: boolean): Promise<DataModelFilter[]> {
     const filters = forAdmin
       ? (await this.tsbClient.client.portal_targetsystem_uns_group_datamodel_get(undefined)).Filters

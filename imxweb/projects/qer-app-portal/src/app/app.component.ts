@@ -63,6 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public message: Message | undefined;
   private routerStatus: EventType;
   private readonly subscriptions: Subscription[] = [];
+  private profileSettings: ProfileSettings;
 
   constructor(
     private readonly logger: ClassloggerService,
@@ -99,7 +100,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.isLoggedIn = sessionState.IsLoggedIn ?? false;
         if (this.isLoggedIn) {
-          const isUseProfileLangChecked = (await this.qerClient.client.portal_profile_get()).UseProfileLanguage ?? false;
+          this.profileSettings = await this.qerClient.v2Client.portal_profile_get();
+          const isUseProfileLangChecked = this.profileSettings.UseProfileLanguage ?? false;
           // Set session culture if isUseProfileLangChecked is true
           if (isUseProfileLangChecked) {
             // Use culture if available, if not fetch
@@ -209,9 +211,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private async applyProfileSettings() {
     try {
-      let profileSettings: ProfileSettings = await this.qerClient.client.portal_profile_get();
-      if (profileSettings?.PreferredAppThemes) {
-        this.themeService.setTheme(<EuiTheme>profileSettings.PreferredAppThemes);
+      if (this.profileSettings?.PreferredAppThemes) {
+        this.themeService.setTheme(<EuiTheme>this.profileSettings.PreferredAppThemes);
       }
     } catch (error) {
       this.errorHandler.handleError(error);

@@ -54,6 +54,12 @@ export class DugReportEntity extends TypedEntity {
       ColumnName: 'UidReport',
     };
 
+    returnColumns.Description = {
+      Type: ValType.String,
+      ColumnName: 'Description',
+      Display: translate ? translate.instant('#LDS#Description') : '#LDS#Description',
+    };
+
     return {
       TypeName: 'Reports',
       Display: translate ? translate.instant('#LDS#Reports') : '#LDS#Reports',
@@ -89,8 +95,9 @@ export class DugReportEntity extends TypedEntity {
       const returnColumns: { [key: string]: EntityColumnData } = {};
       returnColumns.ReportDisplayName = { Value: elem.ReportDisplayName, IsReadOnly: true };
       returnColumns.UidReport = { Value: elem.UidReport, IsReadOnly: true };
+      returnColumns.Description = { Value: elem.Description, IsReadOnly: true };
 
-      return { Columns: returnColumns, Display: elem.ReportDisplayName };
+      return { Columns: returnColumns, Display: elem.ReportDisplayName, Description: elem.Description };
     });
   }
 }

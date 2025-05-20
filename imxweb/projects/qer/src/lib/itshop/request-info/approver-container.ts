@@ -117,6 +117,22 @@ export class ApproverContainer {
     return ret;
   }
 
+  public getApproverAdditionalInfo(
+    approver: { display: string; data: EntityData[] }[],
+    additionalInfoDisplay: string,
+  ): { [key: string]: { [key: string]: { string } } } {
+    const returnValue = {};
+    for (const elem of approver) {
+      returnValue[elem.display] = {};
+      for (const data of elem.data) {
+        if (data.Columns?.UID_ComplianceRule?.Value)
+          returnValue[elem.display][data.Columns.UID_PersonHead.DisplayValue] =
+            `(${additionalInfoDisplay}: ${data.Columns.UID_ComplianceRule?.DisplayValue ?? ''})`;
+      }
+    }
+    return returnValue;
+  }
+
   /**
    * Inits an approver container instance
    * @param canSeeCurrent Determines, if the current approver can be seen

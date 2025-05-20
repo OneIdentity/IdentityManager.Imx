@@ -26,14 +26,22 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema } from '@imx-modules/imx-qbm-dbts';
+import { ListReportContentData, PortalReportData } from '@imx-modules/imx-api-rps';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
 import {
   BusyService,
   ClassloggerService,
-  DataSourceToolbarGroupData,
   DataSourceToolbarSettings,
   DataTableGroupedData,
-  createGroupData,
+  DataViewInitParameters,
+  DataViewSource,
 } from 'qbm';
 import { ListReportDataProvider } from './list-report-data-provider.interface';
 
@@ -51,6 +59,7 @@ import { ListReportDataProvider } from './list-report-data-provider.interface';
   selector: 'imx-list-report-viewer',
   templateUrl: './list-report-viewer.component.html',
   styleUrls: ['./list-report-viewer.component.scss'],
+  providers: [DataViewSource],
 })
 export class ListReportViewerComponent implements OnInit {
   /**
@@ -69,11 +78,13 @@ export class ListReportViewerComponent implements OnInit {
   public groupedData: { [key: string]: DataTableGroupedData } = {};
 
   private dataModel: DataModel;
-  private groupData: DataSourceToolbarGroupData | undefined;
   private reportColumns: string[];
   private navigationState: CollectionLoadParameters = {};
 
-  constructor(private logger: ClassloggerService) {}
+  constructor(
+    private logger: ClassloggerService,
+    public dataSource: DataViewSource,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
@@ -86,78 +97,37 @@ export class ListReportViewerComponent implements OnInit {
   }
 
   /**
-   * Updates the search parameter and navigates
-   * @param key: the keyword, that should be searched for
-   */
-  public async onSearch(key: string): Promise<void> {
-    this.navigationState = { ...this.navigationState, StartIndex: 0, search: key };
-    return this.navigate();
-  }
-
-  /**
-   * Updates the navigation state and navigates
-   * @param newState: the new navigation state
-   */
-  public async onNavigationStateChanged(newState: CollectionLoadParameters): Promise<void> {
-    this.navigationState = newState;
-    return this.navigate();
-  }
-
-  /**
-   * Is called, if the grouping changed.
-   * Updates the grouping navigation state and navigates
-   * @param groupKey the gouping keyword
-   */
-  public async onGroupingChange(groupKey: string): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-
-    try {
-      if (this.groupData?.[groupKey]) {
-        const groupedData = this.groupData[groupKey];
-        const navigationState = { ...groupedData.navigationState };
-        groupedData.data = await this.dataService.get(navigationState);
-        groupedData.settings = {
-          displayedColumns: this.dstSettings.displayedColumns,
-          dataModel: this.dstSettings.dataModel,
-          dataSource: groupedData.data,
-          entitySchema: this.dstSettings.entitySchema,
-          navigationState,
-        };
-      }
-    } finally {
-      isBusy.endBusy();
-    }
-  }
-
-  /**
    * navigates the list report data
    */
   private async navigate(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    try {
-      const data = await this.dataService.get({ ...this.navigationState });
-
-      //Apply new schema to data
-      data.Data.forEach((elem) => elem.GetEntity().ApplySchema(this.entitySchema));
-
-      const displayedColumns = this.reportColumns.map((elem) => this.entitySchema.Columns[elem]).filter((elem) => !!elem);
-      if (displayedColumns.length === 0) {
-        displayedColumns.push(DisplayColumns.DISPLAY_PROPERTY);
-        this.logger.warn(this, 'There was a problem, loading the columns. The displays of the objects will be shown instead');
-      }
-
-      this.dstSettings = {
-        dataSource: data,
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns,
-        dataModel: this.dataModel,
-        groupData: this.groupData,
-        filters: this.dataModel.Filters,
-      };
-    } finally {
-      isBusy.endBusy();
+    const columnsToDisplay = this.reportColumns.map((elem) => this.entitySchema.Columns[elem]).filter((elem) => !!elem);
+    if (columnsToDisplay.length === 0) {
+      columnsToDisplay.push(DisplayColumns.DISPLAY_PROPERTY);
+      this.logger.warn(this, 'There was a problem, loading the columns. The displays of the objects will be shown instead');
     }
+    const dataViewInitParameters: DataViewInitParameters<TypedEntity> = {
+      execute: async (
+        params: CollectionLoadParameters,
+      ): Promise<ExtendedTypedEntityCollection<PortalReportData, ListReportContentData>> => {
+        this.navigationState = { ...this.navigationState, ...params };
+        const data = await this.dataService.get(this.navigationState);
+
+        //Apply new schema to data
+        data.Data.forEach((elem) => elem.GetEntity().ApplySchema(this.entitySchema));
+        return data;
+      },
+      groupExecute: (column: string, params: CollectionLoadParameters, signal: AbortSignal) => {
+        return this.dataService.getGroupInfo({
+          ...{ by: column },
+          ...params,
+        });
+      },
+      schema: this.entitySchema,
+      columnsToDisplay,
+      dataModel: this.dataModel,
+      exportFunction: this.dataService.exportReports?.(),
+    };
+    await this.dataSource.init(dataViewInitParameters);
   }
 
   /**
@@ -183,18 +153,5 @@ export class ListReportViewerComponent implements OnInit {
     if (this.reportParameter) {
       this.navigationState.parameters = this.reportParameter;
     }
-
-    this.groupData = createGroupData(
-      this.dataModel,
-      (parameters) =>
-        this.dataService.getGroupInfo({
-          ...{
-            PageSize: this.navigationState.PageSize,
-            StartIndex: 0,
-          },
-          ...parameters,
-        }),
-      [],
-    );
   }
 }

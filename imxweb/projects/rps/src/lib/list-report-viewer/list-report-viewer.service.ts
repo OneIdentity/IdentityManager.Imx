@@ -26,8 +26,18 @@
 
 import { Injectable } from '@angular/core';
 
-import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection, GroupInfoData } from '@imx-modules/imx-qbm-dbts';
-import { ListReportContentData, PortalReportData } from '@imx-modules/imx-api-rps';
+import { ListReportContentData, PortalReportData, V2ApiClientMethodFactory } from '@imx-modules/imx-api-rps';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  GroupInfoData,
+  MethodDefinition,
+  MethodDescriptor,
+} from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolbarExportMethod } from 'qbm';
 import { RpsApiService } from '../rps-api-client.service';
 import { ListReportDataProvider } from './list-report-data-provider.interface';
 
@@ -74,5 +84,20 @@ export class ListReportViewerService implements ListReportDataProvider {
     }
     const { withProperties, OrderBy, search, ...params } = parameters;
     return this.api.client.portal_report_data_group_get(this.uidReport, { ...params });
+  }
+
+  public exportReports(): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_report_data_get(this.uidReport, { ...navigationState, withProperties, PageSize, StartIndex: 0 });
+        } else {
+          method = factory.portal_report_data_get(this.uidReport, { ...navigationState, withProperties });
+        }
+        return new MethodDefinition(method);
+      },
+    };
   }
 }

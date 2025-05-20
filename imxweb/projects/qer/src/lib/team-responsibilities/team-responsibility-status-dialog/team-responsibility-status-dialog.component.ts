@@ -33,19 +33,23 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrl: './team-responsibility-status-dialog.component.scss',
 })
 export class TeamResponsibilityStatusDialogComponent {
-  public shoppingCartInfoPlural =
-    '#LDS#{0} responsibilities have been successfully removed. {0} responsibilities have been added to your shopping cart. To complete the process, submit your shopping cart.';
-  public shoppingCartInfoSingular =
-    '#LDS#One responsibility has been successfully removed. One responsibility has been added to your shopping cart. To complete the process, submit your shopping cart.';
   public reassignInfoSingular = '#LDS#One responsibility has been successfully reassigned.';
   public reassignInfoPlural = '#LDS#{0} responsibilities have been successfully reassigned.';
   constructor(
     public dialogRef: MatDialogRef<TeamResponsibilityStatusDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { reassignedResponsibilities: number; cartResponsibilities: number },
+    @Inject(MAT_DIALOG_DATA) public data: { reassignedResponsibilities: number; cartResponsibilities: number; newResponsibilities: number },
   ) {}
 
   public get shoppingCartInfo(): string {
-    return this.data.cartResponsibilities == 1 ? this.shoppingCartInfoSingular : this.shoppingCartInfoPlural;
+    if (this.data.cartResponsibilities == 1 && this.data.newResponsibilities == 1) {
+      return '#LDS#One responsibility has been successfully removed. One responsibility has been added to your shopping cart. To complete the process, submit your shopping cart.';
+    } else if (this.data.cartResponsibilities == 1) {
+      return '#LDS#One responsibility has been successfully removed. {1} responsibilities have been added to your shopping cart. To complete the process, submit your shopping cart.';
+    } else if (this.data.newResponsibilities == 1) {
+      return '#LDS#{0} responsibilities have been successfully removed. One responsibility has been added to your shopping cart. To complete the process, submit your shopping cart.';
+    } else {
+      return '#LDS#{0} responsibilities have been successfully removed. {1} responsibilities have been added to your shopping cart. To complete the process, submit your shopping cart.';
+    }
   }
 
   public get reassignInfo(): string {

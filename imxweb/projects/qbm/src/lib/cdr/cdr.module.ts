@@ -57,6 +57,7 @@ import { FkHierarchicalDialogModule } from '../fk-hierarchical-dialog/fk-hierarc
 import { ImageModule } from '../image/image.module';
 import { InfoModalDialogModule } from '../info-modal-dialog/info-modal-dialog.module';
 import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
+import { NumberFormatPipe } from '../number/number-format.pipe';
 import { CdrEditorComponent } from './cdr-editor/cdr-editor.component';
 import { CdrSidesheetComponent } from './cdr-sidesheet/cdr-sidesheet.component';
 import { DateRangeComponent } from './date-range/date-range.component';
@@ -137,6 +138,7 @@ import { ViewPropertyComponent } from './view-property/view-property.component';
     FkHierarchicalDialogModule,
     DateModule,
     ImageModule,
+    NumberFormatPipe,
   ],
   exports: [
     CdrEditorComponent,

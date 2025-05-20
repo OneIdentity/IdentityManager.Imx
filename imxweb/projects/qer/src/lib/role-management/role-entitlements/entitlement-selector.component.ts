@@ -136,6 +136,8 @@ export class EntitlementSelectorComponent {
       },
       isMultiValue: true,
     };
-    this.selectedFkTable = { ...this.selectedType, ...this.data, fkColumnName: this.selectedType.TableName };
+    if (!!this.selectedType) {
+      this.selectedFkTable = { ...this.selectedType, ...this.data, fkColumnName: this.selectedType.TableName };
+    }
   }
 }

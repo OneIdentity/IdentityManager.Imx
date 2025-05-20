@@ -32,6 +32,7 @@ import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
 import { NotificationRegistryService } from 'qer';
 import { canSeeAttestationPolicies, isAttestationAdmin } from './admin/permissions-helper';
 import { PermissionsService } from './admin/permissions.service';
+import { AttestationHistoryFilterComponent } from './attestation-history/attestation-history-filter/attestation-history-filter.component';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { AttestationWrapperComponent } from './runs/attestation/attestation-wrapper/attestation-wrapper.component';
 
@@ -79,6 +80,10 @@ export class InitService {
       },
       sortOrder: 0,
     } as TabItem);
+
+    this.extService.register('externalFilter_attestationHistory', {
+      instance: AttestationHistoryFilterComponent,
+    });
 
     // Register handler for attestation notifications
     this.notificationService.registerRedirectNotificationHandler({

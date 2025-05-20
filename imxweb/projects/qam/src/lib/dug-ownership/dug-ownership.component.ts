@@ -24,23 +24,22 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, HelpContextualValues, SideNavigationComponent } from 'qbm';
 
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { DugSidesheetComponent } from '../dug/dug-sidesheet.component';
-import { DugOverviewService } from './dug-overview.service';
+import { DugOwnershipService } from './dug-ownership.service';
+import { PortalDgeResourcesPerceivedowners } from '../TypedClient';
 
 @Component({
-  selector: 'imx-dug-overview',
-  templateUrl: './dug-overview.component.html',
-  styleUrls: ['./dug-overview.component.scss'],
+  selector: 'imx-dug-ownership',
+  templateUrl: './dug-ownership.component.html',
+  styleUrls: ['./dug-ownership.component.scss'],
 })
-export class DugOverviewComponent implements OnInit, SideNavigationComponent {
-
-  @Input() public isAdmin = false;
+export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
   public data?: any;
   public contextId?: HelpContextualValues;
   private dataModel: DataModel;
@@ -51,24 +50,30 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
   public entitySchema: EntitySchema;
   private displayedColumns: IClientProperty[] = [];
   public readonly DisplayColumns = DisplayColumns;
+  public perceivedOwners: PortalDgeResourcesPerceivedowners;
 
   constructor(
-    private readonly overviewService: DugOverviewService,
+    private readonly ownershipService: DugOwnershipService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly translate: TranslateService,
   ) {
-    this.entitySchema = overviewService.DugResourceSchema;
+    this.entitySchema = ownershipService.DugResourceSchema;
     this.displayedColumns = [
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      this.entitySchema.Columns.UID_QAMResourceType,
+      {
+        ColumnName: "assignOwner",
+        Type: ValType.String
+      },
+      // this.entitySchema.Columns.UID_QAMResourceType,
       this.entitySchema.Columns.RiskIndexCalculated,
+      this.entitySchema.Columns.RequiresOwnership
     ];
   }
 
   public async ngOnInit(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      this.dataModel = await this.overviewService.getDataModel();
+      this.dataModel = await this.ownershipService.getDataModel();
       await this.getData();
     } finally {
       isBusy.endBusy();
@@ -92,15 +97,15 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
     await this.getData({ ...this.navigationState, StartIndex: 0, search: keywords });
   }
 
-  public async showDugResource(resource: TypedEntity): Promise<void> {
+  public async perceivedOwner(resource: TypedEntity): Promise<void> {
     const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading Edit Governed Data'),
+      title: this.translate.instant('#LDS#Heading Assign OwnerShip'),
       subTitle: resource.GetEntity().GetDisplay(),
-      width: calculateSidesheetWidth(1000, 0.9),
+      width: calculateSidesheetWidth(),
       disableClose: true,
       padding: '0',
-      testId: 'edit-dug-resource-sidesheet',
-      data: { uid: resource.GetEntity().GetKeys()[0] },
+      testId: 'assign-dug-resource-sidesheet',
+      data: { uid: resource.GetEntity().GetKeys()[0], identifier:'perceivedOwner' },
     });
     sidesheetRef.afterClosed().subscribe((result) => {
       if (result) {
@@ -111,10 +116,10 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
 
   private async getData(parameter: CollectionLoadParameters = {}): Promise<void> {
     const isBusy = this.busyService.beginBusy();
-    this.navigationState = this.isAdmin ? {...parameter, allresources: '1'} : { ...parameter, owned: '1' };
-    try { 
-      const data = await this.overviewService.getData(this.navigationState);
-
+    this.navigationState = { ...parameter, withoutowner: '1' };
+    try {
+      const data = await this.ownershipService.getData(this.navigationState);
+     
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: data,

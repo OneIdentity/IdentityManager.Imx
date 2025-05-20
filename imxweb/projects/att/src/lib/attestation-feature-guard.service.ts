@@ -27,7 +27,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { AttestationConfig } from '@imx-modules/imx-api-att';
-import { AppConfigService, RouteGuardService } from 'qbm';
+import { CachedPromise } from '@imx-modules/imx-qbm-dbts';
+import { AppConfigService, CacheService, RouteGuardService } from 'qbm';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -39,17 +40,26 @@ export class AttestationFeatureGuardService {
     private readonly appConfig: AppConfigService,
     private readonly router: Router,
     private readonly routeGuardService: RouteGuardService,
-  ) {}
+    cacheService: CacheService,
+  ) {
+    this.cachedAttestationConfig = cacheService.buildCache(() => this.attService.client.portal_attestation_config_get());
+  }
+  private config: Promise<AttestationConfig>;
 
-  public async getAttestationConfig(): Promise<AttestationConfig> {
-    return this.attService.client.portal_attestation_config_get();
+  // The cached promises cache the results of often needed API requests.
+  // The CacheService takes care of flushing the cache when re-authenticating.
+  private cachedAttestationConfig: CachedPromise<AttestationConfig>;
+
+  public getAttestationConfig(): Promise<AttestationConfig> {
+    this.config = this.cachedAttestationConfig.get();
+    return this.config;
   }
 
   public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     if (await this.routeGuardService.canActivate(route, state)) {
-      const attestationConfig = await this.getAttestationConfig();
+      this.getAttestationConfig();
 
-      const featureEnabled = attestationConfig?.IsAttestationEnabled;
+      const featureEnabled = (await this.config)?.IsAttestationEnabled;
       if (!featureEnabled) {
         this.router.navigate([this.appConfig.Config.routeConfig?.start]);
       }

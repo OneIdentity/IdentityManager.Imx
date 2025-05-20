@@ -27,7 +27,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { PortalShopServiceitems, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { PortalShopServiceitems, PwoData, QerProjectConfig } from '@imx-modules/imx-api-qer';
 import { EntityData } from '@imx-modules/imx-qbm-dbts';
 import moment from 'moment';
 import { BaseReadonlyCdr, BusyService, ClassloggerService, ColumnDependentReference, ExtService, IExtension } from 'qbm';
@@ -141,7 +141,9 @@ export class RequestInfoComponent implements OnInit, OnDestroy {
     /**calculate currently show workflow data */
     const workflowData = this.itshopService
       .createTypedHistory(this.sortedDataCache, this.startIndex)
-      .map((item) => new WorkflowHistoryItemWrapper(item, this.decisionHistory));
+      .map(
+        (item, index) => new WorkflowHistoryItemWrapper(item, this.decisionHistory, this.getComplianceRule(index, this.request.pwoData)),
+      );
 
     this.workflow.push(...workflowData); //add workflow data
     this.canLoadMore = this.workflow.length < (this.request.pwoData.WorkflowHistory?.Entities?.length ?? 0);
@@ -153,5 +155,10 @@ export class RequestInfoComponent implements OnInit, OnDestroy {
 
   private isForView(cdr: ColumnDependentReference): boolean {
     return cdr.column.ColumnName !== 'PWOPriority' || cdr.column.GetValue() !== 0;
+  }
+
+  private getComplianceRule(index: number, pwoData: PwoData): string {
+    const elem = pwoData?.WorkflowHistory?.Entities?.[index]?.Columns?.['UID_ComplianceRule'];
+    return elem?.DisplayValue ?? '';
   }
 }

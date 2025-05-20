@@ -219,7 +219,7 @@ export class SubscriptionsComponent implements OnInit {
     const sidesheetRef = this.sideSheet.open(ReportViewConfigComponent, {
       title: await this.translate.get('#LDS#Heading View a Report').toPromise(),
       padding: '0px',
-      width: calculateSidesheetWidth(1000),
+      width: calculateSidesheetWidth(1000, 70),
       testId: 'subscriptions-view-config',
     });
 

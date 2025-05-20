@@ -145,7 +145,6 @@ export class GroupMembersComponent implements OnInit {
   }
 
   public canDeleteSelected(): boolean {
-    this.dataSourceDirect.selection != null;
     return (
       this.dataSourceDirect.selection.selected != null &&
       this.dataSourceDirect.selection.selected.length > 0 &&

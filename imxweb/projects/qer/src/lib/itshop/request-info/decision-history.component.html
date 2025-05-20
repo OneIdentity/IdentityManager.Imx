@@ -40,6 +40,12 @@
               {{ step.approveHistory.ReasonHead.Column.GetDisplayValue() }}
             </span>
           </div>
+          <div class="imx-reason" *ngIf="step.complianceRule">
+            <span class="column-display">{{ '#LDS#Compliance rule' | translate }}</span>
+            <span class="column-value">
+              {{ step.complianceRule }}
+            </span>
+          </div>
           <imx-cdr-editor *ngFor="let cdr of step.columns" [cdr]="cdr"></imx-cdr-editor>
         </mat-card-content>
       </mat-card>
@@ -84,7 +90,10 @@
                 <span>{{ approvalStep.display }}</span>
               </div>
               <div approver *ngFor="let pnow of approvalStep.data" class="imx-approver">
-                {{ pnow.Columns?.UID_PersonHead?.DisplayValue }}
+                <span>{{ pnow.Columns?.UID_PersonHead?.DisplayValue ?? '' }}</span>
+                <ng-container *ngIf="approverAdditionalInfo[approvalStep.display][pnow.Columns?.UID_PersonHead?.DisplayValue ?? '']">
+                  <span>{{ approverAdditionalInfo[approvalStep.display][pnow.Columns?.UID_PersonHead?.DisplayValue ?? ''] }}</span>
+                </ng-container>
               </div>
             </div>
           </div>

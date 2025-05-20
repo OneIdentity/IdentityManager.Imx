@@ -21,7 +21,11 @@
         [attr.data-imx-identifier]="'additional-infos-option-' + (property?.Display || property?.ColumnName)"
         *ngFor="let property of possibleProperties"
       >
-        {{ property?.Display ?? (property?.untranslatedDisplay ?? '' | translate) ?? property?.ColumnName }}
+        {{
+          property?.Display ??
+            (property?.untranslatedDisplay ? (property?.untranslatedDisplay ?? '' | translate) : undefined) ??
+            property?.ColumnName
+        }}
       </mat-list-option>
     </mat-selection-list>
   </mat-card>
@@ -29,7 +33,13 @@
     <mat-card-title>{{ '#LDS#Columns that are displayed' | translate }}</mat-card-title>
     <div cdkDropList cdkDropListOrientation="vertical" class="example-list" (cdkDropListDropped)="drop($event)">
       <div class="example-box" *ngFor="let property of data?.preselectedProperties" cdkDrag>
-        <span> {{ property?.Display ?? (property?.untranslatedDisplay ?? '' | translate) ?? property?.ColumnName }}</span>
+        <span>
+          {{
+            property?.Display ??
+              (property?.untranslatedDisplay ? (property?.untranslatedDisplay ?? '' | translate) : undefined) ??
+              property?.ColumnName
+          }}</span
+        >
         <button
           mat-icon-button
           *ngIf="isRemoveable(property)"

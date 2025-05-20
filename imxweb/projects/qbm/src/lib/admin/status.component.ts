@@ -157,7 +157,7 @@ export class StatusComponent implements OnInit, OnDestroy, SideNavigationCompone
 
     const client = this.appConfigService.client;
     this.pingResult = await client.imx_ping_get();
-    this.systemInfo = await client.imx_system_get();
+    this.systemInfo = await this.systemInfoService.get();
     this.apiProjects = await client.admin_projects_get();
     const s = await client.admin_systeminfo_software_status_get();
     this.config = await this.systemInfoService.getImxConfig();

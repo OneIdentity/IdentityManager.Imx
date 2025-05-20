@@ -32,7 +32,15 @@ import { PortalItshopPeergroupMemberships } from '@imx-modules/imx-api-qer';
 import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 import { MatDialog } from '@angular/material/dialog';
-import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, HELP_CONTEXTUAL, SettingsService } from 'qbm';
+import {
+  Busy,
+  BusyService,
+  DataSourceToolbarComponent,
+  DataSourceToolbarSettings,
+  HELP_CONTEXTUAL,
+  ImxTranslationProviderService,
+  SettingsService,
+} from 'qbm';
 import { ItshopService } from '../../itshop/itshop.service';
 import { CurrentProductSource } from '../current-product-source';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
@@ -72,6 +80,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
   public SelectedProductSource = SelectedProductSource;
   public selectedSource: SelectedProductSource;
   public contextId = HELP_CONTEXTUAL.NewRequestRecommendedProduct;
+  public readonly currentCulture: string;
   //#endregion
 
   constructor(
@@ -85,6 +94,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
     private readonly cd: ChangeDetectorRef,
     public readonly busyService: BusyService,
     private readonly dialog: MatDialog,
+    private readonly translationProviderService: ImxTranslationProviderService,
   ) {
     this.orchestration.selectedView = SelectedProductSource.PeerGroupProducts;
     this.orchestration.searchApi$.next(this.searchApi);
@@ -104,6 +114,8 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
       this.membershipApi.PortalItshopPeergroupMembershipsSchema.Columns.FullPath,
       this.membershipApi.PortalItshopPeergroupMembershipsSchema.Columns.Description,
     ];
+
+    this.currentCulture = this.translationProviderService.CultureFormat;
 
     //#region Subscriptions
 

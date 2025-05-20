@@ -38,6 +38,7 @@ import {
   LdsReplaceModule,
   MenuItem,
   MenuService,
+  NumberFormatPipe,
   QbmModule,
   SelectedElementsModule,
   SidenavTreeComponent,
@@ -113,6 +114,7 @@ import { NewRequestComponent } from './new-request.component';
     MatChipsModule,
     HelpContextualModule,
     SelectedElementsModule,
+    NumberFormatPipe,
   ],
   exports: [NewRequestComponent],
 })

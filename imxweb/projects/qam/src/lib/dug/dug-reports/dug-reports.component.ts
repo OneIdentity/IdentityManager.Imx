@@ -48,7 +48,7 @@ export class DugReportsComponent implements OnInit {
 
   constructor(private readonly dugReportService: DugReportService, translateService: TranslateService) {
     this.entitySchema = DugReportEntity.GetEntitySchema(translateService);
-    this.displayedColumns = [this.entitySchema.Columns.ReportDisplayName, {ColumnName: 'action', Type: ValType.String}];
+    this.displayedColumns = [this.entitySchema.Columns.ReportDisplayName, this.entitySchema.Columns.Description, {ColumnName: 'action', Type: ValType.String}];
   }
 
   public async ngOnInit(): Promise<void> {

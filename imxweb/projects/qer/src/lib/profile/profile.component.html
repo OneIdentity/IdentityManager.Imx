@@ -37,32 +37,34 @@
       </ng-template>
     </mat-tab>
     <mat-tab label="{{ '#LDS#Heading Main Data' | translate }}" data-imx-identifier="profile-main-data">
-      <mat-card class="imx-card-scroll-content">
-        <mat-card-content>
-          <form [formGroup]="form" id="form" (ngSubmit)="save()">
-            <imx-cdr-editor
-              *ngFor="let cdr of cdrList"
-              [cdr]="cdr"
-              (controlCreated)="form.addControl(cdr?.column?.ColumnName ?? '', $event)"
-              [attr.data-imx-identifier]="'edit-profile-property-' + cdr.column.ColumnName"
-            >
-            </imx-cdr-editor>
-          </form>
-        </mat-card-content>
-      </mat-card>
-      <div class="imx-button-bar-transparent">
-        <button
-          mat-flat-button
-          [disabled]="!form.dirty || form.invalid"
-          type="submit"
-          (click)="save()"
-          form="form"
-          color="primary"
-          data-imx-identifier="edit-profile-button-save"
-        >
-          {{ '#LDS#Save' | translate }}
-        </button>
-      </div>
+      <ng-template matTabContent>
+        <mat-card class="imx-card-scroll-content">
+          <mat-card-content>
+            <form [formGroup]="form" id="form" (ngSubmit)="save()">
+              <imx-cdr-editor
+                *ngFor="let cdr of cdrList"
+                [cdr]="cdr"
+                (controlCreated)="form.addControl(cdr?.column?.ColumnName ?? '', $event)"
+                [attr.data-imx-identifier]="'edit-profile-property-' + cdr.column.ColumnName"
+              >
+              </imx-cdr-editor>
+            </form>
+          </mat-card-content>
+        </mat-card>
+        <div class="imx-button-bar-transparent">
+          <button
+            mat-flat-button
+            [disabled]="!form.dirty || form.invalid"
+            type="submit"
+            (click)="save()"
+            form="form"
+            color="primary"
+            data-imx-identifier="edit-profile-button-save"
+          >
+            {{ '#LDS#Save' | translate }}
+          </button>
+        </div>
+      </ng-template>
     </mat-tab>
     <mat-tab label="{{ '#LDS#Heading Email Notifications' | translate }}" data-imx-identifier="profile-email" *ngIf="hasMailSubscriptions">
       <ng-template matTabContent>

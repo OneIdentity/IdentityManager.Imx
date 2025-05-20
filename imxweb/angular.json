@@ -1820,7 +1820,7 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["projects/uci/tsconfig.lib.json", "projects/uci/tsconfig.spec.json"],
+            "tsConfig": ["projects/qam/tsconfig.lib.json", "projects/qam/tsconfig.spec.json"],
             "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
           }
         }

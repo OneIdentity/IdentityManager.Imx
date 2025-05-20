@@ -41,17 +41,48 @@ export class DecisionStepSevice {
   }
 
   public getCurrentStepCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference | undefined {
+    const step = this.getStep(extended, entity);
+
+    return step?.Columns.Ident_PWODecisionStep == null
+      ? undefined
+      : new BaseReadonlyCdr(this.createEntityColumn(step.Columns.Ident_PWODecisionStep), display);
+  }
+
+  public getAdditionalInfoCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference | undefined {
+    const step = this.getStep(extended, entity);
+
+    const data = extended.WorkflowData?.Entities?.find(
+      (elem) =>
+        elem.Columns.UID_QERWorkingStep.Value === step.Columns.UID_QERWorkingStep.Value &&
+        elem.Columns.UID_PersonHead.Value === this.uidUser,
+    );
+
+    return (data?.Columns.UID_ComplianceRule?.Value ?? '') === ''
+      ? undefined
+      : new BaseReadonlyCdr(this.createEntityColumn(data.Columns.UID_ComplianceRule), display);
+  }
+
+  private getStep(extended: any, entity: TypedEntity) {
     const steps = extended.WorkflowSteps?.Entities?.filter(
       (elem) =>
         elem?.Columns?.UID_QERWorkingMethod.Value === entity.GetEntity().GetColumn('UID_QERWorkingMethod').GetValue() &&
         elem.Columns.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue(),
     );
 
-    const step = steps.find((elem) => this.isFitting(extended.WorkflowData?.Entities, elem));
+    //add sublevel to steps
+    const stepsWithSubLevel: { subLevel: number; column: any }[] = [];
+    steps
+      .filter((elem) => this.isFitting(extended.WorkflowData?.Entities, elem))
+      .forEach((element) => {
+        const subLevel = extended.WorkflowData.Entities.find(
+          (data) => data.Columns.UID_QERWorkingStep.Value === element.Columns.UID_QERWorkingStep.Value,
+        );
+        stepsWithSubLevel.push({ subLevel: subLevel.Columns.SubLevelNumber.Value, column: element });
+      });
 
-    return step?.Columns.Ident_PWODecisionStep == null
-      ? undefined
-      : new BaseReadonlyCdr(this.createEntityColumn(step.Columns.Ident_PWODecisionStep), display);
+    //Sort steps and get step with lowest sub level
+    const step = stepsWithSubLevel?.sort((x, y) => x.subLevel - y.subLevel)?.[0]?.column;
+    return step;
   }
 
   private createEntityColumn(data: EntityColumnData): IEntityColumn {

@@ -40,6 +40,7 @@ import {
   EntityService,
   HELPER_ALERT_KEY_PREFIX,
   LdsReplacePipe,
+  SnackBarService,
   StorageService,
 } from 'qbm';
 import { AccessRequestDataService } from './access-request-data.service';
@@ -81,6 +82,9 @@ export class AccessRequestSidesheetComponent implements OnInit {
   private readonly subscriptions: Subscription[] = [];
   private dgeResourcesNodes: QamTreeNode[] = [];
 
+  public formValid: boolean = true;
+  public validationMessage: string = '';
+
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: AccessRequestSidesheetData,
     confirmationService: ConfirmationService,
@@ -91,19 +95,15 @@ export class AccessRequestSidesheetComponent implements OnInit {
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly storageService: StorageService,
     private readonly translate: TranslateService,
+    private readonly snackbar: SnackBarService,
   ) {
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
-        const folders = await this.getFolders();
-        if (folders.length === 0 || folders.filter((folder) => folder.length === 0).length > 0) {
-          const close = await confirmationService.confirmLeaveWithUnsavedChanges();
-          if (close) {
-            this.sidesheetRef.close([]);
-          } else {
-            return;
-          }
+        const close = await confirmationService.confirmLeaveWithUnsavedChanges();
+        if (close) {
+          this.sidesheetRef.close([]);
         } else {
-          this.sidesheetRef.close(folders);
+          return;
         }
       }),
     );
@@ -150,8 +150,41 @@ export class AccessRequestSidesheetComponent implements OnInit {
     }
   }
 
+  public checkEnteredFoldersPathValid(): boolean {
+    let isValid = true;
+    this.formGroup.controls.folderArray.value.forEach((element: string, index: number) => {
+      if (element.length == 0) {
+        this.validationMessage = this.ldsReplace.transform(
+          this.translate.instant('Folder #{0} path is empty. Please enter a valid path.'),
+          index + 1,
+        );
+        isValid = false;
+        return;
+      }
+      const regex = /^(\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9_.-]+(\\[a-zA-Z0-9_.-]+)*)$/;
+      if (!regex.test(element)) {
+        this.validationMessage = this.ldsReplace.transform(
+          this.translate.instant('The entered path of Folder #{0} is not valid. Please use the form \\\\server\\path.'),
+          index + 1,
+        );
+        isValid = false;
+        return;
+      }
+    });
+    return isValid;
+  }
+
   protected submitValues(): void {
+    if (this.formGroup.controls.enterFolderManually.value && !this.checkEnteredFoldersPathValid()) {
+      this.formValid = false;
+      return;
+    }
     this.sidesheetRef.close(this.getFolders());
+  }
+
+  showSnackBar() {
+    this.snackbar.open({ key: '#LDS#Validation error message closed.' });
+    this.formValid = true;
   }
 
   private async initializeTree(): Promise<void> {

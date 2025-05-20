@@ -1,27 +1,83 @@
-<mat-tab-group (selectedTabChange)="updateCurrentTab($event)">
+<mat-tab-group (selectedTabChange)="updateCurrentTab($event)" *ngIf="isPerceivedOwner()">
   <mat-tab>
-    <ng-template mat-tab-label> <span translate>#LDS#Heading Main Data</span>&nbsp; </ng-template>
+    <ng-template mat-tab-label> <span translate>#LDS#Perceived Owners</span></ng-template>
+    <div class="imx-tab-content">
+      <div class="imx-tab-content-body">
+        <div eui-sidesheet-content>
+          <imx-busy-indicator class="imx-busy-loader" *ngIf="isLoading"></imx-busy-indicator>
+          <div class="imx-table-container">
+            <mat-card class="imx-card-fill">
+              <form [formGroup]="dugResourceFormGroup">
+              <imx-data-source-toolbar #dst [settings]="dstSettings" [busyService]="busyService">
+              </imx-data-source-toolbar>
+              <imx-data-table [dst]="dst" mode="manual">
+                <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonPerceivedOwner">
+                </imx-data-table-column>
+                <imx-data-table-column [entityColumn]="entitySchema.Columns.PerceptionScore">
+                </imx-data-table-column>
+                <imx-data-table-generic-column columnName="assignOwner" columnLabel="Action">
+                  <ng-template let-data>
+                    <mat-radio-group
+                      (change)="onAssignSelectionChange(data.UID_PersonPerceivedOwner)"
+                      [value]="selectedOwner"
+                    >
+                      <mat-radio-button [value]="data.UID_PersonPerceivedOwner"></mat-radio-button>
+                    </mat-radio-group>
+                  </ng-template>
+                </imx-data-table-generic-column>
+              </imx-data-table>
+              <div class="dug-assign-owner-text" (click)="assignOwner()">
+                  <span>{{ ldsChooseAnotherEmployee | translate }}</span>
+              </div>
+              <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+            </form>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<mat-tab-group (selectedTabChange)="updateCurrentTab($event)" *ngIf="isAssignOwnership()">
+  <mat-tab>
+    <ng-template mat-tab-label> <span translate>#LDS#Assign Owners</span></ng-template>
     <div class="imx-tab-content">
       <div class="imx-tab-content-body">
         <div eui-sidesheet-content>
           <imx-busy-indicator class="imx-busy-loader" *ngIf="isLoading"></imx-busy-indicator>
           <mat-card class="imx-card-fill imx-margin-bottom-16" [ngClass]="{ hidden: isLoading }">
             <form [formGroup]="dugResourceFormGroup">
-              <imx-cdr-editor
-                *ngFor="let cdr of cdrList"
-                [cdr]="cdr"
-                (controlCreated)="dugResourceFormGroup.controls.array.push($event)"
-              ></imx-cdr-editor>
+              <imx-cdr-editor *ngFor="let cdr of cdrOwnerShip" [cdr]="cdr"
+                (controlCreated)="dugResourceFormGroup.controls.array.push($event)"></imx-cdr-editor>
+            </form>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<mat-tab-group (selectedTabChange)="updateCurrentTab($event)" *ngIf="!isPerceivedOwner() && !isAssignOwnership()">
+  <mat-tab>
+    <ng-template mat-tab-label> <span translate>#LDS#Heading Main Data</span>&nbsp; </ng-template>
+    <div class="imx-tab-content">
+      <div class="imx-tab-content-body">
+        <div eui-sidesheet-content>
+          @if (isLoading) {
+            <imx-busy-indicator class="imx-busy-loader"></imx-busy-indicator>
+          }
+          <mat-card class="imx-card-fill imx-margin-bottom-16" [ngClass]="{ hidden: isLoading }">
+            <form [formGroup]="dugResourceFormGroup">
+              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+                (controlCreated)="dugResourceFormGroup.controls.array.push($event)"></imx-cdr-editor>
             </form>
           </mat-card>
           <mat-card [ngClass]="{ hidden: isLoading }">
             <mat-card-title>{{ orderRestrictionHint | translate }}</mat-card-title>
             <form [formGroup]="dugResourceConditionsFormGroup">
-              <imx-cdr-editor
-                *ngFor="let cdr of cdrListOrderConditions"
-                [cdr]="cdr"
-                (controlCreated)="dugResourceConditionsFormGroup.controls.array.push($event)"
-              ></imx-cdr-editor>
+              <imx-cdr-editor *ngFor="let cdr of cdrListOrderConditions" [cdr]="cdr"
+                (controlCreated)="dugResourceConditionsFormGroup.controls.array.push($event)"></imx-cdr-editor>
             </form>
           </mat-card>
         </div>
@@ -57,13 +113,15 @@
     </ng-template>
   </mat-tab>
 
-  <mat-tab data-imx-identifier="dug-sidesheet-tab-activity" *ngIf="supportsActivity" [label]="'#LDS#Recent activity' | translate">
+  <mat-tab data-imx-identifier="dug-sidesheet-tab-activity" *ngIf="supportsActivity"
+    [label]="'#LDS#Recent activity' | translate">
     <ng-template matTabContent>
       <div class="imx-tab-content">
         <div class="imx-tab-content-body">
           <div eui-sidesheet-content>
             <mat-card class="imx-card-sidesheet">
-              <imx-dug-activity [activities]="activity" [interval]="config.ActivityAggregationIntervalDays"></imx-dug-activity>
+              <imx-dug-activity [activities]="activity"
+                [interval]="config.ActivityAggregationIntervalDays"></imx-dug-activity>
             </mat-card>
           </div>
           <!-- TODO: group activity by trustee, for each trustee: list comma-seperated displayvalue(Operation)+' ('+Activities+')'-->
@@ -124,7 +182,7 @@
   </ng-container>
 </mat-tab-group>
 <div eui-sidesheet-actions *ngIf="!hideActionBar">
-  <button mat-stroked-button data-imx-identifier="imx-application-details-button-menu" [matMenuTriggerFor]="menu">
+  <button mat-stroked-button data-imx-identifier="imx-application-details-button-menu" [matMenuTriggerFor]="menu" *ngIf="!isPerceivedOwner() && !isAssignOwnership()">
     <eui-icon icon="ellipsisvertical"></eui-icon>
     {{ '#LDS#Actions' | translate }}
   </button>
@@ -132,15 +190,12 @@
     <button *ngIf="canAnalyzeRisk" (click)="analyzeRisk()" mat-menu-item data-imx-identifier="dug-button-analyze-risk">
       {{ '#LDS#Analyze risk' | translate }}
     </button>
-    <button (click)="makeRequest(ChangeRequestType.RejectOwnership)" mat-menu-item data-imx-identifier="dug-button-reject-ownership">
+    <button (click)="makeRequest(ChangeRequestType.RejectOwnership)" mat-menu-item
+      data-imx-identifier="dug-button-reject-ownership">
       {{ '#LDS#Reject Ownership' | translate }}
     </button>
-    <button
-      *ngIf="showChangePropertyButton"
-      (click)="makeRequest(ChangeRequestType.Change)"
-      mat-menu-item
-      data-imx-identifier="dug-button-change-property"
-    >
+    <button *ngIf="showChangePropertyButton" (click)="makeRequest(ChangeRequestType.Change)" mat-menu-item
+      data-imx-identifier="dug-button-change-property">
       {{ '#LDS#Change Property' | translate }}
     </button>
   </mat-menu>
