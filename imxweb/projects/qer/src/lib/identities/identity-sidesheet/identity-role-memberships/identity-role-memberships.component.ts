@@ -28,7 +28,7 @@ import { Component, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 import {
   BusyService,
   calculateSidesheetWidth,
@@ -37,6 +37,7 @@ import {
   MetadataService,
   SettingsService,
 } from 'qbm';
+import { QerApiService } from '../../../qer-api-client.service';
 import { RoleService } from '../../../role-management/role.service';
 import {
   SourceDetectiveSidesheetComponent,
@@ -57,12 +58,15 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   public entitySchema: EntitySchema | undefined;
   public withActions: boolean;
 
+  public primName: string;
+  public primValue: string;
+
   private referrer: { objectuid: string; tablename: string };
   private navigationState: CollectionLoadParameters;
   private displayedColumnsWithDisplay: IClientProperty[];
 
   public busyService = new BusyService();
-
+  
   constructor(
     private readonly metadataService: MetadataService,
     private readonly roleMembershipsService: IdentityRoleMembershipsService,
@@ -70,6 +74,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     private readonly settingService: SettingsService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
+    private readonly qerClient: QerApiService,   
     dataProvider: DynamicTabDataProviderDirective,
   ) {
     this.referrer = dataProvider.data;
@@ -88,7 +93,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
       this.entitySchema.Columns.ValidUntil,
     ];
 
-    this.displayedColumnsWithDisplay = [...[this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]], ...this.displayedColumns];
+    this.displayedColumnsWithDisplay = [...[this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]], ...this.displayedColumns];    
   }
 
   public async ngOnInit(): Promise<void> {
@@ -145,8 +150,26 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   private async getData(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
+            
       const dataSource = await this.roleMembershipsService.get(this.referrer.tablename, this.referrer.objectuid, this.navigationState);
+      
+      //-->TODO - add configuration for admin to chose whether to show primary membership or not.
+      //--> Retrieve user data to see primary membership: Department, Locality, Cost Center, Business Role
+      var identityCollection : any;
 
+      if(this.referrer.tablename === "Org"){
+        //--> Column UID_Org is not present in the return object.
+        //--> Need to request it.
+        const parametersOptional = {withProperties: 'UID_Org' }
+        identityCollection = await this.qerClient.typedClient.PortalPersonUid.Get(this.referrer.objectuid, parametersOptional); 
+      }else{
+        identityCollection = await this.qerClient.typedClient.PortalPersonUid.Get(this.referrer.objectuid);
+      }
+      
+      const ret = this.GetPrimaryDisplay(this.referrer.tablename, identityCollection)
+      this.primName = ret.name
+      this.primValue = ret.value
+      
       if (this.entitySchema == null) {
         return;
       }
@@ -160,5 +183,62 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     } finally {
       isBusy.endBusy();
     }
+  }
+  
+  private GetPrimaryDisplay(tableName: string, identityCollection: any): { name: string; value: string } {
+    
+    var ret : { name: string; value: string } = {
+      name: '',
+      value: ''
+    }
+    switch (tableName) {
+      case 'Department':
+        ret.value = identityCollection?.Data[0]?.UID_Department?.Column?.data?.DisplayValue
+        if(ret.value){
+          ret.name = 'Primary department'
+        }
+        break;
+
+      case 'Locality':
+        ret.value = identityCollection?.Data[0]?.UID_Locality?.Column?.data?.DisplayValue
+        if(ret.value){
+          ret.name = 'Primary location'
+        }
+        break;
+
+      case 'ProfitCenter':
+        ret.value = identityCollection?.Data[0]?.UID_ProfitCenter?.Column?.data?.DisplayValue
+        if(ret.value){
+          ret.name = 'Primary cost center'
+        }
+        break;
+
+      case 'Org':
+
+        //--> Value UID_Org exists in the Extended Typed Entity (we requested it during API call)
+        //--> Just need to do a couple of operations to retrieve it.
+        var ent = identityCollection.Data[0].GetEntity();
+        ent.ApplySchema({
+          Columns: {
+                  "UID_Org": {
+                      Type: ValType.String,
+                      ColumnName: "UID_Org"
+                  }
+              }
+        });
+
+        var column = ent.GetColumn("UID_Org");
+        ret.value = column.data.DisplayValue  
+        
+        if(ret.value){
+          ret.name = 'Primary business role'
+        }
+        break;
+
+       
+    }
+
+    return ret;
+
   }
 }

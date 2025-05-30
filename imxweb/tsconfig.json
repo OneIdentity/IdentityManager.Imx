@@ -51,5 +51,10 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
     "strictNullInputTypes": false
-  }
+  },
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/html",
+  ]
 }

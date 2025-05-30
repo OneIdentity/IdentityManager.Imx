@@ -1,10 +1,17 @@
 <eui-alert class="imx-margin-top-20" [condensed]="true" [colored]="true" type="info" [dismissable]="false" *ngIf="withActions">
   {{
-    '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.'
+    '#LDS#Here you can get an overview of the identity\'s memberships, including the primary membership where available. Additionally, you can view the assignment analysis for each membership.'
       | translate
   }}
 </eui-alert>
 <mat-card class="imx-memberships">
+
+  <div *ngIf="primValue" class="custom-label-row mat-body-1">
+    <span class="fixed-label">{{ primName }}</span>
+    <span class="fixed-label">:</span>
+    <span>{{ primValue }}</span>
+  </div>
+
   <imx-data-source-toolbar
     #dst
     [settings]="dstSettings"

@@ -10,7 +10,13 @@
       "reAttach": true,
       "name": "QER App Portal (Firefox)",
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "pathMappings": [
+        {
+          "url": "webpack:///projects/qer/src/lib",
+          "path": "${workspaceFolder}/projects/qer/src/lib"
+        }
+      ]
     },
     {
       "type": "firefox",

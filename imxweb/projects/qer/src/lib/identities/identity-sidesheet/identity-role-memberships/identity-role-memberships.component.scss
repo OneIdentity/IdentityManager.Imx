@@ -21,3 +21,40 @@
   overflow: auto;
   margin-top: 20px;
 }
+
+// .custom-label-row {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   gap: 12px;
+//   margin: 12px 0;
+// }
+// .custom-label-row {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   gap: 12px;
+//   margin: 12px 0;
+//   padding: 8px 12px;
+//   border-left: 2px solid #0a96d1; /* Material Indigo 500 */
+//   background-color: #f9f9f9;
+// }
+
+.custom-label-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 8px 12px;
+  border-left: 3px solid #0a96d1;
+  background-color: #e8f0fe; /* Light blue background */
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* subtle shadow */
+}
+
+.fixed-label {
+  font-weight: 600;
+  //color: #1a237e; // Material Indigo 900
+  color: rgba(0, 0, 0, 0.87); // standard Material color
+}
