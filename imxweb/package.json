@@ -86,7 +86,7 @@
     "@angular/cli": "18.2.14",
     "@angular/compiler-cli": "18.2.13",
     "@angular/language-service": "18.2.13",
-    "@compodoc/compodoc": "1.1.25",
+    "@compodoc/compodoc": "1.1.26",
     "@nx/angular": "19.8.14",
     "@nx/js": "19.8.14",
     "@nx/workspace": "19.8.14",
