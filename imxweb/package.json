@@ -116,7 +116,7 @@
     "karma-junit-reporter": "2.0.1",
     "karma-viewport": "1.0.9",
     "karma": "6.4.4",
-    "ng-mocks": "14.13.1",
+    "ng-mocks": "14.13.5",
     "ng-packagr": "18.2.1",
     "prettier": "3.3.2",
     "terser": "5.37.0",
