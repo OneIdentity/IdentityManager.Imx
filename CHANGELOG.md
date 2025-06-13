@@ -1,4 +1,15 @@
-### May, 7, 2025
+### June 13, 2025
+- 494248 (main work item 486606): Fixes an issue with submitting requests while a validation is ongoing.
+- 495884: Fixes an exception while opening the Edit Product Bundle side sheet.
+- 492390: Fixes an issue with a missing cancel reservation button on the request information side sheet.
+- 494298: Fixes an issue with rearranging added column to the show report view setting.
+- 484186: Fixes an exception when deciding a request as a member of the chief approval team.
+- 489130: Fixes an issue with the Product Bundle paginator.
+- 491726: Fixes an issue with saving a view on the Responsibility -> System Roles page.
+- 485683: Fixes an issue with a read-only toggle, that is not disabled in the Edit Identity UI.
+- 490276: fixes an issue with the risk index analysis for DEC functions.
+
+### May 7, 2025
 - 483102: Fixes an issue with deep links in the mail body of send inquiries.
 - 486602: Fixes an issue with editing old-style request property values by an approver.
 - 489974: Fixes an issue with the editing of request properties that contains at least on read-only property (Github issue).
