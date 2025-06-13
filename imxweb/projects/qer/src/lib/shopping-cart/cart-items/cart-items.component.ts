@@ -186,12 +186,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
 
     sidesheetRef.afterClosed().subscribe(async doSave => {
       if (doSave) {
-        setTimeout(() => this.busyService.show());
+        this.showBusyIndicator();
         try {
           await this.cartItemsService.save(entityWrapper);
           this.logger.debug(this, 'data is cart item saved.');
         } finally {
-          setTimeout(() => this.busyService.hide());
+          this.busyService.hide();
           this.dataChange.emit(false);
         }
       } else {
@@ -209,25 +209,25 @@ export class CartItemsComponent implements OnInit, OnChanges {
   }
 
   public async moveSelectedToCart(): Promise<void> {
-    setTimeout(() => this.busyService.show());
+    this.showBusyIndicator();
     try {
       await this.cartItemsService.moveToCart(this.selectedItems);      
       await this.userModelService.reloadPendingItems();
 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your shopping cart.' });
     } finally {
-      setTimeout(() => this.busyService.hide());
+      this.busyService.hide();
       this.router.navigate(['/shoppingcart/']);
     }
   }
 
   public async moveSelectedToLater(): Promise<void> {
-    setTimeout(() => this.busyService.show());
+    this.showBusyIndicator();
     try {
       await this.cartItemsService.moveToLater(this.selectedItems); 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your Saved for Later list.' });
     } finally {
-      setTimeout(() => this.busyService.hide());
+      this.busyService.hide();
       this.dataChange.emit(true);
       await this.userModelService.reloadPendingItems();
       if (this.cartItemsTable) {
@@ -245,7 +245,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
   }
 
   public async editSelectedItems(): Promise<void>{
-    this.busyService.show()
+    this.showBusyIndicator();
     let entityWrappers: ExtendedEntityWrapper<PortalCartitem>[] = [];
     for await (const selectedItem of this.selectedItems){
       entityWrappers.push(await this.cartItemsService.getInteractiveCartitem(
@@ -432,14 +432,13 @@ export class CartItemsComponent implements OnInit, OnChanges {
       Message: this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart,
       identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete'
     })) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      const overlayRef = this.showBusyIndicator();
       try {
         await this.cartItemsService.removeItems(cartItems.filter(item => this.getNextSelectedAncestor(item) == null));
         this.logger.debug(this, 'selected items are removed from list');
         this.snackBarService.open({ key: this.forLater ? snackBarMessageWatchList : snackBarMessageShoppingCart }, '#LDS#Close');
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide(overlayRef);
         this.dataChange.emit(true);        
         await this.userModelService.reloadPendingItems();
 
@@ -486,5 +485,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
       }
     };
     await this.cartItemsService.saveItems(cartItems);
+  }
+
+  private showBusyIndicator(): OverlayRef | undefined {
+    if (this.busyService?.overlayRefs?.length === 0) {
+      return this.busyService.show();
+    }
+    return undefined;
   }
 }

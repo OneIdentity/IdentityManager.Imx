@@ -42,6 +42,10 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
     return this.workflowWrapper.userAskedLastQuestion(this.currentUser, this.DecisionLevel.value);
   }
 
+  public get hasOpenQuestions(): boolean {
+    return this.workflowWrapper.hasOpenQuestions(this.DecisionLevel.value);
+  }
+
   public get canRecallInquiry(): boolean {
     return this.IsReserved.value && this.hasAskedLastQuestion;
   }

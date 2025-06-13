@@ -31,20 +31,18 @@ import { IClientProperty, IEntityColumn, TypedEntity, ValType } from 'imx-qbm-db
 @Component({
   selector: 'imx-data-table-cell',
   templateUrl: './data-table-cell.component.html',
-  styleUrls: ['./data-table-cell.component.scss']
+  styleUrls: ['./data-table-cell.component.scss'],
 })
 export class DataTableCellComponent {
-
   public readonly ValType = ValType;
 
   @Input() public entity: TypedEntity;
   @Input() public property: IClientProperty;
 
-
-  public get column(): IEntityColumn{
-    try{
-      return this.entity?.GetEntity()?.GetColumn(this.property?.ColumnName);
-    }catch {
+  public get column(): IEntityColumn | undefined {
+    try {
+      return this.entity?.GetEntity()?.GetColumn(this.property?.ColumnName ?? '');
+    } catch {
       return undefined;
     }
   }

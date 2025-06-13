@@ -27,12 +27,12 @@
 import { EventEmitter, Injector } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DataModel, DataModelViewConfig, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import _ from 'lodash';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { StorageService } from '../storage/storage.service';
 import { AdditionalInfosComponent } from './additional-infos/additional-infos.component';
-import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
-import _ from 'lodash';
+import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 import { DSTViewConfig } from './data-source-toolbar-view-config.interface';
 
 export interface ShownClientPropertiesArg {
@@ -194,12 +194,10 @@ export class ColumnOptions {
    * resets the view by removing all optional columns and restoring the initial order
    */
   public resetView(): void {
-    if (this.currentViewSettings == null) {
-      return;
+    if (!this.currentViewSettings) {
+      // We will reset by grabbing the default Id
+      this.currentViewSettings = this.dataModel.Configurations?.find((elem) => elem.Id === 'Default');
     }
-
-    // We will reset by grabbing the default Id
-    this.currentViewSettings = this.dataModel.Configurations?.find((elem) => elem.Id === 'Default');
 
     const addition = this.additionalColumns;
     this.selectedOptionals = [];

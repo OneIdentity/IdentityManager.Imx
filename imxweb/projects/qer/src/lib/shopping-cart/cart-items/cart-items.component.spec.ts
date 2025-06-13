@@ -29,7 +29,7 @@ import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { EuiSidesheetService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { MockBuilder, MockedComponentFixture, MockRender, ngMocks } from 'ng-mocks';
 
 import { ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
@@ -108,6 +108,7 @@ describe('CartItemsComponent', () => {
     )
       .mock(Router, { export: true })
       .mock(EuiSidesheetService)
+      .mock(EuiLoadingService)
       .mock(CartItemCloneService, cartitemCloneService)
       .mock(CartItemsService, cartItemsServiceStub);
   });

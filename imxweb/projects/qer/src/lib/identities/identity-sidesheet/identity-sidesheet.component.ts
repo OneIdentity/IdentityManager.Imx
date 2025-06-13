@@ -25,35 +25,35 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnDestroy, Inject, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatTabGroup } from '@angular/material/tabs';
 import { Router } from '@angular/router';
-import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { IdentitiesService } from '../identities.service';
 import { FeatureConfig, PortalAdminPerson, PortalPersonReports, QerProjectConfig } from 'imx-api-qer';
-import {
-  ColumnDependentReference,
-  ClassloggerService,
-  BaseCdr,
-  SnackBarService,
-  AuthenticationService,
-  SystemInfoService,
-  ConfirmationService,
-  TabItem,
-  ExtService,
-  CdrFactoryService,
-} from 'qbm';
 import { DbObjectKey } from 'imx-qbm-dbts';
-import { IdentitiesReportsService } from '../identities-reports.service';
+import {
+  AuthenticationService,
+  BaseCdr,
+  CdrFactoryService,
+  ClassloggerService,
+  ColumnDependentReference,
+  ConfirmationService,
+  ExtService,
+  SnackBarService,
+  SystemInfoService,
+  TabItem,
+} from 'qbm';
+import { FeatureConfigService } from '../../admin/feature-config.service';
 import { PasscodeService } from '../../ops/passcode.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { RiskAnalysisSidesheetComponent } from '../../risk/riskanalysis-sidesheet.component';
-import { FeatureConfigService } from '../../admin/feature-config.service';
+import { IdentitiesReportsService } from '../identities-reports.service';
+import { IdentitiesService } from '../identities.service';
 
 @Component({
   selector: 'imx-identity-sidesheet',
@@ -100,7 +100,7 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService,
-    private readonly extService: ExtService,    
+    private readonly extService: ExtService,
     private readonly featureConfigService: FeatureConfigService,
     private readonly cdrFactoryService: CdrFactoryService,
     authentication: AuthenticationService,
@@ -318,18 +318,30 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     this.detailsFormGroup.addControl(this.data.selectedIdentity.IsInActive.Column.ColumnName, this.isActiveFormControl);
 
     const personalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_Attributes;
-    this.cdrListPersonal = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(), personalColumns, !this.data.canEdit);
+    this.cdrListPersonal = this.cdrFactoryService.buildCdrFromColumnList(
+      this.data.selectedIdentity.GetEntity(),
+      personalColumns,
+      !this.data.canEdit
+    );
 
     const organizationalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_OrganizationalAttributes;
     this.cdrListOrganizational = this.cdrFactoryService.buildCdrFromColumnList(
       this.data.selectedIdentity.GetEntity(),
-      organizationalColumns, !this.data.canEdit
+      organizationalColumns,
+      !this.data.canEdit
     );
 
     const localityColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_LocalityAttributes;
-    this.cdrListLocality = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(), localityColumns, !this.data.canEdit);
+    this.cdrListLocality = this.cdrFactoryService.buildCdrFromColumnList(
+      this.data.selectedIdentity.GetEntity(),
+      localityColumns,
+      !this.data.canEdit
+    );
 
     this.isSecurityIncidentFormControl.setValue(this.data.selectedIdentity.IsSecurityIncident.value);
+    if (!this.data.canEdit || !this.data.selectedIdentity.IsSecurityIncident.GetMetadata().CanEdit()) {
+      this.isSecurityIncidentFormControl.disable();
+    }
     this.detailsFormGroup.addControl(this.data.selectedIdentity.IsSecurityIncident.Column.ColumnName, this.isSecurityIncidentFormControl);
 
     this.busyService.show();

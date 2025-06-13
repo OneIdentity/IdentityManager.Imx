@@ -93,11 +93,32 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   public get canEscalateDecisions(): boolean {
     return this.selectedCases.every((item) => item.canEscalateDecision(this.userUid));
   }
+  public get canSendInquiry(): boolean {
+    return this.selectedCases.every((item) => item.canAskAQuestion);
+  }
+  public get canRecallInquiry(): boolean {
+    return this.selectedCases.every((item) => item.IsReserved.value && item.hasAskedLastQuestion(this.userUid));
+  }
+  public get canCancelReservation(): boolean {
+    return (
+      !this.canRecallInquiry &&
+      this.selectedCases.every(
+        (item) => item.IsReserved.value && (item.hasAskedLastQuestion(this.userUid) || this.isUserEscalationApprover),
+      )
+    );
+  }
 
   public get canPerformActions(): boolean {
     return (
       this.selectedCases.length > 0 &&
-      (this.canWithdrawAddApprover || this.canAddApprover || this.canDelegateDecision || this.canDenyApproval || this.canReRouteDecision)
+      (this.canWithdrawAddApprover ||
+        this.canAddApprover ||
+        this.canDelegateDecision ||
+        this.canDenyApproval ||
+        this.canReRouteDecision ||
+        this.canRecallInquiry ||
+        this.canSendInquiry ||
+        this.canCancelReservation)
     );
   }
   public isUserEscalationApprover = false;

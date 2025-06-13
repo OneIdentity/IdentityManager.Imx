@@ -44,17 +44,20 @@ import {
   BusyService,
   CdrFactoryService,
   ClassloggerService,
+  DataSourceToolbarExportMethod,
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
+  ErrorService,
+  HelpContextualValues,
   MetadataService,
   SettingsService,
   SideNavigationComponent,
-  DataSourceToolbarViewConfig,
-  DataSourceToolbarExportMethod,
-  ErrorService,
-  HelpContextualValues,
 } from 'qbm';
+import { Subscription } from 'rxjs';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
+import { UserModelService } from '../../user/user-model.service';
+import { ViewConfigService } from '../../view-config/view-config.service';
 import { DataManagementService } from '../data-management.service';
 import { NewRoleComponent } from '../new-role/new-role.component';
 import { IRoleRestoreHandler } from '../restore/restore-handler';
@@ -62,9 +65,6 @@ import { RestoreComponent } from '../restore/restore.component';
 import { RoleDetailComponent } from '../role-detail/role-detail.component';
 import { RoleService } from '../role.service';
 import { TreeDatabaseAdaptorService } from './tree-database-adaptor.service';
-import { ViewConfigService } from '../../view-config/view-config.service';
-import { Subscription } from 'rxjs';
-import { UserModelService } from '../../user/user-model.service';
 
 @Component({
   selector: 'imx-roles-overview',
@@ -152,7 +152,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     this.roleService.isAdmin = this.isAdmin;
 
-    this.viewConfigPath = (this.isAdmin ? 'admin/role/' : 'role/') + this.ownershipInfo.TableName.toLowerCase();
+    this.viewConfigPath = (this.isAdmin ? 'admin/role/' : 'resp/') + this.ownershipInfo.TableName.toLowerCase();
     const isBusy = this.busyService.beginBusy();
     this.hasHierarchy = (await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, { PageSize: -1 }))?.Hierarchy != null;
     this.useTree = this.isAdmin && this.hasHierarchy;

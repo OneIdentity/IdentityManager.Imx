@@ -24,6 +24,7 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -93,13 +94,13 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
 
     const result = await this.checkShoppingCart();
     let message = '#LDS#An error ocurred';
-    setTimeout(() => this.busyService.show());
+    const overlayRef = this.showBusyIndicator();
 
     try {
       message = result.HasErrors ? '#LDS#At least one request cannot be submitted.' : '#LDS#Your shopping cart may be submitted.';
       await this.getCartItems();
     } finally {
-      setTimeout(() => this.busyService.hide());
+      this.busyService.hide(overlayRef);
       this.snackBarService.open(
         { key: message },
         '#LDS#Close'
@@ -141,7 +142,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
       Message: message,
       identifier: 'shoppingcart-delete',
     })) {
-      setTimeout(() => this.busyService.show());
+      const overlayRef = this.showBusyIndicator();
 
       try {
         await this.cartItemService.removeItems(this.shoppingCart.getItems(item => item.UID_ShoppingCartItemParent.value === ''));
@@ -151,7 +152,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
         await this.userModelService.reloadPendingItems();
       } finally {
         this.snackBarService.open({ key: '#LDS#The shopping cart "{0}" has been successfully deleted.', parameters: [docNr] });
-        setTimeout(() => this.busyService.hide());
+        this.busyService.hide(overlayRef);
       }
     }
   }
@@ -169,11 +170,11 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     this.logger.debug(this, `Check shopping cart. Validation warnings: ${validator.hasWarnings}`);
 
     if (validator.hasErrors) {
+      await this.getCartItems();
       this.snackBarService.open(
         { key: '#LDS#At least one request cannot be submitted.' },
         '#LDS#Close'
       );
-      await this.getCartItems();
       return;
     }
 
@@ -230,7 +231,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   }
 
   public async getData(reloadAll: boolean): Promise<void> {
-    setTimeout(() => this.busyService.show());
+    const overlayRef = this.showBusyIndicator();
     try {
       if (reloadAll) {
         this.logger.debug(this, 'get shopping cart list...');
@@ -253,7 +254,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
 
       await this.getCartItems();
     } finally {
-      setTimeout(() => this.busyService.hide());
+      this.busyService.hide(overlayRef);
     }
   }
 
@@ -262,14 +263,14 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   }
 
   private async checkShoppingCart(): Promise<CartCheckResult> {
-    this.busyService.show();
+    const overlayRef = this.showBusyIndicator();
     try {
       const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
       const result = await this.cartItemService.submit(uid, CheckMode.CheckOnly);
       this.logger.debug(this, 'Validation result', result);
       return result;
     } finally {
-      this.busyService.hide();
+      this.busyService.hide(overlayRef);
     }
   }
 
@@ -331,6 +332,13 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
       this.logger.debug(this, 'there are no service items with terms of use the user have to accepted.');
       return true;
     }
+  }
+
+  private showBusyIndicator(): OverlayRef | undefined {
+    if (this.busyService.overlayRefs.length === 0) {
+      return this.busyService.show();
+    }
+    return undefined;
   }
 }
 

@@ -100,25 +100,25 @@
     {{ '#LDS#Send inquiry' | translate }}
   </button>
 
-  <button
-    mat-stroked-button
-    *ngIf="data.pwo.IsReserved.value && data.pwo.hasAskedLastQuestion"
-    data-imx-identifier="approvals-sidesheet-button-recall-last-question"
-    title="{{ '#LDS#Withdraws the inquiry about this request' | translate }}"
-    (click)="actionService.recallInquiry([data.pwo])"
-  >
-    {{ '#LDS#Withdraw inquiry' | translate }}
-  </button>
+    <button
+      mat-stroked-button
+      *ngIf="canWithdrawInquiry()"
+      data-imx-identifier="approvals-sidesheet-button-recall-last-question"
+      title="{{ '#LDS#Withdraws the inquiry about this request' | translate }}"
+      (click)="actionService.recallInquiry([data.pwo])"
+    >
+      {{ '#LDS#Withdraw inquiry' | translate }}
+    </button>
 
-  <button
-    mat-stroked-button
-    *ngIf="data.pwo.IsReserved.value && (data.pwo.hasAskedLastQuestion || isChiefApprover)"
-    data-imx-identifier="approvals-sidesheet-button-reset-reservation"
-    title="{{ '#LDS#Cancels the reservation for this request' | translate }}"
-    (click)="actionService.resetReservation([data.pwo])"
-  >
-    {{ '#LDS#Cancel reservation' | translate }}
-  </button>
+    <button
+      mat-stroked-button
+      *ngIf="data.pwo.canResetReservation(isChiefApprover)"
+      data-imx-identifier="approvals-sidesheet-button-reset-reservation"
+      title="{{ '#LDS#Cancels the reservation for this request' | translate }}"
+      (click)="actionService.resetReservation([data.pwo])"
+    >
+      {{ '#LDS#Cancel reservation' | translate }}
+    </button>
   </ng-container>
 
   <button

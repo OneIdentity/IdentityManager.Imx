@@ -54,6 +54,13 @@ export class WorkflowDataWrapper {
     );
   }
 
+   public hasOpenQuestions(decisionLevel: number): boolean {
+    const items = this.data.WorkflowData?.Entities?.filter(
+      (entityData) => entityData.Columns?.LevelNumber.Value === decisionLevel && entityData.Columns?.Decision.Value === 'Q',
+    );
+    return (items?.length ?? 0) > 0;
+  }
+
   public canDenyDecision(userUid: string, decisionLevel: number): boolean {
     return this.getWorkflowDataItem(userUid, decisionLevel)?.Columns?.IsFromDelegation?.Value;
   }
@@ -138,8 +145,10 @@ export class WorkflowDataWrapper {
       }
     }
 
-    return undefined;
+    return [];
   }
+
+ 
 
   private getWorkflowDataItem(userUid: string, decisionLevel: number): EntityData {
     return this.data.WorkflowData?.Entities.filter(

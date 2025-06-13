@@ -141,6 +141,10 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
     return !this.IsReserved.value && this.workflowWrapper?.isAdditionalAllowed(userUid, this.DecisionLevel.value);
   }
 
+  public get hasOpenQuestions(): boolean {
+    return this.workflowWrapper.hasOpenQuestions(this.DecisionLevel.value);
+  }
+
   public canDelegateDecision(userUid: string): boolean {
     const instead = userUid === '' ? this.workflowWrapper?.isInsteadOfAllowedForEscalation(this.UID_QERWorkingMethod.value, this.DecisionLevel.value)
      :  this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);

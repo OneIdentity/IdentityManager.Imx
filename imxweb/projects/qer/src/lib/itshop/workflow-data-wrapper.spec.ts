@@ -59,7 +59,7 @@ describe('WorkflowDataWrapper', () => {
 
       const directSteps = workflow.getDirectSteps(UID_PersonHead, LevelNumber);
 
-      expect(directSteps).toBeUndefined();
+      expect(directSteps).toEqual([]);
     });
 
     it('returns the directSteps for the matching item', () => {

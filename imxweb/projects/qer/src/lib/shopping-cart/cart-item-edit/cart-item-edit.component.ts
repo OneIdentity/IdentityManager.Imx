@@ -43,6 +43,7 @@ import { ConfirmationService, EntityColumnEditorComponent } from 'qbm';
 export class CartItemEditComponent implements OnDestroy {
   public readonly shoppingCartItem: PortalCartitem;
   public readonly cartItemForm = new UntypedFormGroup({});
+  public formGroupIsPending = false;
   public columns: IEntityColumn[];
   private readonly subscriptions: Subscription[] = [];
 
@@ -80,6 +81,10 @@ export class CartItemEditComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+  
+  public onPendingChanged(value: boolean) {
+    this.formGroupIsPending = value;
   }
 
   private initColumns(): void {

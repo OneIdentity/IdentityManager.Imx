@@ -30,7 +30,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { PortalItshopPatternAdmin, PortalItshopPatternPrivate } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, TypedEntity } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  DisplayColumns,
+  FilterType,
+  TypedEntity,
+} from 'imx-qbm-dbts';
 
 import {
   AuthenticationService,
@@ -231,12 +237,10 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
 
   private async viewDetails(selectedPattern: PortalItshopPatternPrivate | PortalItshopPatternAdmin): Promise<void> {
     const isMyPattern = this.isMyPattern(selectedPattern);
-    const canEditAndDelete = this.canBeEditedAndDeleted(selectedPattern);
+    const canEditAndDelete = this.canBeEditedAndDeleted(selectedPattern);    const selectedPatternId = selectedPattern.GetEntity().GetKeys()[0];
     const pattern = isMyPattern
-      ? await this.patternService.getPrivatePattern(selectedPattern.GetEntity().GetKeys()[0])
-      : (await this.patternService.getPublicPatterns()).Data.find(
-          (pattern) => pattern.GetEntity().GetKeys()[0] === selectedPattern.GetEntity().GetKeys()[0]
-        );
+      ? await this.patternService.getPrivatePattern(selectedPatternId)
+      : await this.getPublicPattern(selectedPatternId);
 
     const title = await this.translate
       .get(canEditAndDelete ? '#LDS#Heading Edit Product Bundle' : '#LDS#Heading View Product Bundle Details')
@@ -268,5 +272,20 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     } else if (result) {
       this.getData();
     }
+  }
+
+  private async getPublicPattern(id: string): Promise<PortalItshopPatternAdmin> {
+    return (
+      await this.patternService.getPublicPatterns({
+        filter: [
+          {
+            ColumnName: 'UID_ShoppingCartPattern',
+            Type: FilterType.Compare,
+            CompareOp: CompareOperator.Equal,
+            Value1: id,
+          },
+        ],
+      })
+    ).Data[0];
   }
 }
