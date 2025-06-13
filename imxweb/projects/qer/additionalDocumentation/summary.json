@@ -1,11 +1,11 @@
 [
   {
     "title": "Identity Management",
-    "file": "identity.md"
+    "file": "identity-management.md"
   },
   {
     "title": "Role Management",
-    "file": "roles.md"
+    "file": "role-management.md"
   },
   {
     "title": "IT Shop",
@@ -13,6 +13,6 @@
   },
   {
     "title": "Other Components and Services",
-    "file": "other.md"
+    "file": "other-reusable-components.md"
   }
 ]

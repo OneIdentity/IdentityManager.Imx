@@ -5,7 +5,8 @@
   @include flex-column-container-fill();
 
   .effective-permission-content-card-members {
-    @include flex-column-container-fill();
+    @include flex-column-container($overflow: auto);
+    flex: 1 1 auto;
   }
 
   .imx-member-text {

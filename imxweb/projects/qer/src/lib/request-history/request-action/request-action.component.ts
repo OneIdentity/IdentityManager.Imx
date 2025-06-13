@@ -26,14 +26,14 @@
 
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { PortalItshopRequests } from '@imx-modules/imx-api-qer';
-import { ColumnDependentReference, DataSourceToolbarSettings } from 'qbm';
-import { RequestHistoryService } from '../request-history.service';
 import { EntitySchema } from '@imx-modules/imx-qbm-dbts';
+import { ColumnDependentReference, DataSourceToolbarSettings } from 'qbm';
 import { ServiceItemsService } from '../../service-items/service-items.service';
+import { RequestHistoryService } from '../request-history.service';
 
 @Component({
   templateUrl: './request-action.component.html',
@@ -92,6 +92,7 @@ export class RequestActionComponent implements OnDestroy {
   }
 
   public addProlongationMaxValidDaysCheck(control: AbstractControl): void {
+    this.formGroup.addControl('prolongation', control);
     this.subscribers.push(
       control.valueChanges.subscribe(
         (value) =>
@@ -111,6 +112,7 @@ export class RequestActionComponent implements OnDestroy {
   }
 
   public addUnsubscribeMaxValidDaysCheck(control: AbstractControl): void {
+    this.formGroup.addControl('unsubscription', control);
     this.subscribers.push(
       control.valueChanges.subscribe(
         (value) =>

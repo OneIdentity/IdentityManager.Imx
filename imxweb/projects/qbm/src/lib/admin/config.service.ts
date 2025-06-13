@@ -29,7 +29,6 @@ import { EuiLoadingService } from '@elemental-ui/core';
 
 import { ConfigNodeData, ConfigSettingType } from '@imx-modules/imx-api-qbm';
 import { Subject } from 'rxjs';
-import { ConfirmationService } from '../confirmation/confirmation.service';
 import { imx_SessionService } from '../session/imx-session.service';
 import { SnackBarService } from '../snackbar/snack-bar.service';
 import { ConfigSection, KeyData } from './config-section';
@@ -72,7 +71,6 @@ export class ConfigService {
 
   constructor(
     private readonly session: imx_SessionService,
-    private readonly confirmationService: ConfirmationService,
     private readonly busySvc: EuiLoadingService,
     private readonly snackbar: SnackBarService,
   ) {}
@@ -134,7 +132,7 @@ export class ConfigService {
     }
   }
 
-  public async revert(conf: KeyData): Promise<void> {
+  public async revert(conf: KeyData): Promise<ConfigSection[]> {
     const overlay = this.busySvc.show();
 
     try {
@@ -150,24 +148,23 @@ export class ConfigService {
 
       // reload all to get the effective value. there is no good way to get just
       // the new effective value of the changed key.
-      await this.load();
+      const result = await this.load();
       this.submitChanges.next();
+      return result;
     } finally {
       this.busySvc.hide(overlay);
     }
   }
 
-  public async revertAll(isGlobal: boolean): Promise<void> {
-    if (
-      await this.confirmationService.confirm({
-        Title: '#LDS#Heading Reset Configuration',
-        Message: '#LDS#Are you sure you want to reset all customized configuration values?',
-        identifier: 'config-confirm-reset-configuration',
-      })
-    ) {
+  public async revertAll(isGlobal: boolean): Promise<ConfigSection[]> {
+    const overlay = this.busySvc.show();
+
+    try {
       await this.session.Client.admin_apiconfig_revert_post(this.appId, { global: isGlobal });
       delete this.pendingChanges[this.appId];
-      await this.load();
+      return await this.load();
+    } finally {
+      this.busySvc.hide(overlay);
     }
   }
 
@@ -180,15 +177,14 @@ export class ConfigService {
         : '#LDS#Your changes have been successfully saved. The changes only apply to this API Server and will be lost when you restart the server.';
 
       for (let appId in this.pendingChanges) {
-
         const changeObj: { [id: string]: any } = {};
         const changes = this.pendingChanges[appId];
         for (const elem in changes) {
           if (Object.prototype.hasOwnProperty.call(changes, elem)) {
             changeObj[elem] = changes[elem].Value;
           }
-        }  
-        
+        }
+
         await this.session.Client.admin_apiconfig_post(appId, changeObj, { global: isGlobal });
       }
 

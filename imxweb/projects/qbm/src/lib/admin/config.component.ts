@@ -31,6 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { calculateSidesheetWidth } from '../base/sidesheet-helper';
+import { ConfirmationService } from '../confirmation/confirmation.service';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
@@ -58,6 +59,7 @@ export class ConfigComponent implements OnInit, OnDestroy, SideNavigationCompone
     private readonly translator: TranslateService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   public dstSettings: DataSourceToolbarSettings;
@@ -143,8 +145,16 @@ export class ConfigComponent implements OnInit, OnDestroy, SideNavigationCompone
     this.configSvc.addChange(conf);
   }
 
-  public revertAll(isGlobal: boolean) {
-    this.configSvc.revertAll(isGlobal);
+  public async revertAll(isGlobal: boolean) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Reset Configuration',
+        Message: '#LDS#Are you sure you want to reset all customized configuration values?',
+        identifier: 'config-confirm-reset-configuration',
+      })
+    ) {
+      this.sectionsFiltered = await this.configSvc.revertAll(isGlobal);
+    }
   }
 
   public async openConvertSidesheet(): Promise<void> {

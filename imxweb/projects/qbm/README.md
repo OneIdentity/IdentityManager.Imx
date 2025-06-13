@@ -6,17 +6,16 @@ This includes, but is not limited to, the table structure, column-dependent refe
 
 For a more detailed view of the API structure, refer to the following sections:
 
-- [Administration](additional-documentation/library-overview/administration.html)
-- [Properties of an object](additional-documentation/library-overview/property-handling.html)
-- [Data sets](additional-documentation/library-overview/data-sets.html)
-- [Messages and translation](additional-documentation/library-overview/messages.html)
-- [Other reusable components and services](additional-documentation/library-overview/other-reusable-components.html)
-
+- [Administration](./additionalDocumentation/admin.md)
+- [Properties of an object](./additionalDocumentation/properties.md)
+- [Data sets](./additionalDocumentation/datasets.md)
+- [Messages and translation](./additionalDocumentation/messages.md)
+- [Other reusable components and services](./additionalDocumentation/other.md)
 
 ## Helpful topics
-- [Theming the application](additional-documentation/theming-the-application.html)
-- [Samples](additional-documentation/sdk-samples.html)
-  - [Adding a tile component to the dashboard](additional-documentation/sdk-samples/adding-a-tile-component-to-the-dashboard.html)
-  - [Adding a menu to the Web Portal](additional-documentation/sdk-samples/adding-a-menu-to-the-portal.html)
-  - [Working with data tables](additional-documentation/sdk-samples/working-with-data-tables.html)
-  
+
+- [Theming the application](../../custom-theme/readme.md)
+- [Samples](../../compodoc/samples/samples.md)
+  - [Adding a tile component to the dashboard](../../compodoc/samples/tiles.md)
+  - [Adding a menu to the Web Portal](../../compodoc/samples/menu.md)
+  - [Working with data tables](../../compodoc/samples/data_table.md)

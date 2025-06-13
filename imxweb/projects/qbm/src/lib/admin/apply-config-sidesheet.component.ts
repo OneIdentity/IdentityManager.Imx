@@ -24,7 +24,7 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { EuiSidesheetRef } from '@elemental-ui/core';
 import { ConfigService } from './config.service';
 
@@ -32,12 +32,18 @@ import { ConfigService } from './config.service';
   templateUrl: './apply-config-sidesheet.component.html',
   styleUrls: ['./apply-config-sidesheet.component.scss'],
 })
-export class ApplyConfigSidesheetComponent {
+export class ApplyConfigSidesheetComponent implements OnInit {
   constructor(
     private readonly configSvc: ConfigService,
     private readonly sideSheetRef: EuiSidesheetRef,
   ) {
     this.isGlobal = !configSvc.supportsLocalCustomization;
+  }
+
+  pendingChanges: (string | undefined)[][];
+
+  ngOnInit(): void {
+    this.pendingChanges = this.configSvc.getPendingChanges();
   }
 
   public isGlobal: boolean = false;
@@ -58,8 +64,4 @@ export class ApplyConfigSidesheetComponent {
     '#LDS#Use this setting if you want to apply the configuration changes globally. The changes are stored in the global configuration file and distributed to all API servers.';
 
   public LdsApplyLocallyNotPossible = '#LDS#This option has been disabled by your administrator.';
-
-  public get pendingChanges(): (string | undefined)[][] {
-    return this.configSvc.getPendingChanges();
-  }
 }

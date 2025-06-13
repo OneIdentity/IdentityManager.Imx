@@ -28,11 +28,12 @@ import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
-import { TypedClient } from '@imx-modules/imx-api-qbm';
+import { ImxConfig, TypedClient } from '@imx-modules/imx-api-qbm';
 import { Globals } from '@imx-modules/imx-qbm-dbts';
 import {
   AppConfigService,
   AuthenticationService,
+  CaptchaService,
   ISessionState,
   ImxTranslationProviderService,
   SplashService,
@@ -45,6 +46,8 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class AppService {
+  public recaptchaSiteKeyV3: string | null = null;
+  private imxConfig: ImxConfig;
   constructor(
     private readonly config: AppConfigService,
     private readonly systemInfoService: SystemInfoService,
@@ -54,6 +57,7 @@ export class AppService {
     private readonly title: Title,
     private readonly authentication: AuthenticationService,
     private readonly splash: SplashService,
+    private readonly captchaService: CaptchaService,
   ) {}
 
   public async init(): Promise<void> {
@@ -70,6 +74,7 @@ export class AppService {
     this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) =>
       this.translationProvider.init(sessionState?.culture, sessionState?.cultureFormat),
     );
+    this.imxConfig = await this.systemInfoService.getImxConfig();
 
     this.translateService.onLangChange.subscribe(() => {
       this.setTitle();
@@ -78,11 +83,16 @@ export class AppService {
     this.setTitle();
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
+
+    if (this.imxConfig.RecaptchaPublicKey) {
+      this.captchaService.enableReCaptcha(this.imxConfig.RecaptchaPublicKey);
+      this.recaptchaSiteKeyV3 = this.imxConfig.RecaptchaPublicKey;
+    }
+    this.captchaService.captchaImageUrl = 'portal/captchaimage';
   }
 
   private async setTitle(): Promise<void> {
-    const imxConfig = await this.systemInfoService.getImxConfig();
-    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
+    const name = this.imxConfig.ProductName || Globals.QIM_ProductNameFull;
     const title = `${name} ${this.config.Config.Title}`;
     this.title.setTitle(title);
 

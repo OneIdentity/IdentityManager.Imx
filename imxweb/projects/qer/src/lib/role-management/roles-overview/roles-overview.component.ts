@@ -161,7 +161,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     this.roleService.isAdmin = this.isAdmin;
 
-    this.viewConfigPath = (this.isAdmin ? 'admin/role/' : 'role/') + this.ownershipInfo.TableName?.toLowerCase();
+    this.viewConfigPath = (this.isAdmin ? 'admin/role/' : 'resp/') + this.ownershipInfo.TableName?.toLowerCase();
     const isBusy = this.busyService.beginBusy();
     this.hasHierarchy = (await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, { PageSize: -1 }))?.Hierarchy != null;
     this.useTree = this.isAdmin && this.hasHierarchy;

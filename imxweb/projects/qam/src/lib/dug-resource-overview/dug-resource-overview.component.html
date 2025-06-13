@@ -1,0 +1,65 @@
+<mat-card class="imx-data-tree-container">
+	<div class="imx-card-content">
+		<div class="imx-table-container">
+			<mat-card class="imx-card-fill">
+				<imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+				<imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+					<ng-container [matColumnDef]="entitySchema?.Columns?.DisplayValue?.ColumnName">
+						<th mat-header-cell *matHeaderCellDef>{{
+							'#LDS#Resource Type' | translate }}</th>
+						<td mat-cell *matCellDef="let item" class="imx-table-cell" role="gridcell">
+							<div class="imx-display-column-main">
+								<div data-imx-identifier="resourrce-overview-table-display">{{
+									item.GetEntity().GetColumn('DisplayValue').GetValue() }}</div>
+							</div>
+						</td>
+					</ng-container>
+					<ng-container [matColumnDef]="entitySchema.Columns.CountResources.ColumnName">
+						<ng-container>
+							<th mat-header-cell *matHeaderCellDef>
+								{{ '#LDS#Total resource' | translate }}
+							</th>
+						</ng-container>
+						<td mat-cell *matCellDef="let item">
+								{{ item.GetEntity().GetColumn('CountResources').GetValue() }}
+						</td>
+					</ng-container>
+					<ng-container [matColumnDef]="entitySchema.Columns.CountResourcesNotOwned.ColumnName">
+						<th mat-header-cell *matHeaderCellDef>
+							{{ '#LDS#Not Owned' | translate }}
+						</th>
+						<td mat-cell *matCellDef="let item">
+							{{ item.GetEntity().GetColumn('CountResourcesNotOwned').GetValue() }}
+						</td>
+					</ng-container>
+					<ng-container [matColumnDef]="entitySchema.Columns.CountResourcesOwned.ColumnName">
+						<th mat-header-cell *matHeaderCellDef>
+							{{ '#LDS#Owned' | translate }}
+						</th>
+						<td mat-cell *matCellDef="let item">
+							{{ item.GetEntity().GetColumn('CountResourcesOwned').GetValue() }}
+						</td>
+					</ng-container>
+					<ng-container [matColumnDef]="entitySchema.Columns.PercentResourcesNotOwned.ColumnName">
+						<th mat-header-cell *matHeaderCellDef>
+							{{ '#LDS#% Not Owned' | translate }}
+						</th>
+						<td mat-cell *matCellDef="let item">
+							{{ item.GetEntity().GetColumn('PercentResourcesNotOwned').GetValue() }}
+						</td>
+					</ng-container>
+					<ng-container [matColumnDef]="entitySchema.Columns.CountResourceOwners.ColumnName">
+						<th mat-header-cell *matHeaderCellDef>
+							{{ '#LDS#Unique Data Owners' | translate }}
+						</th>
+						<td mat-cell *matCellDef="let item">
+							{{ item.GetEntity().GetColumn('CountResourceOwners').GetValue() }}
+						</td>
+					</ng-container>
+
+				</imx-data-view-auto-table>
+				<imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
+			</mat-card>
+		</div>
+	</div>
+</mat-card>

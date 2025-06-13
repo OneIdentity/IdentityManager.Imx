@@ -110,7 +110,7 @@
 
     <button
       mat-stroked-button
-      *ngIf="data.pwo.IsReserved.value && data.pwo.hasAskedLastQuestion && data.pwo.hasOpenQuestions"
+      *ngIf="canWithdrawInquiry()"
       data-imx-identifier="approvals-sidesheet-button-recall-last-question"
       title="{{ '#LDS#Withdraws the inquiry about this request' | translate }}"
       (click)="actionService.recallInquiry([data.pwo])"

@@ -307,7 +307,7 @@ export class PortalCandidatesAerole extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesAerole type. */
-export class PortalCandidatesAeroleInteractive extends PortalCandidatesAerole {}
+export class PortalCandidatesAeroleInteractive extends PortalCandidatesAerole { }
 
 export class PortalCandidatesDepartment extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -335,7 +335,7 @@ export class PortalCandidatesDepartment extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesDepartment type. */
-export class PortalCandidatesDepartmentInteractive extends PortalCandidatesDepartment {}
+export class PortalCandidatesDepartmentInteractive extends PortalCandidatesDepartment { }
 
 export class PortalCandidatesLocality extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -363,7 +363,7 @@ export class PortalCandidatesLocality extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesLocality type. */
-export class PortalCandidatesLocalityInteractive extends PortalCandidatesLocality {}
+export class PortalCandidatesLocalityInteractive extends PortalCandidatesLocality { }
 
 export class PortalCandidatesOrg extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -391,7 +391,7 @@ export class PortalCandidatesOrg extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesOrg type. */
-export class PortalCandidatesOrgInteractive extends PortalCandidatesOrg {}
+export class PortalCandidatesOrgInteractive extends PortalCandidatesOrg { }
 
 export class PortalCandidatesPerson extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -425,7 +425,7 @@ export class PortalCandidatesPerson extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesPerson type. */
-export class PortalCandidatesPersonInteractive extends PortalCandidatesPerson {}
+export class PortalCandidatesPersonInteractive extends PortalCandidatesPerson { }
 
 export class PortalCandidatesProfitcenter extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -453,7 +453,7 @@ export class PortalCandidatesProfitcenter extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesProfitcenter type. */
-export class PortalCandidatesProfitcenterInteractive extends PortalCandidatesProfitcenter {}
+export class PortalCandidatesProfitcenterInteractive extends PortalCandidatesProfitcenter { }
 
 export class PortalCandidatesQamclassificationlevel extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -481,7 +481,7 @@ export class PortalCandidatesQamclassificationlevel extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesQamclassificationlevel type. */
-export class PortalCandidatesQamclassificationlevelInteractive extends PortalCandidatesQamclassificationlevel {}
+export class PortalCandidatesQamclassificationlevelInteractive extends PortalCandidatesQamclassificationlevel { }
 
 export class PortalCandidatesQamhelperheadpoi extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
@@ -515,7 +515,7 @@ export class PortalCandidatesQamhelperheadpoi extends TypedEntity {
 }
 
 /** @deprecated Use the PortalCandidatesQamhelperheadpoi type. */
-export class PortalCandidatesQamhelperheadpoiInteractive extends PortalCandidatesQamhelperheadpoi {}
+export class PortalCandidatesQamhelperheadpoiInteractive extends PortalCandidatesQamhelperheadpoi { }
 
 export class PortalDgeClassificationlevels extends TypedEntity {
   /** Returns the static compile time schema for this type. */
@@ -530,17 +530,19 @@ export class PortalDgeClassificationlevels extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeClassificationlevels type. */
-export class PortalDgeClassificationlevelsInteractive extends PortalDgeClassificationlevels {}
+export class PortalDgeClassificationlevelsInteractive extends PortalDgeClassificationlevels { }
 
 export class PortalDgeClassificationSummary extends TypedEntity {
   readonly Ident_QAMResourceType: IReadValue<string> = this.GetEntityValue('Ident_QAMResourceType');
+  readonly DisplayValue: IReadValue<string> = this.GetEntityValue('DisplayValue');
+  readonly CountResources: IReadValue<string> = this.GetEntityValue('CountResources');
   readonly CountResourcesNotOwned: IReadValue<number> = this.GetEntityValue('CountResourcesNotOwned');
   readonly CountResourcesOwned: IReadValue<number> = this.GetEntityValue('CountResourcesOwned');
   readonly PercentResourcesNotOwned: IReadValue<number> = this.GetEntityValue('PercentResourcesNotOwned');
   readonly CountResourceOwners: IReadValue<number> = this.GetEntityValue('CountResourceOwners');
   /** Returns the static compile time schema for this type. */
   static GetEntitySchema(): StaticSchema<
-    'Ident_QAMResourceType' | 'CountResourcesNotOwned' | 'CountResourcesOwned' | 'PercentResourcesNotOwned' | 'CountResourceOwners'
+   'DisplayValue' | 'CountResources' |'Ident_QAMResourceType' |  'CountResourcesNotOwned' | 'CountResourcesOwned' | 'PercentResourcesNotOwned' | 'CountResourceOwners'
   > {
     const columns = {
       Ident_QAMResourceType: {
@@ -568,17 +570,27 @@ export class PortalDgeClassificationSummary extends TypedEntity {
         Type: ValType.Int,
         IsReadOnly: true,
       },
+      DisplayValue: {
+        ColumnName: 'DisplayValue',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      CountResources: {
+        ColumnName: 'CountResources',
+        Type: ValType.Int,
+        IsReadOnly: true,
+      }
     };
 
     columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
     columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY_LONG;
 
-    return { TypeName: '', Columns: columns };
+    return { TypeName: 'PortalDgeClassificationSummary', Columns: columns };
   }
 }
 
 /** @deprecated Use the PortalDgeClassificationSummary type. */
-export class PortalDgeClassificationSummaryInteractive extends PortalDgeClassificationSummary {}
+export class PortalDgeClassificationSummaryInteractive extends PortalDgeClassificationSummary { }
 
 export class PortalDgeNodes extends TypedEntity {
   /** Returns the static compile time schema for this type. */
@@ -593,7 +605,7 @@ export class PortalDgeNodes extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeNodes type. */
-export class PortalDgeNodesInteractive extends PortalDgeNodes {}
+export class PortalDgeNodesInteractive extends PortalDgeNodes { }
 
 export class PortalDgeResources extends TypedEntity {
   readonly UID_QAMNode: IReadValue<string> = this.GetEntityValue('UID_QAMNode');
@@ -680,7 +692,7 @@ export class PortalDgeResources extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeResources type. */
-export class PortalDgeResourcesInteractive extends PortalDgeResources {}
+export class PortalDgeResourcesInteractive extends PortalDgeResources { }
 
 export class PortalDgeResourcesAccessanalysis extends TypedEntity {
   readonly TrusteeType: IReadValue<string> = this.GetEntityValue('TrusteeType');
@@ -714,7 +726,7 @@ export class PortalDgeResourcesAccessanalysis extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeResourcesAccessanalysis type. */
-export class PortalDgeResourcesAccessanalysisInteractive extends PortalDgeResourcesAccessanalysis {}
+export class PortalDgeResourcesAccessanalysisInteractive extends PortalDgeResourcesAccessanalysis { }
 
 export class PortalDgeResourcesActivity extends TypedEntity {
   readonly Activities: IReadValue<number> = this.GetEntityValue('Activities');
@@ -768,7 +780,7 @@ export class PortalDgeResourcesActivity extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeResourcesActivity type. */
-export class PortalDgeResourcesActivityInteractive extends PortalDgeResourcesActivity {}
+export class PortalDgeResourcesActivityInteractive extends PortalDgeResourcesActivity { }
 
 export class PortalDgeResourcesbyid extends TypedEntity {
   readonly UID_QAMDuG: IReadValue<string> = this.GetEntityValue('UID_QAMDuG');
@@ -925,7 +937,7 @@ export class PortalDgeResourcesbyid extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeResourcesbyid type. */
-export class PortalDgeResourcesbyidInteractive extends PortalDgeResourcesbyid {}
+export class PortalDgeResourcesbyidInteractive extends PortalDgeResourcesbyid { }
 
 export class PortalDgeResourcesPerceivedowners extends TypedEntity {
   readonly UID_PersonPerceivedOwner: IReadValue<string> = this.GetEntityValue('UID_PersonPerceivedOwner');
@@ -947,7 +959,7 @@ export class PortalDgeResourcesPerceivedowners extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeResourcesPerceivedowners type. */
-export class PortalDgeResourcesPerceivedownersInteractive extends PortalDgeResourcesPerceivedowners {}
+export class PortalDgeResourcesPerceivedownersInteractive extends PortalDgeResourcesPerceivedowners { }
 
 export class PortalDgeTrusteesIdentity extends TypedEntity {
   readonly ObjectKeyGroup: IReadValue<string> = this.GetEntityValue('ObjectKeyGroup');
@@ -975,7 +987,7 @@ export class PortalDgeTrusteesIdentity extends TypedEntity {
 }
 
 /** @deprecated Use the PortalDgeTrusteesIdentity type. */
-export class PortalDgeTrusteesIdentityInteractive extends PortalDgeTrusteesIdentity {}
+export class PortalDgeTrusteesIdentityInteractive extends PortalDgeTrusteesIdentity { }
 
 export class PortalCandidatesAeroleWrapper {
   private builder: TypedEntityBuilder<PortalCandidatesAerole>;
@@ -983,7 +995,7 @@ export class PortalCandidatesAeroleWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1021,7 +1033,7 @@ export class PortalCandidatesDepartmentWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1059,7 +1071,7 @@ export class PortalCandidatesLocalityWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1097,7 +1109,7 @@ export class PortalCandidatesOrgWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1135,7 +1147,7 @@ export class PortalCandidatesPersonWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1173,7 +1185,7 @@ export class PortalCandidatesProfitcenterWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1211,7 +1223,7 @@ export class PortalCandidatesQamclassificationlevelWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1249,7 +1261,7 @@ export class PortalCandidatesQamhelperheadpoiWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1287,7 +1299,7 @@ export class PortalDgeClassificationlevelsWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1325,7 +1337,7 @@ export class PortalDgeClassificationSummaryWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1363,7 +1375,7 @@ export class PortalDgeNodesWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1401,7 +1413,7 @@ export class PortalDgeResourcesWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1439,7 +1451,7 @@ export class PortalDgeResourcesAccessanalysisWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1477,7 +1489,7 @@ export class PortalDgeResourcesActivityWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1515,7 +1527,7 @@ export class PortalDgeResourcesbyidWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1613,7 +1625,7 @@ export class PortalDgeResourcesPerceivedownersWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;
@@ -1651,7 +1663,7 @@ export class PortalDgeTrusteesIdentityWrapper {
   constructor(
     private readonly client: V2Client,
     private readonly translationProvider,
-  ) {}
+  ) { }
 
   private commitMethod;
   private deleteMethod;

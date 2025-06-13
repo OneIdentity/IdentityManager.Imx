@@ -77,6 +77,7 @@ export class AccessRequestSidesheetComponent implements OnInit {
 
   public selectedNodes: IEntity[] = [];
   public showTree = true;
+  public isSharePointAccess = false;
 
   private dataModel: DataModel;
   private readonly subscriptions: Subscription[] = [];
@@ -107,7 +108,8 @@ export class AccessRequestSidesheetComponent implements OnInit {
         }
       }),
     );
-
+    
+    this.isSharePointAccess = this.data.uidAccProduct === 'QAM-1E9EB40D495D4C26B30CC1605EDB8F54';
     this.initializeTree();
   }
 
@@ -161,10 +163,10 @@ export class AccessRequestSidesheetComponent implements OnInit {
         isValid = false;
         return;
       }
-      const regex = /^(\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9_.-]+(\\[a-zA-Z0-9_.-]+)*)$/;
+      const regex = /^(\\\\[^\\\/:*?"<>|]+\\[^\\\/:*?"<>|]+(\\[^\\\/:*?"<>|]+)*)$/;
       if (!regex.test(element)) {
         this.validationMessage = this.ldsReplace.transform(
-          this.translate.instant('The entered path of Folder #{0} is not valid. Please use the form \\\\server\\path.'),
+          this.translate.instant('The entered path of Folder #{0} is not valid. Please use the format \\\\server\\path and ensure that path does not contain any of the following characters: \ / : * ? " < > |'),
           index + 1,
         );
         isValid = false;
