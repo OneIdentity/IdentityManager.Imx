@@ -111,14 +111,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   public get canPerformActions(): boolean {
     return (
       this.selectedCases.length > 0 &&
-      (this.canWithdrawAddApprover ||
-        this.canAddApprover ||
-        this.canDelegateDecision ||
-        this.canDenyApproval ||
-        this.canReRouteDecision ||
-        this.canRecallInquiry ||
-        this.canSendInquiry ||
-        this.canCancelReservation)
+      (this.canWithdrawAddApprover || this.canAddApprover || this.canDelegateDecision || this.canDenyApproval || this.canReRouteDecision)
     );
   }
   public isUserEscalationApprover = false;

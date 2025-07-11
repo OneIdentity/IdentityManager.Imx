@@ -27,8 +27,9 @@
 import { Injectable } from '@angular/core';
 import { HistoryComparisonData } from 'imx-api-qbm';
 import { IStateOverviewItem, ObjectHistoryEvent } from 'imx-qbm-dbts';
-import { ObjectHistoryApiService } from './object-history-api.service';
+import moment from 'moment-timezone';
 import { MetadataService } from '../base/metadata.service';
+import { ObjectHistoryApiService } from './object-history-api.service';
 
 export interface ObjectHistoryParameters {
   table: string;
@@ -41,18 +42,15 @@ export interface ObjectHistoryParameters {
 export class ObjectHistoryService {
   private dataCached: ObjectHistoryEvent[];
 
-  constructor(
-    private readonly apiService: ObjectHistoryApiService,
-    private metadataService: MetadataService,
-  ) {}
+  constructor(private readonly apiService: ObjectHistoryApiService, private metadataService: MetadataService) {}
 
   public async get(parameters: ObjectHistoryParameters, fetchRemote: boolean = true): Promise<ObjectHistoryEvent[]> {
     if (fetchRemote || this.dataCached == null) {
       this.dataCached = (await this.apiService.getHistoryData(parameters.table, parameters.uid))
         .map((x) => x.Events)
-        .reduce((a, b) => a.concat(b));
+        .reduce((a, b) => a.concat(b))
+        .sort((eventA, eventB) => moment(eventB.ChangeTime).diff(moment(eventA.ChangeTime)));
     }
-
     return this.dataCached;
   }
 

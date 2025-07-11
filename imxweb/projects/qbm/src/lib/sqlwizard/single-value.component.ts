@@ -84,7 +84,7 @@ export class SingleValueComponent implements OnInit, OnDestroy {
   }
 
   set displayValue(val) {
-    if (!this.expr.Data?.DisplayValues) {
+    if (!this.expr.Data) {
       return;
     }
     if (this.mode == 'array' && this.expr.Data.DisplayValues) {
