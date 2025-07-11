@@ -1,3 +1,12 @@
+### July 11, 2025
+- 496243 *(496242)*: Fixes an issue with the sorting in the history view.
+- 470865: Provides an API documentation for our new data-table.
+- 496590 *(496025)*: Fixes an issue regarding error messages on multi-line component dependent reference editors, whenever a server error occurs.
+- 496475 *(489057)*: Fixes an issue with cut off labels on the x-axis of statistics.
+- 496641: Fixes an issue with the rendering of a account report.
+- 496646: Fixes an issue with correct filters after using deep links to the policy violation approval page.
+- 496654 *(496653)*: Adds support for decimal range report parameters.
+
 ### June 13, 2025
 - 495784: Fixes an issue with submitting requests while a validation is ongoing.
 - 481927 *(480466)*: Fixes an 404 error on approve/deny request.
