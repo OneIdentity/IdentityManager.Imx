@@ -1,7 +1,7 @@
 ### July 11, 2025
 - 496637: Fixes an issue with missing renewal dates on the Pending Attestations page.
 - 496242: Fixes an issue with the sorting in the history view.
-- 496025: Fixes an issue regarding error messages on multi line component depended reference editors, whenever a server error occurs.
+- 496025: Fixes an issue regarding error messages on multi-line component dependent reference editors, whenever a server error occurs.
 - 496653: Adds support for decimal range report parameters.
 - 494430: Fixes an issue with displaying display names after re-opening an active filter.
 - 499014: Fixes an additional issue with a missing cancel reservation button on the request information side sheet.
