@@ -1,3 +1,18 @@
+### June 13, 2025
+- 495784: Fixes an issue with submitting requests while a validation is ongoing.
+- 481927 *(480466)*: Fixes an 404 error on approve/deny request.
+- 492327 *(484186)*: Fixes an exception when deciding a request as a member of the chief approval team.
+- 493673 *(474749)*: Fixes an issue with wrong sublevels when the same person can approve a request again in the same level.
+- 474724: Fixes an issue with the Cancel reservation button that is shown even though inquiry is not answered yet.
+- 493494: Adds sorting options to rule violations.
+- 488099 *(463113)*: Fixes an issue with the date field unsubscribing an assigned request.
+- 493438 *(491726)*: Fixes an issue with saving a view on the Responsibility -> System Roles page.
+- 490160: Fixes an issue with the culture formatting in the identity history.
+- 488101 *(474430)*: Fixes an issue with zooming in on the parameter section of a selected report.
+- 484625: Fixes an issue with the CAPTCHA based login on the custom-app.
+- 488853: Fixes links in readme files.
+- 491498 *(489984)*: Fixes an issue with the CAPTCHA prompt on the Password Reset Portal (it was not display again after a wrong input)
+
 ### May 20, 2025
 - 486313: Fixes an issue with scroll bars in the View Report side sheet.
 - 483185 *(483102)*: Fixes an issue with deep links in the mail body of send inquiries.
