@@ -213,6 +213,7 @@ export class StatisticsChartHandlerService {
         top: 0,
         left: 0,
         right: 0,
+        mode: 'fit',
       },
     };
   }

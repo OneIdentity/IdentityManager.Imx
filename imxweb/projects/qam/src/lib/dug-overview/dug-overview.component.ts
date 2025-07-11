@@ -44,13 +44,13 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
   public data?: any;
   public contextId?: HelpContextualValues;
   private dataModel: DataModel;
-
   public busyService = new BusyService();
   public navigationState: CollectionLoadParameters = {};
   public dstSettings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
   private displayedColumns: IClientProperty[] = [];
   public readonly DisplayColumns = DisplayColumns;
+  public activeTabIndex = 0;
 
   constructor(
     private readonly overviewService: DugOverviewService,
@@ -111,8 +111,8 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
 
   private async getData(parameter: CollectionLoadParameters = {}): Promise<void> {
     const isBusy = this.busyService.beginBusy();
-    this.navigationState = this.isAdmin ? {...parameter, allresources: '1'} : { ...parameter, owned: '1' };
-    try { 
+    this.navigationState = this.isAdmin ? { ...parameter, allresources: '1' } : { ...parameter, owned: '1' };
+    try {
       const data = await this.overviewService.getData(this.navigationState);
 
       this.dstSettings = {

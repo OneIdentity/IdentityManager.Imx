@@ -263,4 +263,16 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
   public onAttestationApprove() {
     this.attestationAction.checkForViolations([_.cloneDeep(this.case)]);
   }
+
+  public canWithdrawInquiry(): boolean {
+    return this.case.IsReserved.value && this.case.hasAskedLastQuestion(this.userUid) && this.case.hasOpenQuestions;
+  }
+
+  public canResetReservation(): boolean {
+    if (this.canWithdrawInquiry()) return false;
+    return (
+      this.case.IsReserved.value &&
+      ((this.case.hasAskedLastQuestion(this.userUid) && !this.case.hasOpenQuestions) || this.isUserEscalationApprover)
+    );
+  }
 }

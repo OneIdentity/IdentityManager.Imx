@@ -105,7 +105,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   }
 
   public get canResetReservation(): boolean {
-    return this.selectedItems.every((item: Approval) => item.canResetReservation(this.isChiefApprover));
+    return this.selectedItems.every((item: Approval) => !item.canRecallInquiry && item.canResetReservation(this.isChiefApprover));
   }
 
   public get canSendInquiry(): boolean {

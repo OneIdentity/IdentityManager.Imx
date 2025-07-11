@@ -42,12 +42,13 @@ import {
   CdrModule,
   DataSourceToolbarModule,
   DataTableModule,
+  DataViewModule,
   DynamicTabsModule,
   ExtModule,
   HelpContextualModule,
   LdsReplaceModule,
   ObjectHistoryModule,
-  RouteGuardService,
+  RouteGuardService
 } from 'qbm';
 import { ObjectHyperviewModule, StatisticsModule } from 'qer';
 import { AccessRequestModule } from './access-request/access-request.module';
@@ -58,6 +59,7 @@ import { DugActivitiesComponent } from './dug-activities/dug-activities.componen
 import { DugDashboardsComponent } from './dug-dashboards/dug-dashboards.component';
 import { DugOverviewComponent } from './dug-overview/dug-overview.component';
 import { DugOwnershipComponent } from './dug-ownership/dug-ownership.component';
+import { DugResourceOverviewComponent } from './dug-resource-overview/dug-resource-overview.component';
 import { AccessComparisonComponent } from './dug/access-comparison.component';
 import { DugAccessAnalysisComponent } from './dug/dug-access-analysis.component';
 import { DugAccessDetailComponent } from './dug/dug-access-detail.component';
@@ -122,6 +124,8 @@ const routes: Routes = [
     ExtModule,
     StatisticsModule,
     MatTooltipModule,
+    DugResourceOverviewComponent,
+    DataViewModule
   ],
 })
 export class QamConfigModule {

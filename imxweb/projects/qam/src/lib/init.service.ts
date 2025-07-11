@@ -49,7 +49,9 @@ export class InitService {
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly qamClientService: QamApiService
-  ) {}
+  ) {
+    this.setupMenu();
+  }
 
   public onInit(routes: Route[]): void {
     // register the extension on the group sidesheet
@@ -115,7 +117,7 @@ export class InitService {
          instance: DugOverviewComponent,
          sortOrder: 1,
          name: this.dgeTag,
-         caption: '#LDS#Governed Data Overview',
+         caption: '#LDS#Menu Entry Governed Data Overview',
          data: {
            TableName: this.dgeTag,
            Count: 0,
@@ -134,7 +136,7 @@ export class InitService {
       instance: DugOwnershipComponent,
       sortOrder: 8,
       name: 'QAMDuGOWNER',
-      caption: '#LDS#Governed Data Ownership',
+      caption: '#LDS#Menu Entry Governed Data Ownership',
       data: {
         TableName: this.dgeTag,
         Count: 0,
@@ -145,6 +147,29 @@ export class InitService {
  );
 
     this.addRoutes(routes);
+  }
+
+  private setupMenu(): void {
+    this.menuService.addMenuFactories(
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (!this.qamClientService.isPersonDGEAdmin(groups)) {
+          return undefined;
+        }
+
+        return {
+          id: 'ROOT_Data',
+          title: '#LDS#Data administration',
+          sorting: '40',
+          items: [
+            {
+              id: 'QER_DataExplorer',
+              navigationCommands: { commands: ['admin', 'dataexplorer'] },
+              title: '#LDS#Menu Entry Data Explorer',
+              sorting: '40-10',
+            },
+          ],
+        };
+      });
   }
 
   private supportsAccess(referrer: any): boolean {

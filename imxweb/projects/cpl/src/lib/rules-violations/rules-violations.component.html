@@ -11,7 +11,15 @@
     ></imx-data-view-toolbar>
   </div>
   <mat-card class="imx-card-fill">
-    <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+    <imx-data-view-auto-table
+      [dataSource]="dataSource"
+      mode="manual"
+      [selectable]="true"
+      matSort
+      (matSortChange)="dataSource?.sortChange($event)"
+      [matSortActive]="dataSource.sortId()"
+      [matSortDirection]="dataSource.sortDirection()"
+    >
       <ng-container [matColumnDef]="entitySchema?.Columns?.UID_Person?.ColumnName">
         <ng-container>
           <th mat-header-cell *matHeaderCellDef>
@@ -50,7 +58,7 @@
       </ng-container>
       <ng-container [matColumnDef]="entitySchema?.Columns?.RiskIndexCalculated?.ColumnName">
         <ng-container>
-          <th mat-header-cell *matHeaderCellDef>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ entitySchema?.Columns?.RiskIndexCalculated?.Display }}
           </th>
         </ng-container>
@@ -62,7 +70,7 @@
       </ng-container>
       <ng-container [matColumnDef]="entitySchema?.Columns?.RiskIndexReduced?.ColumnName">
         <ng-container>
-          <th mat-header-cell *matHeaderCellDef>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ entitySchema?.Columns?.RiskIndexReduced?.Display }}
           </th>
         </ng-container>

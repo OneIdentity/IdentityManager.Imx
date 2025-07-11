@@ -277,7 +277,7 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
 
   public async assignOwner(): Promise<void> {
     const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading Assign OwnerShip'),
+      title: this.translate.instant('#LDS#Heading Assign Ownership'),
       width: calculateSidesheetWidth(),
       disableClose: true,
       padding: '0',

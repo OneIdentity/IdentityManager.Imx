@@ -97,11 +97,12 @@ export class PasscodeLoginComponent implements OnInit, OnDestroy {
           Code: resp,
         });
       }
+      this.isEnteringPasscode = true;
     } catch (e) {
+      this.isEnteringPasscode = false;
       throw e;
     } finally {
       this.passcode = '';
-      this.isEnteringPasscode = true;
       this.captchaSvc.ReinitCaptcha();
       this.busyService.hide();
     }

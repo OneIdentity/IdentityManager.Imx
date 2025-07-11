@@ -203,7 +203,7 @@
       </button>
       <button
         mat-menu-item
-        *ngIf="case.IsReserved.value && case.hasAskedLastQuestion(userUid)"
+        *ngIf="canWithdrawInquiry()"
         data-imx-identifier="attestation-case-button-recall-last-question"
         title="{{ '#LDS#Withdraws the inquiry about this attestation case' | translate }}"
         (click)="attestationAction.recallInquiry([case])"
@@ -213,7 +213,7 @@
 
       <button
         mat-menu-item
-        *ngIf="case.IsReserved.value && (case.hasAskedLastQuestion(userUid) || isUserEscalationApprover)"
+        *ngIf="canResetReservation()"
         data-imx-identifier="attestation-case-button-reset-reservation"
         title="{{ '#LDS#Cancels the reservation for this attestation case' | translate }}"
         (click)="attestationAction.resetReservation([case])"

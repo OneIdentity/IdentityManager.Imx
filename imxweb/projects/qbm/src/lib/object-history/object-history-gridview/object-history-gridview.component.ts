@@ -31,6 +31,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ObjectHistoryEvent, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import moment from 'moment-timezone';
 import { SettingsService } from '../../settings/settings-service';
 import { ObjectHistoryParameters } from '../object-history.service';
 
@@ -96,7 +97,7 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     await this.addColumnDef({
       id: 'ChangeTime',
       title: '#LDS#Modified on',
-      getValue: (row: ObjectHistoryEvent) => new Date(row.ChangeTime).toLocaleString(this.translationProvider.currentLang),
+      getValue: (row: ObjectHistoryEvent) => moment(row.ChangeTime).format('L LTS'),
     });
     await this.addColumnDef({
       id: 'ChangeType',

@@ -37,6 +37,7 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateS
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 import { MatPaginatorIntl } from '@angular/material/paginator';
+import { RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha-2';
 import {
   AuthenticationModule,
   CustomThemeModule,
@@ -56,49 +57,62 @@ import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { StartComponent } from './start.component';
 
-@NgModule({ declarations: [AppComponent, StartComponent],
-    bootstrap: [AppComponent], imports: [AppRoutingModule,
-        AuthenticationModule,
-        BrowserAnimationsModule,
-        BrowserModule,
-        EuiCoreModule,
-        EuiMaterialModule,
-        MatButtonModule,
-        MatCardModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
-        MastHeadModule,
-        QbmModule,
-        CustomThemeModule,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useClass: ImxTranslateLoader,
-            },
-            missingTranslationHandler: {
-                provide: MissingTranslationHandler,
-                useClass: ImxMissingTranslationHandler,
-            },
-        }),
-        UserMessageModule], providers: [
-        { provide: 'environment', useValue: environment },
-        { provide: 'appConfigJson', useValue: appConfigJson },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: AppService.init,
-            deps: [AppService],
-            multi: true,
-        },
-        {
-            provide: ErrorHandler,
-            useClass: GlobalErrorHandler,
-        },
-        {
-            provide: MatPaginatorIntl,
-            useFactory: Paginator.Create,
-            deps: [TranslateService, LdsReplacePipe],
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-    ] })
+@NgModule({
+  declarations: [AppComponent, StartComponent],
+  bootstrap: [AppComponent],
+  imports: [
+    AppRoutingModule,
+    AuthenticationModule,
+    BrowserAnimationsModule,
+    BrowserModule,
+    EuiCoreModule,
+    EuiMaterialModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
+    MastHeadModule,
+    QbmModule,
+    CustomThemeModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useClass: ImxTranslateLoader,
+      },
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: ImxMissingTranslationHandler,
+      },
+    }),
+    UserMessageModule,
+  ],
+  providers: [
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: AppService.init,
+      deps: [AppService],
+      multi: true,
+    },
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
+    },
+    {
+      provide: MatPaginatorIntl,
+      useFactory: Paginator.Create,
+      deps: [TranslateService, LdsReplacePipe],
+    },
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: (config: AppService) => {
+        return config.recaptchaSiteKeyV3;
+      },
+      deps: [AppService],
+    },
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
+})
 export class AppModule {}

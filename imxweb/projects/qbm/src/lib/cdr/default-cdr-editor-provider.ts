@@ -70,7 +70,7 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
     const limitedValues = this.isLimitedValues(meta);
     const schemaKey = meta.GetSchemaKey();
     const isRiskIndexColumn =
-      ['RiskIndex', 'RiskLevel'].includes(schemaKey.substring(schemaKey.lastIndexOf('.') + 1)) || schemaKey == 'QERRiskIndex.Weight';
+      ['RiskIndex', 'RiskRange', 'RiskLevel'].includes(schemaKey.substring(schemaKey.lastIndexOf('.') + 1)) || schemaKey == 'QERRiskIndex.Weight';
     const type = meta.GetType();
 
     if (type === ValType.Binary) {

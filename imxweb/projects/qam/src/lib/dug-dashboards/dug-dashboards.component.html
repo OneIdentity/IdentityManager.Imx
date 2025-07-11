@@ -4,8 +4,10 @@
       {{ stat?.Display }}
     </mat-card-header>
     <mat-card-content class="card-content center-content">
-      <div>
-        <imx-chart-tile [summaryStat]="stat" [chartInfo]="info[index]"></imx-chart-tile>
+      <imx-chart-tile *ngIf="info[index] && showChart[index]" [chartInfo]="info[index]" [summaryStat]="stat">
+      </imx-chart-tile>
+      <div *ngIf="info[index] && !showChart[index]" class="center-content">
+        <mat-spinner [diameter]="40"></mat-spinner>
       </div>
     </mat-card-content>
   </mat-card>

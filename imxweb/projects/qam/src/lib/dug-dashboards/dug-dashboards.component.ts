@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { ChartInfoTyped } from 'qer';
 import { ChartDto } from '../TypedClient';
@@ -36,26 +36,46 @@ import { DugDashboardsService } from './dug-dashboards.service';
   styleUrls: ['./dug-dashboards.component.scss'],
 })
 export class DugDashboardsComponent implements OnInit {
+  @Input() public isAdmin = false;
   public stats: ChartDto[] = [];
   public info: ChartInfoTyped[] = [];
+  public showChart: boolean[] = [];
   constructor(
     public readonly dashboardsService: DugDashboardsService,
     private readonly loadingServiceEui: EuiLoadingService,
-  ) {}
+  ) { }
 
   public async ngOnInit(): Promise<void> {
     const over = this.loadingServiceEui.show();
     try {
       const test = await this.dashboardsService.getDashboards();
+      const filteredData = test.Data?.filter(elem =>
+        this.isAdmin
+          ? elem.Name === "QAMMostActiveResources"
+          : elem.Name !== "QAMMostActiveResources"
+      ) ?? [];
+      const filteredCharts = test.Charts?.filter(elem =>
+        this.isAdmin
+          ? elem.Id === "QAMMostActiveResources"
+          : elem.Id !== "QAMMostActiveResources"
+      ) ?? [];
       this.stats =
-        test.Data?.map((elem) => {
-          if (elem.Data?.[0]) {
-            elem.Data[0].Name = elem.Data[0].Name + '(' + (elem.Data[0]?.ObjectDisplay ?? '') + ')';
+        filteredData.map((elem) => {
+          if (elem.Name == "QAMResourcesOfCurrentUserByHost") {
+            elem.Data?.forEach((item) => {
+              item.Name = item.Name + '(' + (item?.ObjectDisplay ?? '') + ')';
+            })
           }
           return elem;
         }) ?? [];
-      this.info = ChartInfoTyped.buildEntities((test.Charts ?? []).map((elem) => ChartInfoTyped.buildEntityData(elem))).Data;
-      console.log(this.info, this.stats);
+      this.info = ChartInfoTyped.buildEntities((filteredCharts ?? []).map((elem) => ChartInfoTyped.buildEntityData(elem))).Data;
+      // After setting this.info
+      this.showChart = new Array(this.info.length).fill(false);
+      this.info.forEach((_, idx) => {
+        setTimeout(() => {
+          this.showChart[idx] = true;
+        }, 100);
+      });
     } finally {
       this.loadingServiceEui.hide(over);
     }

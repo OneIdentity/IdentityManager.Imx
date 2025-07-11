@@ -25,25 +25,26 @@
  */
 
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-
-import { ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
-import { QamApiService } from '../../qam-api-client.service';
-import { DugReportEntity } from './dug-report-entity';
+import { CollectionLoadParameters, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
+import { QamApiService } from '../qam-api-client.service';
+import { PortalDgeClassificationSummary } from '../TypedClient';
 
 @Injectable({ providedIn: 'root' })
-export class DugReportService {
+export class DugResourceOverviewService {
   constructor(
-    private readonly api: QamApiService,
-    private readonly translate: TranslateService,
-  ) {}
+    private readonly api: QamApiService
+  ) { }
 
-  public async getReports(uid: string): Promise<ExtendedTypedEntityCollection<DugReportEntity, { [key: string]: string }[]>> {
-    const resource = await this.api.client.portal_dge_resources_reports_get(uid);
-    return DugReportEntity.buildEntities(
-      DugReportEntity.buildEntityData(resource),
-      resource.map((elem) => elem.PresetParameters!),
-      DugReportEntity.GetEntitySchema(this.translate),
-    );
+  public async getData(parameter?: CollectionLoadParameters,
+    signal?: AbortSignal): Promise<ExtendedTypedEntityCollection<PortalDgeClassificationSummary, unknown>> {
+    return this.api.typedClient.PortalDgeClassificationSummary.Get(parameter, { signal });
+  }
+
+  public get DugResourceOverviewSchema(): EntitySchema {
+    return this.api.typedClient.PortalDgeClassificationSummary.GetSchema();
+  }
+
+  public async getClassificationSummary(): Promise<EntityCollectionData> {
+    return this.api.client.portal_dge_classification_summary_get();
   }
 }

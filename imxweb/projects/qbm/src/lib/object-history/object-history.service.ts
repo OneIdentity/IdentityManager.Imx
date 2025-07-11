@@ -27,6 +27,7 @@
 import { Injectable } from '@angular/core';
 import { HistoryComparisonData } from '@imx-modules/imx-api-qbm';
 import { IStateOverviewItem, ObjectHistoryEvent } from '@imx-modules/imx-qbm-dbts';
+import moment from 'moment-timezone';
 import { MetadataService } from '../base/metadata.service';
 import { ObjectHistoryApiService } from './object-history-api.service';
 
@@ -52,7 +53,8 @@ export class ObjectHistoryService {
         parameters.table && parameters.uid
           ? (await this.apiService.getHistoryData(parameters.table, parameters.uid))
               ?.map((x) => x.Events)
-              ?.reduce((a, b) => (a ?? []).concat(b ?? [])) ?? []
+              ?.reduce((a, b) => (a ?? []).concat(b ?? []))
+              ?.sort((eventA, eventB) => moment(eventB.ChangeTime).diff(moment(eventA.ChangeTime))) ?? []
           : [];
     }
 

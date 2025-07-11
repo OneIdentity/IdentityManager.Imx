@@ -6,7 +6,7 @@
           {{ (data.canEditAndDelete ? editableDetailsInfoText : detailsInfoText) | translate }}
         </eui-alert>
         <mat-card>
-          <eui-badge class="imx-margin-bottom-20" *ngIf="!data.pattern.IsPublicPattern.value">
+          <eui-badge class="imx-margin-bottom-20" *ngIf="!data?.pattern?.IsPublicPattern?.value">
             {{ '#LDS#Private product bundle' | translate }}
           </eui-badge>
           <eui-badge class="imx-margin-bottom-20" color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
@@ -86,7 +86,7 @@
       *ngIf="data.isMyPattern && data.adminMode"
       (click)="togglePublic()"
     >
-      {{ (data.pattern.IsPublicPattern.value ? '#LDS#Unshare' : '#LDS#Share') | translate }}
+      {{ (data?.pattern?.IsPublicPattern?.value ? '#LDS#Unshare' : '#LDS#Share') | translate }}
     </button>
     <button
       mat-flat-button

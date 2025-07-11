@@ -31,8 +31,8 @@ import { EuiSidesheetService } from '@elemental-ui/core';
 import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { DugSidesheetComponent } from '../dug/dug-sidesheet.component';
-import { DugOwnershipService } from './dug-ownership.service';
 import { PortalDgeResourcesPerceivedowners } from '../TypedClient';
+import { DugOwnershipService } from './dug-ownership.service';
 
 @Component({
   selector: 'imx-dug-ownership',
@@ -99,7 +99,7 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
 
   public async perceivedOwner(resource: TypedEntity): Promise<void> {
     const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading Assign OwnerShip'),
+      title: this.translate.instant('#LDS#Heading Assign Ownership'),
       subTitle: resource.GetEntity().GetDisplay(),
       width: calculateSidesheetWidth(),
       disableClose: true,

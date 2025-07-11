@@ -51,10 +51,14 @@ export class DecisionStepSevice {
   public getAdditionalInfoCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference | undefined {
     const step = this.getStep(extended, entity);
 
+    if (!step) {
+      return undefined;
+    }
+
     const data = extended.WorkflowData?.Entities?.find(
       (elem) =>
-        elem.Columns.UID_QERWorkingStep.Value === step.Columns.UID_QERWorkingStep.Value &&
-        elem.Columns.UID_PersonHead.Value === this.uidUser,
+        elem?.Columns?.UID_QERWorkingStep.Value === step.Columns.UID_QERWorkingStep.Value &&
+        elem?.Columns?.UID_PersonHead.Value === this.uidUser,
     );
 
     return (data?.Columns.UID_ComplianceRule?.Value ?? '') === ''
@@ -82,6 +86,7 @@ export class DecisionStepSevice {
 
     //Sort steps and get step with lowest sub level
     const step = stepsWithSubLevel?.sort((x, y) => x.subLevel - y.subLevel)?.[0]?.column;
+
     return step;
   }
 
@@ -93,7 +98,8 @@ export class DecisionStepSevice {
     return workflowData.some(
       (elem) =>
         elem?.Columns?.UID_QERWorkingStep.Value === step?.Columns?.UID_QERWorkingStep.Value &&
-        elem?.Columns?.UID_PersonHead.Value === this.uidUser,
+        elem?.Columns?.UID_PersonHead.Value === this.uidUser &&
+        (elem?.Columns?.Decision.Value ?? '') === '',
     );
   }
 }

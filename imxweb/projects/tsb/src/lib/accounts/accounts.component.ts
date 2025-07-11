@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, Signal } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -42,6 +42,7 @@ import {
 } from '@imx-modules/imx-qbm-dbts';
 import {
   BusyService,
+  calculateSidesheetWidth,
   ClassloggerService,
   DataSourceToolbarFilter,
   DataSourceToolbarViewConfig,
@@ -50,7 +51,6 @@ import {
   HELP_CONTEXTUAL,
   SettingsService,
   SideNavigationComponent,
-  calculateSidesheetWidth,
 } from 'qbm';
 import { ViewConfigService } from 'qer';
 import { ContainerTreeDatabaseWrapper } from '../container-list/container-tree-database-wrapper';
@@ -82,7 +82,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
 
   private displayedColumns: IClientProperty[] = [];
   private authorityDataDeleted$: Subscription;
-  private tableName: string;
+  private tableName: Signal<string> = computed(() => this.dataSource.collectionData().tableName || '');
   private dataModel: DataModel;
   private viewConfigPath = 'targetsystem/uns/account';
   private viewConfig: DataSourceToolbarViewConfig;
@@ -181,7 +181,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
         unsDbObjectKey,
         selectedAccount: await this.accountsService.getAccountInteractive(unsDbObjectKey, 'UID_UNSAccount'),
         uidPerson: unsAccount.GetEntity().GetColumn('UID_Person').GetValue(),
-        tableName: this.tableName,
+        tableName: this.tableName(),
       };
     } finally {
       this.busyServiceElemental.hide(hideOverlayRef);

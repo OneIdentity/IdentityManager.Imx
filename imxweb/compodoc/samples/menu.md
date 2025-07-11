@@ -2,7 +2,7 @@
 
 The main menu (projects\qbm\src\lib\menu) is a central component, just like the dashboard.
 
-![Main menu](../../assets/images/menu/1-menu-bar.png)
+![Main menu](../assets/images/menu/1-menu-bar.png)
 
 New menus and menu items are dynamically added to the main menu via a plugin system.
 
@@ -16,6 +16,7 @@ There is a security breach and an administrator wants to block the account of th
 At first, the `Select Identity` component has to be created in which the identity that should be blocked can be selected.
 
 The component consists of the following files:
+
 - `select-identity.component.html`
 - `select-identity.component.scss`
 - `select-identity.component.ts`
@@ -26,7 +27,7 @@ Before the menu is implemented, a route must be added that leads to the `Select 
 
 A new entry to the routing table must be added.
 
-``` ts
+```ts
 const routes: Routes = [
   :
   {
@@ -38,13 +39,13 @@ const routes: Routes = [
 
 The new menu with the associated route can now be added. This can be done in the `init` service (init-service.ts). In the code snippet below, only the part where the menu is added is shown.
 
-``` ts
+```ts
 :
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
   :
-  
+
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
     :
@@ -82,7 +83,7 @@ Menus and menu items can be added via the `menu` service (projects\qbm\src\lib\m
 
 Extract of the file:
 
-``` ts
+```ts
 import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
@@ -111,15 +112,11 @@ export interface MenuItem {
 
   /** Submenu items. */
   items?: MenuItem[];
-
 }
 
 export type MenuFactory = (preProps: string[], features: string[], projectConfig?: ProjectConfig, groups?: string[]) => MenuItem;
-
-
-
 ```
 
 The final result looks like this.
 
-![Final Result](../../assets/images/menu/3-sub-item-menu.png)
+![Final Result](../assets/images/menu/3-sub-item-menu.png)

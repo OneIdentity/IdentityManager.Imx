@@ -82,9 +82,14 @@ export class ApprovalsSidesheetComponent implements OnDestroy, OnInit {
   }
 
   public canResetReservation() {
+    if (this.canWithdrawInquiry()) return false;
     return (
       this.data.pwo.IsReserved.value && ((this.data.pwo.hasAskedLastQuestion && !this.data.pwo.hasOpenQuestions) || this.isChiefApprover)
     );
+  }
+
+  public canWithdrawInquiry(): boolean {
+    return this.data.pwo.IsReserved.value && this.data.pwo.hasAskedLastQuestion && this.data.pwo.hasOpenQuestions;
   }
 
   public async acceptTermsOfUse(): Promise<void> {

@@ -28,7 +28,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { first, Subscription } from 'rxjs';
 
 import { PortalPolicies } from '@imx-modules/imx-api-pol';
 import { ViewConfigData } from '@imx-modules/imx-api-qer';
@@ -75,6 +75,7 @@ export class PolicyViolationsComponent implements OnInit {
   private readonly subscriptions: Subscription[] = [];
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'policies/violations';
+  private selectedPolicyUid: string;
 
   constructor(
     public policyViolationsService: PolicyViolationsService,
@@ -94,6 +95,9 @@ export class PolicyViolationsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
+    const queryParams = await this.actRoute.queryParams.pipe(first()).toPromise();
+    this.selectedPolicyUid = queryParams?.['uid_qerpolicy'];
+
     if (!this.selectedCompanyPolicy)
       this.approveOnly = this.actRoute.snapshot.url[this.actRoute.snapshot.url.length - 1].path === 'approve';
     this.displayedColumns = [
@@ -102,13 +106,13 @@ export class PolicyViolationsComponent implements OnInit {
       this.entitySchema?.Columns.State,
       ...(!this.selectedCompanyPolicy
         ? [
-            {
-              ColumnName: 'actions',
-              Type: ValType.String,
-              afterAdditionals: true,
-              untranslatedDisplay: '#LDS#Approval decision',
-            },
-          ]
+          {
+            ColumnName: 'actions',
+            Type: ValType.String,
+            afterAdditionals: true,
+            untranslatedDisplay: '#LDS#Approval decision',
+          },
+        ]
         : []),
     ];
 
@@ -187,6 +191,9 @@ export class PolicyViolationsComponent implements OnInit {
         if (this.selectedCompanyPolicy) {
           const selectedCompanyPolicyKey = this.selectedCompanyPolicy.GetEntity().GetKeys()[0];
           params = { ...params, uid_qerpolicy: selectedCompanyPolicyKey };
+        }
+        if (this.selectedPolicyUid) {
+          params = { ...params, uid_qerpolicy: this.selectedPolicyUid };
         }
         return this.policyViolationsService.get(this.approveOnly, params, signal);
       },

@@ -44,6 +44,7 @@ export class AccessRequestService implements ICartItemsExtensionService {
 
   // TODO #460645: replace UidAccProduct-workaround with if (requestable.DisplayType === 'DGEAccessRequest' )
   private fileSystemAccessUidAccProduct = 'QAM-4B31152BD53849CFBCEA4B27570BD947';
+  private sharePointAccessUidAccProduct = 'QAM-1E9EB40D495D4C26B30CC1605EDB8F54';
 
   constructor(
     private readonly accessRequestDataService: AccessRequestDataService,
@@ -67,6 +68,7 @@ export class AccessRequestService implements ICartItemsExtensionService {
 
     // TODO #460645: replace UidAccProduct-workaround with if (requestable.DisplayType === 'DGEAccessRequest' )
     const countFileSystemAccessProducts = products.filter((product) => product.UidAccProduct === this.fileSystemAccessUidAccProduct).length;
+    const countSharePointAccessProducts = products.filter((product) => product.UidAccProduct === this.sharePointAccessUidAccProduct).length;
 
     if (countFileSystemAccessProducts > 0) {
       // the user should specify which folders he want to request
@@ -76,7 +78,23 @@ export class AccessRequestService implements ICartItemsExtensionService {
           title: this.translate.instant('#LDS#Heading Requesting File System Access'),
           width: calculateSidesheetWidth(800, 0.5),
           disableClose: true,
-          testId: 'access-request-sidesheet',
+          testId: 'filesystem-access-request-sidesheet',
+          padding: '0px',
+          data,
+        })
+        .afterClosed()
+        .toPromise();
+    }
+
+    if (countSharePointAccessProducts > 0) {
+      // the user should specify which folders he want to request
+      data.uidAccProduct = this.sharePointAccessUidAccProduct;
+      this.folders = await this.sidesheetService
+        .open(AccessRequestSidesheetComponent, {
+          title: this.translate.instant('#LDS#Heading Requesting Sharepoint Access'),
+          width: calculateSidesheetWidth(800, 0.5),
+          disableClose: true,
+          testId: 'sharepoint-access-request-sidesheet',
           padding: '0px',
           data,
         })
@@ -84,7 +102,7 @@ export class AccessRequestService implements ICartItemsExtensionService {
         .toPromise();
     }
     for (const product of products) {
-      if (product.UidAccProduct === this.fileSystemAccessUidAccProduct) {
+      if (product.UidAccProduct === this.fileSystemAccessUidAccProduct || product.UidAccProduct === this.sharePointAccessUidAccProduct ) {
         if (this.folders?.length > 0) {
           // create a product for each folder
           for (const folder of this.folders) {
