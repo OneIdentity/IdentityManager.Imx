@@ -66,7 +66,7 @@
     "ngx-logger": "5.0.12",
     "nx": "19.8.14",
     "rxjs": "7.8.1",
-    "swagger-ui-dist": "5.17.14",
+    "swagger-ui-dist": "5.26.2",
     "tslib": "2.8.1",
     "url-polyfill": "1.1.12",
     "web-animations-js": "2.3.2",
