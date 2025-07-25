@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -67,7 +67,7 @@ import { RequestHistoryService } from './request-history.service';
   selector: 'imx-request-table',
   providers: [DataViewSource],
 })
-export class RequestTableComponent implements OnInit, OnDestroy {
+export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
   public additional: IClientProperty[] = [];
   public get entitySchema(): EntitySchema {
     return this.requestHistoryService.PortalItshopRequestsSchema;
@@ -182,6 +182,14 @@ export class RequestTableComponent implements OnInit, OnDestroy {
       }),
     );
   }
+  public async ngOnChanges(): Promise<void> {
+    const busy = this.busyService.beginBusy();
+    try {
+      await this.getData();
+    } finally {
+      busy.endBusy();
+    }
+  }
 
   public async ngOnInit(): Promise<void> {
     this.displayedColumns = [
@@ -215,10 +223,6 @@ export class RequestTableComponent implements OnInit, OnDestroy {
   }
 
   public updateFiltersFromRouteParams(params: Params): void {
-    if (this.viewConfigService.isDefaultConfigSet()) {
-      // If we have a default config, we won't set our filters
-      return;
-    }
     // Make keys lowercase
     const result = {};
     for (const [key, value] of Object.entries(params)) {

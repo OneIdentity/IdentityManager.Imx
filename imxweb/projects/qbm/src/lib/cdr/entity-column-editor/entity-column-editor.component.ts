@@ -64,6 +64,11 @@ export class EntityColumnEditorComponent implements OnChanges {
   @Output() public controlCreated = new EventEmitter<{ name: string; control: AbstractControl }>();
 
   /**
+   * An event, that is emitted, if the value of the cdr is pending.
+   */
+  @Output() public readonly pendingChanged = new EventEmitter<boolean>();
+
+  /**
    * @ignore Used in template only.
    * The cdr editor component.
    */

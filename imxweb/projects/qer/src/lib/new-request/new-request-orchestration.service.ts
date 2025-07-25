@@ -85,16 +85,18 @@ export class NewRequestOrchestrationService implements OnDestroy {
   //#endregion
 
   //#region Current Product Source
-  private currentProductSourceProperty: CurrentProductSource;
-  public get currentProductSource(): CurrentProductSource {
+  private currentProductSourceProperty: CurrentProductSource | undefined;
+  public get currentProductSource(): CurrentProductSource | undefined {
     return this.currentProductSourceProperty;
   }
-  public set currentProductSource(value: CurrentProductSource) {
-    value.dst.itemStatus = {
-      enabled: (prod: PortalShopServiceitems): boolean => {
-        return prod.IsRequestable === undefined || prod.IsRequestable?.value;
-      },
-    };
+  public set currentProductSource(value: CurrentProductSource | undefined) {
+    if (value) {
+      value!.dst.itemStatus = {
+        enabled: (prod: PortalShopServiceitems): boolean => {
+          return prod.IsRequestable === undefined || prod.IsRequestable?.value;
+        },
+      };
+    }
     this.currentProductSourceProperty = value;
     this.currentProductSource$.next(value);
   }
@@ -287,6 +289,12 @@ export class NewRequestOrchestrationService implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.dstSettingsAllProducts = undefined;
+    this.dstSettingsPeerGroupProducts;
+    this.dstSettingsPeerGroupOrgs = undefined;
+    this.dstSettingsReferenceUserProducts = undefined;
+    this.dstSettingsReferenceUserOrgs = undefined;
+    this.dstSettingsProductBundles = undefined;
     this.referenceUser = undefined;
   }
 

@@ -91,21 +91,15 @@ export class MitigatingControlsComponent implements OnInit {
     return this.mitigatingForm.dirty || this.controlsToDelete.length > 0;
   }
 
-  public async onSelectionChange(mcontrol: PolicyViolationExtended, value: string): Promise<void> {
-    mcontrol.UID_MitigatingControl.value = value;
+  public async onSelectionChange(mcontrol: PolicyViolationExtended, value: EuiSelectOption | EuiSelectOption[]): Promise<void> {
+    const selectedOption: EuiSelectOption = Array.isArray(value) ? value[0] : value;
+    mcontrol.UID_MitigatingControl.value = selectedOption.value;
     this.formArray.updateValueAndValidity();
     this.cd.detectChanges();
     return;
   }
 
   public async ngOnInit(): Promise<void> {
-    this.subscriptions$.push(
-      this.sidesheetRef.closeClicked().subscribe(async () => {
-        if (!this.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
-          this.sidesheetRef.close();
-        }
-      }),
-    );
     return this.loadMitigationControls();
   }
 

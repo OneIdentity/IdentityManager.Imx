@@ -1,8 +1,0 @@
-78325ef03 2025-06-05 Merged PR 80238: fix: dashboard chart issue
-3c4e8b82c 2025-06-03 Merged PR 80157: Resource Overview tab api call fixed and ui table data issue fixed.
-3f5271e34 2025-05-28 Merged PR 80007: Bug Fixes For Scroll Bar and Resolved Group Name and New share creation approval Fields Name.
-37aa9c453 2025-05-27 Merged PR 79913: #492328 fix revert of configuration
-2c23e9e7b 2025-05-27 Merged PR 79917: DGE: The charts under 'Access analysis on NTFS\Folder' tab of governed data sometimes are not loaded.
-1604a6a90 2025-05-27 Merged PR 79514: Resource overview tab (Governed Data Overview)
-601038c84 2025-05-23 Merged PR 79718: Bug Fixes related to QAM Angular UI.
-36434740a 2025-05-13 Merged PR 79340: taking all lates of v93

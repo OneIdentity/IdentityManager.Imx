@@ -101,7 +101,7 @@ export class StatisticsChartHandlerService {
       });
       outputData.push([rowName, ...row]);
     });
-
+    outputData[0] = outputData[0].map((name: string) => (name.length > 40 ? `${name.substring(0, 40)}...` : name));
     return { groupedData: outputData };
   }
 
@@ -209,11 +209,10 @@ export class StatisticsChartHandlerService {
         },
       },
       padding: {
-        bottom: 1,
+        bottom: -1,
         top: 0,
         left: 0,
         right: 0,
-        mode: 'fit',
       },
     };
   }

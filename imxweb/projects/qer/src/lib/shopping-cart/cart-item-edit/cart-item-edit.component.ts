@@ -26,14 +26,14 @@
 
 import { ChangeDetectorRef, Component, Inject, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { CartItemEditParameter } from './cart-item-edit-parameter.interface';
 import { PortalCartitem } from '@imx-modules/imx-api-qer';
-import { CartItemsService } from '../cart-items.service';
 import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { ConfirmationService, EntityColumnEditorComponent } from 'qbm';
+import { CartItemsService } from '../cart-items.service';
+import { CartItemEditParameter } from './cart-item-edit-parameter.interface';
 
 @Component({
   templateUrl: './cart-item-edit.component.html',
@@ -43,6 +43,7 @@ import { ConfirmationService, EntityColumnEditorComponent } from 'qbm';
 export class CartItemEditComponent implements OnDestroy {
   public readonly shoppingCartItem: PortalCartitem;
   public readonly cartItemForm = new UntypedFormGroup({});
+  public formGroupIsPending = false;
   public columns: IEntityColumn[];
   private readonly subscriptions: Subscription[] = [];
 
@@ -53,7 +54,7 @@ export class CartItemEditComponent implements OnDestroy {
     public readonly cartItemSvc: CartItemsService,
     public readonly sideSheetRef: EuiSidesheetRef,
     confirmation: ConfirmationService,
-    changeDetector: ChangeDetectorRef
+    changeDetector: ChangeDetectorRef,
   ) {
     this.shoppingCartItem = this.data.entityWrapper.typedEntity;
 
@@ -64,7 +65,7 @@ export class CartItemEditComponent implements OnDestroy {
         data.updated.subscribe(() => {
           this.editors.forEach((elem) => elem.update());
           changeDetector.detectChanges();
-        })
+        }),
       );
     }
     this.subscriptions.push(
@@ -80,6 +81,10 @@ export class CartItemEditComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
+  public onPendingChanged(value: boolean) {
+    this.formGroupIsPending = value;
   }
 
   private initColumns(): void {

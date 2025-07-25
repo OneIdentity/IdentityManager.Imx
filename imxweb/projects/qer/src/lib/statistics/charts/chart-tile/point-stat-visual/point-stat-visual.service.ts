@@ -40,7 +40,7 @@ export class PointStatVisualService {
 
   public extractStatus(stat: ChartDto): PointStatTyped {
     const topDataPoint = stat.Data?.[0];
-    const value = topDataPoint?.Points?.[0].Value;
+    const value = topDataPoint?.Points?.[0].Value ?? 0;
     if (this.isBetween0And1(stat.ErrorThreshold)) {
       // We have threshold less than 1, so we need to use the percentage
       this.percentOrValue = topDataPoint?.Points?.[0].Percentage ?? 0;
@@ -54,9 +54,12 @@ export class PointStatVisualService {
       }
     }
 
+    // Add the unit to the display value if it exists
+    const displayValue = [value.toString(), stat?.Unit].filter((str) => str).join(' ');
+
     return PointStatTyped.buildEntity({
-      displayValue: value?.toString() ?? '',
-      value: value ?? 0,
+      displayValue: displayValue,
+      value: value,
       description: stat.Description ?? '',
       ...this.getTrend(),
       ...this.getStatus(stat),

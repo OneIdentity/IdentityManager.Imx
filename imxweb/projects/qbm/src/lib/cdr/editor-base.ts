@@ -68,6 +68,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
    * used for the template to signal, that the component is loading content from the server.
    */
   public isBusy = false;
+  public readonly pendingChanged = new EventEmitter<boolean>();
 
   /**
    * @ignore
@@ -200,6 +201,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     }
 
     this.isBusy = true;
+    this.pendingChanged.emit(true);
     this.isWriting = true;
     try {
       this.logger.debug(this, 'writeValue - PutValue...');
@@ -210,6 +212,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
       this.logger.error(this, e);
     } finally {
       this.isBusy = false;
+      this.pendingChanged.emit(false);
       this.isWriting = false;
       if (!this.lastError && this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });

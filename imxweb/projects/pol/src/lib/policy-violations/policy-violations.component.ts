@@ -28,7 +28,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { first, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { PortalPolicies } from '@imx-modules/imx-api-pol';
 import { ViewConfigData } from '@imx-modules/imx-api-qer';
@@ -75,7 +75,7 @@ export class PolicyViolationsComponent implements OnInit {
   private readonly subscriptions: Subscription[] = [];
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'policies/violations';
-  private selectedPolicyUid: string;
+  private uniqueTableConfig = false;
 
   constructor(
     public policyViolationsService: PolicyViolationsService,
@@ -95,9 +95,6 @@ export class PolicyViolationsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    const queryParams = await this.actRoute.queryParams.pipe(first()).toPromise();
-    this.selectedPolicyUid = queryParams?.['uid_qerpolicy'];
-
     if (!this.selectedCompanyPolicy)
       this.approveOnly = this.actRoute.snapshot.url[this.actRoute.snapshot.url.length - 1].path === 'approve';
     this.displayedColumns = [
@@ -192,9 +189,6 @@ export class PolicyViolationsComponent implements OnInit {
           const selectedCompanyPolicyKey = this.selectedCompanyPolicy.GetEntity().GetKeys()[0];
           params = { ...params, uid_qerpolicy: selectedCompanyPolicyKey };
         }
-        if (this.selectedPolicyUid) {
-          params = { ...params, uid_qerpolicy: this.selectedPolicyUid };
-        }
         return this.policyViolationsService.get(this.approveOnly, params, signal);
       },
       schema: this.entitySchema,
@@ -205,6 +199,7 @@ export class PolicyViolationsComponent implements OnInit {
       },
       exportFunction: this.policyViolationsService.exportPolicyViolations(),
       viewConfig: this.viewConfig,
+      uniqueConfig: this.uniqueTableConfig,
       highlightEntity: (identity: PolicyViolation) => {
         this.viewDetails(identity);
       },
@@ -214,11 +209,6 @@ export class PolicyViolationsComponent implements OnInit {
   }
 
   private updateFiltersFromRouteParams(params: Params): void {
-    if (this.viewConfigService.isDefaultConfigSet()) {
-      // If there is a default config, we will not use our defaults
-      return;
-    }
-
     for (const [key, value] of Object.entries(params)) {
       this.tryApplyFilter(key, value);
     }
@@ -232,7 +222,8 @@ export class PolicyViolationsComponent implements OnInit {
       const filter = filterOptions[index];
       if (filter) {
         filter.InitialValue = value;
-        filter.CurrentValue = value;
+        filter.CurrentValue = value;        
+        this.uniqueTableConfig = true;
         this.dataSource.state.update((state) => ({ ...state, [name.toLowerCase()]: value }));
       }
     }

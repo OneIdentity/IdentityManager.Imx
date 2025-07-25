@@ -92,6 +92,7 @@ export interface DataViewInitParameters<T = any> {
   groupExecute?: ExecuteGroupFunction;
   exportFunction?: DataSourceToolbarExportMethod;
   viewConfig?: DataSourceToolbarViewConfig;
+  // set this to true, if you don't want to apply the default view config initially
   uniqueConfig?: boolean;
   selectionChange?: SelectionChangeFunction<T>;
   filterTree?: FilterTreeParameter;

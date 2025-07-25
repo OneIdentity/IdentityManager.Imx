@@ -370,6 +370,7 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.orchestration.currentProductSource = undefined;
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 

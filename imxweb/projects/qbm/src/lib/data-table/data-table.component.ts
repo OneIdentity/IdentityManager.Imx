@@ -401,6 +401,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
           }),
         );
       }
+      await this.dstHasChanged();
+
       this.isLoading = this.dst?.busyService?.isBusy ?? false;
     }
   }
@@ -410,6 +412,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * Unsubscribes all listeners.
    */
   public ngOnDestroy(): void {
+    this.dst?.ngOnDestroy();
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -544,7 +547,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * Emits an event to allow data to be retrieved from calling code if no data is present
    */
   public onGroupExpanded(group: GroupInfo): void {
-    if (group && (group.Count ?? 0) > 0) {      
+    if (group && (group.Count ?? 0) > 0) {
       const groupKey = this.getGroupKey(group);
       if (!groupKey) {
         return;
@@ -629,8 +632,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
 
   /**
    * Calculates a key that is used for handling the grouping.
-   * @param group The group the key is calculated for. 
-   * @returns 
+   * @param group The group the key is calculated for.
+   * @returns
    */
   protected getGroupKey(group: GroupInfo): string {
     return group?.Display?.[0]?.Display + (group?.Filters?.[0]?.Value1 ?? group?.Filters?.[0]?.Values?.[0]);

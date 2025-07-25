@@ -28,7 +28,7 @@
       <div *ngFor="let mcontrol of mControls; let i = index" class="imx-mitigating-control">
         <eui-select
           *ngIf="mcontrol.editable"
-          (selectionChange)="onSelectionChange(mcontrol, $event.values)"
+          (selectionChange)="onSelectionChange(mcontrol, $event)"
           [label]="mitigatingCaption"
           [filterFunction]="filter"
           [enableFormFieldMargin]="true"

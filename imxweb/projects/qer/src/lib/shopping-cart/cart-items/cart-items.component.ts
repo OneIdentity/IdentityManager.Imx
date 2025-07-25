@@ -24,6 +24,7 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
@@ -415,14 +416,14 @@ export class CartItemsComponent implements OnInit, OnChanges {
         identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete',
       })
     ) {
-      this.showBusyIndicator();
+      const overlayRef = this.showBusyIndicator();
       try {
         await this.cartItemsService.removeItems(cartItems.filter((item) => this.getNextSelectedAncestor(item) == null));
         this.logger.debug(this, 'selected items are removed from list');
         this.snackBarService.open({ key: this.forLater ? snackBarMessageWatchList : snackBarMessageShoppingCart }, '#LDS#Close');
       } finally {
         await this.userModelService.reloadPendingItems();
-        this.busyService.hide();
+        this.busyService.hide(overlayRef);
         this.dataChange.emit(true);
 
         this.dataSource.selection.clear();
@@ -489,9 +490,10 @@ export class CartItemsComponent implements OnInit, OnChanges {
     await this.cartItemsService.saveItems(cartItems);
   }
 
-  private showBusyIndicator(): void {
+  private showBusyIndicator(): OverlayRef | undefined {
     if (this.busyService.overlayRefs.length === 0) {
-      this.busyService.show();
+      return this.busyService.show();
     }
+    return undefined;
   }
 }

@@ -24,13 +24,14 @@
  *
  */
 
-import { Component, Inject, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 
 import { ObjectInfo } from '@imx-modules/imx-api-pol';
 import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
-import { ColumnDependentReference } from 'qbm';
+import { ColumnDependentReference, ConfirmationService } from 'qbm';
 import { Subscription } from 'rxjs';
+import { MitigatingControlsComponent } from '../mitigating-controls/mitigating-controls.component';
 import { PolicyViolation } from '../policy-violation';
 import { PolicyViolationsService } from '../policy-violations.service';
 
@@ -59,6 +60,8 @@ export class PolicyViolationsSidesheetComponent implements OnDestroy {
     return this.data.policyViolation.GetEntity().GetKeys().join(',');
   }
 
+  @ViewChild('mitig') mitig: MitigatingControlsComponent;
+
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
     public data: {
@@ -68,11 +71,14 @@ export class PolicyViolationsSidesheetComponent implements OnDestroy {
     },
     private readonly policyViolationService: PolicyViolationsService,
     public readonly sideSheetRef: EuiSidesheetRef,
+    private readonly confirmationService: ConfirmationService,
     private readonly euiLoadingService: EuiLoadingService,
   ) {
     this.cdrList = this.data.policyViolation.properties;
-    this.closeSubscription = sideSheetRef.closeClicked().subscribe(() => {
-      sideSheetRef.close(this.result);
+    this.closeSubscription = sideSheetRef.closeClicked().subscribe(async () => {
+      if (!this.mitig.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
+        sideSheetRef.close(this.result);
+      }
     });
   }
 

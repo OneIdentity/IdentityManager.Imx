@@ -83,6 +83,7 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'rules/violations';
   private readonly subscriptions: Subscription[] = [];
+  private uniqueTableConfig = false;
 
   constructor(
     public readonly rulesViolationsService: RulesViolationsService,
@@ -158,6 +159,7 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
         this.rulesViolationsService.getGroupInfo({ ...params, by: column }),
       exportFunction: this.rulesViolationsService.exportRulesViolations(),
       viewConfig: this.viewConfig,
+      uniqueConfig: this.uniqueTableConfig,
       highlightEntity: (entity: RulesViolationsApproval) => {
         this.viewDetails(entity);
       },
@@ -227,6 +229,7 @@ export class RulesViolationsComponent implements OnInit, OnDestroy {
       if (filter) {
         filter.InitialValue = value;
         filter.CurrentValue = value;
+        this.uniqueTableConfig = true;
         this.dataSource.state.update((state) => ({ ...state, [name.toLowerCase()]: value }));
       }
     }

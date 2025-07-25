@@ -19,3 +19,4 @@ For a more detailed view of the API structure, refer to the following sections:
   - [Adding a tile component to the dashboard](../../compodoc/samples/tiles.md)
   - [Adding a menu to the Web Portal](../../compodoc/samples/menu.md)
   - [Working with data tables](../../compodoc/samples/data_table.md)
+  - [Working with new data tables](../../compodoc/samples/new_data_table.md)

@@ -23,6 +23,7 @@
         *ngFor="let column of columns; let i = index"
         [column]="column"
         (controlCreated)="cartItemForm.addControl($event.name + '_' + i, $event.control)"
+        (pendingChanged)="onPendingChanged($event)"
         [attr.data-imx-identifier]="'cartitem-edit-' + column.ColumnName + '_' + i"
       >
       </imx-entity-column-editor>
@@ -51,7 +52,7 @@
     mat-flat-button
     color="primary"
     (click)="sideSheetRef.close(true)"
-    [disabled]="cartItemForm.invalid || !cartItemForm.dirty"
+    [disabled]="cartItemForm.invalid || !cartItemForm.dirty || formGroupIsPending"
   >
     {{ '#LDS#Save' | translate }}
   </button>

@@ -122,7 +122,7 @@
         color="primary"
         data-imx-identifier="shoppingcart-submit-button"
         (click)="submitShoppingCart()"
-        [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || !!selectedItems?.length"
+        [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || !!selectedItems?.length || !!busyService.overlayRefs?.length"
       >
         {{ '#LDS#Submit' | translate }}
       </button>

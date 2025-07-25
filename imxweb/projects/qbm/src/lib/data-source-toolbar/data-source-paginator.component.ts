@@ -81,7 +81,7 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
   public get hidePaginator() {
     return !this.dst?.dataSourceHasData || this.dst.settings?.groupData?.currentGrouping != null || this.isLoading;
   }
-  public isLoading = true;
+  public isLoading = false;
 
   constructor(private readonly changeDetector: ChangeDetectorRef) {}
 

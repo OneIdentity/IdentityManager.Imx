@@ -112,6 +112,7 @@ export class NewRequestHeaderToolbarComponent implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.dst.ngOnDestroy();
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 

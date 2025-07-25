@@ -37,7 +37,6 @@ import { MailInfoType, MailSubscriptionService } from './mailsubscription.servic
   styleUrls: ['./mailsubscriptions.component.scss'],
 })
 export class MailSubscriptionsComponent implements OnInit {
-  public selectedOptions: string[] = [];
   public filteredSelectedOptions: string[] = [];
   public selectionChanged = false;
   public searchControl: FormControl<string> = new FormControl();
@@ -45,8 +44,7 @@ export class MailSubscriptionsComponent implements OnInit {
   @Input() public set mailInfo(value: MailInfoType[]) {
     this._mailInfo = value;
     this.filteredMailInfo = value;
-    this.selectedOptions = this.mailInfo.filter((item) => item.IsSubscribed).map((item) => item.UidMail);
-    this.filteredSelectedOptions = this.selectedOptions;
+    this.filteredSelectedOptions = this.mailInfo.filter((item) => item.IsSubscribed).map((item) => item.UidMail);
   }
   public get mailInfo(): MailInfoType[] {
     return this._mailInfo;
@@ -67,9 +65,8 @@ export class MailSubscriptionsComponent implements OnInit {
 
   public async saveChanges(): Promise<void> {
     await this.wrap(async () => {
-      const unsubscribed = this.mailSvc.getMailsToUnsubscribe(this.mailInfo, this.selectedOptions);
-      const subscribed = this.mailSvc.getMailsToSubscribe(this.mailInfo, this.selectedOptions);
-
+      const unsubscribed = this.mailSvc.getMailsToUnsubscribe(this.filteredMailInfo, this.filteredSelectedOptions);
+      const subscribed = this.mailSvc.getMailsToSubscribe(this.filteredMailInfo, this.filteredSelectedOptions);
       if (unsubscribed.length > 0) {
         await this.mailSvc.unsubscribe(
           this.uidPerson,
@@ -82,9 +79,9 @@ export class MailSubscriptionsComponent implements OnInit {
           subscribed.map((c) => c.UidMail),
         );
       }
-      for (const m of this.mailInfo) {
-        m.IsSubscribed = this.selectedOptions.includes(m.UidMail);
-      }
+      unsubscribed.map((mailInfo) => (mailInfo.IsSubscribed = false));
+      subscribed.map((mailInfo) => (mailInfo.IsSubscribed = true));
+
       this.selectionChanged = false;
       this.snackBar.open({ key: '#LDS#The changes have been successfully saved.' });
     });
@@ -128,8 +125,6 @@ export class MailSubscriptionsComponent implements OnInit {
     this.filteredMailInfo = this.mailInfo.filter(
       (item) => item.Display.toLowerCase().includes(search) || item.Description.toLowerCase().includes(search),
     );
-    this.filteredSelectedOptions = this.selectedOptions.filter((option) =>
-      this.filteredMailInfo.some((mailInfo) => mailInfo.UidMail === option),
-    );
+    this.filteredSelectedOptions = this.filteredMailInfo.filter((item) => item.IsSubscribed).map((item) => item.UidMail);
   }
 }

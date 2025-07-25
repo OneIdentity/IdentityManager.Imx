@@ -44,6 +44,10 @@
       {
         "title": "Working with data tables",
         "file": "../../../compodoc/samples/data_table.md"
+      },
+      {
+        "title": "Working with new data tables",
+        "file": "../../../compodoc/samples/new_data_table.md"
       }
     ]
   }
