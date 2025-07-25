@@ -1,3 +1,16 @@
+### July 25, 2025
+- Packages updated to 9.3.1
+- 499192 *(496637)*: Fixes an issue with missing renewal dates on the Pending Attestations page.
+- 497218: Fixes an issue with deep links that freeze the selected company policy of the policy violations page
+- 501688 *(501314)*: Fixes an issue with reloading achieved requests after the identity is changed.
+- 500294 *(497103)*: Fixes an issue with the units displayed on statistics.
+- 500552 *(497578)*: Fixes an issue with the assignment of mitigating controls to a policy violation on the policy violations page.
+- 497425: Fixes an issue with the management of e-mail notification on a user's profile page.
+- 496475 *(489057)*: Fixes an issue with cut-off labels on the x-axis of statistics.
+- 480248: Fixes an issue with resetting the search on the Request page.
+- 496323: Fixes some security issues.
+- 487046 *(486606)*: Fixes an issue with preventing the submission of a request while a validation is ongoing.
+
 ### July 11, 2025
 - 496243 *(496242)*: Fixes an issue with the sorting in the history view.
 - 470865: Provides an API documentation for our new data-table.
