@@ -157,6 +157,12 @@ describe('DateParser', () => {
     { locale: 'de-DE', text: '22.12.2100 2:47', valid: true, year: 2100, month: 11, day: 22, excludeTime: true},
     { locale: 'de-DE', text: '1.2.03 4:5', valid: true, year: 2003, month: 1, day: 1, excludeTime: true},
     { locale: 'de-DE', text: '22.12.2100', valid: true, year: 2100, month: 11, day: 22, hour: 0, minute: 0}, // because the time is added internally
+    { locale: 'sl-Sl', text: '22. 12. 2100 11:47', valid: true, year: 2100, month: 11, day: 22, hour: 11, minute: 47 },
+    { locale: 'sl-Sl', text: '22. 12. 2100 14:47', valid: true, year: 2100, month: 11, day: 22, hour: 14, minute: 47 },
+    { locale: 'sl-Sl', text: '22. 12. 2100 2:47', valid: true, year: 2100, month: 11, day: 22, hour: 2, minute: 47 },
+    { locale: 'sl-Sl', text: '22. 12. 2100 2:47', valid: true, year: 2100, month: 11, day: 22, excludeTime: true },
+    { locale: 'sl-Sl', text: '1. 2. 03 4:5', valid: true, year: 2003, month: 1, day: 1, excludeTime: true },
+    { locale: 'sl-Sl', text: '26. 07. 2025', valid: true, year: 2025, month: 6, day: 26, hour: 0, minute: 0, excludeTime: true },
   ].forEach(testcase => it(`should ${testcase.valid ? '' : 'not '}parse as date and time: ${testcase.text}`, () => {
 
       if (testcase.locale) {

@@ -118,7 +118,7 @@ export class DateParser {
         || combined.month() !== date.month()
         || combined.date() !== date.date()
         || combined.hour() !== time.hour()
-        || combined.seconds() !== time.seconds()) {
+        || combined.minutes() !== time.minutes()) {
         return moment.invalid();
 
       }
@@ -179,25 +179,25 @@ export class DateParser {
    * @param text The string representation
    * @returns A moment according to the date part.
    */
-     public static parseDate(text: string): Moment {
-      const s = (text ?? '').trim();
-      let date = moment(s, DateParser.FORMAT_DATE, true);
+  public static parseDate(text: string): Moment {
+    const s = (text ?? '').trim();
+    let date = moment(s, DateParser.FORMAT_DATE, true);
 
     if (!date.isValid()) {
 
-        // maybe it's s.th. like 3/4/21 instead of 04/04/2021
-        // we look for that.
-        const generous = moment(s, DateParser.FORMAT_DATE, false);
+      // maybe it's s.th. like 3/4/21 instead of 04/04/2021
+      // we look for that.
+      const generous = moment(s, DateParser.FORMAT_DATE, false);
 
-        // TODO: Reactivate
-        // if (generous.isValid() && (! generous.unusedInput || generous.unusedInput.length === 0)) {
-        if (generous.isValid()) {
-          date = generous;
-        }
+      // TODO: Reactivate
+      // if (generous.isValid() && (! generous.unusedInput || generous.unusedInput.length === 0)) {
+      if (generous.isValid()) {
+        date = generous;
       }
-
-      return date;
     }
+
+    return date;
+  }
 
 
   /**
@@ -217,8 +217,19 @@ export class DateParser {
 
     // if invalid, maybe the time part is prefixed by a valid date?
     if (!time.isValid() && DateParser.parseDate(s).isValid()) {
-      const separatorIndex = s.indexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+      let separatorIndex: number;
 
+      // regex to detect the position between date and time
+      const seperatorRegex = /(?<=\d)(\s+)(?=\d{1,2}:\d{2})/;
+      const match = s.match(seperatorRegex);
+      if (match && match.index !== undefined) {
+        // get index with the help of the regex
+        separatorIndex = match.index;
+      } else {
+        // as fallback: get index by using the lastIndex
+        separatorIndex = s.lastIndexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+      }
+      
       const suffix = separatorIndex > 0 ? s.substring(separatorIndex + 1).trim() : '';
       if (suffix.length === 0) {
         // if there is no suffix, there is no time
