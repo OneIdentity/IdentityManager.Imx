@@ -2,7 +2,6 @@
 - 502448: Fixes an issue with the Slovenian date format on the date control.
 - 503133: Adds missing paginator on the request history details side sheet (entitlements tab).
 
-
 ### July 11, 2025
 - 496637: Fixes an issue with missing renewal dates on the Pending Attestations page.
 - 496242: Fixes an issue with the sorting in the history view.
