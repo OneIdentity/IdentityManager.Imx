@@ -144,7 +144,8 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
 
     this.sessionResponse$ = this.authService.onSessionResponse.subscribe(async (session: ISessionState) => {
       if (session.IsLoggedIn) {
-        (this.currentUser = session.UserUid || ''), (this.isManagerForPersons = await qerPermissionService.isPersonManager());
+        this.currentUser = session.UserUid ?? '';
+        this.isManagerForPersons = await qerPermissionService.isPersonManager();
         this.isPersonAdmin = await qerPermissionService.isPersonAdmin();
         this.isAuditor = await qerPermissionService.isAuditor();
       }

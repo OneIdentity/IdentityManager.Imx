@@ -275,6 +275,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
       return;
     }
     // There are losses, show them
+    this.lossPreview.Case = undefined;
     this.lossPreview.LossPreviewItems = this.allLossPreviewItems;
     const subTitle =
       cases.length === 1

@@ -25,22 +25,24 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, HelpContextualValues, SideNavigationComponent } from 'qbm';
+import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataViewInitParameters, DataViewSource, HelpContextualValues, SideNavigationComponent } from 'qbm';
 
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { DugSidesheetComponent } from '../dug/dug-sidesheet.component';
-import { PortalDgeResourcesPerceivedowners } from '../TypedClient';
+import { PortalDgeResources, PortalDgeResourcesPerceivedowners } from '../TypedClient';
+import { DugAssignOwnershipSidesheetComponent } from './dug-assign-ownership-sidesheet/dug-assign-ownership-sidesheet.component';
 import { DugOwnershipService } from './dug-ownership.service';
 
 @Component({
   selector: 'imx-dug-ownership',
   templateUrl: './dug-ownership.component.html',
   styleUrls: ['./dug-ownership.component.scss'],
+  providers: [DataViewSource],
 })
 export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
-  public data?: any;
+  public data?: PortalDgeResources;
   public contextId?: HelpContextualValues;
   private dataModel: DataModel;
 
@@ -51,15 +53,17 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
   private displayedColumns: IClientProperty[] = [];
   public readonly DisplayColumns = DisplayColumns;
   public perceivedOwners: PortalDgeResourcesPerceivedowners;
+  public selectedItems: PortalDgeResources[] = [];
 
   constructor(
     private readonly ownershipService: DugOwnershipService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly translate: TranslateService,
+    public dataSource: DataViewSource<PortalDgeResources>
   ) {
     this.entitySchema = ownershipService.DugResourceSchema;
     this.displayedColumns = [
-      this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
+      this.entitySchema.Columns.DisplayName,
       {
         ColumnName: "assignOwner",
         Type: ValType.String
@@ -80,24 +84,7 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
     }
   }
 
-  /**
-   * Occurs when the navigation state has changed - e.g. users clicks on the next page button.
-   *
-   */
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    await this.getData(newState);
-  }
-
-  /**
-   * Occurs when user triggers search.
-   *
-   * @param keywords Search keywords.
-   */
-  public async onSearch(keywords: string): Promise<void> {
-    await this.getData({ ...this.navigationState, StartIndex: 0, search: keywords });
-  }
-
-  public async perceivedOwner(resource: TypedEntity): Promise<void> {
+  public async perceivedOwner(resource: PortalDgeResources): Promise<void> {
     const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
       title: this.translate.instant('#LDS#Heading Assign Ownership'),
       subTitle: resource.GetEntity().GetDisplay(),
@@ -109,25 +96,53 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
     });
     sidesheetRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.getData(this.navigationState);
+        this.getData();
       }
     });
   }
 
-  private async getData(parameter: CollectionLoadParameters = {}): Promise<void> {
+  public async assignOwner(resources: PortalDgeResources[]): Promise<void> {
+    if (resources.length === 0) {
+      return;
+    }
+    const uidResources: string[] = resources.map((resource) => resource.GetEntity().GetKeys()[0]);
+    const sidesheetRef = this.sideSheet.open(DugAssignOwnershipSidesheetComponent, {
+      title: this.translate.instant('#LDS#Heading Assign Ownership'),
+      subTitle: resources.map((res)=> res.GetEntity().GetDisplay()).join(', '),
+      width: calculateSidesheetWidth(),
+      disableClose: true,
+      padding: '0',
+      testId: 'assign-dug-owner-sidesheet',
+      data: { uid:uidResources, identifier:'dug-assign-ownership' }
+    });
+    sidesheetRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.dataSource.selection.clear();
+        this.getData();
+      }
+    });
+}
+
+  public onSelectionChanged(items: PortalDgeResources[]): void {
+    this.selectedItems = items;
+  }
+
+  private async getData(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
-    this.navigationState = { ...parameter, withoutowner: '1' };
     try {
-      const data = await this.ownershipService.getData(this.navigationState);
-     
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
+      const dataViewInitParameters: DataViewInitParameters<PortalDgeResources> = {
+        execute: async (params: CollectionLoadParameters,
+          signal: AbortSignal,): Promise<TypedEntityCollectionData<PortalDgeResources>> => {
+          params= { ...params, withoutowner: '1' };
+          const data = await this.ownershipService.getData(params,signal)
+          return data;
+        },
         dataModel: this.dataModel,
-        filters: this.dataModel?.Filters ?? [],
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
+        schema: this.entitySchema,
+        columnsToDisplay: this.displayedColumns,
+        selectionChange: (assign: PortalDgeResources[]) => this.onSelectionChanged(assign),
       };
+      this.dataSource.init(dataViewInitParameters);
     } finally {
       isBusy.endBusy();
     }

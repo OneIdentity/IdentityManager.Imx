@@ -26,6 +26,7 @@
 
 import { Injectable } from '@angular/core';
 import { ChartDto } from '@imx-modules/imx-api-qer';
+import { handleDecimal } from '../../../helper-functions';
 import { StatisticsConstantsService } from '../../../statistics-home-page/statistics-constants.service';
 import { PointStatTyped, StatusIcon, StatusStateCSS, TrendIcon } from './point-stat-typed';
 
@@ -40,7 +41,7 @@ export class PointStatVisualService {
 
   public extractStatus(stat: ChartDto): PointStatTyped {
     const topDataPoint = stat.Data?.[0];
-    const value = topDataPoint?.Points?.[0].Value ?? 0;
+    const value = handleDecimal(topDataPoint?.Points?.[0].Value) ?? 0;
     if (this.isBetween0And1(stat.ErrorThreshold)) {
       // We have threshold less than 1, so we need to use the percentage
       this.percentOrValue = topDataPoint?.Points?.[0].Percentage ?? 0;

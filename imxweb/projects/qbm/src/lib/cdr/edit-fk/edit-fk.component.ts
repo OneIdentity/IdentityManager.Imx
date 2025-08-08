@@ -321,7 +321,10 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
           return;
         }
 
-        const value = selection.candidates && selection.candidates.length > 0 ? selection.candidates[0] : { DataValue: undefined };
+        const value: Candidate = selection.candidates && selection.candidates.length > 0 ? selection.candidates[0] : { DataValue: '' };
+        if (!!value.displayLong && value.displayLong !== value.DisplayValue) {
+          value.DisplayValue += ` - ${value.displayLong}`;
+        }
         this.control.setValue(value, { emitEvent: false });
         await this.writeValue(value);
       } else {

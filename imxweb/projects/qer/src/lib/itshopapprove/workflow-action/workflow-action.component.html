@@ -51,9 +51,7 @@
 <ng-template #decisionContent>
   <form [formGroup]="formGroup">
     <ng-container *ngIf="data.customValidation">
-      <mat-error *ngIf="formGroup?.invalid">
-        {{ data.customValidation.message | translate }}
-      </mat-error>
+      <mat-error *ngIf="formGroup?.errors?.customValidationError">{{ data.customValidation.message | translate }}</mat-error>
     </ng-container>
     <p *ngIf="data.description">{{ data.description | translate }}</p>
     <ng-container *ngIf="data.requests.length > 1">

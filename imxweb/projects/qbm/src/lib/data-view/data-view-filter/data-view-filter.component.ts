@@ -166,7 +166,10 @@ export class DataViewFilterComponent {
       } else {
         this.dataSource.state.update((state) => {
           const filter =
-            state.filter?.filter((filter) => filter.ColumnName !== this.dataSource.filterTreeSelection()?.filter?.ColumnName) || [];
+            state.filter?.filter(
+              (filter) =>
+                filter.Type == FilterType.Search || filter.ColumnName !== this.dataSource.filterTreeSelection()?.filter?.ColumnName,
+            ) || [];
           return { ...state, filter };
         });
         this.dataSource.filterTreeSelection.set(undefined);

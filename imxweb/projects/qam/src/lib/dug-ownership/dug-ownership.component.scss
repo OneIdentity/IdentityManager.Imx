@@ -1,11 +1,8 @@
-@use 'base/mixins' as mixins;
- 
-:host {
-  @include mixins.flex-column-container($overflow: hidden, $height: 100%, $max-width: 100%);
-  padding-bottom: 3px;
-}
- 
-.heading-wrapper {
-  @include mixins.flex-row-container();
-  flex: 0 0 auto;
+.data-explorer {
+  &.data-explorer--dug-ownership {
+    .data-explorer-table ::ng-deep .mat-column-__Display {
+      max-width: 40vw;
+      word-wrap: break-word;
+    }
+  }
 }

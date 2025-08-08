@@ -54,6 +54,7 @@ export class ApprovalsSidesheetComponent implements OnDestroy, OnInit {
       pwo: Approval;
       itShopConfig?: ITShopConfig;
       fromInquiry: boolean;
+      isUserEscalationApprover: boolean;
     },
     public readonly actionService: WorkflowActionService,
     private readonly sideSheetRef: EuiSidesheetRef,

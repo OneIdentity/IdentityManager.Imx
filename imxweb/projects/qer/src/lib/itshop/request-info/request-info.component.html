@@ -35,7 +35,7 @@
   </mat-tab>
 
   <mat-tab *ngIf="isRoleAssignment" [label]="'#LDS#Heading Entitlements' | translate">
-    <div eui-sidesheet-content>
+    <div eui-sidesheet-content class="imx-entitlement-tab">
       <imx-product-entitlements [uidAccProduct]="request.UID_AccProduct.value"></imx-product-entitlements>
     </div>
   </mat-tab>

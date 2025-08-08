@@ -117,7 +117,7 @@ export class DateParser {
         combined.month() !== date.month() ||
         combined.date() !== date.date() ||
         combined.hour() !== time.hour() ||
-        combined.seconds() !== time.seconds()
+        combined.minutes() !== time.minutes()
       ) {
         return moment.invalid();
       }
@@ -213,7 +213,18 @@ export class DateParser {
 
     // if invalid, maybe the time part is prefixed by a valid date?
     if (!time.isValid() && DateParser.parseDate(s).isValid()) {
-      const separatorIndex = s.indexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+      let separatorIndex: number;
+
+      // regex to detect the position between date and time
+      const seperatorRegex = /(?<=\d)(\s+)(?=\d{1,2}:\d{2})/;
+      const match = s.match(seperatorRegex);
+      if (match && match.index !== undefined) {
+        // get index with the help of the regex
+        separatorIndex = match.index;
+      } else {
+        // as fallback: get index by using the lastIndex
+        separatorIndex = s.lastIndexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+      }
 
       const suffix = separatorIndex > 0 ? s.substring(separatorIndex + 1).trim() : '';
       if (suffix.length === 0) {

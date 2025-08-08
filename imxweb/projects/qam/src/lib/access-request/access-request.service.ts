@@ -91,7 +91,7 @@ export class AccessRequestService implements ICartItemsExtensionService {
       data.uidAccProduct = this.sharePointAccessUidAccProduct;
       this.folders = await this.sidesheetService
         .open(AccessRequestSidesheetComponent, {
-          title: this.translate.instant('#LDS#Heading Requesting Sharepoint Access'),
+          title: this.translate.instant('#LDS#Heading Requesting SharePoint Access'),
           width: calculateSidesheetWidth(800, 0.5),
           disableClose: true,
           testId: 'sharepoint-access-request-sidesheet',

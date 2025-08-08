@@ -37,7 +37,7 @@ import {
   TypedEntityBuilder,
   ValType,
 } from '@imx-modules/imx-qbm-dbts';
-
+import { handleDecimal } from '../helper-functions';
 export class ChartDataTyped extends TypedEntity {
   public readonly Name: IReadValue<string> = this.GetEntityValue('Name');
   public readonly ObjectDisplay: IReadValue<string> = this.GetEntityValue('ObjectDisplay');
@@ -102,8 +102,8 @@ export class ChartDataTyped extends TypedEntity {
         const ret: { [key: string]: EntityColumnData } = {};
         ret.Name = { Value: chartData.Name, IsReadOnly: true };
         ret.ObjectDisplay = { Value: chartData?.ObjectDisplay, IsReadOnly: true };
-        ret.Value = { Value: point.Value, IsReadOnly: true };
-        ret.Percentage = { Value: point?.Percentage, IsReadOnly: true };
+        ret.Value = { Value: handleDecimal(point.Value), IsReadOnly: true };
+        ret.Percentage = { Value: handleDecimal(point?.Percentage), IsReadOnly: true };
         ret.Date = { Value: point.Date, IsReadOnly: true };
         return { Columns: ret };
       }) ?? []

@@ -27,7 +27,7 @@
 import { Component, ErrorHandler, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { OwnershipInformation, PortalPersonReports, ProjectConfig } from '@imx-modules/imx-api-qer';
+import { OwnershipInformation, PortalPersonReports, ProjectConfig, QerProjectConfig } from '@imx-modules/imx-api-qer';
 import { TranslateService } from '@ngx-translate/core';
 import { calculateSidesheetWidth } from 'qbm';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
@@ -46,15 +46,16 @@ import { DashboardService } from '../start/dashboard.service';
 })
 export class BusinessOwnerChartSummaryComponent implements OnInit {
   public reports: PortalPersonReports[];
+  public loadingState = false;
   public ownerships: OwnershipInformation[] | undefined;
   public get viewReady(): boolean {
     return !this.dashboardService.isBusy;
   }
   public allReportsCount: number;
-
   public isPersonManager: boolean;
+  public isCreationAllowed: boolean;
 
-  private projectConfig: ProjectConfig;
+  private projectConfig: ProjectConfig & QerProjectConfig;
 
   constructor(
     private readonly router: Router,
@@ -78,6 +79,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
       this.isPersonManager = await this.qerPermissions.isPersonManager();
 
       this.projectConfig = await this.configService.getConfig();
+      this.isCreationAllowed = this.projectConfig.PersonConfig?.EnableNewPerson ?? false;
 
       await this.getData();
     } finally {
@@ -131,6 +133,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
   }
 
   public async openCreateNewIdentitySidesheet(): Promise<void> {
+    this.loadingState = true;
     const identityCreated = await this.sideSheet
       .open(CreateNewIdentityComponent, {
         title: await this.translate.get('#LDS#Heading Create Identity').toPromise(),
@@ -147,6 +150,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
       })
       .afterClosed()
       .toPromise();
+    this.loadingState = false;
 
     if (identityCreated) {
       const busy = this.dashboardService.beginBusy();

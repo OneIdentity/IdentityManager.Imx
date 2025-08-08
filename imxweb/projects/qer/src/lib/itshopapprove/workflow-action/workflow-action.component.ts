@@ -75,7 +75,7 @@ export class WorkflowActionComponent {
   ) {
     if (this.data.customValidation) {
       this.formGroup.setValidators((control: AbstractControl) =>
-        this.data.customValidation?.validate(control) ? null : { required: true },
+        this.data.customValidation?.validate(control) ? null : { customValidationError: true },
       );
     }
   }

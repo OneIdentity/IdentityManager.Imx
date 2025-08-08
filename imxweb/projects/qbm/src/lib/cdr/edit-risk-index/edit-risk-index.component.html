@@ -21,7 +21,11 @@
     </mat-slider>
     <mat-label class="slider-label__suffix" translate>#LDS#Maximum risk</mat-label>
   </div>
+  <mat-error *ngIf="control.errors?.['generalError']">
+    {{ validationErrorMessage }}
+  </mat-error>
 </div>
+
 <!-- template for read only elements-->
 <ng-template #isReadonly>
   <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>

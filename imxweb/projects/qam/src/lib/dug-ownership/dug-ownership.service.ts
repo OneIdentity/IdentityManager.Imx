@@ -25,10 +25,10 @@
  */
 
 import { Injectable } from '@angular/core';
-import { QamApiService } from '../qam-api-client.service';
 import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
-import { ChangeRequestType, DgeConfigData, PortalDgeResources, PortalDgeResourcesActivity, PortalDgeResourcesbyid, PortalDgeResourcesPerceivedowners } from '../TypedClient';
 import { SettingsService } from 'qbm';
+import { QamApiService } from '../qam-api-client.service';
+import { ChangeRequestType, DgeConfigData, PortalDgeResources, PortalDgeResourcesActivity, PortalDgeResourcesbyid, PortalDgeResourcesPerceivedowners } from '../TypedClient';
 
 @Injectable({ providedIn: 'root' })
 export class DugOwnershipService {
@@ -36,9 +36,10 @@ export class DugOwnershipService {
     private readonly api: QamApiService,
     private readonly settings: SettingsService,
   ) {}
-
-  public async getData(parameter: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalDgeResources, unknown>> {
-    return this.api.typedClient.PortalDgeResources.Get(parameter);
+  
+  public async getData(parameter?: CollectionLoadParameters,
+        signal?: AbortSignal): Promise<ExtendedTypedEntityCollection<PortalDgeResources, unknown>> {
+        return this.api.typedClient.PortalDgeResources.Get(parameter, { signal });
   }
 
   public async getPerceivedowners(uid: string): Promise<ExtendedTypedEntityCollection<PortalDgeResourcesPerceivedowners, unknown>> {

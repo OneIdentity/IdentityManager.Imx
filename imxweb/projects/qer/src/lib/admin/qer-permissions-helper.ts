@@ -80,6 +80,11 @@ export function isPersonStatistics(features: string[]): boolean {
 export function isTSBStatistics(features: string[]): boolean {
   return features.find((item) => item === 'Portal_UI_TSBStatistics') != null;
 }
+
+export function isQAMAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_QAMAdmin') != null;
+}
+
 export function isStatistics(features: string[]): boolean {
   return (
     isRoleStatistics(features) ||
@@ -90,7 +95,8 @@ export function isStatistics(features: string[]): boolean {
     isPAGStatistics(features) ||
     isQERPolicyStatistics(features) ||
     isPersonStatistics(features) ||
-    isTSBStatistics(features)
+    isTSBStatistics(features) ||
+    isQAMAdmin(features)
   );
 }
 export function isHyperviewNavigation(features: string[]): boolean {

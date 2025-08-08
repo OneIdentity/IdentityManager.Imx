@@ -17,7 +17,13 @@
   <!-- Custom filters -->
   <ng-container *ngIf="!!customFilters()?.length">
     <mat-chip-listbox *ngFor="let item of customFilters()">
-      <mat-chip-option color="primary" class="imx-chip" (removed)="removeItem(item)" [selectable]="false">
+      <mat-chip-option
+        color="primary"
+        class="imx-chip"
+        (removed)="removeItem(item)"
+        [selectable]="false"
+        *ngIf="item.value?.Expression?.Expressions?.length"
+      >
         <span class="tag-name">{{ '#LDS#Custom filter' | translate }} ({{ item.value?.Expression?.Expressions?.length }})</span>
         <button matChipRemove>
           <eui-icon size="s" icon="close"></eui-icon>

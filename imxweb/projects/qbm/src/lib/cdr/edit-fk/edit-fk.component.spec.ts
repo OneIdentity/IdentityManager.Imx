@@ -186,7 +186,7 @@ describe('EditFkComponent', () => {
         } else {
           expect(component.columnContainer.displayValue).toEqual('');
           expect(component.control.value).toBeUndefined();
-          expect(component.columnContainer.value).toBeUndefined();
+          expect(component.columnContainer.value).toEqual('');
         }
       } else {
         expect(component.columnContainer.displayValue).toBe(start.DisplayValue);

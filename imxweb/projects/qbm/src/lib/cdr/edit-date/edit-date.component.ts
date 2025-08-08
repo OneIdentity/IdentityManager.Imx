@@ -79,6 +79,12 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
   private previousValue: Moment | undefined;
 
   /**
+   * We need to track error states incase external validation scripts are erroring on the current value.
+   * i.e original value is now invalid as too much time has passed while being in the shopping cart
+   */
+  private errorCount = 0;
+
+  /**
    * Determines, if a time control should be added.
    */
   public get withTime(): boolean {
@@ -182,32 +188,33 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
     if (this.control.errors || value?.isSame(this.previousValue)) {
       return;
     }
-    this.previousValue = value;
-    // Beware: the columnContainer used date while the date editor uses moment!!
+
     const date = value == null ? undefined : value.toDate();
-    const resetValue = this.columnContainer.value;
-    this.logger.debug(this, 'writeValue called with value', date);
-    if (!this.columnContainer.canEdit || moment(this.columnContainer.value).isSame(value)) {
+    const resetDate = new Date(this.columnContainer.value);
+    const resetMoment = moment(resetDate);
+
+    if (!this.columnContainer.canEdit || (value && value.isSame(this.columnContainer.value))) {
+      // if the value is the same, we don't need to update the value
       return;
     }
 
-    this.updateControlValue(value);
+    this.logger.debug(this, 'writeValue called with value', date);
 
     this.isBusy = true;
+    this.isWriting = true;
     try {
-      this.isWriting = true;
       await this.columnContainer.updateValue(date);
+      this.updateControlValue(value);
+      this.valueHasChanged.emit({ value: this.columnContainer.value, forceEmit: true });
+      this.errorCount = 0;
     } catch (error) {
+      this.errorCount += 1;
       this.errorHandler.handleError(error);
-      this.control?.setValue(resetValue ? moment(resetValue) : undefined);
+      // try to reset, but if we have errors too many times, we break the loop by setting empty
+      this.control?.setValue(this.errorCount < 2 && resetDate.getTime() !== 0 ? resetMoment : undefined, { emitEvent: true });
     } finally {
       this.isBusy = false;
       this.isWriting = false;
-
-      // Writing could fail or not but in the end the columns value (date) and the controls value (moment) should be "equal".
-      this.resetControlValue();
     }
-
-    this.valueHasChanged.emit({ value: this.columnContainer.value, forceEmit: true });
   }
 }

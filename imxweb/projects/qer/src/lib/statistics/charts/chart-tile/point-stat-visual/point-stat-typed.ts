@@ -30,7 +30,6 @@ import {
   EntitySchema,
   IClientProperty,
   IReadValue,
-  IWriteValue,
   TypedEntity,
   TypedEntityBuilder,
   ValType,

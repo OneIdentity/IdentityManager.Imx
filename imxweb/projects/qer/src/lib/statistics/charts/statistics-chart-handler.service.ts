@@ -29,6 +29,7 @@ import { ChartData, ChartDto } from '@imx-modules/imx-api-qer';
 import { ChartOptions, bar, donut, line, zoom } from 'billboard.js';
 import { chain, uniqBy } from 'lodash';
 import { ShortDatePipe } from 'qbm';
+import { handleDecimal } from '../helper-functions';
 import { StatisticsConstantsService } from '../statistics-home-page/statistics-constants.service';
 
 export interface ChartNamesValues {
@@ -293,7 +294,7 @@ export class StatisticsChartHandlerService {
     ];
 
     slicedData?.forEach((data) => {
-      columns.push([data.Name ?? '', ...(data.Points?.slice(0, timecutoff).map((datum) => datum.Value) || [])]);
+      columns.push([data.Name ?? '', ...(data.Points?.slice(0, timecutoff).map((datum) => handleDecimal(datum.Value)!) || [])]);
     });
 
     return {

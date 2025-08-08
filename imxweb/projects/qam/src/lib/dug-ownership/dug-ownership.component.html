@@ -1,40 +1,86 @@
-<mat-card class="imx-data-tree-container">
+
+<mat-card class="data-explorer data-explorer--dug-ownership" >
   <div class="imx-card-data-explorer-header">
-      <div class="imx-card-data-explorer-header-bg">
-          <h3>{{'#LDS#Heading Assign Ownership' | translate}}</h3>
-          @if (contextId) {
-            <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-            }
-      </div>
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Heading Assign Ownership</h3>
+      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+    </div>
   </div>
-  <div class="imx-card-content">
-      <div class="imx-table-container">
-          <mat-card class="imx-card-fill">
-              <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search']"
-                  [busyService]="busyService" (navigationStateChanged)="onNavigationStateChanged($event)"
-                  (search)="onSearch($event)">
-              </imx-data-source-toolbar>
-              <imx-data-table [dst]="dst" 
-                  [detailViewVisible]="false" mode="manual">
-                  <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-                      <ng-template let-item>
-                          <div>{{ item.GetEntity().GetDisplay() }}</div>
-                          <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
-                      </ng-template>
-                  </imx-data-table-column>
-                  <imx-data-table-generic-column columnName="assignOwner" columnLabel="Action">
-                      <ng-template let-data>
-                          <button mat-stroked-button color="primary" (click)="perceivedOwner(data)"> {{
-                              '#LDS#Assign' | translate }}</button>
-                      </ng-template>
-                  </imx-data-table-generic-column>
-                  <imx-data-table-column
-                      [entityColumn]="entitySchema.Columns.RequiresOwnership"></imx-data-table-column>
-                  <imx-data-table-column
-                      [entityColumn]="entitySchema.Columns.RiskIndexCalculated"></imx-data-table-column>
-              </imx-data-table>
-              <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-          </mat-card>
-      </div>
-  </div>
+  <imx-data-view-toolbar
+    [dataSource]="dataSource" [showSettings]="false" 
+  ></imx-data-view-toolbar>
+  <div class="data-explorer-table">
+    <imx-data-view-auto-table
+    [dataSource]="dataSource"
+    mode="manual"    
+    [selectable]="true"
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [matSortActive]="dataSource.sortId()"
+    [matSortDirection]="dataSource.sortDirection()"
+    >
+        <ng-container [matColumnDef]="entitySchema.Columns.DisplayName.ColumnName">
+            <ng-container>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ '#LDS#Display Name' | translate }}
+                </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let item">
+                    {{ item.GetEntity().GetColumn('DisplayName').GetValue() }}
+            </td>
+        </ng-container> 
+        <ng-container [matColumnDef]="'assignOwner'">
+            <ng-container>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ '#LDS#Actions' | translate }}
+                </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let item">
+                    <button
+                        mat-stroked-button
+                        color="primary"
+                        (click)="perceivedOwner(item)"
+                        data-imx-identifier="dge-dug-table-assign-ownership"
+                    >
+                        {{ '#LDS#Assign' | translate }}
+                    </button>
+                </td>
+        </ng-container>
+        <ng-container [matColumnDef]="entitySchema.Columns.RiskIndexCalculated.ColumnName">
+            <ng-container>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ '#LDS#Risk index (calculated)' | translate }}
+                </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let item">
+                    {{ item.GetEntity().GetColumn('RiskIndexCalculated').GetValue() }}
+            </td>
+        </ng-container> 
+        <ng-container [matColumnDef]="entitySchema.Columns.RequiresOwnership.ColumnName">
+            <ng-container>
+                <th mat-header-cell *matHeaderCellDef>
+                    {{ '#LDS#Requires ownership' | translate }}
+                </th>
+            </ng-container>
+            <td mat-cell *matCellDef="let item">
+                    {{ item.GetEntity().GetColumn('RequiresOwnership').GetValue() }}
+            </td>
+        </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
+    </div>
 </mat-card>
+
+<div class="imx-button-bar-transparent">
+    <imx-data-view-selection [dataSource]="dataSource" class="justify-start"></imx-data-view-selection>
+     <button
+        mat-flat-button
+        color="primary"
+        data-imx-identifier="dug-ownership-table-button-assign-owner"
+        title="{{ '#LDS#Assigns owner to the selected resources' | translate }}"
+        (click)="assignOwner(selectedItems)"
+        [disabled]="!selectedItems.length"
+     >
+        {{ '#LDS#Assign owner' | translate }}
+    </button>
+</div>

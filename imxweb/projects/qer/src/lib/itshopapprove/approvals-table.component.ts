@@ -92,7 +92,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     return this.selectedItems.every((item: Approval) => item.canAddApprover(this.currentUserId));
   }
   public get canDelegateDecision(): boolean {
-    return this.selectedItems.every((item: Approval) => item.canDelegateDecision(this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canDelegateDecision(this.isUserEscalationApprover ? '' : this.currentUserId));
   }
   public get canDenyApproval(): boolean {
     return this.selectedItems.every((item: Approval) => item.canDenyApproval(this.currentUserId));
@@ -338,6 +338,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
           pwo,
           itShopConfig: (await this.projectConfig.getConfig()).ITShopConfig,
           fromInquiry: false,
+          isUserEscalationApprover: this.isUserEscalationApprover,
         },
       })
       .afterClosed()

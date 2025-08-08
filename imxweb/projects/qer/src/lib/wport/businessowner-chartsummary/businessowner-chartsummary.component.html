@@ -1,14 +1,9 @@
 <!-- List-Tile -->
-<imx-tile
-  *ngIf="viewReady && !!ownerships?.length"
+<imx-tile *ngIf="viewReady && !!ownerships?.length"
   data-imx-identifier="businessowner-chartsummary-tile-my-responsibilities"
-  [caption]="'#LDS#Heading My Responsibilities' | translate"
-  [identifier]="'my-responsibilities'"
-  [size]="'Dashboard'"
-  [hideActionButton]="true"
-  [subtitle]="'#LDS#View and manage objects you are responsible for.' | translate"
-  [contentType]="'Container'"
->
+  [caption]="'#LDS#Heading My Responsibilities' | translate" [identifier]="'my-responsibilities'" [size]="'Dashboard'"
+  [hideActionButton]="true" [subtitle]="'#LDS#View and manage objects you are responsible for.' | translate"
+  [contentType]="'Container'">
   <div class="imx-tile-content">
     <ul class="imx-valuelist">
       <li *ngFor="let currentOwnerships of ownerships">
@@ -22,14 +17,9 @@
 </imx-tile>
 
 <!-- List-Tile -->
-<imx-tile
-  *ngIf="viewReady && isPersonManager && allReportsCount > 0"
-  data-imx-identifier="businessowner-chartsummary-tile-my-direct-reports"
-  [identifier]="'my-direct-reports'"
-  [size]="'Dashboard'"
-  [contentType]="'Container'"
-  (actionClick)="openIdentitiesOverview()"
->
+<imx-tile *ngIf="viewReady && isPersonManager && allReportsCount > 0"
+  data-imx-identifier="businessowner-chartsummary-tile-my-direct-reports" [identifier]="'my-direct-reports'"
+  [size]="'Dashboard'" [contentType]="'Container'" (actionClick)="openIdentitiesOverview()">
   <ng-template #CaptionTemplate>
     <div class="imx-flex-header">
       <div data-imx-identifier="tile-div-caption-container" class="imx-generic-tile-caption">
@@ -42,24 +32,14 @@
         </h4>
       </div>
       <div class="imx-mobile-mobileonly">
-        <button
-          mat-icon-button
-          color="primary"
-          [attr.data-imx-identifier]="'tile-button-explore-mobile-reports'"
-          type="button"
-          (click)="openIdentitiesOverview()"
-        >
+        <button mat-icon-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-mobile-reports'"
+          type="button" (click)="openIdentitiesOverview()">
           <eui-icon icon="chevronright"></eui-icon>
         </button>
       </div>
       <div class="imx-mobile-nomobile">
-        <button
-          mat-button
-          class="imx-button-uppercase"
-          color="primary"
-          [attr.data-imx-identifier]="'tile-button-explore-nomobile-reports'"
-          (click)="openIdentitiesOverview()"
-        >
+        <button mat-button class="imx-button-uppercase" color="primary"
+          [attr.data-imx-identifier]="'tile-button-explore-nomobile-reports'" (click)="openIdentitiesOverview()">
           {{ '#LDS#View' | translate }}
         </button>
       </div>
@@ -77,30 +57,16 @@
 </imx-tile>
 
 <!-- Show Create identities button if the user has no direct and indirect reports -->
-<imx-tile
-  class="imx-create-identity-tile"
-  *ngIf="viewReady && isPersonManager && allReportsCount === 0"
+<imx-icon-tile *ngIf="viewReady && isCreationAllowed && isPersonManager && allReportsCount === 0"
+  [caption]="'#LDS#Heading My Direct Reports' | translate"
+  [subtitle]="'#LDS#View and manage identities you are directly responsible for.' | translate"
   data-imx-identifier="businessowner-chartsummary-tile-my-direct-reports-create-identity"
-  [identifier]="'my-direct-reports-create-identity'"
-  size="Custom-Tile"
->
-  <ng-template #CustomTemplate>
-    <mat-card-title [matTooltip]="'#LDS#Heading My Direct Reports' | translate">
-      <div>{{ '#LDS#Heading My Direct Reports' | translate }}</div>
-    </mat-card-title>
-    <mat-card-subtitle>
-      <div>{{ '#LDS#View and manage identities you are directly responsible for.' | translate }}</div>
-    </mat-card-subtitle>
-    <mat-card-actions align="start">
-      <button
-        mat-button
-        class="imx-button-uppercase"
-        color="primary"
-        data-imx-identifier="businessowner-chartsummary-tile-button-create-new-identity"
-        (click)="openCreateNewIdentitySidesheet()"
-      >
-        <span>{{ '#LDS#Create identity' | translate }}</span>
-      </button>
-    </mat-card-actions>
+  [identifier]="'my-direct-reports-create-identity'" [loadingState]="loadingState">
+  <ng-template #ActionTemplate>
+    <button mat-button color="primary" class="imx-button-uppercase"
+      data-imx-identifier="businessowner-chartsummary-tile-button-create-new-identity"
+      (click)="openCreateNewIdentitySidesheet()">
+      {{ '#LDS#Create identity' | translate }}
+    </button>
   </ng-template>
-</imx-tile>
+</imx-icon-tile>
