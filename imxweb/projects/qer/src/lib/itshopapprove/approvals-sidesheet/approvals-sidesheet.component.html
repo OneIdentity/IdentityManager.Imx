@@ -55,7 +55,7 @@
     </button>
     <button
       mat-stroked-button
-      *ngIf="data.pwo.canDelegateDecision(currentUserId)"
+      *ngIf="data.pwo.canDelegateDecision(data.isUserEscalationApprover ? '' : currentUserId)"
       data-imx-identifier="approvals-sidesheet-button-delegate-approval"
       title="{{ '#LDS#Delegates the approval for this request to another identity' | translate }}"
       (click)="actionService.delegateDecisions([data.pwo])"

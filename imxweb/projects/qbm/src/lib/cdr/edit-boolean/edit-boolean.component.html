@@ -2,6 +2,9 @@
   <span>{{ columnContainer?.display | translate }}</span>
 </mat-checkbox>
 <mat-spinner class="imx-checkbox-spinner" diameter="16" *ngIf="isBusy"></mat-spinner>
+<mat-error *ngIf="control.errors?.['generalError']">
+    {{ validationErrorMessage }}
+</mat-error>
 
 <ng-template #isReadonly>
   <imx-view-property

@@ -136,7 +136,9 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
   }
 
   public canDelegateDecision(userUid: string): boolean {
-    return !this.IsReserved.value && this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
+     const instead = userUid === '' ? this.workflowWrapper?.isInsteadOfAllowedForEscalation(this.UID_QERWorkingMethod.value, this.DecisionLevel.value)
+     :  this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && instead;
   }
 
   public canWithdrawAdditionalApprover(userUid: string): boolean {
