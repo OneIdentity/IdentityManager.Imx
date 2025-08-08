@@ -1,6 +1,6 @@
 ### August 8, 2025
-- 502690: Fixes an issue with server sided error messages on request properties that contains a list  of permitted values.
-- 502805: Fixes an display issue with entitlement loss for single attestation case although multiple are selected.
+- 502690: Fixes an issue with server-side error messages on request properties that contain a list of permitted values.
+- 502805: Fixes a display issue with entitlement loss for a single attestation case, although multiple are selected.
 
 ### July 29, 2025
 - 502448: Fixes an issue with the Slovenian date format on the date control.
