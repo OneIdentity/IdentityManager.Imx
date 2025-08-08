@@ -1,3 +1,16 @@
+### August 8, 2025
+- 504964 *(502690)*:  Fixes an issue with server-side error messages on request properties that contain a list of permitted values.
+- 504872 *(500296)*: Fixes an issue with showing very long decimal numbers.
+- 504893 *(500816)*: Fixes an issue with the wrong error message when entering an invalid date for an approval
+- 502012: Fixes an issue with date time validation in the shopping cart, which causes an error to be thrown infinitely.
+- 504865 *(502805)*: Fixes a display issue with entitlement loss for a single attestation case, although multiple are selected.
+- 491804: Fixes an issue with custom filtering on UNSContainer, which may display different containers with the same indistinguishable value.
+- 494594: Fixes an issue with custom filtering the request history on reserved requests, which ignores the previously set text filter.
+- 503322 *(501310)*: Fixes an issue where the chief approval team can't delegate requests.
+- 503159 *(503133)*: Fixes an issue with a missing paginator on request history > view entitlements.
+- 503039 *(502448)*: Fixes an issue with the Slovenian format on date controls.
+- 502483: Fixes an issue with the My Direct Reports tile, which allows for identity creation although disabled otherwise.
+
 ### July 25, 2025
 - Packages updated to 9.3.1
 - 499192 *(496637)*: Fixes an issue with missing renewal dates on the Pending Attestations page.
