@@ -1,13 +1,13 @@
 ### August 26, 2025
 - 488098 *(479191)*: Fixes an issue with duplicated session calls in the portal.
 - 505567 *(501784)*: Various web maintenance tasks implemented.
-- 505891 *(505565)*: Fixes an UI issue on the login page, that prevents a captcha from beeing entered when the scaling is set to 150%.
+- 505891 *(505565)*: Fixes a UI issue on the login page, that prevents a captcha from being entered when the scaling is set to 150%.
 - 495789: Fixes an issue with unlisted service items from product bundles.
-- 505552 *(501788)*: Fixes an issue with server-side error messages on request properties that contain a request property parameter which is multi value.
-- 498992: Fixes an issue with reports, that only has pre-filled parameters and were showing a blank page.
+- 505552 *(501788)*: Fixes an issue with server-side error messages on request properties that contain a request property parameter that is multi value.
+- 498992: Fixes an issue with reports that only have pre-filled parameters and were showing a blank page.
 - 503449: Fixes an issue with viewing and editing rights for a user on the data explorer.
 - 505517: Fixes an undefined value exception when using deeplinks in combination with OAuth (Github #356).
-- 502012: Fixes an issue with date time validation in the shopping cart. An error was thrown infinitely.
+- 502012: Fixes an issue with date and time validation in the shopping cart. An error was thrown infinitely.
 
 ### August 8, 2025
 - 504964 *(502690)*:  Fixes an issue with server-side error messages on request properties that contain a list of permitted values.
