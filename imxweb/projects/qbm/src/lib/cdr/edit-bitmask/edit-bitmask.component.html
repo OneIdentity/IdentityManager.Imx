@@ -1,8 +1,18 @@
 <ng-container *ngIf="columnContainer?.canEdit; else isReadonly">
-  <eui-select class="imx-bitmask-select" [label]="columnContainer?.display || '' | translate"
-    [placeholder]="'#LDS#Select one or more items' | translate" [multiple]="true" [hidePanelFooter]="true"
-    [useLegacyFloatingLabel]="true" [options]="options" [formControl]="control">
+  <eui-select
+    class="imx-bitmask-select"
+    [label]="columnContainer?.display || '' | translate"
+    [placeholder]="'#LDS#Select one or more items' | translate"
+    [multiple]="true"
+    [hidePanelFooter]="true"
+    [useLegacyFloatingLabel]="true"
+    [options]="options"
+    [formControl]="control"
+  >
   </eui-select>
+  <mat-error *ngIf="control.errors?.['generalError']">
+    {{ validationErrorMessage }}
+  </mat-error>
 </ng-container>
 
 <ng-template #isReadonly>

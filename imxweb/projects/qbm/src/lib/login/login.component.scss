@@ -27,6 +27,8 @@
   flex-direction: column;
   align-items: center;
 
+  z-index: 1; // cover the footer area on small resolutions
+
   h1 {
     text-align: center;
   }

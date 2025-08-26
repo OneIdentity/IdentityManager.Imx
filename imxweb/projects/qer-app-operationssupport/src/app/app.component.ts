@@ -36,9 +36,9 @@ import {
   AuthenticationService,
   ClassloggerService,
   ConfirmationService,
-  ISessionState,
   imx_SessionService,
   ImxTranslationProviderService,
+  ISessionState,
   MenuService,
   Message,
   SettingsService,
@@ -85,7 +85,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (Object.keys(sessionState).length === 0) {
-          sessionState = await sessionService.getSessionState();
+          return;
         }
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState

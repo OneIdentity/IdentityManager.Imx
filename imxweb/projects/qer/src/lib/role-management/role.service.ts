@@ -458,6 +458,10 @@ export class RoleService {
     return tableName != null && this.targetMap.has(tableName);
   }
 
+  public async getCanEdit(tablename: string): Promise<boolean | undefined> {
+    return this.targetMap.get(tablename)?.canEdit ? this.targetMap.get(tablename)?.canEdit!() : undefined;
+  }
+
   public async get(
     tableName: string,
     isAdmin: boolean = false,

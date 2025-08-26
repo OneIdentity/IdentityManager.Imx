@@ -74,9 +74,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly userMessageService: UserMessageService,
   ) {
     this.subscriptions.push(
-      this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {        
+      this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (Object.keys(sessionState).length === 0) {
-          sessionState = await this.session.getSessionState();
+          return;
         }
 
         if (sessionState.hasErrorState) {

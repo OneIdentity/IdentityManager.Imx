@@ -1,44 +1,21 @@
 const path = './package-lock.json';
 const fs = require('fs');
-var data = require(path);
+var lockContent = require(path);
+
+// Regex to match scoped @imx-modules/* and @elemental-ui/*
+const scopedPackageRegex = /@(imx-modules|elemental-ui)\/.+$/;
 
 var anyChanges = false;
-for (const name of [
-  // these are the local packages that must not be included in package-lock.json.
-  // This script removes the entries in the package-lock dependencies object
-  // for these packages.
+for (const name of Object.keys({ ...lockContent.dependencies, ...lockContent.packages })) {
+  if (!scopedPackageRegex.test(name)) continue;
 
-  // Add any custom API client libraries to this list (imx-api-ccc is already
-  // included by default.)
-  '@imx-modules/imx-api-ccc',
-  '@imx-modules/imx-qbm-dbts',
-  '@imx-modules/imx-api-qbm',
-  '@imx-modules/imx-api-dpr',
-  '@imx-modules/imx-api-tsb',
-  '@imx-modules/imx-api-aob',
-  '@imx-modules/imx-api-apc',
-  '@imx-modules/imx-api-qer',
-  '@imx-modules/imx-api-rps',
-  '@imx-modules/imx-api-sac',
-  '@imx-modules/imx-api-cpl',
-  '@imx-modules/imx-api-pol',
-  '@imx-modules/imx-api-aad',
-  '@imx-modules/imx-api-rmb',
-  '@imx-modules/imx-api-rms',
-  '@imx-modules/imx-api-hds',
-  '@imx-modules/imx-api-att',
-  '@imx-modules/imx-api-uci',
-  '@imx-modules/imx-api-olg',
-  '@elemental-ui/core',
-  '@elemental-ui/cadence-icon'
-]) {
-  if (data?.dependencies && data.dependencies[name]) {
-    delete data.dependencies[name];
+  if (lockContent?.dependencies && lockContent.dependencies[name]) {
+    delete lockContent.dependencies[name];
     anyChanges = true;
   }
-  const nodeModuleName = 'node_modules/' + name;
-  if (data.packages[nodeModuleName]) {
-    delete data.packages[nodeModuleName];
+
+  if (lockContent?.packages && lockContent.packages[name]) {
+    delete lockContent.packages[name];
     anyChanges = true;
   }
 }
@@ -49,7 +26,7 @@ if (!anyChanges) {
 }
 
 // write JSON with the same indentation as npm; trimming the last line feed
-var toWrite = JSON.stringify(data, null, 2) + '\n';
+var toWrite = JSON.stringify(lockContent, null, 2) + '\n';
 var error;
 fs.writeFile(path, toWrite, 'utf8', (err) => {
   if (err) {

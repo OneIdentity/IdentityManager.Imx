@@ -61,7 +61,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectConfig } from '@imx-modules/imx-api-qbm';
-import { isAuditor, isRoleAdmin, isRoleStatistics, isStructAdmin, isStructStatistics } from '../admin/qer-permissions-helper';
+import { isAuditor, isStructAdmin, isStructStatistics } from '../admin/qer-permissions-helper';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
 import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
 import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
@@ -170,13 +170,7 @@ export class RoleManangementModule {
   private setupDataExplorer(): void {
     this.dataExplorerRegistryService.registerFactory(
       (preProps: string[], features: string[], projectConfig?: ProjectConfig, groups?: string[]) => {
-        if (
-          !isRoleAdmin(features) &&
-          !isRoleStatistics(features) &&
-          !isStructStatistics(features) &&
-          !isStructAdmin(features) &&
-          !isAuditor(groups ?? [])
-        ) {
+        if (!isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups ?? [])) {
           return;
         }
         const contextId: string = HELP_CONTEXTUAL.DataExplorerDepartment;
@@ -209,13 +203,7 @@ export class RoleManangementModule {
         };
       },
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (
-          !isRoleAdmin(features) &&
-          !isRoleStatistics(features) &&
-          !isStructStatistics(features) &&
-          !isStructAdmin(features) &&
-          !isAuditor(groups)
-        ) {
+        if (!isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
           return;
         }
         return {
@@ -231,13 +219,7 @@ export class RoleManangementModule {
         };
       },
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (
-          !isRoleAdmin(features) &&
-          !isRoleStatistics(features) &&
-          !isStructStatistics(features) &&
-          !isStructAdmin(features) &&
-          !isAuditor(groups)
-        ) {
+        if (!isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
           return;
         }
         return {
@@ -259,13 +241,7 @@ export class RoleManangementModule {
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
       // must also work if ITSHOP is disabled!
-      if (
-        !isRoleAdmin(features) &&
-        !isRoleStatistics(features) &&
-        !isStructStatistics(features) &&
-        !isStructAdmin(features) &&
-        !isAuditor(groups)
-      ) {
+      if (!isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
         return;
       }
       const menu = {

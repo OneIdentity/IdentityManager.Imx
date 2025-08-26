@@ -28,9 +28,11 @@ import { Component, EventEmitter } from '@angular/core';
 import { UntypedFormControl, Validators } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
 import { Subject, Subscription } from 'rxjs';
+import { ServerError } from '../../base/server-error';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { EditorBase } from '../editor-base';
 import { EntityColumnContainer } from '../entity-column-container';
 
 @Component({
@@ -66,6 +68,18 @@ export class EditBitmaskComponent implements CdrEditor {
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
+
+  /**
+   * @ignore
+   * Used for the template and displays the last server error, that occured while loading content.
+   */
+  public lastError: ServerError | undefined;
+  /**
+   * If an error occured, it returns its message
+   */
+  public get validationErrorMessage(): string {
+    return this.lastError?.toString() || '';
+  }
 
   constructor(private readonly logger: ClassloggerService) {}
 
@@ -110,6 +124,7 @@ export class EditBitmaskComponent implements CdrEditor {
       );
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(this.fromArray(value))));
       this.initOptions();
+      this.control.addValidators(EditorBase.hasServerError(this));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -121,6 +136,10 @@ export class EditBitmaskComponent implements CdrEditor {
    * @param values The values, that will be used as a new value.
    */
   private async writeValue(value: Number): Promise<void> {
+    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
+      this.logger.debug(this, 'writeValue - client validation failed');
+      return;
+    }
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.columnContainer.value === value) {
@@ -131,14 +150,17 @@ export class EditBitmaskComponent implements CdrEditor {
       this.isWriting = true;
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
+      this.lastError = undefined;
     } catch (e) {
       this.logger.error(this, e);
+      this.lastError = undefined;
     } finally {
       this.isWriting = false;
       const valueAfterWrite = this.toArray(this.columnContainer.value);
-      if (this.control.value !== valueAfterWrite) {
+      if (!this.lastError && this.control.value !== valueAfterWrite) {
         this.control.setValue(valueAfterWrite, { emitEvent: false });
       }
+      this.control.updateValueAndValidity();
     }
 
     this.valueHasChanged.emit({ value, forceEmit: true });

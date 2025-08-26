@@ -87,7 +87,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (Object.keys(sessionState).length === 0) {
-          sessionState = await this.session.getSessionState();
+          return;
         }
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState

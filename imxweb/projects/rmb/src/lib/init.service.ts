@@ -173,6 +173,9 @@ export class InitService {
       },
       adminHelpContextId: HELP_CONTEXTUAL.DataExplorerBusinessRolesRoleEntitlements,
       respHelpContextId: HELP_CONTEXTUAL.MyResponsibilitiesBusinessRolesRoleEntitlements,
+      canEdit: () => {
+        return this.qerPermissionsService.isRoleAdmin();
+      },
     });
 
     this.identityRoleMembershipService.addTarget({

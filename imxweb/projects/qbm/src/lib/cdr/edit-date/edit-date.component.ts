@@ -184,16 +184,14 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
    * Updates the value for the CDR.
    * @param value The Moment object, that is used as the new value for the control.
    */
-  private async writeValue(value: Moment): Promise<void> {
-    if (this.control.errors || value?.isSame(this.previousValue)) {
+  private async writeValue(value: Moment | undefined): Promise<void> {
+    if (this.control.errors || value?.isSame(this.previousValue) || (value === this.previousValue && !value)) {
       return;
     }
-
     const date = value == null ? undefined : value.toDate();
     const resetDate = new Date(this.columnContainer.value);
     const resetMoment = moment(resetDate);
-
-    if (!this.columnContainer.canEdit || (value && value.isSame(this.columnContainer.value))) {
+    if (!this.columnContainer.canEdit) {
       // if the value is the same, we don't need to update the value
       return;
     }
@@ -205,13 +203,16 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
     try {
       await this.columnContainer.updateValue(date);
       this.updateControlValue(value);
+      this.previousValue = value;
       this.valueHasChanged.emit({ value: this.columnContainer.value, forceEmit: true });
       this.errorCount = 0;
     } catch (error) {
       this.errorCount += 1;
       this.errorHandler.handleError(error);
       // try to reset, but if we have errors too many times, we break the loop by setting empty
-      this.control?.setValue(this.errorCount < 2 && resetDate.getTime() !== 0 ? resetMoment : undefined, { emitEvent: true });
+      const fallbackValue = this.errorCount < 2 && resetDate.getTime() !== 0 ? resetMoment : undefined;
+      this.control?.setValue(fallbackValue, { emitEvent: true });
+      this.previousValue = fallbackValue;
     } finally {
       this.isBusy = false;
       this.isWriting = false;

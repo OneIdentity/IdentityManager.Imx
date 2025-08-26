@@ -299,7 +299,9 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
         ownershipInfo: this.ownershipInfo,
         entity: item,
         isAdmin: this.isAdmin,
-        canEdit: !this.isAdmin || (this.isAdmin && this.isStructureAdmin),
+        canEdit:
+          !this.isAdmin ||
+          (this.isAdmin && ((await this.roleService.getCanEdit(this.ownershipInfo.TableName ?? '')) ?? this.isStructureAdmin)),
       });
       await this.dataManagementService.setInteractive();
     } finally {

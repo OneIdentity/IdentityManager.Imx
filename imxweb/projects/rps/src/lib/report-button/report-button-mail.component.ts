@@ -114,6 +114,6 @@ export class ReportButtonMailComponent implements OnDestroy {
 
     const presetParameter = Object.entries(this.referrer.presetParameters).map((elem) => elem[0]);
 
-    return !!this.subscription?.parameterNames.filter((elem) => presetParameter.indexOf(elem) === -1);
+    return this.subscription?.parameterNames.some((elem) => presetParameter.indexOf(elem) === -1) ?? false;
   }
 }

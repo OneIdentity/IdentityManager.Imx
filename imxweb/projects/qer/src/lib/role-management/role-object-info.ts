@@ -77,6 +77,7 @@ export interface RoleObjectInfo {
   canUseRecommendations?: boolean;
   translateKeys?: RoleTranslateKeys;
   exportMethod?: (isAdmin: boolean) => DataSourceToolbarExportMethod;
+  canEdit?: () => Promise<boolean>;
 
   /** ID to inject into the HelpContextualService  */
   respHelpContextId?: HelpContextualValues;

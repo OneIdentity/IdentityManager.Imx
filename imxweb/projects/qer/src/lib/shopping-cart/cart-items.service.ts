@@ -182,7 +182,7 @@ export class CartItemsService {
       ? await this.editItems(cartitemReferences, cartItemsWithoutParams)
       : {
           possibleItems: requestableProducts.length,
-          savedItems: requestableProducts.length,
+          savedItems: addedItems.length,
         };
   }
 

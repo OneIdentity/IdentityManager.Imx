@@ -45,6 +45,7 @@ import {
   DataExplorerRegistryService,
   IdentityRoleMembershipsService,
   MyResponsibilitiesRegistryService,
+  QerPermissionsService,
   RoleService,
   RolesOverviewComponent,
   isAuditor,
@@ -70,6 +71,7 @@ export class InitService {
     private readonly roleService: RoleService,
     private readonly identityRoleMembershipService: IdentityRoleMembershipsService,
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
+    private readonly qerPermissionsService: QerPermissionsService,
   ) {}
 
   public onInit(routes: Route[]): void {
@@ -171,6 +173,9 @@ export class InitService {
       },
       adminHelpContextId: HELP_CONTEXTUAL.DataExplorerSystemRolesRoleEntitlements,
       respHelpContextId: HELP_CONTEXTUAL.MyResponsibilitiesSystemRolesRoleEntitlements,
+      canEdit: () => {
+        return this.qerPermissionsService.isRoleAdmin();
+      },
     });
 
     this.identityRoleMembershipService.addTarget({

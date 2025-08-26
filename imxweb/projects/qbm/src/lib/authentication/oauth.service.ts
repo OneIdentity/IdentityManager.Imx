@@ -40,7 +40,7 @@ export class OAuthService {
   ) {}
 
   public async GetProviderUrl(authentifier: string): Promise<string> {
-    const module = '?Module=' + authentifier;
+    const module = `${this.platformLocation.hash.includes('?') ? '&' : '?'}Module=${authentifier}`;
     return this.sessionService.Client.imx_oauth_get(authentifier, this.config.Config.WebAppIndex, {
       redirecturi: this.platformLocation.pathname + this.platformLocation.hash + module,
     });
