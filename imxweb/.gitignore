@@ -56,3 +56,4 @@ debug.log
 .angular
 .nx
 *.env
+.npmrc
