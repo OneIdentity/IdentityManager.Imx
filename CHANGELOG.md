@@ -1,3 +1,10 @@
+### September 12, 2025
+- 505565: Fixes an issue with the Captcha, which prevented the user from entering if the scaling was set to 150%.
+- 501788: Fixes an issue with server-side error messages on request properties that contain a request property parameter that is multi-value.
+- 507806 (main work item 505517):  Fixes an undefined value exception when using deep-links in combination with OAuth (Github #356).
+- 494373: Fixes an issue with System Roles -> View Settings -> Additional columns: Column "Display name" is presented twice.
+- 506868: Fixes an issue with approving violations on the Pending Requests page.
+
 ### August 8, 2025
 - 502690: Fixes an issue with server-side error messages on request properties that contain a list of permitted values.
 - 502805: Fixes a display issue with entitlement loss for a single attestation case, although multiple are selected.
