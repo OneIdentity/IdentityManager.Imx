@@ -33,6 +33,8 @@ import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { EntityColumnContainer } from '../entity-column-container';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { MultiValueService } from '../../multi-value/multi-value.service';
+import { ServerError } from '../../base/server-error';
+import { EditorBase } from '../editor-base';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing multi valued columns.
@@ -63,6 +65,18 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
+
+  /**
+   * @ignore
+   * Used for the template and displays the last server error, that occured while loading content.
+   */
+  public lastError: ServerError | undefined;
+  /**
+   * If an error occured, it returns its message
+   */
+  public get validationErrorMessage(): string {
+    return this.lastError?.toString() || '';
+  }
 
   constructor(private readonly logger: ClassloggerService, private readonly multiValueProvider: MultiValueService) {}
 
@@ -112,6 +126,8 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
         })
       );
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(this.fromTextArea(value))));
+
+      this.control.addValidators(EditorBase.hasServerError(this));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -122,7 +138,11 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
    * Updates the value for the CDR.
    * @param values The values, that will be used as a new value.
    */
-  private async writeValue(value: string): Promise<void> {
+  private async writeValue(value: string | undefined): Promise<void> {
+    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
+      this.logger.debug(this, 'writeValue - client validation failed');
+      return;
+    }
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.columnContainer.value === value) {
@@ -133,16 +153,18 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
       this.isWriting = true;
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
+      this.lastError = undefined;
     } catch (e) {
       this.logger.error(this, e);
+      this.lastError = e;
     } finally {
       this.isWriting = false;
       const valueAfterWrite = this.toTextArea(this.columnContainer.value);
-      if (this.control.value !== valueAfterWrite) {
+      if (!this.lastError && this.control.value !== valueAfterWrite) {
         this.control.setValue(valueAfterWrite, { emitEvent: false });
       }
+      this.control.updateValueAndValidity();
     }
-
     this.valueHasChanged.emit({ value, forceEmit: true });
   }
 

@@ -44,7 +44,7 @@ import { WorkflowActionEditWrapper } from './workflow-action-edit-wrapper.interf
 import { WorkflowActionParameters } from './workflow-action-parameters.interface';
 import { TermsOfUseAcceptComponent } from '../../terms-of-use/terms-of-use-accept.component';
 import { UserModelService } from '../../user/user-model.service';
-
+import { getSubLevel } from '../decision-step.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -256,9 +256,8 @@ export class WorkflowActionService {
     return this.apiService.v2Client.portal_itshop_approve_requests_stepup_post({ UidPwo: uidPwo });
   }
 
-  public async approve(requests: Approval[]): Promise<void> {
-
-    const term = (await this.checkTermsOfUse(requests));
+  public async approve(requests: Approval[], user: string): Promise<void> {
+    const term = await this.checkTermsOfUse(requests);
     if (!term.isChecked) {
       this.snackBar.open({ key: '#LDS#You have canceled the action.' });
       return;
@@ -270,7 +269,7 @@ export class WorkflowActionService {
     const mfaRequests = requests.filter((req) => req.IsApproveRequiresMfa?.value);
     if (itShopConfig.StepUpAuthenticationProvider !== 'NoAuth' && mfaRequests.length > 0) {
       // Check for MFA, don't continue unless true
-      const isMFA = term.isAuthenticated || await this.checkMFA(mfaRequests.map((request) => request.key));
+      const isMFA = term.isAuthenticated || (await this.checkMFA(mfaRequests.map((request) => request.key)));
       if (!isMFA) {
         return;
       }
@@ -360,6 +359,7 @@ export class WorkflowActionService {
           Reason: actionParameters.reason.column.GetValue(),
           UidJustification: actionParameters.justification?.column?.GetValue(),
           Decision: true,
+          SubLevel: getSubLevel(request, request.pwoData, user),
         });
       },
     });
@@ -559,7 +559,7 @@ export class WorkflowActionService {
             config.data.requests.length,
             config.data.actionParameters.uidPerson ? config.data.actionParameters.uidPerson.column.GetDisplayValue() : '',
           ],
-        });        
+        });
         await this.userService.reloadPendingItems();
         this.applied.next();
       }
@@ -670,7 +670,7 @@ export class WorkflowActionService {
       return termsOfUseAccepted;
     } else {
       this.logger.debug(this, 'there are no service items with terms of use the user have to accepted.');
-      return { isChecked: true, isAuthenticated: false}
+      return { isChecked: true, isAuthenticated: false };
     }
   }
 }

@@ -90,7 +90,7 @@
               <eui-icon icon="ignore"></eui-icon>
               {{ '#LDS#Deny' | translate }}
             </button>
-            <button mat-stroked-button color="primary" (click)="actionService.approve([item])" data-imx-identifier="approvals-table-row-button-approve">
+            <button mat-stroked-button color="primary" (click)="actionService.approve([item],currentUserId)" data-imx-identifier="approvals-table-row-button-approve">
               <eui-icon icon="check"></eui-icon>
               {{ '#LDS#Approve' | translate }}
             </button>
@@ -153,7 +153,7 @@
     color="primary"
     data-imx-identifier="approvals-table-button-approve"
     title="{{ '#LDS#Approves the selected requests' | translate }}"
-    (click)="actionService.approve(selectedItems)"
+    (click)="actionService.approve(selectedItems,currentUserId)"
     [disabled]="!selectedItems.length"
   >
     <eui-icon icon="check"></eui-icon>

@@ -27,9 +27,9 @@
 import { Injectable } from '@angular/core';
 import { DefaultUrlSerializer } from '@angular/router';
 
-import { imx_SessionService } from '../session/imx-session.service';
-import { AppConfigService } from '../appConfig/appConfig.service';
 import { PlatformLocation } from '@angular/common';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { imx_SessionService } from '../session/imx-session.service';
 
 @Injectable()
 export class OAuthService {
@@ -37,12 +37,12 @@ export class OAuthService {
     private readonly sessionService: imx_SessionService,
     private readonly config: AppConfigService,
     private readonly platformLocation: PlatformLocation
-  ) { }
+  ) {}
 
   public async GetProviderUrl(authentifier: string): Promise<string> {
-    const module = '?Module=' + authentifier;
+    const module = `${this.platformLocation.hash.includes('?') ? '&' : '?'}Module=${authentifier}`;
     return this.sessionService.Client.imx_oauth_get(authentifier, this.config.Config.WebAppIndex, {
-      redirecturi: this.platformLocation.pathname + this.platformLocation.hash + module
+      redirecturi: this.platformLocation.pathname + this.platformLocation.hash + module,
     });
   }
 
@@ -57,15 +57,17 @@ export class OAuthService {
   }
 
   public convertToOAuthLoginData(loginData: { [key: string]: any }): {
-    Module: string,
-    Code: string
+    Module: string;
+    Code: string;
   } {
-    const moduleName = loginData['Module'] || (new DefaultUrlSerializer()).parse(loginData['state']).queryParamMap.get('Module');
+    const moduleName = loginData['Module'] || new DefaultUrlSerializer().parse(loginData['state']).queryParamMap.get('Module');
     const code = loginData['Code'] || loginData['code'];
 
-    return moduleName && code ? {
-      Module: moduleName,
-      Code: code
-    } : undefined;
+    return moduleName && code
+      ? {
+          Module: moduleName,
+          Code: code,
+        }
+      : undefined;
   }
 }

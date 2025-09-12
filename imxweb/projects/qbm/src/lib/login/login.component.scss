@@ -1,4 +1,4 @@
-@import "variables.scss";
+@import 'variables.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 $inputWidth: calc(40vw + 2px);
@@ -27,6 +27,9 @@ $inputWidth: calc(40vw + 2px);
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  // Login footer should not cover the input area on small screens
+  z-index: 1;
 
   h1 {
     text-align: center;

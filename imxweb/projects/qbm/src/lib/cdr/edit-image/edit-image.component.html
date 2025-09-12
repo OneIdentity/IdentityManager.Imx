@@ -8,6 +8,9 @@
   (change)="resetFileFormatErrorState();file.click()"
   (remove)="remove()">
 </imx-image-select>
+<mat-error *ngIf="control.errors?.['generalError']">
+  {{ validationErrorMessage }}
+</mat-error>
 
 <ng-template #imageView>
   <imx-image-view [valueWrapper]="columnContainer" defaultValue="#LDS#Not set"></imx-image-view>

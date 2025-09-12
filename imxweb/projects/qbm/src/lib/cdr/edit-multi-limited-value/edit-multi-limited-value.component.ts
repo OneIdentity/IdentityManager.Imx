@@ -30,9 +30,11 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 
 import { LimitedValueData } from 'imx-qbm-dbts';
+import { ServerError } from '../../base/server-error';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
+import { EditorBase } from '../editor-base';
 import { EntityColumnContainer } from '../entity-column-container';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 
@@ -68,7 +70,19 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
   public readonly pendingChanged = new EventEmitter<boolean>();
 
   private readonly subscriptions: Subscription[] = [];
-  private isWriting = false;
+  public isWriting = false;
+
+  /**
+   * @ignore
+   * Used for the template and displays the last server error, that occured while loading content.
+   */
+  public lastError: ServerError | undefined;
+  /**
+   * If an error occured, it returns its message
+   */
+  public get validationErrorMessage(): string {
+    return this.lastError?.toString() || '';
+  }
 
   constructor(
     private readonly logger: ClassloggerService,
@@ -131,6 +145,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
           this.valueHasChanged.emit({ value: this.columnContainer.value });
         })
       );
+      this.control.addValidators(EditorBase.hasServerError(this));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -161,6 +176,10 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
    */
   private async writeValue(values: boolean[]): Promise<void> {
     this.logger.debug(this, 'writeValue called with value', values);
+    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
+      this.logger.debug(this, 'writeValue - client validation failed');
+      return;
+    }
 
     if (!this.columnContainer.canEdit) {
       return;
@@ -181,12 +200,16 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       this.control.disable({ emitEvent: false });
       this.changeDetectorRef.detectChanges();
       await this.columnContainer.updateValue(value);
+      this.lastError = undefined;
     } catch (e) {
       this.logger.error(this, e);
+      this.lastError = e;
     } finally {
       this.isWriting = false;
       this.control.enable({ emitEvent: false });
       this.pendingChanged.emit(false);
+      this.control.updateValueAndValidity();
+
       this.changeDetectorRef.detectChanges();
       if (this.getSelectedNamesMultiValue(this.control.value) !== this.columnContainer.value) {
         const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);

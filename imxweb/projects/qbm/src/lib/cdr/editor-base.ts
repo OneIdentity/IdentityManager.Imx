@@ -229,7 +229,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     this.valueHasChanged.emit({ value, forceEmit: true });
   }
 
-  private static hasServerError(base: any): ValidatorFn {
+  public static hasServerError(base: any): ValidatorFn {
     return (_: AbstractControl): { [key: string]: boolean } | null => {
       return !base.lastError ? null : { generalError: true };
     };

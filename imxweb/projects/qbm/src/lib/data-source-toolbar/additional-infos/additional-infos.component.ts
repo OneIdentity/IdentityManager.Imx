@@ -26,7 +26,7 @@
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataModel, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
 import { ClientPropertyForTableColumns } from '../client-property-for-table-columns';
@@ -66,10 +66,13 @@ export class AdditionalInfosComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    const possiblePropertiesWithDuplicates = this.data.additionalPropertyNames.concat(this.data.displayedColumns);
-    this.possibleProperties = possiblePropertiesWithDuplicates
-      .filter((element, index) => possiblePropertiesWithDuplicates.findIndex((prop) => prop.ColumnName === element.ColumnName) === index)
-      .sort((prop1, prop2) => AdditionalInfosComponent.compareNames(prop1, prop2));
+    this.possibleProperties = this.data.additionalPropertyNames.slice();
+    this.data.displayedColumns.forEach(column => {
+      // Only add if this is a new column name, we also use the display for __Display === DisplayName conflicts
+      if (this.possibleProperties.find(prop => prop.ColumnName === column.ColumnName || prop.Display === column.Display)) return
+      this.possibleProperties.push(column)
+    })
+    this.possibleProperties.sort((prop1, prop2) => this.compareNames(prop1, prop2));
   }
 
   public drop(event: CdkDragDrop<string[]>): void {
@@ -82,7 +85,7 @@ export class AdditionalInfosComponent implements OnInit {
   }
 
   public isChecked(property: IClientProperty): boolean {
-    return this.data.preselectedProperties.find((elem) => elem.ColumnName === property.ColumnName) != null;
+    return this.data.preselectedProperties.find((elem) => elem.ColumnName === property.ColumnName || elem.Display === property.Display) != null;
   }
 
   public updateSelected(event: MatSelectionListChange): void {
@@ -105,15 +108,12 @@ export class AdditionalInfosComponent implements OnInit {
 
   public isRemoveable(property: IClientProperty): boolean {
     return (
-      this.data.displayedColumns.find((elem) => elem.ColumnName === property.ColumnName) == null &&
-      this.data.additionalColumns.find((elem) => elem.ColumnName === property.ColumnName) == null
+      this.data.displayedColumns.find((elem) => elem.ColumnName === property.ColumnName || elem.Display === property.Display) == null &&
+      this.data.additionalColumns.find((elem) => elem.ColumnName === property.ColumnName || elem.Display === property.Display) == null
     );
   }
 
-  private static compareNames(column1: IClientProperty, column2: IClientProperty): number {
-    if (column1.Display == null || column2?.Display == null) {
-      return column1.ColumnName?.localeCompare(column2.ColumnName);
-    }
-    return column1.ColumnName?.localeCompare(column2.ColumnName);
+  private compareNames(column1: IClientProperty, column2: IClientProperty): number {
+    return (column1.Display || column1.ColumnName)?.localeCompare(column2.Display || column2.ColumnName || '') ?? 0;
   }
 }
