@@ -103,18 +103,18 @@ export abstract class BaseMembership implements IRoleMembershipType {
 
   public async get(id: string, navigationState?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
     const api = new DynamicMethod(this.dynamicRoleUrl, `/${this.basePath}/${id}`, this._api.apiClient, this._session, this._translator);
-    return api.Get(navigationState);
+    return api.Get({query: navigationState});
   }
 
   public async getCandidates(
     id: string,
     navigationState?: CandidateParameters,
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    
+
     const schemaPath =( this.fkCandidateRoute?.Url?.[0] === '/' ? this.fkCandidateRoute.Url.substring(1) : this.fkCandidateRoute.Url);
     const api = new DynamicMethod(schemaPath, (this.fkCandidateRoute?.Url), this._api.apiClient, this._session, this._translator);
     if (this.fkCandidateRoute?.HttpMethod === 'GET') {
-      return api.Get(navigationState);
+      return api.Get({path: {[this.columnName]: id},query: navigationState});
     }
 
     const state = {};

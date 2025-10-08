@@ -74,8 +74,11 @@ export class DynamicMethod {
     return this.builder.buildReadWriteEntity({ entitySchema: this.getSchema(), entityData: initialData });
   }
 
-  async Get(parametersOptional: any = {}) {
-    const data = await this.apiClient.processRequest(this.do_get(parametersOptional));
+  async Get(parameters: {
+    path?: any,
+    query?: any,
+  } = {}) {
+    const data = await this.apiClient.processRequest(this.do_get(parameters.path, parameters.query));
     return this.builder.buildReadWriteEntities(data, this.getSchema());
   }
 
@@ -93,13 +96,21 @@ export class DynamicMethod {
     return this.builder.buildReadWriteEntities(data, this.getSchema());
   }
 
-  private do_get(parametersOptional: any): MethodDescriptor<EntityCollectionData> {
-
+  private do_get(pathParameters?: any, queryParameters?: any): MethodDescriptor<EntityCollectionData> {
     const parameters = [];
-    for (var p in parametersOptional) {
+
+    for (const p in pathParameters) {
       parameters.push({
         name: p,
-        value: parametersOptional[p],
+        value: pathParameters[p],
+        in: 'path',
+      });
+    }
+
+    for (const p in queryParameters) {
+      parameters.push({
+        name: p,
+        value: queryParameters[p],
         in: 'query'
       });
     }
