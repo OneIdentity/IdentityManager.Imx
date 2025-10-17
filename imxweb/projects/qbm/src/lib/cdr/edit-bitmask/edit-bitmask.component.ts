@@ -24,15 +24,13 @@
  *
  */
 
-import { Component, EventEmitter } from '@angular/core';
+import { Component, ErrorHandler, EventEmitter } from '@angular/core';
 import { UntypedFormControl, Validators } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
 import { Subject, Subscription } from 'rxjs';
-import { ServerError } from '../../base/server-error';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import { EditorBase } from '../editor-base';
 import { EntityColumnContainer } from '../entity-column-container';
 
 @Component({
@@ -69,19 +67,10 @@ export class EditBitmaskComponent implements CdrEditor {
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-  /**
-   * @ignore
-   * Used for the template and displays the last server error, that occured while loading content.
-   */
-  public lastError: ServerError | undefined;
-  /**
-   * If an error occured, it returns its message
-   */
-  public get validationErrorMessage(): string {
-    return this.lastError?.toString() || '';
-  }
-
-  constructor(private readonly logger: ClassloggerService) {}
+  constructor(
+    private readonly errorHandler: ErrorHandler,
+    private readonly logger: ClassloggerService,
+  ) {}
 
   /**
    * Binds a column dependent reference to the component.
@@ -124,7 +113,6 @@ export class EditBitmaskComponent implements CdrEditor {
       );
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(this.fromArray(value))));
       this.initOptions();
-      this.control.addValidators(EditorBase.hasServerError(this));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -136,7 +124,7 @@ export class EditBitmaskComponent implements CdrEditor {
    * @param values The values, that will be used as a new value.
    */
   private async writeValue(value: Number): Promise<void> {
-    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
+    if (this.control.errors) {
       this.logger.debug(this, 'writeValue - client validation failed');
       return;
     }
@@ -146,18 +134,19 @@ export class EditBitmaskComponent implements CdrEditor {
       return;
     }
 
+    const resetValue = this.columnContainer.value;
+
     try {
       this.isWriting = true;
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
-      this.lastError = undefined;
     } catch (e) {
-      this.logger.error(this, e);
-      this.lastError = undefined;
+      this.errorHandler?.handleError(e);
+      this.control.setValue(resetValue, { emitEvent: true });
     } finally {
       this.isWriting = false;
       const valueAfterWrite = this.toArray(this.columnContainer.value);
-      if (!this.lastError && this.control.value !== valueAfterWrite) {
+      if (this.control.value !== valueAfterWrite) {
         this.control.setValue(valueAfterWrite, { emitEvent: false });
       }
       this.control.updateValueAndValidity();

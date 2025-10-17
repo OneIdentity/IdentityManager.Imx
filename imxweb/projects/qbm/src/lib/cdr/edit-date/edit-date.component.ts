@@ -78,11 +78,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
   private isWriting = false;
   private previousValue: Moment | undefined;
 
-  /**
-   * We need to track error states incase external validation scripts are erroring on the current value.
-   * i.e original value is now invalid as too much time has passed while being in the shopping cart
-   */
-  private errorCount = 0;
+  private resetValue: Date | undefined;
 
   /**
    * Determines, if a time control should be added.
@@ -131,6 +127,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       this.subscribers.push(
         this.columnContainer.subscribe(() => {
           if (!this.isWriting) {
+            this.resetValue = this.columnContainer.value;
             this.logger.trace(this, 'Control set to new value');
             this.resetControlValue();
             this.valueHasChanged.emit({ value: this.control.value });
@@ -185,13 +182,13 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
    * @param value The Moment object, that is used as the new value for the control.
    */
   private async writeValue(value: Moment | undefined): Promise<void> {
-    if (this.control.errors || value?.isSame(this.previousValue) || (value === this.previousValue && !value)) {
+    const resetMoment = this.resetValue ? moment(this.resetValue) : undefined;
+    if (this.control.errors || value?.isSame(resetMoment) || (value === resetMoment && !value)) {
       return;
     }
     const date = value == null ? undefined : value.toDate();
-    const resetDate = new Date(this.columnContainer.value);
-    const resetMoment = moment(resetDate);
-    if (!this.columnContainer.canEdit) {
+
+    if (!this.columnContainer.canEdit || (value && value.isSame(this.columnContainer.value)) || (!value && !this.columnContainer.value)) {
       // if the value is the same, we don't need to update the value
       return;
     }
@@ -205,14 +202,11 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       this.updateControlValue(value);
       this.previousValue = value;
       this.valueHasChanged.emit({ value: this.columnContainer.value, forceEmit: true });
-      this.errorCount = 0;
+      this.resetValue = this.columnContainer.value;
     } catch (error) {
-      this.errorCount += 1;
       this.errorHandler.handleError(error);
       // try to reset, but if we have errors too many times, we break the loop by setting empty
-      const fallbackValue = this.errorCount < 2 && resetDate.getTime() !== 0 ? resetMoment : undefined;
-      this.control?.setValue(fallbackValue, { emitEvent: true });
-      this.previousValue = fallbackValue;
+      this.control?.setValue(resetMoment, { emitEvent: true });
     } finally {
       this.isBusy = false;
       this.isWriting = false;

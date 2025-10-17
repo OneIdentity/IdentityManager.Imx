@@ -36,7 +36,7 @@
       mat-flat-button
       color="primary"
       data-imx-identifier="approvals-sidesheet-button-approve"
-      (click)="actionService.approve([data.pwo])"
+      (click)="actionService.approve([data.pwo], currentUserId)"
     >
       {{ '#LDS#Approve' | translate }}
     </button>

@@ -43,12 +43,17 @@ export class EntitlementDetailComponent implements OnDestroy {
 
   private readonly subscriptions: Subscription[] = [];
 
+  objectType: string;
+  objectUid: string;
+
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly data: EntitlementWrapper,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
     confirmation: ConfirmationService,
   ) {
+    this.objectType = 'AOBEntitlement';
+    this.objectUid = data.entitlement?.GetEntity().GetKeys().join(',') ?? '';
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
         const entitlementHasChanges = this.entityHasChanges(this.data.entitlement);

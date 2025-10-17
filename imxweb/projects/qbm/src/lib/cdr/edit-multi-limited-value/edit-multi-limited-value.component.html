@@ -26,9 +26,6 @@
 <mat-error class="imx-error-margin imx-small-text" *ngIf="control.errors?.['required']">
   {{ '#LDS#This field is mandatory.' | translate }}
 </mat-error>
-<mat-error class="imx-error-margin imx-small-text" *ngIf="control.errors?.['generalError']">
-  {{ validationErrorMessage }}
-</mat-error>
 
 <ng-template #isReadonly>
   <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>

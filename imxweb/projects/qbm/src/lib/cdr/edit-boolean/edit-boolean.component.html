@@ -6,9 +6,6 @@
   <span>{{ columnContainer.display | translate }}</span>
 </mat-checkbox>
 <mat-spinner class="imx-margin-left-10" diameter="16" *ngIf="isBusy"></mat-spinner>
-<mat-error *ngIf="control.errors?.['generalError']">
-  {{ validationErrorMessage }}
-</mat-error>
 
 <ng-template #isReadonly>
   <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>

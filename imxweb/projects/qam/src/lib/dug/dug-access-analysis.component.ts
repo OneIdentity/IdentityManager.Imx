@@ -25,12 +25,17 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { PortalDgeResourcesbyid, ResourceAccessExpansionPerson } from '../TypedClient';
+import { DisplayColumns, EntitySchema, IClientProperty, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { DataSourceToolbarSettings, DataViewSource, DataViewInitParameters} from 'qbm';
+import { DugAccessDetailEntity, PortalDgeResourcesbyid, ResourceAccessExpansionPerson } from '../TypedClient';
 import { DugAccessAnalysisService } from './dug-access-analysis.service';
 
 @Component({
   templateUrl: './dug-access-analysis.component.html',
+  styleUrls: ['./dug-access-analysis.component.scss'],
   selector: 'imx-dge-access-analysis',
+  providers: [DataViewSource],
 })
 export class DugAccessAnalysisComponent implements OnInit {
   @Input() public dug: PortalDgeResourcesbyid;
@@ -38,8 +43,18 @@ export class DugAccessAnalysisComponent implements OnInit {
   public dugBackingFolder: PortalDgeResourcesbyid;
   public identities: ResourceAccessExpansionPerson[];
   public ldsAccess = '#LDS#The following identities have access to the selected resource.';
+  public entitySchema: EntitySchema;
+  private displayColumns: IClientProperty[] = [];
+  public dstSettings: DataSourceToolbarSettings;
+  public DisplayColumns = DisplayColumns;
 
-  constructor(private readonly dugAccessAnalysisService: DugAccessAnalysisService) {}
+  constructor(
+    private readonly dugAccessAnalysisService: DugAccessAnalysisService,
+    private readonly translate: TranslateService,
+    public dataSource: DataViewSource<DugAccessDetailEntity>,
+  ) {
+    this.entitySchema = DugAccessDetailEntity.GetEntitySchema('Access Detail', '#LDS#Access Detail', this.translate);
+  }
 
   public async ngOnInit(): Promise<void> {
     this.displayResource = this.dug.UID_QAMResourceType.Column.GetDisplayValue();
@@ -54,5 +69,27 @@ export class DugAccessAnalysisComponent implements OnInit {
     }
 
     this.identities = await this.dugAccessAnalysisService.getIdentities(this.dug.UID_QAMDuG.value);
+    this.displayColumns = [
+      this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
+      this.entitySchema.Columns['Department'],
+      this.entitySchema.Columns['Location'],
+      this.entitySchema.Columns['Role'],
+      this.entitySchema.Columns['Manager'],
+    ];
+    this.init();
+  }
+
+  public init() {
+    const data = DugAccessDetailEntity.buildEntities(
+      DugAccessDetailEntity.buildEntityData(this.identities),
+      this.entitySchema,
+    );
+    const dataViewInitParameters: DataViewInitParameters<DugAccessDetailEntity> = {
+      execute: (): Promise<ExtendedTypedEntityCollection<DugAccessDetailEntity, unknown>> => Promise.resolve(data),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayColumns,
+      localSource: true,
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 }

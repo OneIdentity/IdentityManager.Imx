@@ -24,23 +24,29 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
-import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, HelpContextualValues, SideNavigationComponent } from 'qbm';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataViewInitParameters, DataViewSource, HELP_CONTEXTUAL, HelpContextualValues, SideNavigationComponent } from 'qbm';
 
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { DugSidesheetComponent } from '../dug/dug-sidesheet.component';
+import { PortalDgeResources } from '../TypedClient';
 import { DugOverviewService } from './dug-overview.service';
 
 @Component({
   selector: 'imx-dug-overview',
   templateUrl: './dug-overview.component.html',
   styleUrls: ['./dug-overview.component.scss'],
+  providers: [DataViewSource],
 })
 export class DugOverviewComponent implements OnInit, SideNavigationComponent {
 
   @Input() public isAdmin = false;
+  @Input() public uiddugnode: string = ''; 
+  @Input() public isAuditView: boolean = false;
+  @Output() public goBackToAuditView = new EventEmitter<void>();
+
   public data?: any;
   public contextId?: HelpContextualValues;
   private dataModel: DataModel;
@@ -51,11 +57,13 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
   private displayedColumns: IClientProperty[] = [];
   public readonly DisplayColumns = DisplayColumns;
   public activeTabIndex = 0;
+  public rootDug: PortalDgeResources[] = [];
 
   constructor(
     private readonly overviewService: DugOverviewService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly translate: TranslateService,
+    public dataSource: DataViewSource<PortalDgeResources>
   ) {
     this.entitySchema = overviewService.DugResourceSchema;
     this.displayedColumns = [
@@ -69,8 +77,21 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
     const isBusy = this.busyService.beginBusy();
     try {
       this.dataModel = await this.overviewService.getDataModel();
-      await this.getData();
+      if(this.isAuditView){
+        this.displayedColumns.push(
+          {
+            ColumnName: 'actions',
+            Type: ValType.String
+          }
+        );
+        await this.getData({uiddugnode: this.uiddugnode});
+      }
+      else{
+        await this.getData();
+      }
+        
     } finally {
+      this.contextId = this.isAuditView ? HELP_CONTEXTUAL.AuditingGovernedData : ( this.isAdmin ? HELP_CONTEXTUAL.GovernedDataOverview : HELP_CONTEXTUAL.GovernedData );
       isBusy.endBusy();
     }
   }
@@ -113,18 +134,42 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
     const isBusy = this.busyService.beginBusy();
     this.navigationState = this.isAdmin ? { ...parameter, allresources: '1' } : { ...parameter, owned: '1' };
     try {
-      const data = await this.overviewService.getData(this.navigationState);
-
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
+      const dataViewInitParameters: DataViewInitParameters<PortalDgeResources> = {
+        execute: async (): Promise<TypedEntityCollectionData<PortalDgeResources>> => {
+          return await this.overviewService.getData(this.navigationState);
+        },
         dataModel: this.dataModel,
-        filters: this.dataModel?.Filters ?? [],
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
+        schema: this.entitySchema,
+        columnsToDisplay: this.displayedColumns,
+        highlightEntity: (dugResource: PortalDgeResources) => {
+          this.showDugResource(dugResource);
+        },
       };
+      this.dataSource.init(dataViewInitParameters);
     } finally {
       isBusy.endBusy();
     }
+  }
+
+  public async viewContent (item: PortalDgeResources): Promise<void> {
+    this.rootDug.push(item);
+    await this.getData({uiddugnode: this.uiddugnode, uiddugparent: item.GetEntity().GetKeys()[0]});
+  }
+
+  public async goBackToRoot(item?: PortalDgeResources): Promise<void> {
+    if(!item){
+      this.goBackToAuditView.emit();
+      return;
+    }
+    this.rootDug.pop();
+    await this.getData({uiddugnode: this.uiddugnode, uiddugparent: item.GetEntity().GetColumn('UID_QAMDuGParent').GetValue()});
+  }
+
+  public get lastRootDuGItem() {
+    return this.rootDug[this.rootDug.length - 1];
+  }
+
+  public get hasRootDug(): boolean {
+    return this.rootDug.length > 0;
   }
 }

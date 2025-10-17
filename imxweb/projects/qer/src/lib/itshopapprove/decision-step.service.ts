@@ -41,65 +41,81 @@ export class DecisionStepSevice {
   }
 
   public getCurrentStepCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference | undefined {
-    const step = this.getStep(extended, entity);
+    const step = this.getStep(extended, entity, this.uidUser);
 
-    return step?.Columns.Ident_PWODecisionStep == null
+    return step?.Columns?.Ident_PWODecisionStep == null
       ? undefined
       : new BaseReadonlyCdr(this.createEntityColumn(step.Columns.Ident_PWODecisionStep), display);
   }
 
   public getAdditionalInfoCdr(entity: TypedEntity, extended: any, display: string): ColumnDependentReference | undefined {
-    const step = this.getStep(extended, entity);
+    const step = getWorkflowDataWithSmallestSublevel(extended, entity, this.uidUser);
 
     if (!step) {
       return undefined;
     }
 
-    const data = extended.WorkflowData?.Entities?.find(
-      (elem) =>
-        elem?.Columns?.UID_QERWorkingStep.Value === step.Columns.UID_QERWorkingStep.Value &&
-        elem?.Columns?.UID_PersonHead.Value === this.uidUser,
-    );
-
-    return (data?.Columns.UID_ComplianceRule?.Value ?? '') === ''
+    return (step?.Columns?.UID_ComplianceRule?.Value ?? '') === ''
       ? undefined
-      : new BaseReadonlyCdr(this.createEntityColumn(data.Columns.UID_ComplianceRule), display);
-  }
-
-  private getStep(extended: any, entity: TypedEntity) {
-    const steps = extended.WorkflowSteps?.Entities?.filter(
-      (elem) =>
-        elem?.Columns?.UID_QERWorkingMethod.Value === entity.GetEntity().GetColumn('UID_QERWorkingMethod').GetValue() &&
-        elem.Columns.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue(),
-    );
-
-    //add sublevel to steps
-    const stepsWithSubLevel: { subLevel: number; column: any }[] = [];
-    steps
-      .filter((elem) => this.isFitting(extended.WorkflowData?.Entities, elem))
-      .forEach((element) => {
-        const subLevel = extended.WorkflowData.Entities.find(
-          (data) => data.Columns.UID_QERWorkingStep.Value === element.Columns.UID_QERWorkingStep.Value,
-        );
-        stepsWithSubLevel.push({ subLevel: subLevel.Columns.SubLevelNumber.Value, column: element });
-      });
-
-    //Sort steps and get step with lowest sub level
-    const step = stepsWithSubLevel?.sort((x, y) => x.subLevel - y.subLevel)?.[0]?.column;
-
-    return step;
+      : new BaseReadonlyCdr(this.createEntityColumn(step.Columns!.UID_ComplianceRule), display);
   }
 
   private createEntityColumn(data: EntityColumnData): IEntityColumn {
     return this.entityService.createLocalEntityColumn({ ColumnName: 'CurrentStep', Type: ValType.String }, undefined, data);
   }
 
-  private isFitting(workflowData: EntityData[], step: EntityData): boolean {
-    return workflowData.some(
-      (elem) =>
-        elem?.Columns?.UID_QERWorkingStep.Value === step?.Columns?.UID_QERWorkingStep.Value &&
-        elem?.Columns?.UID_PersonHead.Value === this.uidUser &&
-        (elem?.Columns?.Decision.Value ?? '') === '',
-    );
+  /**
+   * Gets the step that needs to be approved by the current user in the current decision level.
+   * @param extended The extended data containing the workflow information.
+   * @param entity The approval object.
+   * @param uidUser The uid of the current user.
+   * @returns
+   */
+  private getStep(extended: any, entity: TypedEntity, uidUser: string): EntityData {
+    const smallest = getWorkflowDataWithSmallestSublevel(extended, entity, uidUser);
+    const uniqueUsersMap =
+      extended?.WorkflowSteps?.Entities?.filter(
+        (elem: EntityData) => elem.Columns?.UID_QERWorkingStep.Value === smallest?.Columns?.UID_QERWorkingStep.Value,
+      )?.reduce((acc, current) => {
+        return { ...acc, [current.Keys[0]]: current };
+      }, {}) ?? [];
+
+    return Object.values(uniqueUsersMap)[0] as EntityData;
   }
+}
+
+/**
+ * Gets the sublevel of the step that needs to be approved by the current user in the current decision level.
+ * @param extended The extended data containing the workflow information.
+ * @param entity The approval object.
+ * @param uidUser The uid of the current user.
+ * @returns The sublevel number or null if no step exists for the current user in the current decision level.
+ */
+export function getSubLevel(entity: TypedEntity, extended: any, uidUser: string): number | undefined {
+  const step = getWorkflowDataWithSmallestSublevel(extended, entity, uidUser);
+
+  if (!step) {
+    return undefined;
+  }
+
+  return step.Columns?.SubLevelNumber?.Value ?? 0;
+}
+
+/**
+ * Searches the step with the smallest sublevel for the given user and decision level.
+ * @param extended The extended data containing the workflow information.
+ * @param entity The approval object.
+ * @param uidUser The uid of the current user.
+ * @returns The step with the smallest sublevel in the current main level, that needs to be approved by the current user.
+ *          If no such step exists, the value is undefined.
+ */
+export function getWorkflowDataWithSmallestSublevel(extended: any, entity: TypedEntity, uidUser: string): EntityData | undefined {
+  return extended?.WorkflowData?.Entities?.filter(
+    (data: EntityData) =>
+      data?.Columns?.UID_PersonHead.Value === uidUser &&
+      (data?.Columns?.Decision?.Value ?? '') === '' &&
+      data.Columns.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue(),
+  )?.reduce((lowestSublevel, current) => {
+    return current.Columns.SubLevelNumber.Value < lowestSublevel.Columns.SubLevelNumber.Value ? current : lowestSublevel;
+  });
 }

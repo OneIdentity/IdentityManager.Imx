@@ -31,6 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationService, FkAdvancedPickerComponent, MultiValueService, calculateSidesheetWidth } from 'qbm';
 import { NewRequestOrchestrationService } from '../../new-request-orchestration.service';
 import { FKAdvancedPickerResponse } from '../../new-request-product/fk-advanced-picker-response';
+import { SelectedProductSource } from '../../new-request-selected-products/selected-product-item.interface';
 import { RecipientsApiService } from './recipients-api.service';
 
 @Component({
@@ -46,11 +47,23 @@ export class NewRequestRecipientsComponent implements OnDestroy {
     private sidesheetService: EuiSidesheetService,
     private translateService: TranslateService,
     private confirmationService: ConfirmationService,
-  ) {}
+  ) { }
 
   ngOnDestroy(): void {
     // Make sure that once you navigate away the default user is set again within the service
     this.setDefaultUser();
+  }
+
+  /**
+   * Check if we have a multi or singular valued selection
+   */
+  public get isMultiValue(): boolean {
+    return [
+      SelectedProductSource.AllProducts,
+      SelectedProductSource.ReferenceUserProducts,
+      SelectedProductSource.ReferenceUserOrgs,
+      SelectedProductSource.ProductBundles
+    ].includes(this.orchestration.selectedView);
   }
 
   public get nRecipients(): number {
@@ -58,10 +71,11 @@ export class NewRequestRecipientsComponent implements OnDestroy {
   }
 
   public async openSidesheet(): Promise<void> {
-    const idList = MultiValue.FromString(this.orchestration.recipients.Column.GetValue()).GetValues();
+    const idList = MultiValue.FromString(this.orchestration.recipients?.Column.GetValue() || '').GetValues();
+    const title = this.isMultiValue ? '#LDS#Heading Select Recipients' : '#LDS#Heading Select Recipient';
     const response: FKAdvancedPickerResponse = await this.sidesheetService
       .open(FkAdvancedPickerComponent, {
-        title: await this.translateService.get('#LDS#Heading Select Recipients').toPromise(),
+        title: await this.translateService.instant(title),
         icon: 'user',
         width: calculateSidesheetWidth(),
         padding: '0px',
@@ -71,7 +85,7 @@ export class NewRequestRecipientsComponent implements OnDestroy {
           displayValue: '',
           isRequired: true,
           fkRelations: this.recipientsApi.getFKRelations(),
-          isMultiValue: true,
+          isMultiValue: this.isMultiValue,
           idList,
         },
       })

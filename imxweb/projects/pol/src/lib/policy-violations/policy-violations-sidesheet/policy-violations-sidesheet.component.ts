@@ -24,10 +24,10 @@
  *
  */
 
-import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSelectOption, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { ObjectInfo } from '@imx-modules/imx-api-pol';
+import { FormControl } from '@angular/forms';
 import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import { ColumnDependentReference, ConfirmationService } from 'qbm';
 import { Subscription } from 'rxjs';
@@ -40,11 +40,12 @@ import { PolicyViolationsService } from '../policy-violations.service';
   templateUrl: './policy-violations-sidesheet.component.html',
   styleUrls: ['./policy-violations-sidesheet.component.scss'],
 })
-export class PolicyViolationsSidesheetComponent implements OnDestroy {
+export class PolicyViolationsSidesheetComponent implements OnInit, OnDestroy {
   public cdrList: ColumnDependentReference[] = [];
   public selectedHyperviewType: string;
   public selectedHyperviewUID: string;
-  public selectedOption: ObjectInfo;
+  public selectedHyperviewOption = new FormControl<string>('', {nonNullable: true});
+  public hyperviewOptions: EuiSelectOption[];
   public result: boolean = false;
   public closeSubscription: Subscription;
 
@@ -73,13 +74,28 @@ export class PolicyViolationsSidesheetComponent implements OnDestroy {
     public readonly sideSheetRef: EuiSidesheetRef,
     private readonly confirmationService: ConfirmationService,
     private readonly euiLoadingService: EuiLoadingService,
-  ) {
+  ) {}
+  
+  ngOnInit() {
     this.cdrList = this.data.policyViolation.properties;
-    this.closeSubscription = sideSheetRef.closeClicked().subscribe(async () => {
+    this.closeSubscription = this.sideSheetRef.closeClicked().subscribe(async () => {
       if (!this.mitig.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
-        sideSheetRef.close(this.result);
+        this.sideSheetRef.close(this.result);
       }
     });
+    this.hyperviewOptions = this.data.policyViolation.data.map(option => {
+      return {
+        display: option.Display!,
+        value: option.ObjectKey
+      }
+    });
+    // Prepopulate with first entry
+    if (this.hyperviewOptions.length > 0) {
+      const initValue = this.hyperviewOptions[0].value;
+      this.selectedHyperviewOption.setValue(initValue);
+      this.setHyperviewObject(initValue);
+    }
+
   }
 
   public ngOnDestroy(): void {
@@ -104,18 +120,22 @@ export class PolicyViolationsSidesheetComponent implements OnDestroy {
     }
   }
 
-  public get relatedOptions(): ObjectInfo[] {
-    return this.data.policyViolation.data || [];
-  }
-
-  public setHyperviewObject(selectedRelatedObject: ObjectInfo): void {
-    const dbKey = DbObjectKey.FromXml(selectedRelatedObject.ObjectKey ?? '');
+  /**
+   * Setup for the hyperview component
+   * @param objectKey 
+   */
+  public setHyperviewObject(objectKey: string | undefined): void {
+    const dbKey = DbObjectKey.FromXml(objectKey ?? '');
     this.selectedHyperviewType = dbKey.TableName;
     this.selectedHyperviewUID = dbKey.Keys.join(',');
   }
 
-  public onHyperviewOptionSelected(): void {
-    this.setHyperviewObject(this.selectedOption);
+  /**
+   * Handle changes to the hyperview option
+   * @param option 
+   */
+  public onHyperviewOptionSelected(option: EuiSelectOption): void {
+    this.setHyperviewObject(option.value);
   }
 
   private async reloadData() {

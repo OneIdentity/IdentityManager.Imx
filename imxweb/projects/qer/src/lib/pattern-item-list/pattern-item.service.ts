@@ -44,6 +44,7 @@ import {
   ValueStruct,
 } from '@imx-modules/imx-qbm-dbts';
 import { isEqual, uniqWith } from 'lodash';
+import { SettingsService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { RequestableProduct } from '../shopping-cart/requestable-product.interface';
@@ -55,6 +56,7 @@ export class PatternItemService {
   constructor(
     private readonly qerClient: QerApiService,
     private readonly serviceItemsProvider: ServiceItemsService,
+    private readonly settings: SettingsService,
   ) {}
 
   public get PortalShopPatternRequestableSchema(): EntitySchema {
@@ -144,14 +146,14 @@ export class PatternItemService {
     uidITShopOrg?: string,
     onlySelected?: boolean,
   ): Promise<RequestableProduct[]> {
-    const serviceItemEntities = await Promise.all(
-      patternRequestables.map(async (patternRequestable) => this.getServiceItemEntities(patternRequestable)),
-    );
+    const serviceItemEntities = await this.getPatternItemLists(patternRequestables);
+
     // make flat list without duplicates
     const serviceItemsEntitesFlat = uniqWith(
-      serviceItemEntities.reduce((a, b) => a.concat(b), []),
+      serviceItemEntities.reduce((a, b) => a?.concat(b ?? []), []),
       isEqual,
     );
+
     let allItems: RequestableProduct[];
     allItems = serviceItemsEntitesFlat
       .map((serviceItem) =>
@@ -179,6 +181,19 @@ export class PatternItemService {
     }
 
     return onlySelected ? selectedItems : allItems;
+  }
+
+  private async getPatternItemLists(patternRequestables: PortalItshopPatternRequestable[]) {
+    const pattern = Array.from(new Set(patternRequestables.map((elem) => elem.UID_ShoppingCartPattern.value)));
+
+    const sets = await Promise.all(
+      pattern.map(
+        async (id) =>
+          (await this.qerClient.v2Client.portal_itshop_pattern_get(id, { PageSize: this.settings.PageSizeForAllElements })).Entities,
+      ),
+    );
+
+    return sets;
   }
 
   /**

@@ -1,0 +1,74 @@
+@if(!isGovernedDataView) {
+<mat-card class="data-explorer data-explorer--nodes" >
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Heading Auditing - Managed Hosts</h3>
+      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+    </div>
+  </div>
+  <imx-data-view-toolbar
+    [dataSource]="dataSource" [showSettings]="false"
+  ></imx-data-view-toolbar>
+  <div class="data-explorer-table">
+	  <imx-data-view-auto-table
+		[dataSource]="dataSource"
+		mode="manual"
+		matSort
+		(matSortChange)="dataSource?.sortChange($event)"
+		[matSortActive]="dataSource.sortId()"
+		[matSortDirection]="dataSource.sortDirection()"
+	  >
+		<ng-container [matColumnDef]="entitySchema.Columns.DisplayValue.ColumnName">
+			<th mat-header-cell *matHeaderCellDef mat-sort-header>
+				{{ '#LDS#Display name' | translate }}
+			</th>
+			<td mat-cell *matCellDef="let item">
+				{{ item.GetEntity().GetColumn('DisplayValue').GetValue() }}
+			</td>
+		</ng-container>
+		<ng-container [matColumnDef]="entitySchema.Columns.NodeType.ColumnName">
+			<th mat-header-cell *matHeaderCellDef mat-sort-header>
+				{{ '#LDS#Host type' | translate }}
+			</th>
+			<td mat-cell *matCellDef="let item">
+				{{ item.GetEntity().GetColumn('NodeType').GetDisplayValue() }}
+			</td>
+		</ng-container>
+		<ng-container [matColumnDef]="entitySchema.Columns.TotalDuGResources.ColumnName">
+			<th mat-header-cell *matHeaderCellDef mat-sort-header>
+				{{ '#LDS#Count of governed resources' | translate }}
+			</th>
+			<td mat-cell *matCellDef="let item">
+				{{ item.GetEntity().GetColumn('TotalDuGResources').GetValue() }}
+			</td>
+		</ng-container>
+		<ng-container [matColumnDef]="entitySchema.Columns.TotalPointsOfInterest.ColumnName">
+			<th mat-header-cell *matHeaderCellDef mat-sort-header>
+				{{ '#LDS#Count of points of interest' | translate }}
+			</th>
+			<td mat-cell *matCellDef="let item">
+				{{ item.GetEntity().GetColumn('TotalPointsOfInterest').GetValue() }}
+			</td>
+		</ng-container>
+		<ng-container [matColumnDef]="'actions'">
+			<th mat-header-cell *matHeaderCellDef>
+				{{ '#LDS#Actions' | translate }}
+			</th>
+			<td mat-cell *matCellDef="let item">
+				<button
+				mat-stroked-button
+				color="primary"
+				(click)="showGovernedData(item)"
+				data-imx-identifier="dge-nodes-table-show-governed-data"
+				>
+					{{ '#LDS#Show governed data' | translate }}
+				</button>
+			</td>
+		</ng-container>
+	  </imx-data-view-auto-table>
+	  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
+  </div>
+</mat-card>
+} @else {
+	<imx-dug-overview [isAdmin]="true" [isAuditView] = "true" [uiddugnode]= "uidNode" (goBackToAuditView) = "closeGovernedDataView()" ></imx-dug-overview>
+}

@@ -28,10 +28,11 @@ import { Injectable } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { ExtService, HELP_CONTEXTUAL, MenuService } from 'qbm';
-import { CartItemsExtensionService, DataExplorerRegistryService, MyResponsibilitiesRegistryService } from 'qer';
+import { CartItemsExtensionService, DataExplorerRegistryService, isAuditor, MyResponsibilitiesRegistryService } from 'qer';
 import { AccessRequestService } from './access-request/access-request.service';
 import { AccessComponent } from './access/access.component';
 import { UserAccessComponent } from './access/user-access.component';
+import { AuditingGovernedDataComponent } from './auditing-governed-data/auditing-governed-data.component';
 import { DugOverviewComponent } from './dug-overview/dug-overview.component';
 import { DugOwnershipComponent } from './dug-ownership/dug-ownership.component';
 import { IdentityComponent } from './identity/identity.component';
@@ -145,6 +146,25 @@ export class InitService {
      };
    },
  );
+
+    this.dataExplorerRegistryService.registerFactory(
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (!isAuditor(groups)) { 
+          return;
+        }
+        return {
+          instance: AuditingGovernedDataComponent,
+          sortOrder: 2,
+          name: 'QAMNodes',
+          caption: '#LDS#Menu Entry Governed Data',
+          data: {
+            TableName: 'QAMNode',
+            Count: 0,
+          },
+          contextId: HELP_CONTEXTUAL.AuditingGovernedData,
+        };
+      },
+    );
 
     this.addRoutes(routes);
   }

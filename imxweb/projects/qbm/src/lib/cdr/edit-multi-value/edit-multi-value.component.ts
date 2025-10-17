@@ -24,16 +24,14 @@
  *
  */
 
-import { Component, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { UntypedFormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { ServerError } from '../../base/server-error';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import { EditorBase } from '../editor-base';
 import { EntityColumnContainer } from '../entity-column-container';
 
 /**
@@ -66,21 +64,10 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-  /**
-   * @ignore
-   * Used for the template and displays the last server error, that occured while loading content.
-   */
-  public lastError: ServerError | undefined;
-  /**
-   * If an error occured, it returns its message
-   */
-  public get validationErrorMessage(): string {
-    return this.lastError?.toString() || '';
-  }
-
   constructor(
     private readonly logger: ClassloggerService,
     private readonly multiValueProvider: MultiValueService,
+    protected readonly errorHandler?: ErrorHandler,
   ) {}
 
   /**
@@ -130,7 +117,6 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
       );
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(this.fromTextArea(value))));
 
-      this.control.addValidators(EditorBase.hasServerError(this));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -142,7 +128,7 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
    * @param values The values, that will be used as a new value.
    */
   private async writeValue(value: string | undefined): Promise<void> {
-    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
+    if (this.control.errors) {
       this.logger.debug(this, 'writeValue - client validation failed');
       return;
     }
@@ -151,19 +137,22 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
     if (!this.columnContainer.canEdit || this.columnContainer.value === value) {
       return;
     }
+    const resetValue = this.columnContainer.value;
 
     try {
       this.isWriting = true;
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
-      this.lastError = undefined;
     } catch (e) {
-      this.logger.error(this, e);
-      this.lastError = e;
+      this.errorHandler?.handleError(e);
+      const valueAfterWrite = this.toTextArea(resetValue);
+      if (this.control.value !== valueAfterWrite) {
+        this.control.setValue(valueAfterWrite, { emitEvent: false });
+      }
     } finally {
       this.isWriting = false;
       const valueAfterWrite = this.toTextArea(this.columnContainer.value);
-      if (!this.lastError && this.control.value !== valueAfterWrite) {
+      if (this.control.value !== valueAfterWrite) {
         this.control.setValue(valueAfterWrite, { emitEvent: false });
       }
       this.control.updateValueAndValidity();

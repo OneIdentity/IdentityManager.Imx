@@ -45,6 +45,7 @@ import {
   calculateSidesheetWidth,
   ClassloggerService,
   ClientPropertyForTableColumns,
+  ConfirmationService,
   DataSourceToolbarSettings,
   DataSourceToolbarViewConfig,
   DataViewInitParameters,
@@ -163,6 +164,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     private readonly ext: ExtService,
     private readonly permissions: QerPermissionsService,
     public dataSource: DataViewSource<Approval, PwoExtendedData | undefined>,
+    private readonly confirm: ConfirmationService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
@@ -317,7 +319,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       },
       selectionChange: (approval: Approval[]) => this.onSelectionChanged(approval),
     };
-    this.dataSource.init(dataViewInitParameters);
+    await this.dataSource.init(dataViewInitParameters);
+    await this.dataSource.init(dataViewInitParameters);
   }
 
   /**
@@ -370,7 +373,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       .toPromise();
 
     if (decision === 'approve') {
-      this.actionService.approve([pwo]);
+      this.actionService.approve([pwo], this.currentUserId);
     } else if (decision === 'deny') {
       this.actionService.deny([pwo]);
     }
@@ -403,14 +406,20 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     // Nothing to handle here.
   }
 
-  private handleDecision(): void {
-    if (this.approvalsDecision === ApprovalsDecision.none || !!this.dataSource.collectionData()?.Data?.length) {
+  private async handleDecision(): Promise<void> {
+    if (this.approvalsDecision === ApprovalsDecision.none || (this.dataSource.data?.length ?? 0) === 0) {
+      if ((this.dataSource.data?.length ?? 0) === 0) {
+        await this.confirm.showErrorMessage({
+          Message: '#LDS#This request has already been approved or denied.',
+          ShowOk: true,
+        });
+      }
       return;
     }
 
     switch (this.approvalsDecision) {
       case ApprovalsDecision.approve:
-        this.actionService.approve(this.dataSource.collectionData()?.Data || []);
+        this.actionService.approve(this.dataSource.collectionData()?.Data || [], this.currentUserId);
         break;
       case ApprovalsDecision.deny:
         this.actionService.deny(this.dataSource.collectionData()?.Data || []);

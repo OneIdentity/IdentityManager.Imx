@@ -15,16 +15,43 @@
         }}
       </p>
       <mat-card class="imx-card-fill">
-        <imx-data-source-toolbar #dstResource [settings]="dstSettingsResource"> </imx-data-source-toolbar>
-        <imx-data-table [dst]="dstResource" [detailViewVisible]="false" mode="manual">
-          <imx-data-table-column [entityColumn]="entitySchemaResource.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-            <ng-template let-item>
-              <div>{{ item.GetEntity().GetDisplay() }}</div>
-              <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
-            </ng-template>
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchemaResource.Columns.CountActivities"></imx-data-table-column>
-        </imx-data-table>
+        <imx-data-view-toolbar [dataSource]="dataSourceResource" [showSettings]="false"></imx-data-view-toolbar>
+         <imx-data-view-auto-table [dataSource]="dataSourceResource" mode="manual">
+          <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ entitySchemaResource?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+            </th>
+            <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+              <div data-imx-identifier="dugActivitiesResource-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
+              <div subtitle data-imx-identifier="dugActivitiesResource-tabledata-subtitle">{{ item.GetEntity().GetDisplayLong() }}</div>
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="entitySchemaResource.Columns.CountActivities.ColumnName">
+            <th mat-header-cell *matHeaderCellDef>{{ entitySchemaResource?.Columns?.CountActivities?.Display }}</th>
+            <td mat-cell *matCellDef="let item" role="gridcell">
+              {{ item.GetEntity().GetColumn('CountActivities').GetDisplayValue() }}
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="entitySchemaResource.Columns.Action.ColumnName">
+            <th mat-header-cell *matHeaderCellDef>{{ entitySchemaResource?.Columns?.Action?.Display }}</th>
+            <td mat-cell *matCellDef="let item" role="gridcell">
+              {{ item.GetEntity().GetColumn('Action').GetDisplayValue() }}
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="entitySchemaResource.Columns.ResourceType.ColumnName">
+            <th mat-header-cell *matHeaderCellDef>{{ entitySchemaResource?.Columns?.ResourceType?.Display }}</th>
+            <td mat-cell *matCellDef="let item" role="gridcell">
+              {{ item.GetEntity().GetColumn('ResourceType').GetDisplayValue() }}
+            </td>
+          </ng-container>
+          <ng-container [matColumnDef]="entitySchemaResource.Columns.RiskIndexCalculated.ColumnName">
+            <th mat-header-cell *matHeaderCellDef>{{ entitySchemaResource?.Columns?.RiskIndexCalculated?.Display }}</th>
+            <td mat-cell *matCellDef="let item" role="gridcell">
+              {{ item.GetEntity().GetColumn('RiskIndexCalculated').GetDisplayValue() }}
+            </td>
+          </ng-container>
+        </imx-data-view-auto-table>
+        <imx-data-view-paginator [dataSource]="dataSourceResource"></imx-data-view-paginator>
       </mat-card>
     </div>
   </mat-expansion-panel>
@@ -45,16 +72,9 @@
         }}
       </p>
       <mat-card class="imx-card-fill">
-        <imx-data-source-toolbar #dstTrustee [settings]="dstSettingsTrustee"> </imx-data-source-toolbar>
-        <imx-data-table [dst]="dstTrustee" [detailViewVisible]="false" mode="manual">
-          <imx-data-table-column [entityColumn]="entitySchemaTrustee.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-            <ng-template let-item>
-              <div>{{ item.GetEntity().GetDisplay() }}</div>
-              <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
-            </ng-template>
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchemaTrustee.Columns.CountActivities"></imx-data-table-column>
-        </imx-data-table>
+        <imx-data-view-toolbar [dataSource]="dataSourceTrustee" [showSettings]="false"></imx-data-view-toolbar>
+        <imx-data-view-auto-table [dataSource]="dataSourceTrustee" mode="auto"></imx-data-view-auto-table>
+        <imx-data-view-paginator [dataSource]="dataSourceTrustee"></imx-data-view-paginator>
       </mat-card>
     </div>
   </mat-expansion-panel>

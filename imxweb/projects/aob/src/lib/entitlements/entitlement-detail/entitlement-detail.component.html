@@ -1,7 +1,18 @@
-<imx-entitlement-edit
-  [entitlement]="data?.entitlement"
-  [serviceItem]="data?.serviceItem"
-  (controlCreated)="form.addControl('entitlementedit', $event)"
-  (saved)="afterSave($event)"
->
-</imx-entitlement-edit>
+<mat-tab-group mat-stretch-tabs="false" class="imx-aob">
+  <mat-tab [label]="'#LDS#Heading Main Data' | translate" data-imx-identifier="app-details">
+    <imx-entitlement-edit
+      [entitlement]="data?.entitlement"
+      [serviceItem]="data?.serviceItem"
+      (controlCreated)="form.addControl('entitlementedit', $event)"
+      (saved)="afterSave($event)"
+    >
+    </imx-entitlement-edit>
+  </mat-tab>
+  <mat-tab [label]="'#LDS#Heading Statistics' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <imx-statistics-for-objects [objectType]="objectType" [objectUid]="objectUid"></imx-statistics-for-objects>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

@@ -31,12 +31,16 @@ import {
   DisplayColumns,
   DisplayPattern,
   EntityCollectionData,
+  EntityColumnData,
+  EntityData,
   EntitySchema,
   EntityWriteDataSingle,
+  ExtendedTypedEntityCollection,
   FilterData,
   FilterTreeData,
   FkCandidateBuilder,
   FkProviderItem,
+  IClientProperty,
   InteractiveEntityData,
   InteractiveEntityWriteData,
   InteractiveTypedEntityBuilder,
@@ -156,6 +160,10 @@ export interface ResourceAccessExpansionData {
 export interface ResourceAccessExpansionPerson {
   UidPerson?: string;
   Display?: string;
+  Department?: string;
+  Location?: string;
+  Manager?: string;
+  Role?: string;
 }
 export interface ResourceAccessMembersData {
   Members?: ResourceAccessMembersData[];
@@ -175,6 +183,9 @@ export interface ResourceActivityData {
   Display?: string;
   LongDisplay?: string;
   CountActivities: number;
+  ResourceType?: string;
+  RiskIndexCalculated?: number;
+  Action?: string;
 }
 export interface ResourceReportData {
   ReportDisplayName?: string;
@@ -229,6 +240,7 @@ export interface TrusteeActivityData {
   Display?: string;
   LongDisplay?: string;
   CountActivities: number;
+  Action?: string;
 }
 export interface TrusteeData {
   Display?: string;
@@ -240,6 +252,7 @@ export interface TrusteeData {
 }
 
 import { IEntity } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 
 export class TypedClient {
   public readonly PortalCandidatesAerole: PortalCandidatesAeroleWrapper;
@@ -281,6 +294,69 @@ export class TypedClient {
     this.PortalDgeTrusteesIdentity = new PortalDgeTrusteesIdentityWrapper(client, translationProvider);
   }
 }
+
+export class DugAccessDetailEntity extends TypedEntity {
+  public static GetEntitySchema(typeName: string, typeDisplay: string, translate?: TranslateService): EntitySchema {
+    const returnColumns: { [key: string]: IClientProperty } = {
+      Department : {
+        Type: ValType.String,
+        ColumnName: 'Department',
+        Display: translate ? translate.instant('#LDS#Department') : '#LDS#Department',
+      },
+      Location : {
+        Type: ValType.String,
+        ColumnName: 'Location',
+        Display: translate ? translate.instant('#LDS#Location') : '#LDS#Location',
+      },
+      Manager : {
+        Type: ValType.String,
+        ColumnName: 'Manager',
+        Display: translate ? translate.instant('#LDS#Manager') : '#LDS#Manager',
+      },
+      Role : {
+        Type: ValType.String,
+        ColumnName: 'Role',
+        Display: translate ? translate.instant('#LDS#Role') : '#LDS#Role',
+      },
+    }
+
+    returnColumns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
+
+    return {
+      TypeName: typeName,
+      Display: translate ? translate.instant(typeDisplay) : typeDisplay,
+      Columns: returnColumns,
+    };
+  };
+
+  public static buildEntities(
+    entityData: EntityData[],
+    entitySchema: EntitySchema,
+  ): ExtendedTypedEntityCollection<DugAccessDetailEntity, unknown> {
+    const builder = new TypedEntityBuilder(DugAccessDetailEntity);
+    return builder.buildReadWriteEntities(
+      {
+        TotalCount: entityData.length,
+        Entities: entityData,
+      },
+      entitySchema,
+    );
+  }
+
+  public static buildEntityData(resources: ResourceAccessExpansionPerson[]): EntityData[] {
+    return resources.map((elem) => {
+      const returnColumns: { [key: string]: EntityColumnData } = {};
+      returnColumns.Department = { Value: elem.Department, IsReadOnly: true };
+      returnColumns.Location = { Value: elem.Location, IsReadOnly: true };  
+      returnColumns.Manager = { Value: elem.Manager, IsReadOnly: true };
+      returnColumns.Role = { Value: elem.Role, IsReadOnly: true };
+
+      return { Columns: returnColumns, Display: elem.Display ?? '', Keys: [elem.UidPerson ?? ''] };
+    });
+  }
+}
+
+
 export class PortalCandidatesAerole extends TypedEntity {
   readonly XObjectKey: IReadValue<string> = this.GetEntityValue('XObjectKey');
   readonly UID_AERole: IReadValue<string> = this.GetEntityValue('UID_AERole');
@@ -593,9 +669,43 @@ export class PortalDgeClassificationSummary extends TypedEntity {
 export class PortalDgeClassificationSummaryInteractive extends PortalDgeClassificationSummary { }
 
 export class PortalDgeNodes extends TypedEntity {
+
+  readonly DisplayValue: IReadValue<string> = this.GetEntityValue('DisplayValue');
+  readonly UID_QAMNode: IReadValue<string> = this.GetEntityValue('UID_QAMNode');
+  readonly NodeType: IReadValue<number> = this.GetEntityValue('NodeType');
+  readonly TotalDuGResources: IReadValue<number> = this.GetEntityValue('TotalDuGResources');
+  readonly TotalPointsOfInterest: IReadValue<number> = this.GetEntityValue('TotalPointsOfInterest');
+
   /** Returns the static compile time schema for this type. */
-  static GetEntitySchema(): StaticSchema<never> {
-    const columns = {};
+  static GetEntitySchema(): StaticSchema<
+    'DisplayValue' | 'UID_QAMNode' | 'NodeType' | 'TotalDuGResources' | 'TotalPointsOfInterest'> {
+    const columns = {
+      DisplayValue: {
+        ColumnName: 'DisplayValue',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      UID_QAMNode:{
+        ColumnName: 'UID_QAMNode',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      NodeType: {
+        ColumnName: 'NodeType',
+        Type: ValType.Int,
+        IsReadOnly: true,
+      },
+      TotalDuGResources: {
+        ColumnName: 'TotalDuGResources',
+        Type: ValType.Int,
+        IsReadOnly: true,
+      },
+      TotalPointsOfInterest: {
+        ColumnName: 'TotalPointsOfInterest',
+        Type: ValType.Int,
+        IsReadOnly: true,
+      },
+    };
 
     columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
     columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY_LONG;
@@ -618,6 +728,8 @@ export class PortalDgeResources extends TypedEntity {
   readonly DisplayPath: IReadValue<string> = this.GetEntityValue('DisplayPath');
   readonly RiskIndexCalculated: IReadValue<number> = this.GetEntityValue('RiskIndexCalculated');
   readonly RequiresOwnership: IReadValue<boolean> = this.GetEntityValue('RequiresOwnership');
+  readonly UID_QAMDuGParent: IReadValue<string> = this.GetEntityValue('UID_QAMDuGParent');
+  readonly HasPerceivedOwner?: IReadValue<boolean> = this.GetEntityValue('PerceivedOwner');
   /** Returns the static compile time schema for this type. */
   static GetEntitySchema(): StaticSchema<
     | 'UID_QAMNode'
@@ -630,6 +742,8 @@ export class PortalDgeResources extends TypedEntity {
     | 'DisplayPath'
     | 'RiskIndexCalculated'
     | 'RequiresOwnership'
+    | 'UID_QAMDuGParent'
+    | 'HasPerceivedOwner'
   > {
     const columns = {
       UID_QAMNode: {
@@ -679,6 +793,16 @@ export class PortalDgeResources extends TypedEntity {
       },
       RequiresOwnership: {
         ColumnName: 'RequiresOwnership',
+        Type: ValType.Bool,
+        IsReadOnly: true,
+      },
+      UID_QAMDuGParent: {
+        ColumnName: 'UID_QAMDuGParent',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      HasPerceivedOwner: {
+        ColumnName: 'HasPerceivedOwner',
         Type: ValType.Bool,
         IsReadOnly: true,
       },

@@ -87,7 +87,7 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
   public entitySchema: EntitySchema;
   private displayedColumns: IClientProperty[] = [];
   public readonly DisplayColumns = DisplayColumns;
-  public perceivedOwners: ExtendedTypedEntityCollection<PortalDgeResourcesPerceivedowners, unknown>;;
+  public perceivedOwners: ExtendedTypedEntityCollection<PortalDgeResourcesPerceivedowners, unknown>;
   public selectedOwner: IReadValue<string> | null = null;
   public ldsChooseAnotherEmployee =
     '#LDS#If the given accounts are not sufficient, Click here to choose another employee who should be owner of this resource.';
@@ -107,7 +107,7 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
   @ViewChild('accessTab') private accessTab: MatTab;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: { uid: string, identifier: string },
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: { uid: string, identifier: string, sidesheetRef?: EuiSidesheetRef},
     private readonly dugOverviewProvider: DugOverviewService,
     private readonly ownershipService: DugOwnershipService,
     private readonly sideSheet: EuiSidesheetService,
@@ -168,6 +168,7 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
       this.isShare = this.dug.UID_QAMResourceType.value == 'QAM-52F4B02EFBCAEB7A2EE35B8A4636FAEA';
       if (this.isPerceivedOwner()) {
         this.perceivedOwners = await this.ownershipService.getPerceivedowners(this.data.uid);
+        this.onAssignSelectionChange(this.perceivedOwners?.Data?.[0]?.UID_PersonPerceivedOwner)
         this.dstSettings = {
           displayedColumns: this.displayedColumns,
           dataSource: this.perceivedOwners,
@@ -277,13 +278,13 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
 
   public async assignOwner(): Promise<void> {
     const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading Assign Ownership'),
+      title: this.translate.instant('#LDS#Heading Assign Owner'),
       subTitle: this.dug.GetEntity().GetDisplay(),
       width: calculateSidesheetWidth(),
       disableClose: true,
       padding: '0',
       testId: 'assign-dug-owner-sidesheet',
-      data: { uid: this.dug.UID_QAMDuG.value, identifier: 'dug-assign-ownership' },
+      data: { uid: this.dug.UID_QAMDuG.value, identifier: 'dug-assign-ownership', sidesheetRef: this.sidesheetRef },
     });
   }
 
@@ -301,6 +302,7 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
       await this.dug.GetEntity().Commit();
       this.snackbar.open({ key: '#LDS#The resource has been saved' });
       this.sidesheetRef.close(true);
+      this.data.sidesheetRef?.close(true);
     } finally {
       this.loadingService.hide(overlay);
     }

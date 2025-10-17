@@ -120,6 +120,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
   public onDateChanged(event: MatCalendarUserEvent<Moment>): void {
     this.datePickerDate = moment(event.value).clone();
     this.control.setValue(this.datePickerDate);
+    this.close.emit();
   }
 
   /**

@@ -40,14 +40,31 @@ import { ResourceActivityData, TrusteeActivityData } from '../TypedClient';
 
 export class DugActivityEntity extends TypedEntity {
   public static GetEntitySchema(typeName: string, typeDisplay: string, translate?: TranslateService): EntitySchema {
-    const returnColumns: { [key: string]: IClientProperty } = {};
-
-    returnColumns.CountActivities = {
-      Type: ValType.Int,
-      ColumnName: 'CountActivities',
-      Display: translate ? translate.instant('#LDS#Activity count') : '#LDS#Activity count',
+    const returnColumns: { [key: string]: IClientProperty } = {
+      Action : {
+        Type: ValType.String,
+        ColumnName: 'Action',
+        Display: typeName === 'Trustee' ? (translate ? translate.instant('#LDS#Activity') : '#LDS#Activity') : (translate ? translate.instant('#LDS#Action') : '#LDS#Action'),
+      },
+      CountActivities : {
+        Type: ValType.Int,
+        ColumnName: 'CountActivities',
+        Display: typeName === 'Trustee' ? (translate ? translate.instant('#LDS## operations') : '#LDS## operations') : (translate ? translate.instant('#LDS#Activity Count') : '#LDS#Activity Count'),
+      },
     };
 
+    if(typeName === 'Resources') {
+      returnColumns.ResourceType = {
+          Type: ValType.String,
+          ColumnName: 'ResourceType',
+          Display: translate ? translate.instant('#LDS#Governed data type') : '#LDS#Governed data type',
+      };
+      returnColumns. RiskIndexCalculated = {
+          Type: ValType.Int,
+          ColumnName: 'RiskIndexCalculated',
+          Display: translate ? translate.instant('#LDS#Risk index (calculated)') : '#LDS#Risk index (calculated)',
+      };
+    }
     returnColumns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
 
     return {
@@ -73,18 +90,22 @@ export class DugActivityEntity extends TypedEntity {
 
   public static buildEntityDataTrustee(trustees: TrusteeActivityData[]): EntityData[] {
     return trustees.map((elem) => {
-      const returnColumns: { [key: string]: EntityColumnData } = {};
-      returnColumns.CountActivities = { Value: elem.CountActivities, IsReadOnly: true };
-
+      const returnColumns: { [key: string]: EntityColumnData } = {
+        CountActivities : { Value: elem.CountActivities, IsReadOnly: true },
+        Action : { Value: elem.Action, IsReadOnly: true },
+      };
       return { Columns: returnColumns, Display: elem.Display ?? '', LongDisplay: elem.LongDisplay ?? '', Keys: [elem.UidTrustee ?? ''] };
     });
   }
 
   public static buildEntityDataResource(resources: ResourceActivityData[]): EntityData[] {
     return resources.map((elem) => {
-      const returnColumns: { [key: string]: EntityColumnData } = {};
-      returnColumns.CountActivities = { Value: elem.CountActivities, IsReadOnly: true };
-
+      const returnColumns: { [key: string]: EntityColumnData } = {
+        CountActivities : { Value: elem.CountActivities, IsReadOnly: true },
+        Action : { Value: elem.Action, IsReadOnly: true },
+        ResourceType : { Value: elem.ResourceType, IsReadOnly: true },
+        RiskIndexCalculated : { Value: elem.RiskIndexCalculated, IsReadOnly: true },
+      };
       return { Columns: returnColumns, Display: elem.Display ?? '', LongDisplay: elem.LongDisplay ?? '', Keys: [elem.UidQamDug ?? ''] };
     });
   }

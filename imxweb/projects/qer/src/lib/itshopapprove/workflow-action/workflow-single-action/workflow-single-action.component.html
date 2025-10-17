@@ -17,8 +17,10 @@
     >
     </imx-decision-reason>
 
-    <imx-cdr-editor [cdr]="currentStepCdr" data-imx-identifier="workflow-single-action-current-step"></imx-cdr-editor>
-    <imx-cdr-editor [cdr]="complianceCdr" data-imx-identifier="workflow-single-action-current-step"></imx-cdr-editor>
+    <ng-container *ngIf="request.pwoData != null">
+      <imx-cdr-editor [cdr]="currentStepCdr" data-imx-identifier="workflow-single-action-current-step"></imx-cdr-editor>
+      <imx-cdr-editor [cdr]="complianceCdr" data-imx-identifier="workflow-single-action-current-step"></imx-cdr-editor>
+    </ng-container>
 
     <imx-busy-indicator *ngIf="busyService.isBusy"></imx-busy-indicator>
     <ng-container *ngIf="data.additionalInfo != null">

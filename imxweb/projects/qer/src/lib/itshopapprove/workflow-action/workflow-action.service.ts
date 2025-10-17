@@ -62,10 +62,10 @@ import { TermsOfUseAcceptComponent } from '../../terms-of-use/terms-of-use-accep
 import { UserModelService } from '../../user/user-model.service';
 import { Approval } from '../approval';
 import { ApprovalsService } from '../approvals.service';
+import { getSubLevel } from '../decision-step.service';
 import { WorkflowActionEditWrapper } from './workflow-action-edit-wrapper.interface';
 import { WorkflowActionParameters } from './workflow-action-parameters.interface';
 import { WorkflowActionComponent } from './workflow-action.component';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -279,7 +279,7 @@ export class WorkflowActionService {
     return this.apiService.v2Client.portal_itshop_approve_requests_stepup_post({ UidPwo: uidPwo });
   }
 
-  public async approve(entities: (Approval | TypedEntity)[]): Promise<void> {
+  public async approve(entities: (Approval | TypedEntity)[], user: string): Promise<void> {
     const requests = entities as Approval[];
     const term = await this.checkTermsOfUse(requests);
     if (!term.isChecked) {
@@ -394,6 +394,7 @@ export class WorkflowActionService {
           Reason: actionParameters.reason?.column.GetValue(),
           UidJustification: actionParameters.justification?.column?.GetValue(),
           Decision: true,
+          SubLevel: getSubLevel(request, request.pwoData, user),
         });
       },
     });

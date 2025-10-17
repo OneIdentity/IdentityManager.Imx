@@ -1,13 +1,9 @@
-
 @use 'base/mixins' as mixin;
 
 :host {
   @include mixin.flex-column-container-fill();
 
-  .data-explorer--ownership, .data-explorer-table {
+  .data-explorer--nodes, .data-explorer-table {
     @include mixin.flex-column-container-fill();
   }
-}
-.none-text{
-  padding: 15px;
 }

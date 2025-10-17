@@ -2,13 +2,12 @@
   class="imx-card eui-clickable eui-clickable-primary"
   role="button"
   tabindex="0"
-  #changeRecipientTooltip="matTooltip"
   (keyup.enter)="openSidesheet()"
   (click)="openSidesheet()"
   [ngClass]="{ 'contains-button': nRecipients > 1 }"
-  [matTooltip]="'#LDS#Click to change the recipient' | translate"
+  [matTooltip]="(isMultiValue ? '#LDS#Click to change the recipients' : '#LDS#Click to change the recipient') | translate"
 >
-  <span class="imx-label">{{ '#LDS#Recipients' | translate }}:</span>
+  <span class="imx-label">{{ (isMultiValue ? '#LDS#Recipients': '#LDS#Recipient') | translate }}:</span>
   <span class="imx-description">({{ '#LDS#Click to change' | translate }})</span>
   <div *ngIf="nRecipients === 1" class="imx-content">
     <span>
@@ -23,8 +22,6 @@
       mat-icon-button
       (click)="clearRecipients(); $event.stopPropagation()"
       [matTooltip]="'#LDS#Clear recipients' | translate"
-      (mouseover)="changeRecipientTooltip.hide()"
-      (mouseout)="changeRecipientTooltip.show()"
     >
       <eui-icon icon="close" size="22px"></eui-icon>
     </button>

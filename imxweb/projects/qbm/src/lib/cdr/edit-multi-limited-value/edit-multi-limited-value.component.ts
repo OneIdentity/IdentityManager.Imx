@@ -24,18 +24,16 @@
  *
  */
 
-import { ChangeDetectorRef, Component, EventEmitter, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { FormGroup, UntypedFormArray, UntypedFormControl } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 
 import { LimitedValueData } from '@imx-modules/imx-qbm-dbts';
-import { ServerError } from '../../base/server-error';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import { EditorBase } from '../editor-base';
 import { EntityColumnContainer } from '../entity-column-container';
 interface LimitedForm {
   array: UntypedFormArray;
@@ -77,22 +75,11 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
   private readonly subscriptions: Subscription[] = [];
   public isWriting = false;
 
-  /**
-   * @ignore
-   * Used for the template and displays the last server error, that occured while loading content.
-   */
-  public lastError: ServerError | undefined;
-  /**
-   * If an error occured, it returns its message
-   */
-  public get validationErrorMessage(): string {
-    return this.lastError?.toString() || '';
-  }
-
   constructor(
     private readonly logger: ClassloggerService,
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly multiValueProvider: MultiValueService,
+    protected readonly errorHandler?: ErrorHandler,
   ) {}
 
   /**
@@ -148,7 +135,6 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
           this.valueHasChanged.emit({ value: this.columnContainer.value });
         }),
       );
-      this.control.addValidators(EditorBase.hasServerError(this));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -196,6 +182,8 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     }
 
     this.valueHasChanged.emit({ value, forceEmit: true });
+    const resetValue = this.columnContainer.value;
+    let resetNeeded = false;
 
     try {
       this.logger.debug(this, 'writeValue - updateCdrValue...');
@@ -203,10 +191,10 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       this.control.controls.array.disable({ emitEvent: false });
       this.changeDetectorRef.detectChanges();
       await this.columnContainer.updateValue(value);
-      this.lastError = undefined;
     } catch (e) {
-      this.logger.error(this, e);
-      this.lastError = e;
+      resetNeeded = true;
+      this.errorHandler?.handleError(e);
+      await this.columnContainer.updateValue(resetValue);
     } finally {
       this.isWriting = false;
       this.control.controls.array.enable({ emitEvent: false });
@@ -214,8 +202,9 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       this.control.updateValueAndValidity();
 
       this.changeDetectorRef.detectChanges();
-      if (this.getSelectedNamesMultiValue(this.control.controls.array.value) !== this.columnContainer.value) {
-        const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
+      const newvalue = resetNeeded ? resetValue : this.columnContainer.value;
+      if (this.getSelectedNamesMultiValue(this.control.controls.array.value) !== newvalue) {
+        const selectedValues = this.multiValueProvider.getValues(newvalue);
         this.control.controls.array.controls.forEach((checkBox, index) =>
           checkBox.setValue(this.isSelected(this.columnContainer.limitedValuesContainer.values?.[index], selectedValues), {
             emitEvent: false,

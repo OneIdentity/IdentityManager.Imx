@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { Component, ErrorHandler, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -79,6 +79,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
     private readonly translateService: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly multiValueProvider: MultiValueService,
+    private readonly errorHandler: ErrorHandler,
   ) {}
 
   public ngOnDestroy(): void {
@@ -252,6 +253,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
       this.loading = false;
     } catch (e) {
       this.logger.error(this, e);
+      this.errorHandler.handleError(e);
     } finally {
       this.isWriting = false;
 

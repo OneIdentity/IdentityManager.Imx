@@ -135,14 +135,16 @@ export class WorkflowMultiActionComponent implements OnInit {
       bulkItem.properties.push(new BaseCdr(approval.ValidUntilProlongation.Column));
     }
 
-    const step = this.stepService.getCurrentStepCdr(approval, approval.pwoData, '#LDS#Current approval step');
-    if (step != null) {
-      bulkItem.properties.unshift(step);
-    }
+    if (approval.pwoData) {
+      const step = this.stepService.getCurrentStepCdr(approval, approval.pwoData, '#LDS#Current approval step');
+      if (step != null) {
+        bulkItem.properties.unshift(step);
+      }
 
-    const cRule = this.stepService.getAdditionalInfoCdr(approval, approval.pwoData, '#LDS#Compliance rule');
-    if (cRule != null) {
-      bulkItem.properties.unshift(cRule);
+      const cRule = this.stepService.getAdditionalInfoCdr(approval, approval.pwoData, '#LDS#Compliance rule');
+      if (cRule != null) {
+        bulkItem.properties.unshift(cRule);
+      }
     }
 
     if (approval.parameterColumns) {

@@ -10,9 +10,6 @@
     [formControl]="control"
   >
   </eui-select>
-  <mat-error *ngIf="control.errors?.['generalError']">
-    {{ validationErrorMessage }}
-  </mat-error>
 </ng-container>
 
 <ng-template #isReadonly>

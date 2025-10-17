@@ -1,16 +1,11 @@
-<ng-template mat-tab-label> <span translate>#LDS#Assign Owners</span></ng-template>
-<div class="imx-tab-content">
-  <div class="imx-tab-content-body">
-    <div eui-sidesheet-content>
-      <imx-busy-indicator class="imx-busy-loader" *ngIf="isLoading"></imx-busy-indicator>
-      <mat-card class="imx-card-fill imx-margin-bottom-16" [ngClass]="{ hidden: isLoading }">
-        <form [formGroup]="dugResourceFormGroup">
-          <imx-cdr-editor *ngFor="let cdr of cdrOwnerShip" [cdr]="cdr"
-            (controlCreated)="dugResourceFormGroup.controls.array.push($event)" (valueChange) = "savePersonResponsible($event)"></imx-cdr-editor>
-        </form>
-      </mat-card>
-    </div>
-  </div>
+<div eui-sidesheet-content>
+  <imx-busy-indicator class="imx-busy-loader" *ngIf="isLoading"></imx-busy-indicator>
+  <mat-card class="imx-card-fill imx-margin-bottom-16" [ngClass]="{ hidden: isLoading }">
+    <form [formGroup]="dugResourceFormGroup">
+      <imx-cdr-editor *ngFor="let cdr of cdrOwnerShip" [cdr]="cdr"
+        (controlCreated)="dugResourceFormGroup.controls.array.push($event)" (valueChange) = "savePersonResponsible($event)"></imx-cdr-editor>
+    </form>
+  </mat-card>
 </div>
 <div eui-sidesheet-actions>
   <button mat-flat-button [disabled]="saveDisabled" color="primary" (click)="save()">

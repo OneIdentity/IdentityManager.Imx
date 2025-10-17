@@ -1,4 +1,5 @@
-<imx-date *ngIf="columnContainer?.canEdit; else isReadonly"
+<imx-date
+  *ngIf="columnContainer?.canEdit; else isReadonly"
   [control]="control"
   [display]="columnContainer?.display"
   [isReadonly]="!columnContainer?.canEdit"
@@ -14,10 +15,5 @@
 
 <!-- template for read only elements-->
 <ng-template #isReadonly>
-  <imx-view-property
-    [columnContainer]="columnContainer"
-    defaultValue="#LDS#Not set"
-  >
-  </imx-view-property>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
 </ng-template>
-

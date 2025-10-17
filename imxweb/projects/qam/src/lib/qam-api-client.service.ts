@@ -81,7 +81,6 @@ export class QamApiService {
   }
 
   public isPersonDGEAdmin(groups: string[]): boolean {
-    const isDGEAdminReal = groups.find((item) => item.toUpperCase() === 'VI_4_QAM_ADMIN') != null;
-    return isDGEAdminReal;
+    return groups.find((item) => item.toUpperCase() === 'VI_4_QAM_ADMIN') != null;
   }
 }

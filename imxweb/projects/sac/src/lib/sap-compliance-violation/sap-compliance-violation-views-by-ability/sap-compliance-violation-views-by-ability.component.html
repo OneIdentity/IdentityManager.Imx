@@ -22,15 +22,15 @@
         [detailViewVisible]="false"
         (groupDataChanged)="onGroupingChange($event)"
       >
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPProfile" [columnLabel]="'#LDS#Authentication' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPProfile" [columnLabel]="'#LDS#Profile' | translate">
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPAuthObject" [columnLabel]="'#LDS#Object' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPAuthObject" [columnLabel]="'#LDS#Authorization object' | translate">
         </imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPField" [columnLabel]="'#LDS#Field' | translate">
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.LowerLimit" [columnLabel]="'#LDS#Lower limit' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.LowerLimit" [columnLabel]="'#LDS#Lower value' | translate">
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.UpperLimit" [columnLabel]="'#LDS#Upper limit' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.UpperLimit" [columnLabel]="'#LDS#Upper value' | translate">
         </imx-data-table-column>
         <imx-data-table-column
           [entityColumn]="entitySchema.Columns.DisplaySapFunctionInstance"

@@ -9,6 +9,7 @@
     @include flex-row-container();
     flex-wrap: wrap;
     gap: 10px;
+    overflow: auto;
   }
 
   .imx-chart-container {

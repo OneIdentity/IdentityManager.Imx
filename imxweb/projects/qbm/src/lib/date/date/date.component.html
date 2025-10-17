@@ -10,10 +10,18 @@
   />
   <div matSuffix>
     <mat-spinner diameter="30" class="imx-spinner-inline-flex imx-margin-right-10" *ngIf="isLoading"></mat-spinner>
-    <button #dateButton (click)="toggleDatePickerOpen($event)" cdkOverlayOrigin #triggerDate="cdkOverlayOrigin"
-      mat-icon-button type="button" class="mat-focus-indicator mat-icon-button mat-button-base"
-      aria-haspopup="dialog" aria-label="Open calendar"
-      [class.mat-datepicker-toggle-active]="isDatePickerOpen">
+    <button
+      #dateButton
+      (click)="toggleDatePickerOpen($event)"
+      cdkOverlayOrigin
+      #triggerDate="cdkOverlayOrigin"
+      mat-icon-button
+      type="button"
+      class="mat-focus-indicator mat-icon-button mat-button-base"
+      aria-haspopup="dialog"
+      aria-label="Open calendar"
+      [class.mat-datepicker-toggle-active]="isDatePickerOpen"
+    >
       <eui-icon icon="calendar" size="m" [aria-hidden]="false" [attr.aria-label]="'#LDS#Edit date' | translate"></eui-icon>
     </button>
 
@@ -44,7 +52,7 @@
         [control]="shadowDate"
         [min]="min"
         [max]="max"
-        (close)="isDatePickerOpen = false"
+        (close)="handleClose()"
         cdkTrapFocus
         [cdkTrapFocus]="true"
         [cdkTrapFocusAutoCapture]="true"
@@ -62,8 +70,9 @@
       (overlayOutsideClick)="handleTimePickerOutsideClick($event)"
     >
       <imx-time-picker
+        class="mat-datepicker-content"
         [control]="shadowTime"
-        (close)="isTimePickerOpen = false"
+        (close)="handleClose()"
         cdkTrapFocus
         [cdkTrapFocus]="true"
         [cdkTrapFocusAutoCapture]="true"

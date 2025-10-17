@@ -25,7 +25,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataViewInitParameters, DataViewSource, HelpContextualValues, SideNavigationComponent } from 'qbm';
+import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataViewInitParameters, DataViewSource, HelpContextualValues, SideNavigationComponent, HELP_CONTEXTUAL } from 'qbm';
 
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
@@ -80,13 +80,14 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
       this.dataModel = await this.ownershipService.getDataModel();
       await this.getData();
     } finally {
+      this.contextId = HELP_CONTEXTUAL.GovernedDataOwnership;
       isBusy.endBusy();
     }
   }
 
   public async perceivedOwner(resource: PortalDgeResources): Promise<void> {
     const sidesheetRef = this.sideSheet.open(DugSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading Assign Ownership'),
+      title: this.translate.instant('#LDS#Heading Perceived Owners'),
       subTitle: resource.GetEntity().GetDisplay(),
       width: calculateSidesheetWidth(),
       disableClose: true,
@@ -107,7 +108,7 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
     }
     const uidResources: string[] = resources.map((resource) => resource.GetEntity().GetKeys()[0]);
     const sidesheetRef = this.sideSheet.open(DugAssignOwnershipSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading Assign Ownership'),
+      title: this.translate.instant('#LDS#Heading Assign Owner'),
       subTitle: resources.map((res)=> res.GetEntity().GetDisplay()).join(', '),
       width: calculateSidesheetWidth(),
       disableClose: true,

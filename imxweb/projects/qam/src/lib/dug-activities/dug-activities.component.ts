@@ -24,19 +24,26 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, InjectionToken, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { DugActivitiesService } from './dug-activities.service';
 import { ResourceActivityData, TrusteeActivityData } from '../TypedClient';
 import { DugActivityEntity } from './dug-activity-entity';
 import { TranslateService } from '@ngx-translate/core';
-import { DisplayColumns, EntitySchema } from '@imx-modules/imx-qbm-dbts';
-import { DataSourceToolbarSettings } from 'qbm';
+import { DisplayColumns, EntitySchema, ExtendedTypedEntityCollection, IClientProperty } from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolbarSettings, DataViewInitParameters, DataViewSource } from 'qbm';
+
+export const DataViewSourceResource = new InjectionToken<DataViewSource<DugActivityEntity>>('DataViewSourceResource');
+export const DataViewSourceTrustee = new InjectionToken<DataViewSource<DugActivityEntity>>('DataViewSourceTrustee');
 
 @Component({
   selector: 'imx-dug-activities',
   templateUrl: './dug-activities.component.html',
   styleUrls: ['./dug-activities.component.scss'],
+  providers: [
+    { provide: DataViewSourceResource, useClass: DataViewSource },
+    { provide: DataViewSourceTrustee, useClass: DataViewSource }
+  ]
 })
 export class DugActivitiesComponent implements OnInit {
   private mostActiveTrustees: TrusteeActivityData[];
@@ -49,8 +56,8 @@ export class DugActivitiesComponent implements OnInit {
   public dstSettingsResource: DataSourceToolbarSettings;
   public DisplayColumns = DisplayColumns;
 
-  private displayColumnsTrustee;
-  private displayColumnsResource;
+  private displayColumnsTrustee: IClientProperty[] = [];
+  private displayColumnsResource: IClientProperty[] = [];
 
   public topCountResource: number = 10;
   public topCountTrustee: number = 10;
@@ -61,6 +68,8 @@ export class DugActivitiesComponent implements OnInit {
     public readonly activityService: DugActivitiesService,
     private readonly loadingServiceEui: EuiLoadingService,
     private readonly translateService: TranslateService,
+    @Inject(DataViewSourceResource) public dataSourceResource: DataViewSource<DugActivityEntity>,
+    @Inject(DataViewSourceTrustee) public dataSourceTrustee: DataViewSource<DugActivityEntity>,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -75,9 +84,13 @@ export class DugActivitiesComponent implements OnInit {
       this.displayColumnsTrustee = [
         this.entitySchemaTrustee.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         this.entitySchemaTrustee.Columns['CountActivities'],
+        this.entitySchemaTrustee.Columns['Action'],
       ];
       this.displayColumnsResource = [
         this.entitySchemaResource.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
+        this.entitySchemaResource.Columns['ResourceType'],
+        this.entitySchemaResource.Columns['RiskIndexCalculated'],
+        this.entitySchemaResource.Columns['Action'],
         this.entitySchemaResource.Columns['CountActivities'],
       ];
       this.initTrustee();
@@ -93,24 +106,26 @@ export class DugActivitiesComponent implements OnInit {
       DugActivityEntity.buildEntityDataTrustee(this.mostActiveTrustees),
       this.entitySchemaTrustee,
     );
-    this.dstSettingsTrustee = {
-      displayedColumns:this.displayColumnsTrustee,
-      dataSource: data,
-      entitySchema: this.entitySchemaTrustee,
-      navigationState: {},
+    const dataViewInitParameters: DataViewInitParameters<DugActivityEntity> = {
+      execute: (): Promise<ExtendedTypedEntityCollection<DugActivityEntity, unknown>> => Promise.resolve(data),
+      schema: this.entitySchemaTrustee,
+      columnsToDisplay: this.displayColumnsTrustee,
+      localSource: true,
     };
+    this.dataSourceTrustee.init(dataViewInitParameters);
   }
 
   public initResources() {
     const data = DugActivityEntity.buildEntities(
-      DugActivityEntity.buildEntityDataTrustee(this.mostActiveResources),
+      DugActivityEntity.buildEntityDataResource(this.mostActiveResources),
       this.entitySchemaResource,
     );
-    this.dstSettingsResource = {
-      displayedColumns:this.displayColumnsResource,
-      dataSource: data,
-      entitySchema: this.entitySchemaResource,
-      navigationState: {},
+    const dataViewInitParameters: DataViewInitParameters<DugActivityEntity> = {
+      execute: (): Promise<ExtendedTypedEntityCollection<DugActivityEntity, unknown>> => Promise.resolve(data),
+      schema: this.entitySchemaResource,
+      columnsToDisplay: this.displayColumnsResource,
+      localSource: true,
     };
+    this.dataSourceResource.init(dataViewInitParameters);
   }
 }

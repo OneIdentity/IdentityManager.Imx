@@ -205,7 +205,9 @@ export const HELP_CONTEXTUAL = {
   ProcessingQueue: 'processing-queue',
   GovernedData: 'governed-data',
   GovernedDataOverview: 'governed-data-overview',
-  GovernedDataOwnership: 'governed-data-ownership'
+  GovernedDataOwnership: 'governed-data-ownership',
+  AuditingGovernedData: 'auditing-governed-data',
+  AuditingManagedHosts: 'auditing-managed-hosts',
 } as const;
 type ObjectValues<T> = T[keyof T];
 export type HelpContextualValues = ObjectValues<typeof HELP_CONTEXTUAL>;

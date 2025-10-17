@@ -43,8 +43,8 @@ export class SapComplianceViolationComponent implements OnInit {
   public resultByRole: ByRoleResult = { Elements: [] };
   public resultByAbility: ByAbilityResult = { Data: [] };
   public selectionOptions: SapSelectionOptions[] = [
-    { value: SapSelectionTypeEnum.ROLE, label: '#LDS#By role' },
-    { value: SapSelectionTypeEnum.ABILITY, label: '#LDS#By ability' },
+    { value: SapSelectionTypeEnum.ROLE, label: '#LDS#By type' },
+    { value: SapSelectionTypeEnum.ABILITY, label: '#LDS#By profile' },
   ];
   public selectedOption: SapSelectionTypeEnum = SapSelectionTypeEnum.ROLE;
   public loading = false;

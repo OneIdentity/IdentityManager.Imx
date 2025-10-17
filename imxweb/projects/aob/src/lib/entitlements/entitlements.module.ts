@@ -59,6 +59,7 @@ import {
   SelectedElementsModule,
   SqlWizardModule,
 } from 'qbm';
+import { StatisticsModule } from 'qer';
 import { LifecycleActionsModule } from '../lifecycle-actions/lifecycle-actions.module';
 import { AobUserModule } from '../user/user.module';
 import { EntitlementsAddComponent } from './entitlement-add/entitlements-add.component';
@@ -116,6 +117,7 @@ import { EntitlementsService } from './entitlements.service';
     InfoModalDialogModule,
     SelectedElementsModule,
     DataViewModule,
+    StatisticsModule,
   ],
   providers: [EntitlementsService],
   exports: [EntitlementsComponent],

@@ -24,11 +24,10 @@
  *
  */
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
-import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, Validators } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 
 import { ValType } from '@imx-modules/imx-qbm-dbts';
-import { ServerError } from '../base/server-error';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { CdrEditor, ValueHasChangedEventArg } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
@@ -71,12 +70,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   public readonly pendingChanged = new EventEmitter<boolean>();
 
   /**
-   * @ignore
-   * Used for the template and displays the last server error, that occured while loading content.
-   */
-  public lastError: ServerError | undefined;
-
-  /**
    * The maximal length a string could have.
    * The value depends on the meta data of the column.
    */
@@ -100,13 +93,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   }
 
   /**
-   * If an error occured, it returns its message
-   */
-  public get validationErrorMessage(): string {
-    return this.lastError?.toString() || '';
-  }
-
-  /**
    * Binds a column dependent reference to the component, by setting the control value and subscribing to the events,
    * the CDR or the ColumnContainer emits
    * @param cdref a column dependent reference
@@ -114,8 +100,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   public bind(cdref: ColumnDependentReference): void {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
-
-      this.control.addValidators(EditorBase.hasServerError(this));
 
       this.setControlValue();
 
@@ -179,9 +163,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
       this.columnContainer.type !== ValType.Bool // because bool is always valid
     ) {
       this.logger.debug(this, `A value for column "${this.columnContainer.name}" is required`);
-      this.control.setValidators([Validators.required, EditorBase.hasServerError(this)]);
-    } else {
-      this.control.setValidators(EditorBase.hasServerError(this));
+      this.control.setValidators([Validators.required]);
     }
   }
 
@@ -190,7 +172,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
    * @param value the new value
    */
   private async writeValue(value: any): Promise<void> {
-    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
+    if (this.control.errors) {
       this.logger.debug(this, 'writeValue - client validation failed');
       return;
     }
@@ -200,21 +182,22 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
       return;
     }
 
+    const resetValue = this.columnContainer.value;
+
     this.isBusy = true;
     this.pendingChanged.emit(true);
     this.isWriting = true;
     try {
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
-      this.lastError = undefined;
     } catch (e) {
-      this.lastError = e;
-      this.logger.error(this, e);
+      this.errorHandler?.handleError(e);
+      this.control.setValue(resetValue, { emitEvent: true });
     } finally {
       this.isBusy = false;
       this.pendingChanged.emit(false);
       this.isWriting = false;
-      if (!this.lastError && this.control.value !== this.columnContainer.value) {
+      if (this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
         this.logger.debug(this, 'form control value is set to', this.control.value);
       }
@@ -222,11 +205,5 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     }
 
     this.valueHasChanged.emit({ value, forceEmit: true });
-  }
-
-  public static hasServerError(base: any): ValidatorFn {
-    return (_: AbstractControl): { [key: string]: boolean } | null => {
-      return !base.lastError ? null : { generalError: true };
-    };
   }
 }

@@ -129,7 +129,7 @@ export class WorkflowSingleActionComponent implements OnInit {
       this.columns.push(new BaseCdr(this.request.ValidUntil.Column));
     }
 
-    if(this.request.ValidUntilProlongation?.value && this.request.OrderState.value === 'OrderProlongate') {
+    if (this.request.ValidUntilProlongation?.value && this.request.OrderState.value === 'OrderProlongate') {
       this.columns.push(new BaseCdr(this.request.ValidUntilProlongation.Column));
     }
 
@@ -152,8 +152,10 @@ export class WorkflowSingleActionComponent implements OnInit {
       }
     }
 
-    this.currentStepCdr = this.stepService.getCurrentStepCdr(this.request, this.request.pwoData, '#LDS#Current approval step');
-    this.complianceCdr = this.stepService.getAdditionalInfoCdr(this.request, this.request.pwoData, '#LDS#Compliance rule');
+    if (this.request.pwoData) {
+      this.currentStepCdr = this.stepService.getCurrentStepCdr(this.request, this.request.pwoData, '#LDS#Current approval step');
+      this.complianceCdr = this.stepService.getAdditionalInfoCdr(this.request, this.request.pwoData, '#LDS#Compliance rule');
+    }
   }
 
   /**

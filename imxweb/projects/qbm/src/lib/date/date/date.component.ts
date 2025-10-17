@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, UntypedFormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import moment, { Moment } from 'moment-timezone';
@@ -115,6 +115,9 @@ export class DateComponent implements OnInit, OnDestroy {
 
   @Input() validateOnlyOnChange: boolean = false;
 
+  /*Emits an event, when the user changed something in the UI, by closing dialogs or when focus is lost */
+  @Output() manuallyChanged: EventEmitter<void> = new EventEmitter();
+
   /**
    * @ignore only public because of databinding in template
    *
@@ -151,9 +154,18 @@ export class DateComponent implements OnInit, OnDestroy {
   public shadowTime = new UntypedFormControl();
 
   /**
+   * Closes all picker and emits the manually changed event.
+   */
+  public handleClose(): void {
+    this.isDatePickerOpen = false;
+    this.isTimePickerOpen = false;
+    this.manuallyChanged.emit();
+  }
+
+  /**
    * @ignore
    * the result of the internal shadow form control.
-   * Useful to avoid unecessay update loop when writing back the value to the input control.
+   * Useful to avoid unnecessary update loop when writing back the value to the input control.
    */
   private result: Moment | undefined;
 
@@ -289,6 +301,7 @@ export class DateComponent implements OnInit, OnDestroy {
 
   public focusout(): void {
     this.handleShadowTimeChanged();
+    this.manuallyChanged.emit();
   }
 
   /**

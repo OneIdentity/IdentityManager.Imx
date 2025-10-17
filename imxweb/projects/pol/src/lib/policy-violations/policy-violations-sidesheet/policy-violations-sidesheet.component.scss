@@ -16,14 +16,6 @@
     flex-direction: column;
   }
 
-  .eui-sidesheet-actions {
-    margin-top: auto;
-  }
-
-  .eui-sidesheet-actions.mat-mdc-card {
-    margin: 16px 32px;
-  }
-
   .imx-state-caption {
     font-size: 12px;
     padding-bottom: 5px;
@@ -32,6 +24,7 @@
   .imx-policy-violations-hyperview {
     display: flex;
     flex-direction: column;
+    gap: 10px;
   }
 }
 

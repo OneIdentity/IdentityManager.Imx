@@ -55,6 +55,7 @@ import { AccessRequestModule } from './access-request/access-request.module';
 import { AccessComponent } from './access/access.component';
 import { TrusteeViewComponent } from './access/trustee-view.component';
 import { UserAccessComponent } from './access/user-access.component';
+import { AuditingGovernedDataComponent } from './auditing-governed-data/auditing-governed-data.component';
 import { DugActivitiesComponent } from './dug-activities/dug-activities.component';
 import { DugDashboardsComponent } from './dug-dashboards/dug-dashboards.component';
 import { DugOverviewComponent } from './dug-overview/dug-overview.component';
@@ -93,6 +94,7 @@ const routes: Routes = [
     AccessComparisonComponent,
     DugOverviewComponent,
     DugOwnershipComponent,
+    AuditingGovernedDataComponent,
     DugReportsComponent,
     DugDashboardsComponent,
     DugActivitiesComponent,
