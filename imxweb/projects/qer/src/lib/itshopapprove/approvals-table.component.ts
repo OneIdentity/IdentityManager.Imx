@@ -44,6 +44,7 @@ import {
   DataSourceToolbarViewConfig,
   ClientPropertyForTableColumns,
   BusyService,
+  UserMessageService,
 } from 'qbm';
 import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
 import { Approval } from './approval';
@@ -157,7 +158,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     private readonly userModelService: UserModelService,
     authentication: AuthenticationService,
     private readonly ext: ExtService,
-    private readonly permissions: QerPermissionsService
+    private readonly permissions: QerPermissionsService,
+    private readonly messageService: UserMessageService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
@@ -404,9 +406,14 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private handleDecision(): void {
     if (
       this.approvalsDecision === ApprovalsDecision.none ||
-      this.approvalsCollection.Data == null ||
-      this.approvalsCollection.Data.length === 0
+      this.approvalsCollection?.Data == null ||
+      this.approvalsCollection?.Data?.length === 0
     ) {
+      if((this.approvalsCollection?.Data?.length ?? 0) === 0){
+        this.messageService.subject.next({
+        text: '#LDS#This request has already been approved or denied.',
+      });
+      }
       return;
     }
 
