@@ -1,3 +1,14 @@
+### October 17, 2025
+- 508158 (499229): Fixes an issue with the hyperview on Compliance -> Policy violations.
+- 494396 (494373): Fixes an issue with duplicate names on System Roles -> View Settings -> Additional columns.
+- 470423: Adds terminology of union view SAPGroup.
+- 508772 (502012): Fixes an issue with error messages for server validations.
+- 519009 (506868): Fixes an issue with approving violations on the Pending Requests page.
+- 493153: Fixes an issue with direct links to IT shop approvals.
+- 542152 (493140): Fixes an issue with requests that are approved using an email link when the request was already approved.
+- 542744: Fixes an issue with server-side error messages on request properties that contain a request property parameter that is a multi-foreign-key value.
+- 544148 (489411):  Fixes an issue with adding items from shopping card bundles that have more than 20 items.
+
 ### August 26, 2025
 - 488098 *(479191)*: Fixes an issue with duplicated session calls in the portal.
 - 505567 *(501784)*: Various web maintenance tasks implemented.
