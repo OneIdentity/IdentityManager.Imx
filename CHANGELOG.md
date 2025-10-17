@@ -1,3 +1,9 @@
+### October 17, 2025
+- 493140:Fixes an issue with requests that are approved using an email link when the request was already approved.
+- 542531 (542744): Fixes an issue with server-side error messages on request properties that contain a request property parameter that is a multi-foreign-key value.
+- 518880: Fixes an issue with renewed products that should have a valid until date but were saved with an unlimited date.
+- 489411: Fixes an issue with adding items from shopping card bundles that have more than 20 items.
+
 ### September 12, 2025
 - 505565: Fixes an issue with the Captcha, which prevented the user from entering if the scaling was set to 150%.
 - 501788: Fixes an issue with server-side error messages on request properties that contain a request property parameter that is multi-value.
