@@ -96,7 +96,7 @@
     "@nx/angular": "19.8.14",
     "@nx/js": "19.8.14",
     "@nx/workspace": "19.8.14",
-    "@schematics/angular": "18.2.14",
+    "@schematics/angular": "18.2.21",
     "@types/cytoscape": "3.21.9",
     "@types/cytoscape-edgehandles": "4.0.4",
     "@types/d3-hierarchy": "3.1.7",
