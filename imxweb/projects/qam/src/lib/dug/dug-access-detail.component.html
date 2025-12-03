@@ -15,12 +15,27 @@
 <h2 class="imx-margin-vertical-10">{{ LdsViewTitle | translate }}</h2>
 <mat-card class="imx-chart-container imx-margin-5">
   <div class="imx-wrapped-chart-container">
-    <mat-card *ngFor="let chart of charts">
+    <mat-card *ngFor="let chart of organizationalCharts">
       <mat-card-title>
         {{ chart?.title }}
       </mat-card-title>
       <mat-card-content>
         <eui-billboard [options]="chart?.data"></eui-billboard>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</mat-card>
+
+<!-- access rights assignment view -->
+<h2 class="imx-margin-vertical-10">{{ LdsAnalysisTitle2 | translate }}</h2>
+<mat-card class="imx-chart-container imx-margin-5">
+  <div class="imx-wrapped-chart-container">
+    <mat-card *ngIf="assignmentMethodChart">
+      <mat-card-title>
+        {{ assignmentMethodChart?.title }}
+      </mat-card-title>
+      <mat-card-content>
+        <eui-billboard [options]="assignmentMethodChart?.data"></eui-billboard>
       </mat-card-content>
     </mat-card>
   </div>

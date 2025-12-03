@@ -151,10 +151,7 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationStart) {
         this.routerStatus = event.type;
         if (this.isLoggedIn) {
-          if (event.url === '/') {
-            // show the splash screen, when the user logs out!
-            this.splash.init({ applicationName: 'Password Reset Portal' });
-          } else if (event.url === `/${this.config.Config.routeConfig?.start}`) {
+          if (event.url === `/${this.config.Config.routeConfig?.start}`) {
             // closes the splash-screen, if its displayed between Login and Dashboard
             this.splash.close();
           }

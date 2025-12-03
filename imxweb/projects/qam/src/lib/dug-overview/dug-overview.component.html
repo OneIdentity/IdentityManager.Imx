@@ -1,14 +1,4 @@
 <mat-card class="imx-card-fill">
-  <div class="imx-card-data-explorer-header">
-    <div class="imx-card-data-explorer-header-bg">
-      @if(!isAuditView) {
-        <h2 translate>#LDS#Heading Governed Data Overview</h2>
-      } @else {
-        <h3 translate>#LDS#Heading Auditing - Governed Data</h3>
-      }
-      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-    </div>
-  </div>
   @if(isAuditView){
     @if(hasRootDug) {
       <a [matTooltip]="'#LDS#Go back to parent folder' | translate" [ngStyle]="{cursor: 'pointer'}" (click)="goBackToRoot(lastRootDuGItem)"><eui-icon size="25px" icon="openfolder" class="imx-icon-info imx-margin-right-5"></eui-icon>{{lastRootDuGItem?.GetEntity()?.GetDisplayLong()}}</a>
@@ -21,33 +11,46 @@
     <ng-container *ngTemplateOutlet="resourcesTable"></ng-container>
   }
   @else{
+    <div class="imx-card-data-explorer-header">
+      <div class="imx-card-data-explorer-header-bg">
+        <h2>{{ (activeTab?.heading ?? '') | translate}}</h2>
+        <imx-help-contextual [contextId]="getTabContextId(activeTab)"></imx-help-contextual>
+      </div>
+    </div>
     <mat-tab-group [(selectedIndex)]="activeTabIndex" mat-stretch-tabs="false">
-      <mat-tab [label]="isAdmin ? ('#LDS#Heading All Resources' | translate) : ('#LDS#Heading My Resources' | translate)">
-        <div class="imx-table-container"> 
-          <mat-card class="imx-card-fill">
-            <ng-container *ngTemplateOutlet="resourcesTable"></ng-container>
-          </mat-card>
-        </div>
-      </mat-tab>
-      <mat-tab [label]="'#LDS#Dashboards' | translate">
-        <ng-template matTabContent>
-          <imx-dug-dashboards *ngIf="activeTabIndex === 1" [isAdmin] = "isAdmin"></imx-dug-dashboards>
-        </ng-template>
-      </mat-tab>
+      @for (tab of visibleTabs; track tab.id; let i = $index) {
+        <mat-tab [label]="getTabLabel(tab) | translate">
+          @if (activeTabIndex === i) {
+            @switch (tab.id) {
+              @case ('GovernedData') {
+                <div class="imx-table-container">
+                  <mat-card class="imx-card-fill">
+                    <ng-container *ngTemplateOutlet="resourcesTable"></ng-container>
+                  </mat-card>
+                </div>
+              }
 
-      @if (!isAdmin) {
-        <mat-tab [label]="'#LDS#Activities' | translate">
-          <ng-template matTabContent>
-            <imx-dug-activities *ngIf="activeTabIndex === 2"></imx-dug-activities>
-          </ng-template>
-        </mat-tab>
-      }
+              @case ('Dashboards') {
+                <imx-dug-dashboards [isAdmin]="isAdmin"></imx-dug-dashboards>
+              }
 
-      @if (isAdmin) {
-        <mat-tab [label]="'#LDS#Resource Overview' | translate">
-          <ng-template matTabContent>
-            <imx-dug-resource-overview></imx-dug-resource-overview>
-          </ng-template>
+              @case ('Activities') {
+                <imx-dug-activities></imx-dug-activities>
+              }
+
+              @case ('ResourceOverview') {
+                <imx-dug-resource-overview></imx-dug-resource-overview>
+              }
+
+              @case ('Ownership') {
+                <imx-dug-ownership></imx-dug-ownership>
+              }
+
+              @case ('ManagedHosts') {
+                <imx-auditing-governed-data></imx-auditing-governed-data>
+              }
+            }
+          }
         </mat-tab>
       }
     </mat-tab-group>
@@ -78,7 +81,7 @@
           {{ '#LDS#Element type' | translate }}
       </th>
       <td mat-cell *matCellDef="let item">
-          {{ item.GetEntity().GetColumn('UID_QAMResourceType').GetValue() }}
+          {{ item.GetEntity().GetColumn('UID_QAMResourceType').GetDisplayValue() }}
       </td>
     </ng-container>
 		<ng-container [matColumnDef]="entitySchema.Columns.RiskIndexCalculated.ColumnName">

@@ -24,21 +24,36 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
-import { IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
-import { calculateSidesheetWidth, DataSourceToolbarSettings, SettingsService, SnackBarService } from 'qbm';
+import {
+  CollectionLoadParameters,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
+import {
+  calculateSidesheetWidth,
+  DataSourceToolbarSettings,
+  DataViewInitParameters,
+  DataViewSource,
+  SettingsService,
+  SnackBarService,
+} from 'qbm';
 import { JobServersDetailsComponent } from './job-servers-details/job-servers-details.component';
 import { JobServersEditComponent } from './job-servers-edit/job-servers-edit.component';
 import { JobServersParameters, JobServersService } from './job-servers.service';
+
 @Component({
   selector: 'imx-job-servers-gridview',
   templateUrl: './job-servers-gridview.component.html',
   styleUrls: ['./job-servers-gridview.component.scss'],
+  standalone: false,
+  providers: [DataViewSource],
 })
 export class JobServersGridviewComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
@@ -47,8 +62,10 @@ export class JobServersGridviewComponent implements OnInit {
 
   @Output() public readonly jobServersChecked = new EventEmitter<boolean>();
 
-  private navigationState: JobServersParameters;
+  public navigationState: JobServersParameters;
   private editableFields: string[] | undefined;
+
+  public entitySchema: EntitySchema;
 
   constructor(
     private gridDataService: JobServersService,
@@ -57,34 +74,8 @@ export class JobServersGridviewComponent implements OnInit {
     private readonly sidesheet: EuiSidesheetService,
     private readonly snackBarService: SnackBarService,
     private readonly translateService: TranslateService,
-  ) {}
-
-  public async ngOnInit(): Promise<void> {
-    let overlayRef = this.busyService.show();
-    try {
-      await this.refresh();
-      this.editableFields = (await this.gridDataService.getProjectConfig()).EditableFields?.QBMServer;
-    } finally {
-      this.busyService.hide(overlayRef);
-    }
-  }
-
-  public onSearch(keywords: string): Promise<void> {
-    return this.getData({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, search: keywords });
-  }
-
-  public navigationStateChanged(navigationState: JobServersParameters): Promise<void> {
-    return this.getData({ ...this.navigationState, ...navigationState });
-  }
-
-  public async refresh(withconnection: boolean = false): Promise<void> {
-    await this.getData({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, withconnection });
-  }
-
-  private async getData(navigationState: JobServersParameters): Promise<void> {
-    this.navigationState = { ...this.navigationState, ...navigationState };
-
-    let data = await this.gridDataService.get(this.navigationState);
+    public dataSource: DataViewSource,
+  ) {
     let entitySchema = this.gridDataService.OpsupportJobserversSchema;
     let extraColumns = {
       CheckServer: {
@@ -101,47 +92,78 @@ export class JobServersGridviewComponent implements OnInit {
       },
     };
     Object.assign(entitySchema.Columns, extraColumns);
-    const displayedColumns: IClientProperty[] = [];
-    displayedColumns.push(entitySchema.Columns.Ident_Server);
-    if (this.navigationState.withconnection) {
-      displayedColumns.push(entitySchema.Columns.Connection);
-    }
-    displayedColumns.push(entitySchema.Columns.LastJobFetchTime);
-    displayedColumns.push(entitySchema.Columns.ServerWebUrl);
-    displayedColumns.push(entitySchema.Columns.PhysicalServerName);
-    displayedColumns.push(entitySchema.Columns.IPV4);
-    //Additional Columns added
-    displayedColumns.push(entitySchema.Columns.Warning);
-    displayedColumns.push(entitySchema.Columns.Details);
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
-    try {
-      this.dstSettings = {
-        displayedColumns,
-        dataSource: data,
-        entitySchema,
-        navigationState: this.navigationState,
-        extendedData: data.extendedData?.[0] as any[],
-      };
+    this.entitySchema = entitySchema;
+  }
 
-      this.jobServersChecked.emit(this.navigationState.withconnection);
+  public async ngOnInit(): Promise<void> {
+    try {
+      await this.refresh();
+      this.editableFields = (await this.gridDataService.getProjectConfig()).EditableFields?.QBMServer;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
+
+  public async refresh(withconnection: boolean = false): Promise<void> {
+    await this.getData({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, withconnection });
+  }
+
+  private async getDataInternal() {
+    let displayedColumns: IClientProperty[] = [];
+    displayedColumns.push(this.entitySchema?.Columns.Ident_Server);
+    if (this.navigationState.withconnection) {
+      displayedColumns.push(this.entitySchema.Columns.Connection);
+    }
+    displayedColumns.push(this.entitySchema.Columns.LastJobFetchTime);
+    displayedColumns.push(this.entitySchema.Columns.ServerWebUrl);
+    displayedColumns.push(this.entitySchema.Columns.PhysicalServerName);
+    displayedColumns.push(this.entitySchema.Columns.IPV4);
+    //Additional Columns added
+    displayedColumns.push(this.entitySchema.Columns.Warning);
+    displayedColumns.push(this.entitySchema.Columns.Details);
+
+    const dataSourceParameter: DataViewInitParameters<TypedEntity> = {
+      execute: async (params: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, unknown>> => {
+        return this.gridDataService.get(params);
+      },
+      highlightEntity: (entity: TypedEntity) => {
+        this.edit(entity);
+      },
+      schema: this.entitySchema,
+      columnsToDisplay: displayedColumns,
+    };
+    await this.dataSource.init(dataSourceParameter);
+  }
+
+  private async getData(navigationState: JobServersParameters): Promise<void> {
+    this.navigationState = { ...this.navigationState, ...navigationState };
+
+    await this.getDataInternal();
+    this.dataSource.state.set(this.navigationState);
+    this.dataSource.updateState();
+    this.jobServersChecked.emit(this.navigationState.withconnection);
+  }
+
   public async checkServer(data: TypedEntity, event: Event) {
     event.stopPropagation();
-    let overlayRef = this.busyService.show();
     let uid = data.GetEntity().GetKeys()[0],
       connectionTime;
-    connectionTime = await this.gridDataService.checkServerConnection(uid);
-    this.busyService.hide(overlayRef);
+    try {
+      connectionTime = await this.gridDataService.checkServerConnection(uid);
+    } finally {
+    }
     if (connectionTime.Value === -1) {
       let textContainer = { key: '#LDS#The job server does not respond.' };
       this.snackBarService.open(textContainer, '#LDS#Close', { duration: 6000 });
     } else {
-      data.GetEntity().Commit(true);
-      this.refresh(true);
+      let committed = false;
+      try {
+        await data.GetEntity().Commit(true);
+        committed = true;
+      } finally {
+        if (committed) {
+          this.refresh(true);
+        }
+      }
     }
   }
 

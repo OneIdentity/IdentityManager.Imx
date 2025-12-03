@@ -1,6 +1,47 @@
+@use 'base/mixins' as mixins;
+@use '@elemental-ui/core/src/styles/_eui_palette.scss' as eui;
+
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex-grow: 1;
+  @include mixins.flex-column-container-fill();
+
+  .imx-table-container {
+    @include mixins.flex-column-container-fill();
+    .imx-table-toolbar {
+      @include mixins.flex-row-container();
+      justify-content: right;
+    }
+  }
+
+  .imx-table-container-content {
+    @include mixins.flex-column-container-fill();
+    background-color: eui.$color-gray-0;
+  }
+
+  .imx-table-footer {
+    @include mixins.flex-row-container();
+    align-items: center;
+    justify-content: right;
+  }
+
+  .imx-badge-container {
+    gap: 5px;
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  :host {
+    .imx-table-container-content {
+      background-color: eui.$color-gray-70;
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  :host {
+    .imx-table-container-content {
+      background-color: eui.$color-gray-90;
+    }
+  }
 }

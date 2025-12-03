@@ -206,8 +206,11 @@ export const HELP_CONTEXTUAL = {
   GovernedData: 'governed-data',
   GovernedDataOverview: 'governed-data-overview',
   GovernedDataOwnership: 'governed-data-ownership',
-  AuditingGovernedData: 'auditing-governed-data',
-  AuditingManagedHosts: 'auditing-managed-hosts',
+  GovernedDataManagedHosts: 'governed-data-managed-hosts',
+  GovernedDataResourceOverview: 'governed-data-resource-overview',
+  GovernedDataOwnerDashboards: 'governed-data-owner-dashboards',
+  GovernedDataAdminDashboards: 'governed-data-admin-dashboards',
+  GovernedDataActivities: 'governed-data-activities',
 } as const;
 type ObjectValues<T> = T[keyof T];
 export type HelpContextualValues = ObjectValues<typeof HELP_CONTEXTUAL>;

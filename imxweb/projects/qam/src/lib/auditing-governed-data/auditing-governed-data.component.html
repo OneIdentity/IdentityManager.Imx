@@ -1,11 +1,5 @@
 @if(!isGovernedDataView) {
 <mat-card class="data-explorer data-explorer--nodes" >
-  <div class="imx-card-data-explorer-header">
-    <div class="imx-card-data-explorer-header-bg">
-      <h3 translate>#LDS#Heading Auditing - Managed Hosts</h3>
-      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-    </div>
-  </div>
   <imx-data-view-toolbar
     [dataSource]="dataSource" [showSettings]="false"
   ></imx-data-view-toolbar>

@@ -36,7 +36,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { EuiLoadingService, EuiSplashScreenService, EuiTheme, EuiThemeService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiTheme, EuiThemeService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { HighContrastModeDetector } from '@angular/cdk/a11y';
@@ -51,6 +51,7 @@ import { CaptchaService } from '../captcha/captcha.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { ExtDirective } from '../ext/ext.directive';
 import { ISessionState } from '../session/session-state';
+import { SplashService } from '../splash/splash.service';
 import { SystemInfoService } from '../system-info/system-info.service';
 
 @Component({
@@ -89,7 +90,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewChecked {
     private readonly logger: ClassloggerService,
     private readonly systemInfoService: SystemInfoService,
     private readonly componentFactoryResolver: ComponentFactoryResolver,
-    private readonly splash: EuiSplashScreenService,
+    private readonly splash: SplashService,
     private readonly busyService: EuiLoadingService,
     private readonly themeService: EuiThemeService,
     private readonly detector: HighContrastModeDetector,

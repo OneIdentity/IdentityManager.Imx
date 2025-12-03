@@ -36,6 +36,7 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
 import { imx_SessionService } from '../session/imx-session.service';
 import { ISessionState } from '../session/session-state';
 import { SnackBarService } from '../snackbar/snack-bar.service';
+import { SplashService } from '../splash/splash.service';
 import { UserMessageService } from '../user-message/user-message.service';
 import { OAuthService } from './oauth.service';
 import { RedirectService } from './redirect.service';
@@ -67,6 +68,7 @@ export class AuthenticationService {
     private readonly router: Router,
     private readonly zone: NgZone,
     private readonly euiSidesheetService: EuiSidesheetService,
+    private readonly splash: SplashService,
   ) {}
 
   public async update(navigateToStart: boolean = false): Promise<void> {
@@ -116,6 +118,7 @@ export class AuthenticationService {
             this.snackbar.open({ key: '#LDS#You have successfully logged out.' }, '#LDS#Close');
           }
           if (this.appConfig.Config.routeConfig) {
+            this.splash.init({ applicationName: this.appConfig.Config.Title });
             this.zone.run(() => this.router.navigate([this.appConfig.Config.routeConfig?.login], { queryParams: {} }));
           }
         }

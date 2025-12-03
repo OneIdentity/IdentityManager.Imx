@@ -41,9 +41,8 @@ import { DugOwnershipService } from './dug-ownership.service';
   styleUrls: ['./dug-ownership.component.scss'],
   providers: [DataViewSource],
 })
-export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
+export class DugOwnershipComponent implements OnInit {
   public data?: PortalDgeResources;
-  public contextId?: HelpContextualValues;
   private dataModel: DataModel;
 
   public busyService = new BusyService();
@@ -80,7 +79,6 @@ export class DugOwnershipComponent implements OnInit, SideNavigationComponent {
       this.dataModel = await this.ownershipService.getDataModel();
       await this.getData();
     } finally {
-      this.contextId = HELP_CONTEXTUAL.GovernedDataOwnership;
       isBusy.endBusy();
     }
   }

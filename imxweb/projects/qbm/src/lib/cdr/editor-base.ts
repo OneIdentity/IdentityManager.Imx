@@ -164,6 +164,8 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     ) {
       this.logger.debug(this, `A value for column "${this.columnContainer.name}" is required`);
       this.control.setValidators([Validators.required]);
+    } else {
+      this.control.clearValidators();
     }
   }
 

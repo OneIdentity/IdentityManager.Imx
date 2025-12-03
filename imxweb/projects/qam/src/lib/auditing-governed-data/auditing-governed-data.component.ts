@@ -36,9 +36,8 @@ import { AuditingGovernedDataService } from './auditing-governed-data.service';
   styleUrl: './auditing-governed-data.component.scss',
   providers: [DataViewSource],
 })
-export class AuditingGovernedDataComponent implements OnInit, SideNavigationComponent{
+export class AuditingGovernedDataComponent implements OnInit{
   
-  public contextId?: HelpContextualValues;
   public busyService = new BusyService();
   public entitySchema : EntitySchema;
   public uidNode: string = '';
@@ -76,7 +75,6 @@ export class AuditingGovernedDataComponent implements OnInit, SideNavigationComp
           };
       this.dataSource.init(dataViewInitParameters);
     } finally {
-      this.contextId = HELP_CONTEXTUAL.AuditingManagedHosts;
       isBusy.endBusy();
     }
   }

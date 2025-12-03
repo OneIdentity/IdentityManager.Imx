@@ -85,12 +85,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
         this.hideUserMessage = true;
-        if (this.isLoggedIn && event.url === '/') {
-          // show the splash screen when the user logs out!
-          this.splash.init({ applicationName: 'Custom App' });
-        }
       }
-
       if (event instanceof NavigationCancel) {
         this.hideUserMessage = false;
       }

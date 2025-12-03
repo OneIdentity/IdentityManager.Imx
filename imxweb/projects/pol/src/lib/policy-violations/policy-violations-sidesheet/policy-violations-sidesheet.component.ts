@@ -44,7 +44,7 @@ export class PolicyViolationsSidesheetComponent implements OnInit, OnDestroy {
   public cdrList: ColumnDependentReference[] = [];
   public selectedHyperviewType: string;
   public selectedHyperviewUID: string;
-  public selectedHyperviewOption = new FormControl<string>('', {nonNullable: true});
+  public selectedHyperviewOption = new FormControl<string>('', { nonNullable: true });
   public hyperviewOptions: EuiSelectOption[];
   public result: boolean = false;
   public closeSubscription: Subscription;
@@ -75,19 +75,19 @@ export class PolicyViolationsSidesheetComponent implements OnInit, OnDestroy {
     private readonly confirmationService: ConfirmationService,
     private readonly euiLoadingService: EuiLoadingService,
   ) {}
-  
+
   ngOnInit() {
     this.cdrList = this.data.policyViolation.properties;
     this.closeSubscription = this.sideSheetRef.closeClicked().subscribe(async () => {
-      if (!this.mitig.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
+      if (!this.mitig?.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
         this.sideSheetRef.close(this.result);
       }
     });
-    this.hyperviewOptions = this.data.policyViolation.data.map(option => {
+    this.hyperviewOptions = this.data.policyViolation.data.map((option) => {
       return {
         display: option.Display!,
-        value: option.ObjectKey
-      }
+        value: option.ObjectKey,
+      };
     });
     // Prepopulate with first entry
     if (this.hyperviewOptions.length > 0) {
@@ -95,7 +95,6 @@ export class PolicyViolationsSidesheetComponent implements OnInit, OnDestroy {
       this.selectedHyperviewOption.setValue(initValue);
       this.setHyperviewObject(initValue);
     }
-
   }
 
   public ngOnDestroy(): void {
@@ -122,7 +121,7 @@ export class PolicyViolationsSidesheetComponent implements OnInit, OnDestroy {
 
   /**
    * Setup for the hyperview component
-   * @param objectKey 
+   * @param objectKey
    */
   public setHyperviewObject(objectKey: string | undefined): void {
     const dbKey = DbObjectKey.FromXml(objectKey ?? '');
@@ -132,7 +131,7 @@ export class PolicyViolationsSidesheetComponent implements OnInit, OnDestroy {
 
   /**
    * Handle changes to the hyperview option
-   * @param option 
+   * @param option
    */
   public onHyperviewOptionSelected(option: EuiSelectOption): void {
     this.setHyperviewObject(option.value);

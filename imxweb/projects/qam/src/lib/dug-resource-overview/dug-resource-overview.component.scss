@@ -1,0 +1,9 @@
+@use 'base/mixins' as mixin;
+
+:host {
+  @include mixin.flex-column-container-fill();
+
+  .data-explorer--resource-overview, .data-explorer-table {
+    @include mixin.flex-column-container-fill();
+  }
+}

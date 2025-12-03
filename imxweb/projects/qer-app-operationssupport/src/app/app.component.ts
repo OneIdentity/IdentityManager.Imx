@@ -170,10 +170,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((event: Event & RouterEvent) => {
       if (event instanceof NavigationStart) {
         this.routerStatus = event.type;
-        if (this.isLoggedIn && event.url === '/') {
-          // show the splash screen, when the user logs out!
-          this.splash.init({ applicationName: 'Operations Support Web Portal' });
-        }
       }
       if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
         this.routerStatus = event.type;

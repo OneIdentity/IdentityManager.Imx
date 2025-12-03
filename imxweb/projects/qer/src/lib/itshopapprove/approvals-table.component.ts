@@ -407,13 +407,13 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   }
 
   private async handleDecision(): Promise<void> {
-    if (this.approvalsDecision === ApprovalsDecision.none || (this.dataSource.data?.length ?? 0) === 0) {
-      if ((this.dataSource.data?.length ?? 0) === 0) {
-        await this.confirm.showErrorMessage({
-          Message: '#LDS#This request has already been approved or denied.',
-          ShowOk: true,
-        });
-      }
+    if (this.approvalsDecision === ApprovalsDecision.none) return;
+
+    if (this.dataSource.data?.length ?? 0 === 0) {
+      await this.confirm.showErrorMessage({
+        Message: '#LDS#This request has already been approved or denied.',
+        ShowOk: true,
+      });
       return;
     }
 

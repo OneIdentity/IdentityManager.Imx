@@ -34,11 +34,10 @@ import {
   DbObjectKey,
   DisplayColumns,
   EntitySchema,
-  FilterData,
   FilterType,
   TypedEntity,
   TypedEntityCollectionData,
-  ValType,
+  ValType
 } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -57,6 +56,7 @@ import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, Source
 import { Subscription } from 'rxjs';
 import { Approvers } from '../decision/approvers.interface';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
+import { AttestationParameters } from '../runs/attestation/attestation.component';
 import { AttestationHistoryActionService } from './attestation-history-action.service';
 import { AttestationHistoryCase } from './attestation-history-case';
 import { AttestationHistoryDetailsComponent } from './attestation-history-details/attestation-history-details.component';
@@ -69,7 +69,7 @@ import { AttestationHistoryService } from './attestation-history.service';
   providers: [DataViewSource],
 })
 export class AttestationHistoryComponent implements OnInit, OnDestroy {
-  @Input() public parameters: { objecttable: string; objectuid: string; filter?: FilterData[] };
+  @Input() public parameters: AttestationParameters;
   @Input() public itemStatus: DataSourceItemStatus = { enabled: (__) => true };
   @Input() public withAssignmentAnalysis: boolean = false;
   @Input() public selectable: boolean = true;
@@ -192,6 +192,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
       exportFunction: this.historyService.exportAttestation({
         objecttable: this.parameters?.objecttable,
         objectuid: this.parameters?.objectuid,
+        filter: this.parameters?.filter
       }),
     };
     this.dataSource.init(dataViewInitParameters);

@@ -273,7 +273,12 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
       : filter.CurrentValue.includes(fOption.Value);
   }
 
-  public onCheckboxFilterChanged(filter: DataSourceToolbarFilter, option: DataModelFilterOption, event: MatCheckboxChange): void {
+  public onCheckboxFilterChanged(
+    filter: DataSourceToolbarFilter,
+    option: DataModelFilterOption,
+    event: MatCheckboxChange,
+    multi = false,
+  ): void {
     if (filter.Delimiter) {
       this.setDelimitedFilterCurrentValue(filter, option, event.checked);
     } else {
@@ -281,13 +286,14 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
       filter.CurrentValue = event.checked ? option.Value : undefined;
     }
     const selectedFilterData: DataSourceToolbarSelectedFilter = { selectedOption: option, filter };
-    const index = this.findSelectedFilterIndex(filter.Name);
-    if (index >= 0) {
+    const index = this.findSelectedFilterIndex(filter.Name, option.Value);
+    if (multi && !event.checked) {
+      this.internalSelectedFilters.splice(index, 1);
+    } else if (index >= 0) {
       this.internalSelectedFilters[index] = selectedFilterData;
     } else {
       this.internalSelectedFilters.push(selectedFilterData);
     }
-
     this.formState.dirty = true;
     this.filterService.formStatusChanged(this.formState);
   }

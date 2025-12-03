@@ -34,7 +34,7 @@
     <mat-checkbox
       *ngFor="let fopt of filter.Options"
       [checked]="isMultiChecked(filter, fopt)"
-      (change)="onCheckboxFilterChanged(filter, fopt, $event)"
+      (change)="onCheckboxFilterChanged(filter, fopt, $event, true)"
       [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-' + filter.Name + '-' + fopt.Value"
     >
       {{ fopt.Display }}

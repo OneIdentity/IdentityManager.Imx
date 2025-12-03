@@ -24,6 +24,8 @@
     [dataSource]="dataSource"
     mode="manual"
     [selectable]="true"
+    [noDataText]="'#LDS#No data'"
+    noDataIcon="table"
     matSort
     (matSortChange)="dataSource?.sortChange($event)"
     [matSortActive]="dataSource.sortId()"

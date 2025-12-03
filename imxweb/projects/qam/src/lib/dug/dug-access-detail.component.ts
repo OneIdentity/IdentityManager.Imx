@@ -49,11 +49,17 @@ export class DugAccessDetailComponent implements OnInit {
 
   public LdsAdditionalRights = '#LDS#This folder has additional access rights assigned which are not on the share/parent folder.';
 
-  public charts: ({
+  public organizationalCharts: ({
     title: string;
     noDataMessage: string;
     data: ChartOptions;
   } | null)[] = [];
+
+  public assignmentMethodChart: {
+    title: string;
+    noDataMessage: string;
+    data: ChartOptions;
+  } | null = null;
 
   @Input() public dug: PortalDgeResourcesbyid;
 
@@ -72,16 +78,26 @@ export class DugAccessDetailComponent implements OnInit {
 
   private async loadCharts(): Promise<void> {
     if (!this.dug) {
-      this.charts = [];
+      this.organizationalCharts = [];
+      this.assignmentMethodChart = null;
       return;
     }
-    this.charts = (
+
+    // Load organizational charts
+    this.organizationalCharts = (
       await Promise.all([
         this.getChart('QAM_AccessAnalysis_Department', '#LDS#Access analysis by department', '#LDS#Data unavailable.'),
         this.getChart('QAM_AccessAnalysis_PrimaryRoleTitle', '#LDS#Access analysis by primary role title', '#LDS#Data unavailable.', 'ORG'),
         this.getChart('QAM_AccessAnalysis_Location', '#LDS#Access analysis by location', '#LDS#Data unavailable.'),
       ])
     ).filter((x) => x != null);
+
+    // Load assignment method chart
+    this.assignmentMethodChart = await this.getChart(
+      'QAM_AccessAnalysis_TrusteeType_Chart',
+      '#LDS#Access analysis via access assignment method',
+      '#LDS#Data unavailable.'
+    );
   }
 
   private async getChart(id: string, titleLds: string, noDataLds: string, preprop?: string) {
@@ -157,7 +173,8 @@ export class DugAccessDetailComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.charts = [];
+    this.organizationalCharts = [];
+    this.assignmentMethodChart = null;
   }
   //#endregion
 }

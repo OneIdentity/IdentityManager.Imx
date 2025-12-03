@@ -5,7 +5,9 @@
     </ng-template>
   </mat-tab>
   <mat-tab *ngIf="dugBackingFolder" [label]="'#LDS#Access analysis on backing folder permissions' | translate">
-    <imx-dge-access-detail [dug]="dugBackingFolder"></imx-dge-access-detail>
+    <ng-template matTabContent>
+      <imx-dge-access-detail [dug]="dugBackingFolder"></imx-dge-access-detail>
+    </ng-template>
   </mat-tab>
 
   <mat-tab [label]="'#LDS#Access Detail' | translate">

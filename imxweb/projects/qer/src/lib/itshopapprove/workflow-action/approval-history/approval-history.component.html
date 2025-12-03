@@ -9,22 +9,10 @@
     [alwaysVisible]="true"
     data-imx-identifier="approval-history-table-dst"
     (search)="onSearch($event)"
-    [hiddenFilters]="['filtermode']"
-    [showClearFilterOption]="false"
     (navigationStateChanged)="onNavigationStateChanged($event)"
-    (customSelectedFilterRemoved)="historyFilter.onCustomFilterClearedExternally($event)"
   >
-    <div imx-data-source-toolbar-custom-filter (click)="$event.stopPropagation()">
-      <imx-history-filter
-        [filter]="filters"
-        [dst]="dst"
-        [filtermode]="filtermode"
-        (selectedFiltersChanged)="filterChanged($event)"
-        #historyFilter
-      ></imx-history-filter>
-    </div>
   </imx-data-source-toolbar>
-  <div class="imx-table-container" *ngIf="hasFilterApplied; else noFilterWarning">
+  <div class="imx-table-container" [ngClass]="{ 'imx-hidden': !hasFilterApplied }">
     <imx-data-table
       [dst]="dst"
       [detailViewVisible]="false"
@@ -49,12 +37,11 @@
     </imx-data-table>
     <imx-data-source-paginator data-imx-identifier="approval-history-paginator" [dst]="dst"></imx-data-source-paginator>
   </div>
-</mat-card>
-
-<ng-template #noFilterWarning>
-  <div class="imx-no-results">
+  <div class="imx-no-results" [ngClass]="{ 'imx-hidden': hasFilterApplied }">
     <eui-icon icon="warning"></eui-icon>
     <div headline translate>#LDS#Heading No Filter Applied</div>
     <div>{{ '#LDS#Select at least one filter.' | translate }}</div>
   </div>
-</ng-template>
+</mat-card>
+
+<ng-template #noFilterWarning> </ng-template>

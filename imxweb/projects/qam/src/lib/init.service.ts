@@ -32,11 +32,9 @@ import { CartItemsExtensionService, DataExplorerRegistryService, isAuditor, MyRe
 import { AccessRequestService } from './access-request/access-request.service';
 import { AccessComponent } from './access/access.component';
 import { UserAccessComponent } from './access/user-access.component';
-import { AuditingGovernedDataComponent } from './auditing-governed-data/auditing-governed-data.component';
 import { DugOverviewComponent } from './dug-overview/dug-overview.component';
-import { DugOwnershipComponent } from './dug-ownership/dug-ownership.component';
 import { IdentityComponent } from './identity/identity.component';
-import { QamApiService } from './qam-api-client.service';
+import { isQAMAdmin } from './admin/permission-helper';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -49,7 +47,6 @@ export class InitService {
     private readonly menuService: MenuService,
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
-    private readonly qamClientService: QamApiService
   ) {
     this.setupMenu();
   }
@@ -111,60 +108,22 @@ export class InitService {
 
     this.dataExplorerRegistryService.registerFactory(
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[],) => {
-       if (!this.qamClientService.isPersonDGEAdmin(groups)) {
-         return;
+       if (isQAMAdmin(features) || isAuditor(groups)) {
+         return {
+           instance: DugOverviewComponent,
+           sortOrder: 1,
+           name: this.dgeTag,
+           caption: '#LDS#Menu Entry Governed Data',
+           data: {
+             TableName: this.dgeTag,
+             Count: 0,
+           },
+           contextId: HELP_CONTEXTUAL.GovernedDataOverview,
+         };
        }
-       return {
-         instance: DugOverviewComponent,
-         sortOrder: 1,
-         name: this.dgeTag,
-         caption: '#LDS#Menu Entry Governed Data Overview',
-         data: {
-           TableName: this.dgeTag,
-           Count: 0,
-         },
-         contextId: HELP_CONTEXTUAL.GovernedDataOverview,
-       };
+       return;
      },
    );
-
-   this.dataExplorerRegistryService.registerFactory(
-    (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[],) => {
-     if (!this.qamClientService.isPersonDGEAdmin(groups)) {
-       return;
-     }
-     return {
-      instance: DugOwnershipComponent,
-      sortOrder: 8,
-      name: 'QAMDuGOWNER',
-      caption: '#LDS#Menu Entry Governed Data Ownership',
-      data: {
-        TableName: this.dgeTag,
-        Count: 0,
-      },
-      contextId: HELP_CONTEXTUAL.GovernedDataOwnership,
-     };
-   },
- );
-
-    this.dataExplorerRegistryService.registerFactory(
-      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!isAuditor(groups)) { 
-          return;
-        }
-        return {
-          instance: AuditingGovernedDataComponent,
-          sortOrder: 2,
-          name: 'QAMNodes',
-          caption: '#LDS#Menu Entry Governed Data',
-          data: {
-            TableName: 'QAMNode',
-            Count: 0,
-          },
-          contextId: HELP_CONTEXTUAL.AuditingGovernedData,
-        };
-      },
-    );
 
     this.addRoutes(routes);
   }
@@ -172,7 +131,7 @@ export class InitService {
   private setupMenu(): void {
     this.menuService.addMenuFactories(
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!this.qamClientService.isPersonDGEAdmin(groups)) {
+        if (!isQAMAdmin(features)) {
           return undefined;
         }
 

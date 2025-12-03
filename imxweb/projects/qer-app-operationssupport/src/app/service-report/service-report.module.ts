@@ -24,23 +24,24 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { MatCardModule } from '@angular/material/card';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { EuiCoreModule } from '@elemental-ui/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { DataSourceToolbarModule, DataTableModule, CdrModule } from 'qbm';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DataViewModule } from 'qbm';
+import { JobServersDetailsComponent } from './job-servers-details/job-servers-details.component';
+import { JobServersEditComponent } from './job-servers-edit/job-servers-edit.component';
 import { JobServersGridviewComponent } from './job-servers-gridview.component';
+import { JobServersService } from './job-servers.service';
 import { ServiceAvailabilityComponent } from './service-availability.component';
 import { ServiceReportComponent } from './service-report.component';
 import { ServicesInactiveComponent } from './services-inactive.component';
-import { JobServersService } from './job-servers.service';
-import { JobServersEditComponent } from './job-servers-edit/job-servers-edit.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { JobServersDetailsComponent } from './job-servers-details/job-servers-details.component';
 
 @NgModule({
   declarations: [
@@ -56,11 +57,13 @@ import { JobServersDetailsComponent } from './job-servers-details/job-servers-de
     CommonModule,
     DataSourceToolbarModule,
     DataTableModule,
+    DataViewModule,
     EuiCoreModule,
     TranslateModule,
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
+    MatTableModule,
     FormsModule,
     ReactiveFormsModule,
     MatTabsModule,

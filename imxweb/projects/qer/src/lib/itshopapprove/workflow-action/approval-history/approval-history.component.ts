@@ -94,6 +94,7 @@ export class ApprovalHistoryComponent implements OnInit {
   }
 
   public async onNavigationStateChanged(state: CollectionLoadParameters): Promise<void> {
+    this.filtermode = state.filtermode?.split(',').reduce((a, b) => (a |= b)) || HistoryFilterMode.None;
     this.navigationState = state;
     return this.navigate();
   }
@@ -132,11 +133,6 @@ export class ApprovalHistoryComponent implements OnInit {
             ? 'red'
             : 'gray',
     };
-  }
-
-  public async filterChanged(evt: HistoryFilterMode): Promise<void> {
-    this.filtermode = evt;
-    return this.navigate();
   }
 
   public get isSameStepActive(): boolean {
@@ -237,16 +233,17 @@ export class ApprovalHistoryComponent implements OnInit {
     );
   }
 
-  private async buildFilter(): Promise<DataSourceToolbarFilter[]> {
+  private buildFilter(): DataSourceToolbarFilter[] {
     const filterMode: DataSourceToolbarFilter = {
       Name: 'filtermode',
-      Description: await this.translate.get('#LDS#Filter').toPromise(),
+      Description: this.translate.instant('#LDS#Filter'),
       Delimiter: ',',
       Options: [
-        { Value: '1', Display: await this.translate.get('#LDS#Same product').toPromise() },
-        { Value: '2', Display: await this.translate.get('#LDS#Same recipient').toPromise() },
-        { Value: '4', Display: await this.translate.get('#LDS#Your approval decisions').toPromise() },
+        { Value: '1', Display: this.translate.instant('#LDS#Same product') },
+        { Value: '2', Display: this.translate.instant('#LDS#Same recipient') },
+        { Value: '4', Display: this.translate.instant('#LDS#Your approval decisions') },
       ],
+      InitialValue: '1,4',
     };
     return [filterMode];
   }

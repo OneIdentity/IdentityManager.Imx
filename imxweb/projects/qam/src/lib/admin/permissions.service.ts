@@ -24,12 +24,18 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { UserModelService } from 'qer';
+import { isQAMAdmin } from './permission-helper';
 
-@Component({
-  selector: 'imx-services-inactive',
-  templateUrl: './services-inactive.component.html',
-  styleUrls: ['./service-availability.component.scss'],
-  standalone: false,
+@Injectable({
+  providedIn: 'root'
 })
-export class ServicesInactiveComponent {}
+export class PermissionsService {
+
+  constructor(private readonly userService: UserModelService) {}
+  
+  public async isQAMAdmin(): Promise<boolean> {
+    return isQAMAdmin((await this.userService.getFeatures()).Features || []);
+  }
+}
