@@ -1,0 +1,40 @@
+<imx-data-source-toolbar
+  #dst
+  data-imx-identifier="attestation-case-history-dst"
+  [options]="['search']"
+  [settings]="dstSettings"
+  [busyService]="busyService"
+  (search)="onSearch($event)"
+  (navigationStateChanged)="onNavigationStateChanged($event)"
+>
+</imx-data-source-toolbar>
+<imx-data-table
+  class="imx-attestation-case-history-table"
+  data-imx-identifier="attestation-case-history-data-table"
+  [dst]="dst"
+  [detailViewVisible]="false"
+  mode="manual"
+  (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
+  #dataTable
+>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.AttestationState" columnLabel="">
+    <ng-template let-item>
+      <div class="imx-icons-container">
+        <div class="table-icon table-icon--warning" *ngIf="item.AttestationState.value === 'denied'">
+          <eui-icon icon="warning" size="m"></eui-icon>
+          {{ item.AttestationState.Column.GetDisplayValue() }}
+        </div>
+        <div class="table-icon table-icon--new" *ngIf="item.AttestationState.value === 'approved'">
+          <eui-icon icon="check" size="m"></eui-icon>
+          {{ item.AttestationState.Column.GetDisplayValue() }}
+        </div>
+         <div class="table-icon table-icon--primary" *ngIf="item.AttestationState.value === 'pending'">
+          <eui-icon icon="clock" size="m"></eui-icon>
+          {{ item.AttestationState.Column.GetDisplayValue() }}
+        </div>
+      </div>
+    </ng-template>
+  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted" data-imx-identifier="case-history-data-x-date-inserted"></imx-data-table-column>
+</imx-data-table>
+<imx-data-source-paginator [dst]="dst" data-imx-identifier="attestation-case-history-table-paginator"> </imx-data-source-paginator>

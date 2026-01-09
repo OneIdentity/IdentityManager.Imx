@@ -25,11 +25,11 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { PortalAdminRoleOrg, PortalRespOrg, TeamRoleData } from 'imx-api-rmb';
 import { ActivatedRoute } from '@angular/router';
-import { IEntity, ReadOnlyEntity } from 'imx-qbm-dbts';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { PortalAdminRoleOrg, TeamRoleData } from 'imx-api-rmb';
+import { IEntity, ReadOnlyEntity } from 'imx-qbm-dbts';
 import {
   DataManagementService,
   QerPermissionsService,
@@ -40,7 +40,6 @@ import {
   RoleService,
 } from 'qer';
 import { RmbApiService } from '../rmb-api-client.service';
-import { MetadataService } from 'qbm';
 
 @Component({
   selector: 'imx-team-role',
@@ -60,11 +59,11 @@ export class TeamRoleComponent implements OnInit {
     private readonly dataManagementService: DataManagementService,
     private readonly route: ActivatedRoute,
     private readonly permissionService: QerPermissionsService,
-    private readonly roleEntitlementActionService: RoleEntitlementActionService,
+    private readonly roleEntitlementActionService: RoleEntitlementActionService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    if(await this.permissionService.isPersonManager()){
+    if (await this.permissionService.isPersonManager()) {
       this.showTeamRole = true;
       await this.getTeamRole();
     }
@@ -80,16 +79,19 @@ export class TeamRoleComponent implements OnInit {
       const roleItem = roleItemCollection.Data[0].GetEntity();
       await this.setRoleData(roleItem);
       await this.dataManagementService.setInteractive();
-      this.sidesheetService.open(RoleDetailComponent, {
-        title: this.translateService.instant('#LDS#Heading Edit Team Role'),
-        subTitle: roleItem.GetDisplay(),
-        padding: '0px',
-        width: 'max(768px, 80%)',
-        disableClose: true,
-        testId: `${this.orgTag}-role-detail-sidesheet`,
-      }).afterClosed().subscribe(() =>{
-        this.getTeamRole();
-      })
+      this.sidesheetService
+        .open(RoleDetailComponent, {
+          title: this.translateService.instant('#LDS#Heading Edit Team Role'),
+          subTitle: roleItem.GetDisplay(),
+          padding: '0px',
+          width: 'max(768px, 80%)',
+          disableClose: true,
+          testId: `${this.orgTag}-role-detail-sidesheet`,
+        })
+        .afterClosed()
+        .subscribe(() => {
+          this.getTeamRole();
+        });
     } finally {
       this.loadingState = false;
     }
@@ -115,13 +117,14 @@ export class TeamRoleComponent implements OnInit {
             selectionTitle: '#LDS#Selected entitlements',
             submitButtonTitle: '#LDS#Create team role',
             actionColumnTitle: '#LDS#Distribution among the team',
-            hideActionConfirmation: true
+            hideActionConfirmation: true,
+            applyWithoutSelection: true,
           },
         })
         .afterClosed()
-        .subscribe((result: RoleRecommendationResultItem[]) => {
+        .subscribe((result: { items: RoleRecommendationResultItem[] }) => {
           if (!!result) {
-            this.saveRecommendations(result);
+            this.saveRecommendations(result.items);
           }
         });
     } finally {
@@ -155,7 +158,9 @@ export class TeamRoleComponent implements OnInit {
     try {
       // It can take a moment for the team role to become visible over the ownerships API because of DBQUeue calculations.
       this.loadingState = true;
-      const collectionData = await this.rmbApiService.client.portal_resp_team_teamrole_post({ObjectKeys: resultItem.map(item => item.ObjectKey.value)});
+      const collectionData = await this.rmbApiService.client.portal_resp_team_teamrole_post({
+        ObjectKeys: resultItem.map((item) => item.ObjectKey.value),
+      });
       // This entity represents the new team role.
       const entity = new ReadOnlyEntity(PortalAdminRoleOrg.GetEntitySchema(), collectionData.Entities[0]);
       await this.setRoleData(entity);
@@ -170,7 +175,7 @@ export class TeamRoleComponent implements OnInit {
    * Set role service sidesheet data with the required params.
    * @param IEntity
    */
-  private async setRoleData(entity: IEntity): Promise<void>{
+  private async setRoleData(entity: IEntity): Promise<void> {
     const isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     const isStructureAdmin = await this.permissionService.isStructAdmin();
     this.roleService.setSidesheetData({

@@ -32,12 +32,12 @@ import { PortalRolesEntitlements, RoleAssignmentData } from 'imx-api-qer';
 import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
 
 import { BusyService, ConfirmationService, DataSourceToolbarSettings, DataTableComponent, MetadataService, SnackBarService } from 'qbm';
-import { RoleRecommendationsComponent } from './role-recommendations/role-recommendations.component';
 import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 import { EntitlementSelectorComponent } from './entitlement-selector.component';
-import { RoleRecommendationResultItem } from './role-recommendations/role-recommendation-result-item';
 import { RoleEntitlementActionService } from './role-entitlement-action.service';
+import { RoleRecommendationResultItem } from './role-recommendations/role-recommendation-result-item';
+import { RoleRecommendationsComponent } from './role-recommendations/role-recommendations.component';
 @Component({
   selector: 'imx-role-entitlements',
   templateUrl: './role-entitlements.component.html',
@@ -204,7 +204,7 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
 
   public async onShowRecommendations(): Promise<any> {
     const entity = this.dataManagementService.entityInteractive.GetEntity();
-    const result: RoleRecommendationResultItem[] = await this.sidesheet
+    const result: { items: RoleRecommendationResultItem[] } = await this.sidesheet
       .open(RoleRecommendationsComponent, {
         title: await this.translate.get('#LDS#Heading View Recommended Entitlements').toPromise(),
         subTitle: entity.GetDisplay(),
@@ -220,18 +220,18 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .toPromise();
 
-    if (result != null) {
+    if (!!result) {
       let countAdd = 0;
       let countRemove = 0;
       const overlay = this.busyServiceElemental.show();
       try {
         countAdd = await this.roleActionService.addRecommendation(
           entity,
-          result.filter((elem) => elem.Type.value === 0)
+          result.items?.filter((elem) => elem.Type.value === 0)
         );
         countRemove = await this.roleActionService.deleteRecommendations(
           entity,
-          result.filter((elem) => elem.Type.value === 1)
+          result.items?.filter((elem) => elem.Type.value === 1)
         );
       } finally {
         this.busyServiceElemental.hide(overlay);

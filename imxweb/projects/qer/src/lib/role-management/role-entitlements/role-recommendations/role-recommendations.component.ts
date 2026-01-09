@@ -25,14 +25,14 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { RoleRecommendationItem } from 'imx-api-qer';
 import { EntitySchema } from 'imx-qbm-dbts';
 import { BusyService, ConfirmationService, DataSourceToolbarSettings } from 'qbm';
 
+import { RoleService } from '../../role.service';
 import { RoleRecommendationResultItem } from './role-recommendation-result-item';
 import { RoleRecommendationResultBuilder } from './role-recommendation-result-item-builder';
-import { RoleService } from '../../role.service';
 
 @Component({
   selector: 'imx-role-recommendations',
@@ -61,6 +61,7 @@ export class RoleRecommendationsComponent implements OnInit {
       submitButtonTitle?: string;
       actionColumnTitle?: string;
       hideActionConfirmation?: boolean;
+      applyWithoutSelection?: boolean;
     },
     public roleService: RoleService,
     public sidesheetRef: EuiSidesheetRef,
@@ -109,7 +110,7 @@ export class RoleRecommendationsComponent implements OnInit {
         Parameter: [added, remove],
       })
     ) {
-      this.sidesheetRef.close(this.selectedEntities);
+      this.sidesheetRef.close({ items: this.selectedEntities });
     }
   }
 
