@@ -1,3 +1,7 @@
+### January 9, 2025
+- 648346 (648345): Adds historical attestation decisions for an object.
+- 438842 (432021): Improves team role creation.
+
 ### December 4, 2025
 - 545530:Fixes an issue with showing the standard reason for a request. The mandatory field for reason is not displayed correctly.
 - 581967 (549535): Fixes an exception when approving pending requests as a member of the chief approval team.
