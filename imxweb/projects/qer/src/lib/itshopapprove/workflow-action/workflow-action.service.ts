@@ -87,7 +87,7 @@ export class WorkflowActionService {
     private readonly extService: ExtService,
     private readonly userService: UserModelService,
     private readonly queueService: ProcessingQueueService,
-  ) {}
+  ) { }
 
   public async directDecisions(requests: (Approval | TypedEntity)[], userUid: string): Promise<void> {
     const actionParameters = {
@@ -279,7 +279,7 @@ export class WorkflowActionService {
     return this.apiService.v2Client.portal_itshop_approve_requests_stepup_post({ UidPwo: uidPwo });
   }
 
-  public async approve(entities: (Approval | TypedEntity)[], user: string): Promise<void> {
+  public async approve(entities: (Approval | TypedEntity)[], user: string, isEscalation: boolean): Promise<void> {
     const requests = entities as Approval[];
     const term = await this.checkTermsOfUse(requests);
     if (!term.isChecked) {
@@ -361,6 +361,7 @@ export class WorkflowActionService {
         actionParameters,
         showValidDate,
         withGuidance: true,
+        isInEscalationView: isEscalation,
         customValidation: {
           validate: (control: AbstractControl) => {
             const validUntilMoment: Moment = control.value[schema.Columns.ValidUntil.ColumnName!];
@@ -373,6 +374,7 @@ export class WorkflowActionService {
           message:
             '#LDS#The validity period you specified is not valid. The validity end date lies before the validity start date, or vice versa. Change the validity period.',
         },
+
       },
       apply: async (request: Approval) => {
         if (request.canSetValidFrom() && actionParameters.validFrom) {
@@ -394,13 +396,13 @@ export class WorkflowActionService {
           Reason: actionParameters.reason?.column.GetValue(),
           UidJustification: actionParameters.justification?.column?.GetValue(),
           Decision: true,
-          SubLevel: getSubLevel(request, request.pwoData, user),
+          SubLevel: getSubLevel(request, request.pwoData, user, isEscalation),
         });
       },
     });
   }
 
-  public async deny(requests: TypedEntity[]): Promise<void> {
+  public async deny(requests: TypedEntity[], isEscalation: boolean): Promise<void> {
     const itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
 
     let justification: BaseCdr | undefined;
@@ -428,15 +430,16 @@ export class WorkflowActionService {
         requests,
         actionParameters,
         withGuidance: true,
+        isInEscalationView: isEscalation,
         customValidation: itShopConfig?.VI_ITShop_ApproverReasonMandatoryOnDeny
           ? {
-              validate: () => {
-                const reasonValue = actionParameters.reason?.column.GetValue();
-                const justificationValue = actionParameters.justification?.column?.GetValue();
-                return (reasonValue != null && reasonValue.length > 0) || (justificationValue != null && justificationValue.length > 0);
-              },
-              message: '#LDS#Please enter or select a reason for your decision.',
-            }
+            validate: () => {
+              const reasonValue = actionParameters.reason?.column.GetValue();
+              const justificationValue = actionParameters.justification?.column?.GetValue();
+              return (reasonValue != null && reasonValue.length > 0) || (justificationValue != null && justificationValue.length > 0);
+            },
+            message: '#LDS#Please enter or select a reason for your decision.',
+          }
           : undefined,
       },
       apply: async (request: Approval) => {

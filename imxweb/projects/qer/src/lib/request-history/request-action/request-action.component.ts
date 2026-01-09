@@ -103,8 +103,9 @@ export class RequestActionComponent implements OnDestroy {
                 return false;
               }
 
-              const maxDate = new Date(request.OrderDate.value);
+              const maxDate = new Date();
               maxDate.setDate(maxDate.getDate() + request.MaxValidDays.value);
+              maxDate.setHours(23, 59, 59, 999);
               return new Date(value).valueOf() > maxDate.valueOf();
             })),
       ),

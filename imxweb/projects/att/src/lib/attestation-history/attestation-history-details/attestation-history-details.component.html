@@ -76,7 +76,7 @@
       mat-flat-button
       color="warn"
       data-imx-identifier="attestation-history-detail-button-deny"
-      (click)="attestationAction.deny([case])"
+      (click)="attestationAction.deny([case],false)"
       *ngIf="canDecide"
     >
       <eui-icon icon="ignore"></eui-icon>
@@ -87,7 +87,7 @@
       mat-flat-button
       color="primary"
       data-imx-identifier="attestation-history-detail-button-approve"
-      (click)="attestationAction.approve([case])"
+      (click)="attestationAction.approve([case],false)"
       *ngIf="canDecide"
     >
       <eui-icon icon="check"></eui-icon>

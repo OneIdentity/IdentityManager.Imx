@@ -99,7 +99,7 @@
 
       <ng-container [matColumnDef]="entitySchema.Columns.Details.ColumnName">
         <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let item" role="gridcell">
+        <td mat-cell *matCellDef="let item; index as i" role="gridcell">
           <div>
             <div class="imx-button-column">
               <button mat-button (click)="checkServer(item, $event)" data-imx-identifier="service-availability-table-check-server">
@@ -108,7 +108,7 @@
               <button
                 mat-button
                 color="primary"
-                (click)="getServerDetails(item, $event)"
+                (click)="getServerDetails(item, i, $event)"
                 data-imx-identifier="service-availability-table-column-details-button"
               >
                 {{ '#LDS#Details' | translate }}

@@ -28,7 +28,7 @@ import { Injectable } from '@angular/core';
 
 import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { imx_SessionService } from 'qbm';
-import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
+import { OpsupportJobservers, ServerExtendedData } from '@imx-modules/imx-api-qbm';
 
 export interface JobServersParameters extends CollectionLoadParameters {
   withconnection?: boolean;
@@ -43,11 +43,11 @@ export class JobServersService {
 
   constructor(private readonly session: imx_SessionService) {}
 
-  public async get(parameters?: JobServersParameters): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, unknown>> {
+  public async get(parameters?: JobServersParameters): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, ServerExtendedData[]>> {
     return this.session.TypedClient.OpsupportJobservers.Get(parameters);
   }
 
-  public async checkServerConnection(uid) {
+  public async checkServerConnection(uid: string) {
     return this.session.Client.opsupport_jobservers_check_post(uid);
   }
 

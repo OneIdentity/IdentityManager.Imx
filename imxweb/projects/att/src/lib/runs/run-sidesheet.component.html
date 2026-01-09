@@ -186,7 +186,7 @@
     [label]="'#LDS#Attestation cases' | translate"
     data-imx-identifier="run-sidesheet-tab-cases"
   >
-    <imx-attestation [parameters]="attestationFilterParam" [pendingAttestations]="pendingAttestations" (cancel)="cancel()">
+    <imx-attestation [parameters]="attestationFilterParam" [pendingAttestations]="pendingAttestations" [viewEscalation]="false" (cancel)="cancel()">
     </imx-attestation>
   </mat-tab>
 </mat-tab-group>

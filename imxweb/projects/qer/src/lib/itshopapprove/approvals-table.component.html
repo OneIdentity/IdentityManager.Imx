@@ -99,7 +99,7 @@
             mat-stroked-button
             [disabled]="!dataSource.itemStatus.enabled(item)"
             color="warn"
-            (click)="actionService.deny([item])"
+            (click)="actionService.deny([item], viewEscalation)"
             data-imx-identifier="approvals-table-row-button-deny"
           >
             <eui-icon icon="ignore"></eui-icon>
@@ -109,7 +109,7 @@
             mat-stroked-button
             [disabled]="!dataSource.itemStatus.enabled(item)"
             color="primary"
-            (click)="actionService.approve([item], currentUserId)"
+            (click)="actionService.approve([item], currentUserId, viewEscalation)"
             data-imx-identifier="approvals-table-row-button-approve"
           >
             <eui-icon icon="check"></eui-icon>
@@ -168,7 +168,7 @@
     color="warn"
     data-imx-identifier="approvals-table-button-deny"
     title="{{ '#LDS#Denies the selected requests' | translate }}"
-    (click)="actionService.deny(selectedItems)"
+    (click)="actionService.deny(selectedItems, viewEscalation)"
     [disabled]="!selectedItems.length"
   >
     <eui-icon icon="ignore"></eui-icon>
@@ -179,7 +179,7 @@
     color="primary"
     data-imx-identifier="approvals-table-button-approve"
     title="{{ '#LDS#Approves the selected requests' | translate }}"
-    (click)="actionService.approve(selectedItems, currentUserId)"
+    (click)="actionService.approve(selectedItems, currentUserId, viewEscalation)"
     [disabled]="!selectedItems.length"
   >
     <eui-icon icon="check"></eui-icon>

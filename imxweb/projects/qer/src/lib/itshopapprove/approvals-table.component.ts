@@ -373,9 +373,9 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       .toPromise();
 
     if (decision === 'approve') {
-      this.actionService.approve([pwo], this.currentUserId);
+      this.actionService.approve([pwo], this.currentUserId, this.viewEscalation);
     } else if (decision === 'deny') {
-      this.actionService.deny([pwo]);
+      this.actionService.deny([pwo], this.viewEscalation);
     }
   }
 
@@ -419,10 +419,10 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
     switch (this.approvalsDecision) {
       case ApprovalsDecision.approve:
-        this.actionService.approve(this.dataSource.collectionData()?.Data || [], this.currentUserId);
+        this.actionService.approve(this.dataSource.collectionData()?.Data || [], this.currentUserId, this.viewEscalation);
         break;
       case ApprovalsDecision.deny:
-        this.actionService.deny(this.dataSource.collectionData()?.Data || []);
+        this.actionService.deny(this.dataSource.collectionData()?.Data || [], this.viewEscalation);
         break;
       case ApprovalsDecision.denydecision:
         this.actionService.denyDecisions(this.dataSource.collectionData()?.Data || []);

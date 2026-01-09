@@ -36,11 +36,16 @@
       mat-flat-button
       color="primary"
       data-imx-identifier="approvals-sidesheet-button-approve"
-      (click)="actionService.approve([data.pwo], currentUserId)"
+      (click)="actionService.approve([data.pwo], currentUserId, data.isUserEscalationApprover)"
     >
       {{ '#LDS#Approve' | translate }}
     </button>
-    <button mat-flat-button color="warn" data-imx-identifier="approvals-sidesheet-button-deny" (click)="actionService.deny([data.pwo])">
+    <button
+      mat-flat-button
+      color="warn"
+      data-imx-identifier="approvals-sidesheet-button-deny"
+      (click)="actionService.deny([data.pwo], data.isUserEscalationApprover)"
+    >
       {{ '#LDS#Deny' | translate }}
     </button>
     <button

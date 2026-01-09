@@ -89,4 +89,6 @@ export interface WorkflowActionEdit {
     validate: (control?: AbstractControl) => boolean;
     message: string;
   };
+
+  isInEscalationView?: boolean;
 }

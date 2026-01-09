@@ -24,10 +24,9 @@
  *
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { OpsupportJobservers, ServerExtendedDataItem } from '@imx-modules/imx-api-qbm';
+import { ServerExtendedData } from '@imx-modules/imx-api-qbm';
 
 @Component({
   selector: 'imx-job-servers-details',
@@ -35,13 +34,5 @@ import { OpsupportJobservers, ServerExtendedDataItem } from '@imx-modules/imx-ap
   styleUrls: ['./job-servers-details.component.scss'],
 })
 export class JobServersDetailsComponent {
-  public tags: ServerExtendedDataItem[];
-  public machineRoles: ServerExtendedDataItem[];
-  constructor(
-    @Inject(EUI_SIDESHEET_DATA) public serverDetails: OpsupportJobservers,
-    private translate: TranslateService,
-  ) {
-    this.tags = serverDetails['Tags'];
-    this.machineRoles = serverDetails['MachineRoles'];
-  }
+  constructor(@Inject(EUI_SIDESHEET_DATA) protected serverDetails: ServerExtendedData) {}
 }

@@ -111,6 +111,7 @@ export class WorkflowSingleActionComponent implements OnInit {
    * Sets up the {@link columns} to be displayed/edited during OnInit lifecycle hook.
    */
   public async ngOnInit(): Promise<void> {
+    this.stepService.isEscalationApprover = this.data.isInEscalationView ?? false;
     this.request = this.data.requests[0] as Approval;
 
     if (this.request?.OrderState?.Column) {

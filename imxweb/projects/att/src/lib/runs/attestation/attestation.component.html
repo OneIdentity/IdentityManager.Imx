@@ -33,7 +33,7 @@
     data-imx-identifier="attestation-deny-selected-button"
     mat-flat-button
     color="warn"
-    (click)="attestationAction.deny(selectedCases)"
+    (click)="attestationAction.deny(selectedCases, viewEscalation)"
     [disabled]="!canDecide"
   >
     <eui-icon icon="ignore" size="24px"></eui-icon>
@@ -43,7 +43,7 @@
     data-imx-identifier="attestation-approve-selected-button"
     mat-flat-button
     color="primary"
-    (click)="attestationAction.approve(selectedCases)"
+    (click)="attestationAction.approve(selectedCases, viewEscalation)"
     [disabled]="!canDecide"
   >
     <eui-icon icon="check" size="24px"></eui-icon>

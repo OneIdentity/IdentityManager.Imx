@@ -65,10 +65,13 @@ export class AttestationActionComponent {
       approve?: boolean;
       maxReasonType: number;
       additionalInfo?: BaseReadonlyCdr[];
+      isEscalation: boolean;
     },
     public readonly sideSheetRef: EuiSidesheetRef,
     stepService: DecisionStepSevice,
   ) {
+
+    stepService.isEscalationApprover = data.isEscalation;
     Object.keys(this.data.actionParameters).forEach((name) => this.actionParameters.push(this.data.actionParameters[name]));
 
     if (this.data.attestationCases.length === 1) {

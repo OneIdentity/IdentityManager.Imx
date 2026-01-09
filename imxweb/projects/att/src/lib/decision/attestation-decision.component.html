@@ -100,7 +100,7 @@
               mat-stroked-button
               color="warn"
               [disabled]="!dataSource.itemStatus.enabled(item)"
-              (click)="openLossDialog('deny', [item])"
+              (click)="openLossDialog('deny', [item], viewEscalation)"
               data-imx-identifier="attestations-table-deny-button"
             >
               <eui-icon icon="ignore"></eui-icon>
@@ -110,7 +110,7 @@
               mat-stroked-button
               color="primary"
               [disabled]="!dataSource.itemStatus.enabled(item)"
-              (click)="attestationAction.checkForViolations([item])"
+              (click)="attestationAction.checkForViolations([item], viewEscalation)"
               data-imx-identifier="attestations-table-approve-button"
             >
               <eui-icon icon="check"></eui-icon>
@@ -170,7 +170,7 @@
       data-imx-identifier="attestations-deny-selected-button"
       mat-flat-button
       color="warn"
-      (click)="openLossDialog('deny', selectedCases)"
+      (click)="openLossDialog('deny', selectedCases, viewEscalation)"
       [disabled]="!selectedCases.length"
     >
       <eui-icon icon="ignore"></eui-icon>
@@ -180,7 +180,7 @@
       data-imx-identifier="attestations-approve-selected-button"
       mat-flat-button
       color="primary"
-      (click)="attestationAction.checkForViolations(selectedCases)"
+      (click)="attestationAction.checkForViolations(selectedCases, viewEscalation)"
       [disabled]="!selectedCases.length"
     >
       <eui-icon icon="check"></eui-icon>
@@ -238,7 +238,7 @@
       *ngIf="canDenyApproval"
       data-imx-identifier="attestations-actions-menu-button-deny-approvals"
       title="{{ '#LDS#Rejects the approval for the selected attestation cases and sends them back to the original attestors' | translate }}"
-      (click)="openLossDialog('denyDecisions', selectedCases)"
+      (click)="openLossDialog('denyDecisions', selectedCases, viewEscalation)"
     >
       {{ '#LDS#Reject approval' | translate }}
     </button>

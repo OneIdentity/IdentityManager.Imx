@@ -86,6 +86,7 @@ export class WorkflowMultiActionComponent implements OnInit {
    * Sets up during OnInit lifecycle hook the bulk items and their {@link columns} to be displayed/edited for the requests.
    */
   public async ngOnInit(): Promise<void> {
+    this.stepService.isEscalationApprover = this.data.isInEscalationView ?? false;
     const isBusy = this.busyService.beginBusy();
     try {
       this.requests = await Promise.all(this.data.requests.map(async (item) => this.buildSingleItem(item as Approval)));

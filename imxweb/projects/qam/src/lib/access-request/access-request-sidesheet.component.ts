@@ -157,7 +157,7 @@ export class AccessRequestSidesheetComponent implements OnInit {
     this.formGroup.controls.folderArray.value.forEach((element: string, index: number) => {
       if (element.length == 0) {
         this.validationMessage = this.ldsReplace.transform(
-          this.translate.instant('Folder #{0} path is empty. Please enter a valid path.'),
+          this.translate.instant('#LDS#Folder #{0} path is empty. Please enter a valid path.'),
           index + 1,
         );
         isValid = false;
@@ -166,7 +166,7 @@ export class AccessRequestSidesheetComponent implements OnInit {
       const regex = /^(\\\\[^\\\/:*?"<>|]+\\[^\\\/:*?"<>|]+(\\[^\\\/:*?"<>|]+)*)$/;
       if (!regex.test(element)) {
         this.validationMessage = this.ldsReplace.transform(
-          this.translate.instant('The entered path of Folder #{0} is not valid. Please use the format \\\\server\\path and ensure that path does not contain any of the following characters: \ / : * ? " < > |'),
+          this.translate.instant('#LDS#The entered path of Folder #{0} is not valid. Please use the format \\\\server\\path and ensure that path does not contain any of the following characters: \ / : * ? " < > |'),
           index + 1,
         );
         isValid = false;

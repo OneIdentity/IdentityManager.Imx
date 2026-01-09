@@ -244,7 +244,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     return this.allLossPreviewItems.indexOf(loss) === -1 ? true : false;
   }
 
-  public async openLossDialog(func: string, cases: AttestationCase[]): Promise<void> {
+  public async openLossDialog(func: string, cases: AttestationCase[], isEscalation: boolean): Promise<void> {
     if (!this.autoRemovalScope) {
       // We can skip accumulation and go ahead with handle
       this.attestationAction[func](cases);
@@ -271,7 +271,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     }
     if (this.allLossPreviewItems.length === 0) {
       // There are no losses, go ahead with handle
-      this.attestationAction[func](cases);
+      this.attestationAction[func](cases, isEscalation);
       return;
     }
     // There are losses, show them
@@ -292,7 +292,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         data: {
           lossPreview: this.lossPreview,
           decisionFunc: async () => {
-            await this.attestationAction[func](cases);
+            await this.attestationAction[func](cases, isEscalation);
           },
         },
       })
@@ -456,9 +456,9 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
       .toPromise();
 
     if (decision === 'approve') {
-      await this.attestationAction.approve([attestationCase]);
+      await this.attestationAction.approve([attestationCase], this.viewEscalation);
     } else if (decision === 'deny') {
-      await this.attestationAction.deny([attestationCase]);
+      await this.attestationAction.deny([attestationCase], this.viewEscalation);
     }
   }
 
@@ -511,10 +511,10 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
     switch (this.decisionAction) {
       case AttestationDecisionAction.approve:
-        this.attestationAction.approve(this.dataSource.data);
+        this.attestationAction.approve(this.dataSource.data, this.viewEscalation);
         break;
       case AttestationDecisionAction.deny:
-        this.attestationAction.deny(this.dataSource.data);
+        this.attestationAction.deny(this.dataSource.data, this.viewEscalation);
         break;
       case AttestationDecisionAction.denydecision:
         this.attestationAction.denyDecisions(this.dataSource.data);

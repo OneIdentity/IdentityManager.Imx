@@ -28,7 +28,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
+import { OpsupportJobservers, ServerExtendedData } from '@imx-modules/imx-api-qbm';
 import {
   CollectionLoadParameters,
   EntitySchema,
@@ -36,14 +36,7 @@ import {
   IClientProperty,
   TypedEntity,
 } from '@imx-modules/imx-qbm-dbts';
-import {
-  calculateSidesheetWidth,
-  DataSourceToolbarSettings,
-  DataViewInitParameters,
-  DataViewSource,
-  SettingsService,
-  SnackBarService,
-} from 'qbm';
+import { calculateSidesheetWidth, DataViewInitParameters, DataViewSource, SettingsService, SnackBarService } from 'qbm';
 import { JobServersDetailsComponent } from './job-servers-details/job-servers-details.component';
 import { JobServersEditComponent } from './job-servers-edit/job-servers-edit.component';
 import { JobServersParameters, JobServersService } from './job-servers.service';
@@ -56,20 +49,18 @@ import { JobServersParameters, JobServersService } from './job-servers.service';
   providers: [DataViewSource],
 })
 export class JobServersGridviewComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
-
   @Input() public withRefresh = false;
 
   @Output() public readonly jobServersChecked = new EventEmitter<boolean>();
 
-  public navigationState: JobServersParameters;
-  private editableFields: string[] | undefined;
-
+  public navigationState!: JobServersParameters;
   public entitySchema: EntitySchema;
+
+  private editableFields: string[] | undefined;
 
   constructor(
     private gridDataService: JobServersService,
-    private busyService: EuiLoadingService,
+    private readonly busyService: EuiLoadingService,
     private readonly settingsService: SettingsService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly snackBarService: SnackBarService,
@@ -122,7 +113,9 @@ export class JobServersGridviewComponent implements OnInit {
     displayedColumns.push(this.entitySchema.Columns.Details);
 
     const dataSourceParameter: DataViewInitParameters<TypedEntity> = {
-      execute: async (params: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, unknown>> => {
+      execute: async (
+        params: CollectionLoadParameters,
+      ): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, ServerExtendedData[]>> => {
         return this.gridDataService.get(params);
       },
       highlightEntity: (entity: TypedEntity) => {
@@ -155,15 +148,7 @@ export class JobServersGridviewComponent implements OnInit {
       let textContainer = { key: '#LDS#The job server does not respond.' };
       this.snackBarService.open(textContainer, '#LDS#Close', { duration: 6000 });
     } else {
-      let committed = false;
-      try {
-        await data.GetEntity().Commit(true);
-        committed = true;
-      } finally {
-        if (committed) {
-          this.refresh(true);
-        }
-      }
+      this.dataSource.updateState();
     }
   }
 
@@ -186,9 +171,10 @@ export class JobServersGridviewComponent implements OnInit {
     });
   }
 
-  public getServerDetails(data: OpsupportJobservers, event: Event): void {
+  public getServerDetails(data: OpsupportJobservers, index: number, event: Event): void {
     event.stopPropagation();
     let overlayRef = this.busyService.show();
+    const extendedData = this.dataSource.collectionData().extendedData[index];
     try {
       this.sidesheet.open(JobServersDetailsComponent, {
         title: this.translateService.instant('#LDS#Heading View Job Server Details'),
@@ -196,7 +182,7 @@ export class JobServersGridviewComponent implements OnInit {
         width: calculateSidesheetWidth(800, 0.5),
         padding: '0',
         testId: 'job-servers-details-sidesheet',
-        data: this.dstSettings.extendedData,
+        data: extendedData,
       });
     } finally {
       this.busyService.hide(overlayRef);
