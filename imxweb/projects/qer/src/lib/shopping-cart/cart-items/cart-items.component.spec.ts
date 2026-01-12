@@ -29,7 +29,7 @@ import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateNoOpLoader } from '@ngx-translate/core';
 import { MockBuilder, MockedComponentFixture, MockRender, ngMocks } from 'ng-mocks';
 
 import { CartItemDataRead, PortalCartitem } from '@imx-modules/imx-api-qer';
@@ -103,7 +103,7 @@ describe('CartItemsComponent', () => {
         TranslateModule.forRoot({
           loader: {
             provide: TranslateLoader,
-            useClass: TranslateFakeLoader,
+            useClass: TranslateNoOpLoader,
           },
         }),
       ],
@@ -255,9 +255,9 @@ describe('CartItemsComponent', () => {
   ].forEach((testcase) =>
     it(
       'has a method that verifies if the selected cartItems can be deleted, itemsSelected=' +
-        (testcase.itemsSelected && testcase.itemsSelected.length > 0
-          ? testcase.itemsSelected.map((item) => item.GetEntity().GetKeys()[0])
-          : ''),
+      (testcase.itemsSelected && testcase.itemsSelected.length > 0
+        ? testcase.itemsSelected.map((item) => item.GetEntity().GetKeys()[0])
+        : ''),
       () => {
         const Data = [items.child, items.childOptional, items.parent] as PortalCartitem[];
         component.shoppingCart = new ShoppingCart({
@@ -474,9 +474,9 @@ describe('CartItemsComponent', () => {
   ].forEach((testcase) =>
     it(
       'has a method that verifies if the selected cartItems can be moved ' +
-        (testcase.items
-          ? ' numberOfItems=' + testcase.items.length + ', items: ' + testcase.items.map((item) => item.GetEntity().GetKeys()[0])
-          : ''),
+      (testcase.items
+        ? ' numberOfItems=' + testcase.items.length + ', items: ' + testcase.items.map((item) => item.GetEntity().GetKeys()[0])
+        : ''),
       () => {
         const Data = testcase.itemsNotSelected.concat(testcase.items);
         component.shoppingCart = new ShoppingCart({

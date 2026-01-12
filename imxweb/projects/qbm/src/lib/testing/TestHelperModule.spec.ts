@@ -25,12 +25,12 @@
  */
 
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
-import { TranslateModule, TranslateLoader, TranslateParser, TranslateFakeLoader, TranslateDefaultParser } from '@ngx-translate/core';
+import { TranslateDefaultParser, TranslateLoader, TranslateModule, TranslateNoOpLoader, TranslateParser } from '@ngx-translate/core';
 
 @NgModule({
   exports: [TranslateModule],
-  imports: [TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: TranslateFakeLoader } })],
+  imports: [TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: TranslateNoOpLoader } })],
   providers: [{ provide: TranslateParser, useClass: TranslateDefaultParser }],
   schemas: [NO_ERRORS_SCHEMA],
 })
-export class TestHelperModule {}
+export class TestHelperModule { }
