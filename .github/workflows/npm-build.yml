@@ -46,8 +46,7 @@ jobs:
         # ls to verify contents of node_modules
         run:  |
           npm install --skip-dialog
-          ls -la node_modules/@elemental-ui/core/src
-          ls -la node_modules/@elemental-ui/core/src/styles
+          ls -la node_modules/@elemental-ui/core
 
 
       - name: Build All
