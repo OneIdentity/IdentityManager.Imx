@@ -128,6 +128,10 @@ export class WorkflowSingleActionComponent implements OnInit {
       this.columns.push(new BaseCdr(this.request.ValidFrom.Column));
     }
 
+    if (this.data.showValidDate?.validUntil && this.request.OrderState.value !== 'OrderProlongate') {
+      this.columns.push(new BaseCdr(this.request.ValidUntil.Column));
+    }
+
     if (this.request.ValidUntilProlongation?.value && this.request.OrderState.value === 'OrderProlongate') {
       this.columns.push(new BaseCdr(this.request.ValidUntilProlongation.Column));
     }

@@ -49,19 +49,12 @@ Nevertheless within the CDR module there are two plugins that supply some genera
 
 [DefaultCdrEditorProvider](default-cdr-editor-provider.ts) provided editors:
 
-- [EditBinaryComponent](edit-binary/edit-binary.component.ts): for binary properties
-- [EditBitmaskComponent](edit-bitmask/edit-bitmask.component.ts): for bitmask properties
 - [EditBooleanComponent](edit-boolean/edit-boolean.component.ts): for boolean properties
-- [EditDateComponent](edit-date/edit-date.component.ts): for date properties
-- [DateRangeComponent](date-range/date-range.component.ts): for date range properties
-- [EditImageComponent](edit-image/edit-image.component.ts): for properties where the value is image data
 - [EditLimitedValueComponent](edit-limited-value/edit-limited-value.component.ts): for properties where the value can be one of a limited set of allowed values
-- [EditMultiLimitedValueComponent](edit-multi-limited-value/edit-multi-limited-value.component.ts): for properties where the value can be one or many of a limited set of allowed values
+- [EditMultiLimitedValueComponent](edit-multi-limited-value/edit-multi-limited-value.component.ts): for properties where the value can be one or many of a limited set of alowed values
 - [EditMulitValueComponent](edit-multi-value/edit-multi-value.component.ts)
 - [EditMultiLineComponent](edit-multiline/edit-multiline.component.ts): for text properties that allow multiple lines
 - [EditNumberComponent](edit-number/edit-number.component.ts): for numeric properties
-- [EditRiskIndexComponent](edit-risk-index/edit-risk-index.component.ts): for risk index properties
-- [EditUrlComponent](edit-url/edit-url.component.ts): for properties where the value is an URL
 
 [FkCdrEditorProvider](fk-cdr-editor-provider.ts) provided editors:
 

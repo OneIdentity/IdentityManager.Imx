@@ -75,7 +75,7 @@ import { GroupInfoRow } from '../data-view.interface';
  *      </td>
  *    </ng-container>
  *    <ng-container [matColumnDef]="identitySchema.Columns.IsSecurityIncident.ColumnName">
- *      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ identitySchema?.Columns.IsSecurityIncident?.Display }}</th>
+ *      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">{{ identitySchema?.Columns.IsSecurityIncident?.Display }}</th>
  *      <td mat-cell *matCellDef="let item">
  *        <div *ngIf="item.IsSecurityIncident.value">
  *          <eui-badge color="red">{{ '#LDS#Security risk' | translate }}</eui-badge>
@@ -139,6 +139,7 @@ export class DataViewAutoTableComponent implements AfterContentInit {
   // @Input() public queueStatusColumnName: string;
   public table = viewChild<MatTable<any>>('autoTable');
   public columnDefs = contentChildren<MatColumnDef>(MatColumnDef);
+
   /**
    * Array of the display columns.
    */

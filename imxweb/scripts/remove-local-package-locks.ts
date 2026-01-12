@@ -71,6 +71,7 @@ if (anyChanges) {
 } else {
   console.log(`No local packages to remove`);
 }
+removeReactAsset();
 
 function overWriteLockFile(lockFile: string) {
   // write JSON with the same indentation as npm; trimming the last line feed
@@ -84,4 +85,13 @@ function overWriteLockFile(lockFile: string) {
   } finally {
     console.log(`Removed local packages from package-lock`);
   }
+}
+
+function removeReactAsset() {
+  // Remove this function when we have migrated to nx/angular 22.3.3 or later
+  // This is a temporary workaround for having a security issue with react-server-x
+  console.log("Removing react-server-dom-webpack to mitigate security issue");
+  const base = process.argv.length > 2 ? process.argv[2] : './';
+  const reactServerPath = path.join(base, 'node_modules', '@modern-js', 'utils', 'dist', 'compiled', 'react-server-dom-webpack');
+  if (fs.existsSync(reactServerPath)) fs.rmSync(reactServerPath, { recursive: true, force: true });
 }

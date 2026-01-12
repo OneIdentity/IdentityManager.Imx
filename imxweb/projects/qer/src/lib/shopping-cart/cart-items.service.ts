@@ -261,6 +261,13 @@ export class CartItemsService {
     return display;
   }
 
+  public async getJustificationTextIsRequired(uidJustification: string): Promise<boolean> {
+    const result = await this.qerClient.client.portal_justifications_get({
+      filter: [{ ColumnName: 'UID_QERJustification', Value1: uidJustification }],
+    });
+    return result.TotalCount > 0 && result.Entities?.[0].Columns?.RequiresText.Value === true;
+  }
+
   private async get(filter?: FilterData[]): Promise<ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>> {
     return this.qerClient.typedClient.PortalCartitem.Get({ PageSize: 1048576, filter });
   }

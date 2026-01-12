@@ -24,8 +24,8 @@
  *
  */
 
-import { ChangeDetectorRef, Component, Inject, OnDestroy, QueryList, ViewChildren } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
@@ -36,17 +36,20 @@ import { CartItemsService } from '../cart-items.service';
 import { CartItemEditParameter } from './cart-item-edit-parameter.interface';
 
 @Component({
-    templateUrl: './cart-item-edit.component.html',
-    selector: 'imx-cart-item-edit',
-    styleUrls: ['./cart-item-edit.component.scss'],
-    standalone: false
+  templateUrl: './cart-item-edit.component.html',
+  selector: 'imx-cart-item-edit',
+  styleUrls: ['./cart-item-edit.component.scss'],
+  standalone: false
 })
-export class CartItemEditComponent implements OnDestroy {
+export class CartItemEditComponent implements OnInit, OnDestroy {
   public readonly shoppingCartItem: PortalCartitem;
   public readonly cartItemForm = new UntypedFormGroup({});
   public formGroupIsPending = false;
   public columns: IEntityColumn[];
   private readonly subscriptions: Subscription[] = [];
+  public orderReasonType: number;
+
+  private justificationRequiresText: boolean = false;
 
   @ViewChildren(EntityColumnEditorComponent) editors: QueryList<EntityColumnEditorComponent>;
 
@@ -55,7 +58,7 @@ export class CartItemEditComponent implements OnDestroy {
     public readonly cartItemSvc: CartItemsService,
     public readonly sideSheetRef: EuiSidesheetRef,
     confirmation: ConfirmationService,
-    changeDetector: ChangeDetectorRef,
+    private readonly changeDetector: ChangeDetectorRef,
   ) {
     this.shoppingCartItem = this.data.entityWrapper.typedEntity;
 
@@ -80,12 +83,49 @@ export class CartItemEditComponent implements OnDestroy {
     );
   }
 
+  public async ngOnInit(): Promise<void> {
+    this.justificationRequiresText = await this.cartItemSvc.getJustificationTextIsRequired(
+      this.shoppingCartItem.UID_QERJustificationOrder.value,
+    );
+
+    this.shoppingCartItem.UID_QERJustificationOrder.Column.ColumnChanged.subscribe(async () => {
+      this.justificationRequiresText = await this.cartItemSvc.getJustificationTextIsRequired(
+        this.shoppingCartItem.UID_QERJustificationOrder.value,
+      );
+    });
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public onPendingChanged(value: boolean) {
     this.formGroupIsPending = value;
+  }
+
+  /**
+   * Adds a control to the card item after creation.
+   * Removes old control with the name, to make sure, the new one is added correctly
+   * @param name the name of the control
+   * @param control the abstract control, that is registered
+   */
+  public addControlToCartItemForm(name: string, control: AbstractControl): void {
+    this.cartItemForm.removeControl(name);
+    this.changeDetector.detectChanges();
+    this.cartItemForm.addControl(name, control);
+    this.changeDetector.detectChanges();
+    control.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+  }
+
+  public isMandatory(column: IEntityColumn): boolean {
+    switch (column.ColumnName) {
+      case 'OrderReason':
+        return this.orderReasonType === 2 || this.justificationRequiresText;
+      case 'UID_QERJustificationOrder':
+        return this.orderReasonType === 1;
+    }
+
+    return false;
   }
 
   private initColumns(): void {
@@ -100,6 +140,8 @@ export class CartItemEditComponent implements OnDestroy {
     } else {
       defaultColumns.push(this.shoppingCartItem.ValidFrom.Column, this.shoppingCartItem.ValidUntil.Column);
     }
+
+    this.orderReasonType = this.shoppingCartItem.OrderReasonType.value;
 
     this.columns = this.mergeColumns(
       (this.data.entityWrapper.parameterCategoryColumns ?? []).map((item) => item.column),

@@ -10,7 +10,7 @@
  * those terms.
  *
  *
- * Copyright 2025 One Identity LLC.
+ * Copyright 2026 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,7 +53,7 @@ if (fs.existsSync(lockFile)) {
 else {
     throw "The file ".concat(path.resolve(lockFile), " doesn't exist.");
 }
-// Regex to match only @imx-modules/* and @elemental-ui/*
+// Regex to match scoped @imx-modules/* and @elemental-ui/*
 var scopedPackageRegex = /@(imx-modules|elemental-ui)\/.+$/;
 var anyChanges = false;
 for (var _i = 0, _a = Object.keys(__assign(__assign({}, lockContent.dependencies), lockContent.packages)); _i < _a.length; _i++) {
@@ -75,6 +75,7 @@ if (anyChanges) {
 else {
     console.log("No local packages to remove");
 }
+removeReactAsset();
 function overWriteLockFile(lockFile) {
     // write JSON with the same indentation as npm; trimming the last line feed
     var toWrite = JSON.stringify(lockContent, null, 2) + '\n';
@@ -89,4 +90,13 @@ function overWriteLockFile(lockFile) {
     finally {
         console.log("Removed local packages from package-lock");
     }
+}
+function removeReactAsset() {
+    // Remove this function when we have migrated to nx/angular 22.3.3 or later
+    // This is a temporary workaround for having a security issue with react-server-x
+    console.log("Removing react-server-dom-webpack to mitigate security issue");
+    var base = process.argv.length > 2 ? process.argv[2] : './';
+    var reactServerPath = path.join(base, 'node_modules', '@modern-js', 'utils', 'dist', 'compiled', 'react-server-dom-webpack');
+    if (fs.existsSync(reactServerPath))
+        fs.rmSync(reactServerPath, { recursive: true, force: true });
 }

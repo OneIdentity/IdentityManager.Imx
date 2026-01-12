@@ -1,5 +1,7 @@
 <mat-form-field class="imx-form-field-width-full imx-form-field-matsuffix" appearance="outline">
-  <mat-label>{{ display | translate }}</mat-label>
+  @if (display) {
+    <mat-label>{{ display | translate }}</mat-label>
+  }
   <input
     matInput
     [readonly]="isReadonly"
@@ -25,7 +27,7 @@
       [class.mat-datepicker-toggle-active]="isDatePickerOpen"
       [matTooltip]="'#LDS#Edit date' | translate"
     >
-      <eui-icon icon="calendar" size="m" [aria-hidden]="false" ></eui-icon>
+      <eui-icon icon="calendar" size="m" [aria-hidden]="false"></eui-icon>
     </button>
 
     <span cdkOverlayOrigin #triggerTime="cdkOverlayOrigin">
@@ -39,7 +41,7 @@
           [class.mat-datepicker-toggle-active]="isTimePickerOpen"
           [matTooltip]="'#LDS#Edit time' | translate"
         >
-          <eui-icon size="m" icon="clock" [aria-hidden]="false" ></eui-icon>
+          <eui-icon size="m" icon="clock" [aria-hidden]="false"></eui-icon>
         </button>
       }
     </span>

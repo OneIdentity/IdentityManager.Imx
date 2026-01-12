@@ -34,7 +34,7 @@
     [matSortDirection]="dataSource.sortDirection()"
   >
     <ng-container [matColumnDef]="entitySchema?.Columns?.DisplayOrg?.ColumnName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
         {{ entitySchema?.Columns?.DisplayOrg?.Display }}
       </th>
       <td mat-cell *matCellDef="let pwo" role="gridcell">
@@ -49,7 +49,7 @@
       </td>
     </ng-container>
     <ng-container [matColumnDef]="entitySchema?.Columns?.UiOrderState?.ColumnName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
         {{ entitySchema?.Columns?.UiOrderState?.Display }}
       </th>
       <td mat-cell *matCellDef="let pwo" role="gridcell">
@@ -69,7 +69,7 @@
       </td>
     </ng-container>
     <ng-container [matColumnDef]="entitySchema?.Columns?.OrderDate?.ColumnName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
         {{ entitySchema?.Columns?.OrderDate?.Display }}
       </th>
       <td mat-cell *matCellDef="let pwo" role="gridcell">

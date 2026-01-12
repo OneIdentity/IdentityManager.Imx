@@ -165,10 +165,10 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
     searchColumns: string[];
     keywords: string;
   } = {
-    filterColumns: {},
-    searchColumns: [],
-    keywords: '',
-  };
+      filterColumns: {},
+      searchColumns: [],
+      keywords: '',
+    };
 
   constructor(
     private readonly filterService: FilterWizardService,
@@ -550,7 +550,7 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
   private rebuildSelectedDelimitedValue(filter: DataSourceToolbarFilter): void {
     let val = '';
     this.internalSelectedFilters.forEach((sfilter) => {
-      if (sfilter.filter?.Name === filter.Name) {
+      if (sfilter.selectedOption?.Value && sfilter.filter?.Name === filter.Name) {
         val += `${sfilter.selectedOption?.Value}${filter.Delimiter}`;
       }
     });

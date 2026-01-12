@@ -34,28 +34,27 @@ import { DataViewSource } from '../data-view-source';
  */
 
 @Component({
-    selector: 'imx-data-view-selection',
-    templateUrl: './data-view-selection.component.html',
-    styleUrls: ['./data-view-selection.component.scss'],
-    standalone: false
+  selector: 'imx-data-view-selection',
+  templateUrl: './data-view-selection.component.html',
+  styleUrls: ['./data-view-selection.component.scss'],
+  standalone: false
 })
 export class DataViewSelectionComponent {
   /**
    * Input the dataViewSource service. It handles all the action and the data loading. This input property is required.
    */
   @Input({ required: true }) public dataSource: DataViewSource;
+
   /**
    * The value of the material slide toggle.
    */
-  public showSelected: boolean = false;
+  public showSelected = computed(() => this.dataSource.showOnlySelected());
+
   /**
    * Get the total selected number and update the showSelected value in every selection change.
    */
   public totalSelected: Signal<number> = computed(() => {
     this.dataSource.selectionChanged();
-    if (this.dataSource.selection.selected.length == 0) {
-      this.showSelected = false;
-    }
     return this.dataSource.selection.selected.length || 0;
   });
 
