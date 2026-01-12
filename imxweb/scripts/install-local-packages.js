@@ -74,7 +74,6 @@ var process = require("process");
 var readline = require("readline");
 // Look for a positional argument to point where the imx-modules are; defaults to imx-modules
 var imxModuleDir = process.argv.length > 2 ? process.argv[2] : 'imx-modules';
-var isWin = process.platform === 'win32';
 var nodePackageDir = '@imx-modules';
 var nodeElementalDir = '@elemental-ui';
 var nodeModuleDir = 'node_modules';
@@ -139,7 +138,7 @@ function overwrite() {
     fs.readdirSync(imxModuleDir)
         .filter(function (file) { return file.endsWith('.tgz'); })
         .forEach(function (file) {
-        filePath = isWin ? path.join(imxModuleDir, file) : path.join(__dirname, imxModuleDir, file);
+        filePath = path.resolve(imxModuleDir, file);
         if (file.includes('imx-')) {
             var baseName = path.parse(file).name;
             installArg += [nodePackageDir, '/', baseName, '@', filePath, ' '].join('');
