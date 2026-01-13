@@ -61,7 +61,8 @@ jobs:
           apps=("qbm-app-landingpage" "qer-app-portal" "qer-app-pwdportal" "custom-app")
           for app in "${apps[@]}"; do
             if [ -d "./imxweb/dist/$app" ]; then
-              zip -r "./imxweb/dist/Html_${app}.zip" "./imxweb/dist/$app"
+              cd "./imxweb/dist/$app"
+              zip -r "../Html_${app}.zip" .
             fi
           done
 
