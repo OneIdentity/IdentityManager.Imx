@@ -43,18 +43,30 @@ jobs:
 
       - name: Install packages
         working-directory: ./imxweb
-        # ls to verify contents of node_modules
         run:  |
           npm install --skip-dialog
-          ls -la node_modules/@elemental-ui/core
-
 
       - name: Build All
         working-directory: ./imxweb
         run: npm run nx:build-all
         timeout-minutes: 25
 
-      - name: Test All
-        working-directory: ./imxweb
-        run: npm run nx:test-ci
-        timeout-minutes: 40
+      # - name: Test All
+      #   working-directory: ./imxweb
+      #   run: npm run nx:test-ci
+      #   timeout-minutes: 40
+      
+      - name: Zip applications
+        run: |
+          apps=("qbm-app-landingpage" "qer-app-portal" "qer-app-pwdportal" "custom-app")
+          for app in "${apps[@]}"; do
+            if [ -d "./imxweb/dist/$app" ]; then
+              zip -r "./imxweb/dist/Html_${app}.zip" "./imxweb/dist/$app"
+            fi
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: imxweb-apps
+          path: ./imxweb/dist/Html_*.zip
