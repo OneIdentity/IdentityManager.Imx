@@ -52,6 +52,7 @@ jobs:
         timeout-minutes: 25
         env:
           NG_BUILD_PARALLEL: false
+          NX_DAEMON: false
 
       # - name: Test All
       #   working-directory: ./imxweb
