@@ -60,7 +60,7 @@
       <ng-container [matColumnDef]="entitySchema?.Columns?.RiskIndexCalculated?.ColumnName">
         <ng-container>
           @if (dataSource.isSortable(entitySchema?.Columns?.RiskIndexCalculated?.ColumnName)) {
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
               {{ entitySchema?.Columns?.RiskIndexCalculated?.Display }}
             </th>
           } @else {
@@ -78,7 +78,7 @@
       <ng-container [matColumnDef]="entitySchema?.Columns?.RiskIndexReduced?.ColumnName">
         <ng-container>
           @if (dataSource.isSortable(entitySchema?.Columns?.RiskIndexReduced?.ColumnName)) {
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
               {{ entitySchema?.Columns?.RiskIndexReduced?.Display }}
             </th>
           } @else {

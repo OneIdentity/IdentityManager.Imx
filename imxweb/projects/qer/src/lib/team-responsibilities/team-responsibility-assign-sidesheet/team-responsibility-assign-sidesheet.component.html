@@ -21,7 +21,7 @@
         </td>
       </ng-container>
       <ng-container [matColumnDef]="entitySchema.Columns.UID_Department.ColumnName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ entitySchema?.Columns?.UID_Department?.Display }}</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">{{ entitySchema?.Columns?.UID_Department?.Display }}</th>
         <td mat-cell *matCellDef="let item" role="gridcell">
           <div data-imx-identifier="identities-tabledata-display">
             <span>

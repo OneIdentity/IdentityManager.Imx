@@ -1102,7 +1102,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * Is called internally when a filter with multiple (greater than 5 possible) options has a value selected (select list)
    * Updates and emits the new navigationState to include any filter query params.
    */
-  public selectFilterValueChanged(filter: DataSourceToolbarFilter, event: MatSelectChange): void {
+  public selectFilterValueChanged(filter: DataSourceToolbarFilter, event: MatSelectChange<string>): void {
     const option = this.findFilterOptionFromValue(event.value, filter);
     if (option) {
       this.onRadioFilterChanged(filter, option);
@@ -1115,7 +1115,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * has a value selected (multi select list)
    * Updates and emits the new navigationState to include any filter query params.
    */
-  public multiSelectFilterValueChange(filter: DataSourceToolbarFilter, event: MatSelectChange): void {
+  public multiSelectFilterValueChange(filter: DataSourceToolbarFilter, event: MatSelectChange<string[]>): void {
     filter.CurrentValue = undefined;
     const relevantSelectedItems = this.selectedFilters.filter((sfilter) => sfilter.filter?.Name === filter.Name);
     relevantSelectedItems.forEach((rsi) => {

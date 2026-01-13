@@ -25,7 +25,11 @@
           (click)="goHome()"
           [matTooltip]="'#LDS#Back to home page' | translate"
         >
-          {{ productName }} - {{ appConfig?.Config?.Title }}
+          @if (appConfig?.Config?.Title == 'Manager') {
+            {{ appConfig?.Config?.Title }}
+          } @else {
+            {{ productName }} - {{ appConfig?.Config?.Title }}
+          }
         </h1>
         <span class="imx-masthead-space"></span>
         <span class="imx-masthead--controls">

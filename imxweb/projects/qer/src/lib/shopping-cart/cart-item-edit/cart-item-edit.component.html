@@ -28,7 +28,8 @@
       @for (column of columns; track column; let i = $index) {
         <imx-entity-column-editor
           [column]="column"
-          (controlCreated)="cartItemForm.addControl($event.name + '_' + i, $event.control)"
+          [isMandatory]="isMandatory(column)"
+          (controlCreated)="addControlToCartItemForm($event.name + '_' + i, $event.control)"
           (pendingChanged)="onPendingChanged($event)"
           [attr.data-imx-identifier]="'cartitem-edit-' + column.ColumnName + '_' + i"
         >

@@ -152,8 +152,8 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
   private itemNotInQueueOrCompleted = (item?: TypedEntity) =>
     item
       ? [...CompletedActionStates, QueuedActionState.NotInQueue].includes(
-          this.queueService.pollAction(item.GetEntity().GetKeys()?.join(',')),
-        )
+        this.queueService.pollAction(item.GetEntity().GetKeys()?.join(',')),
+      )
       : true;
   /**
    * Row status functions - enabled if queue status is failed or not in queue
@@ -456,21 +456,21 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
     this.localDataCopy =
       keywords.length === 0
         ? // No keywords? return all data
-          this.localData.slice()
+        this.localData.slice()
         : // Search over all columns return if all keywords are contained in any column
-          this.localData.filter((entity) => {
-            return keywords.every((keyword) => {
-              return this.columnsToDisplay().some((column) => {
-                return entity
-                  .GetEntity()
-                  .GetColumn(column.ColumnName!)
-                  .GetValue()
-                  .toString()
-                  .toLocaleLowerCase()
-                  .includes(keyword.toLocaleLowerCase());
-              });
+        this.localData.filter((entity) => {
+          return keywords.every((keyword) => {
+            return this.columnsToDisplay().some((column) => {
+              return entity
+                .GetEntity()
+                .GetColumn(column.ColumnName!)
+                .GetValue()
+                .toString()
+                .toLocaleLowerCase()
+                .includes(keyword.toLocaleLowerCase());
             });
           });
+        });
     // Apply sort after search if we have sorting enabled
     if (this.sortId() && applySort) this.sortLocally(false);
     // Otherwise update directly
@@ -679,6 +679,7 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
    * @returns Column is sortable.
    */
   public isSortable(column: string | undefined): boolean {
+    if (this.showOnlySelected()) return false;
     if (this.isDataLocal) return true;
     if (!column || this?.dataModel() == null || !!this.groupByColumn()) {
       return false;

@@ -68,7 +68,7 @@
         </ng-container>
         @if (entitySchemaUnsGroup?.Columns?.XMarkedForDeletion) {
           <ng-container [matColumnDef]="entitySchemaUnsGroup.Columns.XMarkedForDeletion.ColumnName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ entitySchemaUnsGroup?.Columns?.XMarkedForDeletion?.Display }}</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">{{ entitySchemaUnsGroup?.Columns?.XMarkedForDeletion?.Display }}</th>
             <td mat-cell *matCellDef="let item" role="gridcell">
               @if (item.XMarkedForDeletion.value !== 0) {
                 <div>

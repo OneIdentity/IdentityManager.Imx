@@ -140,7 +140,8 @@ export class StatisticsDataService {
   public getAreaNameFromArea(areaId: string): string {
     let area = this._flatTree.find((node) => node.leafId === areaId || node.leafName === areaId)?.leafName;
     if (!area) {
-      throw new Error('Could not find the areaId: ' + areaId);
+      this.logger.trace(this, 'Could not find the areaId: ' + areaId);
+      return '';
     }
     return area;
   }

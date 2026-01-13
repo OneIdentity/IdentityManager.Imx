@@ -21,7 +21,7 @@
   >
     <ng-container [matColumnDef]="entitySchema.Columns.DisplayName.ColumnName">
       @if (dataSource.isSortable(entitySchema?.Columns?.DisplayName?.ColumnName)) {
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
           {{ entitySchema?.Columns?.DisplayName?.Display }}
         </th>
       }

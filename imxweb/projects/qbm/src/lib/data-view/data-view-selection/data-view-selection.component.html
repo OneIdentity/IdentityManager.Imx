@@ -17,7 +17,7 @@
     <mat-slide-toggle
       class="imx-selection-toggle"
       color="primary"
-      [(ngModel)]="showSelected"
+      [checked]="showSelected()"
       [disabled]="totalSelected() === 0"
       (change)="onShowSelectionChanged($event)"
       >

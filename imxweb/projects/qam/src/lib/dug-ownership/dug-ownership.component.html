@@ -13,7 +13,7 @@
         [matSortDirection]="dataSource.sortDirection()"
         >
             <ng-container [matColumnDef]="entitySchema.Columns.DisplayName.ColumnName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
                     {{ '#LDS#Display name' | translate }}
                 </th>
                 <td mat-cell *matCellDef="let item">
@@ -41,7 +41,7 @@
                 </td>
             </ng-container>
             <ng-container [matColumnDef]="entitySchema.Columns.RiskIndexCalculated.ColumnName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
                     {{ '#LDS#Risk index (calculated)' | translate }}
                 </th>
                 <td mat-cell *matCellDef="let item">

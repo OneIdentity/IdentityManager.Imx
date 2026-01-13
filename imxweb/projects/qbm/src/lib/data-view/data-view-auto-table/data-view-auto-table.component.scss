@@ -60,6 +60,11 @@
     }
   }
 
+  // We hide the sort arrow when sorting is disabled, always
+  ::ng-deep .mat-sort-header-disabled .mat-sort-header-sorted .mat-sort-header-arrow {
+    display: none !important;
+  }
+
   .expanded-group-detail {
     display: flex;
     flex-direction: column;
@@ -75,6 +80,7 @@
   }
 }
 
+
 .imx-no-results {
   &-title {
     color: eui.$color-gray-10;
@@ -84,6 +90,7 @@
   div {
     color: eui.$color-gray-60;
   }
+
 }
 
 .imx-group-cell {

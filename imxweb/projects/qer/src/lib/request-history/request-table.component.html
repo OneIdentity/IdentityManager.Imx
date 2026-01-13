@@ -15,7 +15,7 @@
         </th>
       }
       @if (!isArchivedRequests) {
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
           {{ '#LDS#Product' | translate }}
         </th>
       }
@@ -76,7 +76,7 @@
         </th>
       }
       @if (!isArchivedRequests) {
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
           {{ entitySchema?.Columns?.UiOrderState?.Display }}
         </th>
       }
@@ -104,7 +104,7 @@
           </th>
         }
         @if (!isArchivedRequests) {
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="dataSource.showOnlySelected()">
             {{ entitySchema?.Columns?.OrderDate?.Display }}
           </th>
         }

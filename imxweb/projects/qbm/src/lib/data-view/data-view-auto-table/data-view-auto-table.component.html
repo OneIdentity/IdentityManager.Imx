@@ -124,8 +124,6 @@
   <ng-container>
     <table
       mat-table
-      matSort
-      (matSortChange)="dataSource?.sortChange($event)"
       [dataSource]="dataSource"
       [ngClass]="{
         'imx-hidden': dataSource?.loading() || (isGroupingApplied() && !dataSource.showOnlySelected()) || dataSource?.totalCount() === 0,
@@ -134,8 +132,10 @@
       role="grid"
       tableAccessiblility
       eui-scroll
+      matSort
+      [matSortDisabled]="isGroupingApplied() || dataSource.showOnlySelected()"
+      (matSortChange)="dataSource?.sortChange($event)"
       [matSortActive]="dataSource.sortId()"
-      [matSortDisabled]="isGroupingApplied()"
       [matSortDirection]="dataSource.sortDirection()"
       #autoTable
     >

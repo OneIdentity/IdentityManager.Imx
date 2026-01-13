@@ -130,7 +130,7 @@
   },
   "optionalDependencies": {
     "@elemental-ui/cadence-icon": "~3.1.107",
-    "@elemental-ui/core": "~20.0.0",
+    "@elemental-ui/core": "20.0.76",
     "@imx-modules/imx-api-aad": "~10.0.0",
     "@imx-modules/imx-api-aob": "~10.0.0",
     "@imx-modules/imx-api-apc": "~10.0.0",
