@@ -9,7 +9,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       
@@ -25,7 +25,7 @@ jobs:
             "v93"  { $node = "20.x" }
             "v100" { $node = "22.x" }
             # Future changes:
-            # "v110" { $node = "24.x" }
+            # "v102" { $node = "24.x" }
             default { $node = "22.x" }
           }
           
@@ -48,28 +48,24 @@ jobs:
 
       - name: Build All
         working-directory: ./imxweb
-        run: npm run nx:build-all
-        timeout-minutes: 25
-        env:
-          NG_BUILD_PARALLEL: false
-          NX_DAEMON: false
+        run: npm run-many -t build -c production
 
       # - name: Test All
       #   working-directory: ./imxweb
       #   run: npm run nx:test-ci
       #   timeout-minutes: 40
       
-      # - name: Zip applications
-      #   run: |
-      #     apps=("qbm-app-landingpage" "qer-app-portal" "qer-app-pwdportal" "custom-app")
-      #     for app in "${apps[@]}"; do
-      #       if [ -d "./imxweb/dist/$app" ]; then
-      #         ( cd "./imxweb/dist/$app" && zip -r "../Html_${app}.zip" . )
-      #       fi
-      #     done
+      - name: Zip applications
+        run: |
+          apps=("qbm-app-landingpage" "qer-app-portal" "qer-app-pwdportal" "custom-app")
+          for app in "${apps[@]}"; do
+            if [ -d "./imxweb/dist/$app" ]; then
+              ( cd "./imxweb/dist/$app" && zip -r "../Html_${app}.zip" . )
+            fi
+          done
 
-      # - name: Upload artifacts
-      #   uses: actions/upload-artifact@v6
-      #   with:
-      #     name: imxweb-apps
-      #     path: ./imxweb/dist/Html_*.zip
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: imxweb-apps
+          path: ./imxweb/dist/Html_*.zip
