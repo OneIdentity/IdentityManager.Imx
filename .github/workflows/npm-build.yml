@@ -1,4 +1,5 @@
-name: Build Angular workspace
+name: One Identity Frontend CI Build
+description: CI workflow to build, package and test One Identity frontend applications  
 
 on:
   push:
@@ -7,65 +8,39 @@ on:
     branches: [ v100, v93 ]
 
 jobs:
-  setup:
-    name: Setup
+  build:
+    name: Build and package applications
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup  # Setup steps
       
-      - name: Select Node version
-        id: node
-        shell: pwsh
-        run: |
-          # Determine branch (handles push vs PR)
-          $branch = "${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}"
-          
-          # Select node version based on branch
-          switch ($branch) {
-            "v93"  { $node = "20.x" }
-            "v100" { $node = "22.x" }
-            # Future changes:
-            # "v102" { $node = "24.x" }
-            default { $node = "22.x" }
-          }
-          
-          # Output clear info for logs
-          Write-Host "🔹 Branch detected: $branch"
-          Write-Host "🔹 Node version selected: $node"
-      
-          # Pass to subsequent steps
-          echo "version=$node" >> $env:GITHUB_OUTPUT
-          
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ steps.node.outputs.version }}
-
-      - name: Install packages
-        working-directory: ./imxweb
-        run:  |
-          npm install --skip-dialog
-
       - name: Build All
         working-directory: ./imxweb
         run: npx nx run-many -t build -c production
-
-      # - name: Test All
-      #   working-directory: ./imxweb
-      #   run: npm run nx:test-ci
-      #   timeout-minutes: 40
       
-      - name: Zip applications
+      - name: Zip applications          
         run: |
-          apps=("qbm-app-landingpage" "qer-app-portal" "qer-app-pwdportal" "custom-app")
-          for app in "${apps[@]}"; do
+          # Dynamically get app names from projects dir
+          apps=$(ls -d ./imxweb/projects/*-app* 2>/dev/null | xargs -n1 basename)
+          for app in $apps; do
             if [ -d "./imxweb/dist/$app" ]; then
               ( cd "./imxweb/dist/$app" && zip -r "../Html_${app}.zip" . )
             fi
           done
-
+      
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
           name: imxweb-apps
           path: ./imxweb/dist/Html_*.zip
+  
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup  # Setup steps
+      
+      - name: Test All
+        working-directory: ./imxweb
+        run: npm run nx:test-ci
+        timeout-minutes: 30

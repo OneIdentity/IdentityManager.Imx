@@ -1,0 +1,45 @@
+name: 'Setup Environment'
+description: 'Common setup steps for Node and dependencies'
+
+outputs:
+  node-version:
+    description: 'Selected Node version'
+    value: ${{ steps.which_node.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v6
+      
+    - name: Select Node Version
+      id: which_node
+      shell: pwsh
+      run: |
+        # Determine branch (handles push vs PR)
+        $branch = "${{ github.event_name == 'pull_request' && github.base_ref || github.ref_name }}"
+        
+        # Select node version based on branch
+        switch ($branch) {
+          "v93"  { $node = "20.x" }
+          "v100" { $node = "22.x" }
+          # Future changes:
+          # "v102" { $node = "24.x" }
+          default { $node = "22.x" }
+        }
+        
+        # Output clear info for logs
+        Write-Host "🔹 Branch detected: $branch"
+        Write-Host "🔹 Node version selected: $node"
+        
+        # Pass to subsequent steps
+        echo "version=$node" >> $env:GITHUB_OUTPUT
+      
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ steps.which_node.outputs.version }}
+    
+    - name: Install packages
+      shell: bash
+      working-directory: ./imxweb
+      run: npm install --skip-dialog
