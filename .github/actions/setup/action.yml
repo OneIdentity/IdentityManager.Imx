@@ -8,9 +8,7 @@ outputs:
 
 runs:
   using: 'composite'
-  steps:
-    - uses: actions/checkout@v6
-      
+  steps:      
     - name: Select Node Version
       id: which_node
       shell: pwsh
