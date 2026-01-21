@@ -48,7 +48,7 @@ jobs:
 
       - name: Build All
         working-directory: ./imxweb
-        run: npm run-many -t build -c production
+        run: npx nx run-many -t build -c production
 
       # - name: Test All
       #   working-directory: ./imxweb
