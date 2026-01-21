@@ -40,4 +40,4 @@ runs:
     - name: Install packages
       shell: bash
       working-directory: ./imxweb
-      run: npm install --skip-dialog
+      run: npm install --skip-dialog --verbose
