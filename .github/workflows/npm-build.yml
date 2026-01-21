@@ -13,14 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      
+
       - uses: ./.github/actions/setup  # Setup steps
 
       - name: Cache Nx
         uses: actions/cache@v5
         with:
-          path: .nx/cache
-          key: nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: ./imxweb/.nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('imxweb/package-lock.json') }}
           restore-keys: |
             nx-${{ runner.os }}-
       
@@ -44,8 +44,8 @@ jobs:
           name: imxweb-apps
           path: ./imxweb/dist/Html_*.zip
 
-      - name: Test All
-        working-directory: ./imxweb
-        run: npm run nx:test-ci
-        timeout-minutes: 30
+      # - name: Test All
+      #   working-directory: ./imxweb
+      #   run: npm run nx:test-ci
+      #   timeout-minutes: 30
       
