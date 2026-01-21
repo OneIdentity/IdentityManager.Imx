@@ -8,12 +8,21 @@ on:
     branches: [ v100, v93 ]
 
 jobs:
-  build:
-    name: Build and package applications
+  ci:
+    name: Build, package, and test applications
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      
       - uses: ./.github/actions/setup  # Setup steps
+
+      - name: Cache Nx
+        uses: actions/cache@v5
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
       
       - name: Build All
         working-directory: ./imxweb
@@ -34,15 +43,9 @@ jobs:
         with:
           name: imxweb-apps
           path: ./imxweb/dist/Html_*.zip
-  
-  test:
-    name: Run tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup  # Setup steps
-      
+
       - name: Test All
         working-directory: ./imxweb
         run: npm run nx:test-ci
         timeout-minutes: 30
+      

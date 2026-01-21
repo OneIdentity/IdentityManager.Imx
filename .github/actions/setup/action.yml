@@ -36,8 +36,10 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ steps.which_node.outputs.version }}
+        cache: npm
+        cache-dependency-path: ./imxweb/package-lock.json
     
     - name: Install packages
       shell: bash
       working-directory: ./imxweb
-      run: npm install --skip-dialog --verbose
+      run: npm install --skip-dialog
