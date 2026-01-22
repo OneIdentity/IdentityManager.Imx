@@ -39,7 +39,7 @@ export class HardwareGuardService implements CanActivate {
     private readonly systemInfo: SystemInfoService,
     private readonly router: Router,
     private readonly routeGuardService: RouteGuardService,
-  ) {}
+  ) { }
 
   public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     if (await this.routeGuardService.canActivate(route, state)) {
@@ -54,5 +54,6 @@ export class HardwareGuardService implements CanActivate {
     }
     this.router.navigate([this.config.Config.routeConfig?.login]);
     return false;
+    console.log('unreachable');
   }
 }
