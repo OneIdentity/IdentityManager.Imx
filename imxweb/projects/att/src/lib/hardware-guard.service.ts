@@ -54,6 +54,5 @@ export class HardwareGuardService implements CanActivate {
     }
     this.router.navigate([this.config.Config.routeConfig?.login]);
     return false;
-    console.log('unreachable');
   }
 }
