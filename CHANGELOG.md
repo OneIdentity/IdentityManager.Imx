@@ -1,12 +1,24 @@
-### January 9, 2025
+### Febraury 12, 2026
+- 6487639  Fixes an issue with unsupported system role creation.
+- Minor npm audit fix.
+- 653264: Fixes an issue with the error handling when the session expires.
+- 652604 (652590): Fixes an issue with inquiries that are between the same two people.
+- 651891: Fixes an issue with approvals while the process is still queued.
+- 652702: Fixes an issue with approvals via email links.
+- 496654 (496653): Adds an editor for decimal range report parameters.
+- 519009 (506868): Fixes an issue with the approval of policy violations.
+- 647172: Fixes an issue with deleting custom configuration keys in the Administration Portal.
+- 653182: Fixes an issue with the translation of the 'Display name' column.
+- 651830: Fixes an issue with column-dependent reference editors: Validation errors by the server lead to a loop.
+- 508572: Fixes an issue with the "Readonly" property on a service item, which could be changed, although the value was read-only.
+
+### January 9, 2026
 Bug 601765: Fixes an issue with the list of potential approvers if an approval step is configured with multiple approvers.
 Bug 648439 (647230): Fixes an error message that is displayed if the user likes to approve a request.
 Bug 647621: Fixes an issue in the Operation Support Portal if the user clicks on the details of a job server.
 Bug 646056: Fixes an issue with renewing a request that has a maximum valid days defined.
 
-
 ### November 18, 2025
-
 - 545983 (545530): Fixes an issue with mandatory fields when editing a request in the shopping cart.
 - 581733 (549535): Fixes an issue with displaying the approval page when there are no items to approve.
 - 622249 (579339): Fixes an issue with exporting attestation run data.
