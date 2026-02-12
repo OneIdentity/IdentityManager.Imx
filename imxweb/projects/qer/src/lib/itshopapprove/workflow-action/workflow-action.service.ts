@@ -550,12 +550,23 @@ export class WorkflowActionService {
   }
 
   public getPwoData(pwo: Approval, userUid: string): EntityData | undefined {
-    return pwo.pwoData.WorkflowHistory?.Entities?.find(
+    const questionHistory = pwo.pwoData.WorkflowHistory?.Entities?.filter(
       (entityData) =>
         entityData.Columns?.DecisionType.Value === 'Query' &&
         entityData.Columns?.UID_PersonRelated.Value === userUid &&
         entityData.Columns?.DecisionLevel.Value === pwo.DecisionLevel.value,
-    );
+    ).sort((item1, item2) => this.ascendingDate(item1.Columns?.XDateInserted?.Value, item2.Columns?.XDateInserted?.Value));
+    return questionHistory?.[0];
+  }
+
+  private ascendingDate(value1: Date, value2: Date): number {
+    if (value1 < value2) {
+      return 1;
+    }
+    if (value1 > value2) {
+      return -1;
+    }
+    return 0;
   }
 
   private async editAction(config: WorkflowActionEditWrapper): Promise<void> {

@@ -84,7 +84,7 @@ export class StartComponent implements OnInit {
 
   public ShowPasswordMgmtTile(): boolean {
     return (
-      (this.projectConfig.PasswordConfig?.VI_MyData_MyPassword_Visibility && !!this.projectConfig.PasswordConfig?.PasswordMgmtUrl) ?? false
+      (this.projectConfig?.PasswordConfig?.VI_MyData_MyPassword_Visibility && !!this.projectConfig?.PasswordConfig?.PasswordMgmtUrl) ?? false
     );
   }
 
@@ -93,7 +93,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToPasswordMgmtWeb(): void {
-    this.router.navigate(['/externalRedirect', { externalUrl: this.projectConfig.PasswordConfig?.PasswordMgmtUrl }]);
+    this.router.navigate(['/externalRedirect', { externalUrl: this.projectConfig?.PasswordConfig?.PasswordMgmtUrl }]);
   }
 
   public GoToShoppingCart(): void {
@@ -121,7 +121,7 @@ export class StartComponent implements OnInit {
   }
 
   public ShowQpmIntegration(): boolean {
-    return !!this.projectConfig.PasswordConfig?.QpmBaseUrl;
+    return !!this.projectConfig?.PasswordConfig?.QpmBaseUrl;
   }
 
   public GoToQpm(): void {

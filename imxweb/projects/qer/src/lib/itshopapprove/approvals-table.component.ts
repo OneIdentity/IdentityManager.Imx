@@ -294,8 +294,17 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         params: CollectionLoadParameters,
         signal: AbortSignal,
       ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> => {
+        const newParams: ApprovalsLoadParameters = {
+          ...params,
+        };
+        if (this.navigationState.uid_personwantsorg) {
+          newParams.uid_personwantsorg = this.navigationState.uid_personwantsorg;
+        }
+        if (this.navigationState.uid_attestationhelper) {
+          newParams.uid_attestationhelper = this.navigationState.uid_attestationhelper;
+        }
         return Promise.resolve(
-          this.approvalsService.get(params, { signal }).then((collectionData) => {
+          this.approvalsService.get(newParams, { signal }).then((collectionData) => {
             if (this.extensions) {
               const dstSettings: DataSourceToolbarSettings = {
                 dataSource: collectionData,
@@ -409,7 +418,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private async handleDecision(): Promise<void> {
     if (this.approvalsDecision === ApprovalsDecision.none) return;
 
-    if (this.dataSource.data?.length ?? 0 === 0) {
+    if (!this.dataSource.data?.length) {
       await this.confirm.showErrorMessage({
         Message: '#LDS#This request has already been approved or denied.',
         ShowOk: true,

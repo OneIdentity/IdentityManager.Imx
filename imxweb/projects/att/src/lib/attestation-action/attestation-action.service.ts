@@ -67,7 +67,7 @@ import { AttestationWorkflowService } from './attestation-workflow.service';
   providedIn: 'root',
 })
 export class AttestationActionService {
-  public readonly applied = new Subject<void>();
+  public readonly applied = new Subject<boolean | void>();
   private uidUser: string;
   constructor(
     private readonly apiService: ApiService,
@@ -226,7 +226,6 @@ export class AttestationActionService {
         break;
       }
     }
-
 
     if (isApprovable) {
       return this.approve(attestationCases, isEscalation);
@@ -516,11 +515,11 @@ export class AttestationActionService {
     const subTitle =
       cases.length === 1
         ? // Use Ui Text if we have it, otherwise use display
-        firstCaseUiText
+          firstCaseUiText
           ? firstCaseUiText
           : cases[0].GetEntity().GetDisplay()
         : // If we have more than one case, we don't use a subtitle
-        undefined;
+          undefined;
 
     const result = await this.sideSheet
       .open(AttestationActionComponent, {
@@ -553,6 +552,7 @@ export class AttestationActionService {
           // Once all actions are complete, trigger a data refresh
           this.applied.next();
         });
+        this.applied.next(true);
       } else {
         // Here is old method without queueing
         let success: boolean;

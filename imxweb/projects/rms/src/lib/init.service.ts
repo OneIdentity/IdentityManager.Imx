@@ -139,9 +139,7 @@ export class InitService {
       adminCanCreate: async () => {
         return (await this.api.client.portal_roles_config_systemroles_get()).EnableNewESet;
       },
-      respCanCreate: async () => {
-        return (await this.api.client.portal_roles_config_systemroles_get()).EnableNewESet;
-      },
+      respCanCreate: () => Promise.resolve(false),
       interactiveResp: new ApiWrapper(this.api.typedClient.PortalRespEsetInteractive),
       interactiveAdmin: new ApiWrapper(this.api.typedClient.PortalAdminRoleEsetInteractive),
       entitlements: new EsetEntitlements(this.api, this.translator),

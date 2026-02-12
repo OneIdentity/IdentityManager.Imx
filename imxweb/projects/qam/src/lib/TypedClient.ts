@@ -298,22 +298,22 @@ export class TypedClient {
 export class DugAccessDetailEntity extends TypedEntity {
   public static GetEntitySchema(typeName: string, typeDisplay: string, translate?: TranslateService): EntitySchema {
     const returnColumns: { [key: string]: IClientProperty } = {
-      Department : {
+      Department: {
         Type: ValType.String,
         ColumnName: 'Department',
         Display: translate ? translate.instant('#LDS#Department') : '#LDS#Department',
       },
-      Location : {
+      Location: {
         Type: ValType.String,
         ColumnName: 'Location',
         Display: translate ? translate.instant('#LDS#Location') : '#LDS#Location',
       },
-      Manager : {
+      Manager: {
         Type: ValType.String,
         ColumnName: 'Manager',
         Display: translate ? translate.instant('#LDS#Manager') : '#LDS#Manager',
       },
-      Role : {
+      Role: {
         Type: ValType.String,
         ColumnName: 'Role',
         Display: translate ? translate.instant('#LDS#Role') : '#LDS#Role',
@@ -347,7 +347,7 @@ export class DugAccessDetailEntity extends TypedEntity {
     return resources.map((elem) => {
       const returnColumns: { [key: string]: EntityColumnData } = {};
       returnColumns.Department = { Value: elem.Department, IsReadOnly: true };
-      returnColumns.Location = { Value: elem.Location, IsReadOnly: true };  
+      returnColumns.Location = { Value: elem.Location, IsReadOnly: true };
       returnColumns.Manager = { Value: elem.Manager, IsReadOnly: true };
       returnColumns.Role = { Value: elem.Role, IsReadOnly: true };
 
@@ -618,7 +618,7 @@ export class PortalDgeClassificationSummary extends TypedEntity {
   readonly CountResourceOwners: IReadValue<number> = this.GetEntityValue('CountResourceOwners');
   /** Returns the static compile time schema for this type. */
   static GetEntitySchema(): StaticSchema<
-   'DisplayValue' | 'CountResources' |'Ident_QAMResourceType' |  'CountResourcesNotOwned' | 'CountResourcesOwned' | 'PercentResourcesNotOwned' | 'CountResourceOwners'
+    'DisplayValue' | 'CountResources' | 'Ident_QAMResourceType' | 'CountResourcesNotOwned' | 'CountResourcesOwned' | 'PercentResourcesNotOwned' | 'CountResourceOwners'
   > {
     const columns = {
       Ident_QAMResourceType: {
@@ -685,7 +685,7 @@ export class PortalDgeNodes extends TypedEntity {
         Type: ValType.String,
         IsReadOnly: true,
       },
-      UID_QAMNode:{
+      UID_QAMNode: {
         ColumnName: 'UID_QAMNode',
         Type: ValType.String,
         IsReadOnly: true,
@@ -3452,7 +3452,7 @@ export class Client {
 
   constructor(
     private readonly apiClient: ApiClient,
-    private schemaProvider?: { readonly schemas: { [key: string]: EntitySchema } },
+    private schemaProvider?: { schemas: { [key: string]: EntitySchema } },
   ) {
     if (!apiClient) {
       throw new Error('The value for the apiClient parameter is undefined.');
@@ -3485,8 +3485,6 @@ export class Client {
     for (var key in dtos) {
       const dto = dtos[key];
       const columns = dto.Properties ?? {};
-      columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
-      columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY_LONG;
 
       schemas[key] = {
         TypeName: dto.TypeName,
@@ -3507,8 +3505,16 @@ export class Client {
   /** Returns the runtime schema for the named method. */
   public getSchema(methodKey: string): EntitySchema {
     const result = this.schemas[methodKey];
-    if (!result) throw new Error('Unknown method: ' + methodKey);
-    return result;
+    if (!result)
+      throw new Error('Unknown method: ' + methodKey);
+    return {
+      ...result,
+      Columns: {
+        ...result.Columns,
+        [DisplayColumns.DISPLAY_PROPERTYNAME]: DisplayColumns.DISPLAY_PROPERTY,
+        [DisplayColumns.DISPLAY_LONG_PROPERTYNAME]: DisplayColumns.DISPLAY_PROPERTY_LONG,
+      }
+    }
   }
 
   /** Returns a list of candidate objects from the table AERole. */

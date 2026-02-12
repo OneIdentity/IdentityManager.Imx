@@ -293,7 +293,7 @@ export {
   BaseImxApiDtoMock,
   CreateIEntity,
   CreateIEntityColumn,
-  CreateIReadValue,
+  CreateIReadValue
 } from './lib/testing/base-imx-api-mock.spec';
 export { clearStylesFromDOM } from './lib/testing/clear-styles.spec';
 export { EntityColumnStub } from './lib/testing/entity-column-stub.spec';
@@ -336,3 +336,5 @@ export { DataViewModule } from './lib/data-view/data-view.module';
 
 // Utility
 export { tryCatch } from './lib/utility/tryCatch';
+
+export { DisplayColumnsService } from './lib/display-columns/display-columns.service';

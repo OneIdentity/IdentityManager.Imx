@@ -1,0 +1,51 @@
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
+  <mat-label>{{ columnContainer.display | translate }}</mat-label>
+  <input matInput hidden class="input-hidden" [formControl]="control" />
+
+  <mat-form-field class="imx-form-field-width-full" appearance="outline">
+    <mat-label>{{ '#LDS#From' | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      [formControl]="valueFrom"
+      [attr.data-imx-identifier]="'cdr-edit-number-range-from-input-' + columnContainer?.name"
+      [required]="this.columnContainer?.isValueRequired"
+    />
+    <div matSuffix>
+      <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+    </div>
+    <mat-error *ngIf="valueFrom.errors?.['invalidInteger']">
+      {{ '#LDS#The value you entered is invalid. Enter an integer number.' | translate }}
+    </mat-error>
+    <mat-error *ngIf="valueFrom.errors?.['rangeMin']">
+      {{ '#LDS#Value must be >= {0}' | translate | ldsReplace: columnContainer.valueConstraint?.MinValue }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="imx-form-field-width-full" appearance="outline">
+    <mat-label>{{ '#LDS#To' | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      [formControl]="valueTo"
+      [attr.data-imx-identifier]="'cdr-edit-number-range-to-input-' + columnContainer?.name"
+      [required]="this.columnContainer?.isValueRequired"
+    />
+    <div matSuffix>
+      <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+    </div>
+    <mat-error *ngIf="valueTo.errors?.['invalidInteger']">
+      {{ '#LDS#The value you entered is invalid. Enter an integer number.' | translate }}
+    </mat-error>
+    <mat-error *ngIf="valueTo.errors?.['rangeMax']">
+      {{ '#LDS#Value must be <= {0}' | translate | ldsReplace: columnContainer.valueConstraint?.MaxValue }}
+    </mat-error>
+  </mat-form-field>
+  <mat-error *ngIf="control.errors?.['rangeOrder']">
+    {{ '#LDS#The "from" value must be less than the "to" value.' | translate }}
+  </mat-error>
+</mat-form-field>
+
+<ng-template #isReadonly>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
+</ng-template>

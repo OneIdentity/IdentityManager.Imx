@@ -54,7 +54,7 @@ export class DeleteConfigSidesheetComponent implements OnInit {
   public async submit(): Promise<void> {
     const overlay = this.busySvc.show();
     try {
-      await this.configSvc.deleteKey(this.selectedKey.Path);
+      await this.configSvc.deleteKey(this.selectedKey.Path, this.isGlobal);
       await this.configSvc.load();
       const key = '#LDS#The configuration key has been successfully deleted.';
       this.snackbar.open({ key });

@@ -86,7 +86,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     private readonly permission: QerPermissionsService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly cdrFactoryService: CdrFactoryService,
-  ) {}
+  ) { }
 
   get getSelectedUidPerson(): string {
     return this.ownercontrol?.uidPersonSelected;
@@ -182,7 +182,11 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
       // Handle the requestable (IsInActive column) outside the context of a CDR editor so the UI can invert the meaning to make
       // more sense to the user
       // This should be inversed on the api data response at some point, but until then we handle it in the UI
-      this.isInActiveFormControl.setValue(!this.getColumn('IsInActive')?.GetValue());
+      const isInActiveColumn = this.getColumn('IsInActive');
+      this.isInActiveFormControl.setValue(!isInActiveColumn?.GetValue());
+      isInActiveColumn?.GetMetadata().CanEdit()
+        ? this.isInActiveFormControl.enable({ emitEvent: false })
+        : this.isInActiveFormControl.disable({ emitEvent: false });
       this.onFormControlCreated(this.isInActiveFormControl);
     }
 

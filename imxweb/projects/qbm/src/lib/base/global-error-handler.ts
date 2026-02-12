@@ -41,7 +41,7 @@ export class GlobalErrorHandler implements ErrorHandler {
   constructor(
     private injector: Injector,
     private readonly errorService: ErrorService,
-  ) {}
+  ) { }
 
   private get target() {
     return this.errorService.target;

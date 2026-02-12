@@ -122,12 +122,30 @@ export class ApproverContainer {
     additionalInfoDisplay: string,
   ): { [key: string]: { [key: string]: { string } } } {
     const returnValue = {};
+
     for (const elem of approver) {
       returnValue[elem.display] = {};
       for (const data of elem.data) {
-        if (data.Columns?.UID_ComplianceRule?.Value)
-          returnValue[elem.display][data.Columns.UID_PersonHead.DisplayValue] =
-            `(${additionalInfoDisplay}: ${data.Columns.UID_ComplianceRule?.DisplayValue ?? ''})`;
+        // Find all entries for the same approver in the given working step without a decision yet
+        const elements =
+          this.request.pwoData.WorkflowData?.Entities?.filter(
+            (elem) =>
+              elem.Columns?.UID_PersonHead?.Value === data.Columns?.UID_PersonHead?.Value &&
+              elem.Columns?.UID_QERWorkingStep?.Value === data.Columns?.UID_QERWorkingStep?.Value &&
+              (elem.Columns?.Decision?.Value ?? '') === '',
+          ) ?? [];
+
+        if (!!elements.length) {
+          // Get the one with the lowest sublevel number, that has a compliance rule assigned
+          const lowestElement = elements
+            .filter((elem) => elem.Columns?.SubLevelNumber && elem.Columns?.UID_ComplianceRule?.Value !== '')
+            .reduce((min, e) => (e.Columns!.SubLevelNumber!.Value < min.Columns!.SubLevelNumber!.Value ? e : min), elements[0]);
+          if (lowestElement && lowestElement.Columns?.UID_ComplianceRule?.Value !== '') {
+            // Assign the compliance rule display value to the return object
+            returnValue[elem.display][data.Columns?.UID_PersonHead?.DisplayValue ?? ''] =
+              `(${additionalInfoDisplay}: ${lowestElement.Columns?.UID_ComplianceRule?.DisplayValue ?? ''})`;
+          }
+        }
       }
     }
     return returnValue;

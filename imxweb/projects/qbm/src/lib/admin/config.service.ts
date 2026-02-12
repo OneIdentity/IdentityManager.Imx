@@ -73,7 +73,7 @@ export class ConfigService {
     private readonly session: imx_SessionService,
     private readonly busySvc: EuiLoadingService,
     private readonly snackbar: SnackBarService,
-  ) {}
+  ) { }
 
   /** Returns display information about the pending changes to keys. */
   public getPendingChanges(): (string | undefined)[][] {
@@ -97,10 +97,10 @@ export class ConfigService {
     await this.session.Client.admin_apiconfigsingle_post(this.appId, path);
   }
 
-  public async deleteKey(path: string): Promise<void> {
+  public async deleteKey(path: string, isGlobal: boolean): Promise<void> {
     const payload = {};
     payload[path] = null;
-    await this.session.Client.admin_apiconfig_post(this.appId, payload);
+    await this.session.Client.admin_apiconfig_post(this.appId, payload, { global: isGlobal });
   }
 
   public getLocalCustomizations(): (string | undefined)[][] {

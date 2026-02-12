@@ -215,6 +215,7 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
         this.selectionChangeFunction(this.selection.selected);
       }
       if (this.selection.selected.length === 0) {
+        this.nestedSelection.clear();
         this.showOnlySelected.set(false);
       }
     });

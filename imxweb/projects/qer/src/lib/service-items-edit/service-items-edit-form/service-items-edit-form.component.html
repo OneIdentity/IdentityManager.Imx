@@ -25,7 +25,6 @@
       [formControl]="isInActiveFormControl"
       *ngIf="serviceItem && canEditProperty('IsInActive')"
       (change)="onRequestableToggleChanged($event)"
-      [disabled]="!(getColumn('IsInActive')?.GetMetadata()?.CanEdit() || false)"
       [attr.data-imx-identifier]="
         'service-items-edit-form-toggle-for-column-' + serviceItem?.GetEntity()?.GetColumn('IsInActive')?.ColumnName
       "

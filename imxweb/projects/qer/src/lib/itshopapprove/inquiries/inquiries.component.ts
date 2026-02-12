@@ -33,7 +33,6 @@ import { PwoExtendedData, ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   DataModel,
-  EntityData,
   EntitySchema,
   ExtendedTypedEntityCollection,
   TypedEntity,
@@ -227,31 +226,12 @@ export class InquiriesComponent implements OnInit, OnDestroy {
   }
 
   public getInquiryText(pwo: Approval): string {
-    return this.getPwoData(pwo)?.Columns?.ReasonHead.Value || '';
+    return this.actionService.getPwoData(pwo, this.userUid)?.Columns?.ReasonHead.Value || '';
   }
   public getInquirer(pwo: Approval): string {
-    return this.getPwoData(pwo)?.Columns?.DisplayPersonHead.Value || '';
+    return this.actionService.getPwoData(pwo, this.userUid)?.Columns?.DisplayPersonHead.Value || '';
   }
   public getQueryDate(pwo: Approval): string {
-    return this.getPwoData(pwo)?.Columns?.DateHead.Value ?? '';
-  }
-
-  private getPwoData(pwo: Approval): EntityData | undefined {
-    const questionHistory = pwo.pwoData.WorkflowHistory?.Entities?.filter(
-      (entityData) => entityData.Columns?.DecisionLevel.Value === pwo.DecisionLevel.value,
-    ).sort((item1, item2) => this.ascendingDate(item1.Columns?.XDateInserted?.Value, item2.Columns?.XDateInserted?.Value));
-    return questionHistory?.[0];
-  }
-
-  private ascendingDate(value1: Date, value2: Date): number {
-    if (value1 < value2) {
-      return 1;
-    }
-
-    if (value1 > value2) {
-      return -1;
-    }
-
-    return 0;
+    return this.actionService.getPwoData(pwo, this.userUid)?.Columns?.DateHead.Value ?? '';
   }
 }

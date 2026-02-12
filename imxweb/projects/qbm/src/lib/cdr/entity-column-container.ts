@@ -153,7 +153,13 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
    */
   public async updateValue(value: T | undefined): Promise<void> {
     if (this.cdr && this.cdr.column) {
-      return this.cdr.column.PutValue(value);
+      const oldValue = this.cdr.column.GetValue();
+      try {
+        await this.cdr.column.PutValue(value);
+      } catch (exception) {
+        await this.cdr.column.PutValue(oldValue);
+        throw exception;
+      }
     }
   }
 
