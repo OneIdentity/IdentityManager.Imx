@@ -95,7 +95,7 @@
     "@compodoc/compodoc": "1.1.25",
     "@nx/angular": "21.4.0",
     "@nx/js": "21.4.0",
-    "@nx/workspace": "21.4.0",
+    "@nx/workspace": "21.6.10",
     "@schematics/angular": "18.2.12",
     "@types/d3-hierarchy": "3.1.7",
     "@types/d3-scale": "4.0.8",
