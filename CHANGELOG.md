@@ -1,3 +1,13 @@
+### March 3, 2026
+- 698994 (696400): Fixes an issue with paging in grouped attestation cases due to a missing StartIndex property.
+- 647733 (647208): Fixes an issue with missing KPI information on Data administration > Applications> KPI.
+- 695787: Compile list of Angular changes from v93 to v100 added.
+- console.logs were removed and replaced with classlogger when helpful.
+- 652724 (652702):  Fixes an issue with approvals via email links.
+- 648349 (648345): Adds historical attestation decisions for an object.
+- 698429 (695798): Fixes an issue with direct product access via URL when login is required, and the user has a display language configured.
+- 541738 (506868): Fixes an issue with approving violations on the Pending Requests page.
+
 ### February 20, 2026
 - 652735 (652590)Fixes an issue with inquiries that are between the same two people.
 - 680725 (653182): Fixes an issue with the translation of the 'Display name' column.
