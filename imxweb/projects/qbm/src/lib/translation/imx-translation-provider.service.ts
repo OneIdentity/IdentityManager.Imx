@@ -132,7 +132,7 @@ export class ImxTranslationProviderService implements ITranslationProvider {
     // We may have stale data or schemas from the current page, so we nav back to refresh existing components
     let currentUrl = router.url;
     router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      router.navigate([currentUrl]);
+      router.navigateByUrl(currentUrl);
     });
   }
 

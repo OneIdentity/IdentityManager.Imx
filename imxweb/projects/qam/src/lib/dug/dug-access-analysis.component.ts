@@ -25,9 +25,9 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { DisplayColumns, EntitySchema, IClientProperty, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { DataSourceToolbarSettings, DataViewSource, DataViewInitParameters} from 'qbm';
+import { DataViewSource, LocalDataViewInitParameters } from 'qbm';
 import { DugAccessDetailEntity, PortalDgeResourcesbyid, ResourceAccessExpansionPerson } from '../TypedClient';
 import { DugAccessAnalysisService } from './dug-access-analysis.service';
 
@@ -46,7 +46,6 @@ export class DugAccessAnalysisComponent implements OnInit {
   public ldsAccess = '#LDS#The following identities have access to the selected resource.';
   public entitySchema: EntitySchema;
   private displayColumns: IClientProperty[] = [];
-  public dstSettings: DataSourceToolbarSettings;
   public DisplayColumns = DisplayColumns;
 
   constructor(
@@ -85,12 +84,11 @@ export class DugAccessAnalysisComponent implements OnInit {
       DugAccessDetailEntity.buildEntityData(this.identities),
       this.entitySchema,
     );
-    const dataViewInitParameters: DataViewInitParameters<DugAccessDetailEntity> = {
-      execute: (): Promise<ExtendedTypedEntityCollection<DugAccessDetailEntity, unknown>> => Promise.resolve(data),
-      schema: this.entitySchema,
+    const dataViewInitParameters: LocalDataViewInitParameters<DugAccessDetailEntity> = {
+      data: data.Data,
       columnsToDisplay: this.displayColumns,
-      localSource: true,
+      schema: this.entitySchema,
     };
-    this.dataSource.init(dataViewInitParameters);
+    this.dataSource.initLocal(dataViewInitParameters);
   }
 }

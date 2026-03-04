@@ -52,8 +52,7 @@ import {
   DataViewSource,
   ExtService,
   IExtension,
-  ISessionState,
-  SettingsService,
+  ISessionState
 } from 'qbm';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -93,7 +92,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     return this.selectedItems.every((item: Approval) => item.canAddApprover(this.currentUserId));
   }
   public get canDelegateDecision(): boolean {
-    return this.selectedItems.every((item: Approval) => item.canDelegateDecision(this.isUserEscalationApprover ? '' : this.currentUserId));
+    return this.selectedItems.every((item: Approval) => item.canDelegateDecision(this.isUserEscalationApprover && this.viewEscalation ? '' : this.currentUserId));
   }
   public get canDenyApproval(): boolean {
     return this.selectedItems.every((item: Approval) => item.canDenyApproval(this.currentUserId));
@@ -150,7 +149,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public selectedItems: Approval[] = [];
   public busyService = new BusyService();
 
-  private navigationState: ApprovalsLoadParameters;
   private approvalsDecision: ApprovalsDecision = ApprovalsDecision.none;
   private extensions: IExtension[] = [];
   private readonly subscriptions: Subscription[] = [];
@@ -162,6 +160,9 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private isChiefApprover = false;
   private _viewEscalation = false;
 
+  private uid_personwantsorg: string;
+  private uid_pwohelperpwo: string;
+
   constructor(
     public readonly actionService: WorkflowActionService,
     private readonly approvalsService: ApprovalsService,
@@ -170,7 +171,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     private readonly logger: ClassloggerService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly translator: TranslateService,
-    settingsService: SettingsService,
     private readonly userModelService: UserModelService,
     authentication: AuthenticationService,
     private readonly ext: ExtService,
@@ -178,7 +178,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     public dataSource: DataViewSource<Approval, PwoExtendedData | undefined>,
     private readonly confirm: ConfirmationService,
   ) {
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
     this.displayedColumns = [
       this.entitySchema?.Columns?.DisplayOrg,
@@ -299,8 +298,14 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         params: CollectionLoadParameters,
         signal: AbortSignal,
       ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> => {
+
+        const updatedParams: ApprovalsLoadParameters = {
+          ...params,
+          ...(this.uid_personwantsorg && { uid_personwantsorg: this.uid_personwantsorg }),
+          ...(this.uid_pwohelperpwo && { uid_pwohelperpwo: this.uid_pwohelperpwo }),
+        };
         return Promise.resolve(
-          this.approvalsService.get(params, { signal }).then((collectionData) => {
+          this.approvalsService.get(updatedParams, { signal }).then((collectionData) => {
             if (this.extensions) {
               const dstSettings: DataSourceToolbarSettings = {
                 dataSource: collectionData,
@@ -345,7 +350,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
           pwo,
           itShopConfig: (await this.projectConfig.getConfig()).ITShopConfig,
           fromInquiry: false,
-          isUserEscalationApprover: this.isUserEscalationApprover,
+          isUserEscalationApprover: this.isUserEscalationApprover && this.viewEscalation,
         },
       })
       .afterClosed()
@@ -387,22 +392,21 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     this.logger.trace(this, 'selection changed', items);
     this.selectedItems = items;
   }
-
   private parseParams(): void {
-    // Cases: VI_BuildITShopLink_Approve, VI_BuildITShopLink_Deny, VI_BuildITShopLink_Reject
+    // when a user clicks on the approval link in the email, the params contain the person and pwohelperpwo to identify the request and decision to directly approve or reject the request. This is handled in handleDecision().
     if (this.params.uid_personwantsorg && this.params.uid_pwohelperpwo && this.params.decision) {
-      this.navigationState.uid_personwantsorg = this.params.uid_personwantsorg;
-      this.navigationState.uid_pwohelperpwo = this.params.uid_pwohelperpwo;
+      this.uid_personwantsorg = this.params.uid_personwantsorg;
+      this.uid_pwohelperpwo = this.params.uid_pwohelperpwo;
 
       // Will otherwise result in a string
-      this.approvalsDecision = ApprovalsDecision[this.params.decision.toLowerCase()] as unknown as ApprovalsDecision;
+      this.approvalsDecision = ApprovalsDecision[this.params.decision.toLowerCase() as keyof typeof ApprovalsDecision] ?? ApprovalsDecision.none;
       return;
     }
 
-    // Case: VI_BuildITShopLink_Show_for_Approver
+    // when a user clicks on the link in the email to view the request details, the params contain the person and pwohelperpwo to identify the request. There is no decision param in this case, so it will just open the details without performing any action.
     if (this.params.uid_personwantsorg && this.params.uid_pwohelperpwo) {
-      this.navigationState.uid_personwantsorg = this.params.uid_personwantsorg;
-      this.navigationState.uid_pwohelperpwo = this.params.uid_pwohelperpwo;
+      this.uid_personwantsorg = this.params.uid_personwantsorg;
+      this.uid_pwohelperpwo = this.params.uid_pwohelperpwo;
       return;
     }
 
@@ -413,7 +417,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private async handleDecision(): Promise<void> {
     if (this.approvalsDecision === ApprovalsDecision.none) return;
 
-    if (this.dataSource.data?.length ?? 0 === 0) {
+    if (!this.dataSource.data?.length) {
       await this.confirm.showErrorMessage({
         Message: '#LDS#This request has already been approved or denied.',
         ShowOk: true,

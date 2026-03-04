@@ -95,17 +95,17 @@ export class ApproverContainer {
       const display = element.split(MultiValueProperty.DefaultSeparator)[1];
       const approver = future
         ? this.approverFuture?.filter(
-            (workflowData, index, newArray) =>
-              workflowData.Columns?.UID_QERWorkingStep.Value === uid &&
-              newArray.findIndex((checkData) => checkData.Columns?.UID_PersonHead.Value === workflowData.Columns?.UID_PersonHead.Value) ===
-                index,
-          )
+          (workflowData, index, newArray) =>
+            workflowData.Columns?.UID_QERWorkingStep.Value === uid &&
+            newArray.findIndex((checkData) => checkData.Columns?.UID_PersonHead.Value === workflowData.Columns?.UID_PersonHead.Value) ===
+            index,
+        )
         : this.approverNow?.filter(
-            (workflowData, index, newArray) =>
-              workflowData.Columns?.UID_QERWorkingStep.Value === uid &&
-              newArray.findIndex((checkData) => checkData.Columns?.UID_PersonHead.Value === workflowData.Columns?.UID_PersonHead.Value) ===
-                index,
-          );
+          (workflowData, index, newArray) =>
+            workflowData.Columns?.UID_QERWorkingStep.Value === uid &&
+            newArray.findIndex((checkData) => checkData.Columns?.UID_PersonHead.Value === workflowData.Columns?.UID_PersonHead.Value) ===
+            index,
+        );
 
       this.logger?.trace(this, `analysing ${future ? 'future' : 'current'} step ${uid} (${display}):`, approver);
 
@@ -122,12 +122,30 @@ export class ApproverContainer {
     additionalInfoDisplay: string,
   ): { [key: string]: { [key: string]: { string } } } {
     const returnValue = {};
+
     for (const elem of approver) {
       returnValue[elem.display] = {};
       for (const data of elem.data) {
-        if (data.Columns?.UID_ComplianceRule?.Value)
-          returnValue[elem.display][data.Columns.UID_PersonHead.DisplayValue] =
-            `(${additionalInfoDisplay}: ${data.Columns.UID_ComplianceRule?.DisplayValue ?? ''})`;
+        // Find all entries for the same approver in the given working step without a decision yet
+        const elements =
+          this.request.pwoData.WorkflowData?.Entities?.filter(
+            (elem) =>
+              elem.Columns?.UID_PersonHead?.Value === data.Columns?.UID_PersonHead?.Value &&
+              elem.Columns?.UID_QERWorkingStep?.Value === data.Columns?.UID_QERWorkingStep?.Value &&
+              (elem.Columns?.Decision?.Value ?? '') === '',
+          ) ?? [];
+
+        if (!!elements.length) {
+          // Get the one with the lowest sublevel number, that has a compliance rule assigned
+          const lowestElement = elements
+            .filter((elem) => elem.Columns?.SubLevelNumber && elem.Columns?.UID_ComplianceRule?.Value !== '')
+            .reduce((min, e) => (e.Columns!.SubLevelNumber!.Value < min.Columns!.SubLevelNumber!.Value ? e : min), elements[0]);
+          if (lowestElement && lowestElement.Columns?.UID_ComplianceRule?.Value !== '') {
+            // Assign the compliance rule display value to the return object
+            returnValue[elem.display][data.Columns?.UID_PersonHead?.DisplayValue ?? ''] =
+              `(${additionalInfoDisplay}: ${lowestElement.Columns?.UID_ComplianceRule?.DisplayValue ?? ''})`;
+          }
+        }
       }
     }
     return returnValue;
@@ -150,20 +168,20 @@ export class ApproverContainer {
 
       this.approverNow =
         this.request == null ||
-        this.request.pwoData == null ||
-        this.request.pwoData.WorkflowData == null ||
-        this.request.pwoData.WorkflowData.Entities == null ||
-        currentSteps.length === 0
+          this.request.pwoData == null ||
+          this.request.pwoData.WorkflowData == null ||
+          this.request.pwoData.WorkflowData.Entities == null ||
+          currentSteps.length === 0
           ? []
           : this.request.pwoData.WorkflowData?.Entities?.filter(
-              (data) =>
-                data.Columns?.UID_PersonHead.Value &&
-                currentSteps.some((step) => data.Columns?.UID_QERWorkingStep.Value === step.uidWorkingStep) &&
-                this.request.approvers.includes(data.Columns.UID_PersonHead.Value),
-            ).sort(
-              (data1, data2) =>
-                data1.Columns?.UID_PersonHead.DisplayValue?.localeCompare(data2.Columns?.UID_PersonHead.DisplayValue ?? '') ?? 0,
-            );
+            (data) =>
+              data.Columns?.UID_PersonHead.Value &&
+              currentSteps.some((step) => data.Columns?.UID_QERWorkingStep.Value === step.uidWorkingStep) &&
+              this.request.approvers.includes(data.Columns.UID_PersonHead.Value),
+          ).sort(
+            (data1, data2) =>
+              data1.Columns?.UID_PersonHead.DisplayValue?.localeCompare(data2.Columns?.UID_PersonHead.DisplayValue ?? '') ?? 0,
+          );
       this.logger?.trace(this, 'personWantsOrg should be approved by', this.approverNow);
     }
 
@@ -173,20 +191,20 @@ export class ApproverContainer {
 
       this.approverFuture =
         this.request == null ||
-        this.request.pwoData == null ||
-        this.request.pwoData.WorkflowData == null ||
-        this.request.pwoData.WorkflowData.Entities == null ||
-        futureSteps == null
+          this.request.pwoData == null ||
+          this.request.pwoData.WorkflowData == null ||
+          this.request.pwoData.WorkflowData.Entities == null ||
+          futureSteps == null
           ? []
           : this.request.pwoData.WorkflowData?.Entities?.filter(
-              (data) =>
-                data.Columns?.UID_PersonHead.Value &&
-                futureSteps.map((step) => step.uidWorkingStep).includes(data.Columns?.UID_QERWorkingStep.Value),
-            ).sort((data1, data2) =>
-              (!data1.Columns?.UID_PersonHead?.DisplayValue ? '' : data1.Columns.UID_PersonHead.DisplayValue).localeCompare(
-                !data2.Columns?.UID_PersonHead?.DisplayValue ? '' : data2.Columns.UID_PersonHead.DisplayValue,
-              ),
-            );
+            (data) =>
+              data.Columns?.UID_PersonHead.Value &&
+              futureSteps.map((step) => step.uidWorkingStep).includes(data.Columns?.UID_QERWorkingStep.Value),
+          ).sort((data1, data2) =>
+            (!data1.Columns?.UID_PersonHead?.DisplayValue ? '' : data1.Columns.UID_PersonHead.DisplayValue).localeCompare(
+              !data2.Columns?.UID_PersonHead?.DisplayValue ? '' : data2.Columns.UID_PersonHead.DisplayValue,
+            ),
+          );
       this.logger?.trace(this, 'personWantsOrg should be approved in the future by', this.approverFuture);
     }
   }

@@ -120,7 +120,6 @@ export const FakeDataViewSource: Pick<DataViewSource, keyof DataViewSource> = {
   searchLocally: function (): void { },
   updateState: async function (): Promise<void> {
     let collectionData = await this.execute();
-    console.log(collectionData);
     this.collectionData.set(collectionData);
     return Promise.resolve();
   },

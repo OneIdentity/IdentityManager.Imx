@@ -42,10 +42,10 @@ interface TrusteePermissionData {
 
 /** Component to display a TrusteeAccessData structure. */
 @Component({
-    templateUrl: './trustee-view.component.html',
-    styleUrls: ['../qam.scss', './trustee-view.component.scss'],
-    selector: 'imx-trustee-view',
-    standalone: false
+  templateUrl: './trustee-view.component.html',
+  styleUrls: ['../qam.scss', './trustee-view.component.scss'],
+  selector: 'imx-trustee-view',
+  standalone: false
 })
 export class TrusteeViewComponent implements OnInit, OnChanges {
   public currentSelectedTrustee: TrusteeData | undefined;
@@ -57,7 +57,7 @@ export class TrusteeViewComponent implements OnInit, OnChanges {
 
   public trusteeTypes: { [id: number]: string };
 
-  constructor(private readonly api: QamApiService) {}
+  constructor(private readonly api: QamApiService) { }
 
   public async ngOnInit(): Promise<void> {
     const isBusy = this.busyService?.beginBusy();
@@ -93,6 +93,5 @@ export class TrusteeViewComponent implements OnInit, OnChanges {
         allowFullControl: elem.Permissions?.includes('AllowFullControl') ?? false,
         anyAllow: elem.Permissions?.includes('AnyAllow') ?? false,
       })) ?? [];
-    console.log('martina', this.currentSelectedTrustee, this.currentSelectedTrusteePermissions);
   }
 }

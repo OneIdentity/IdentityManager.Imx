@@ -41,9 +41,7 @@ export class ShoppingCartSubmitWarningsDialog {
   constructor(
     public dialogRef: MatDialogRef<ShoppingCartSubmitWarningsDialog>,
     @Inject(MAT_DIALOG_DATA) public readonly data: any,
-  ) {
-    console.log('data', data);
-  }
+  ) { }
 
   public getStatus(check: ICartItemCheck): { status: string; icon: string; colorClass?: string } {
     return getCartItemValidationStatus(check);

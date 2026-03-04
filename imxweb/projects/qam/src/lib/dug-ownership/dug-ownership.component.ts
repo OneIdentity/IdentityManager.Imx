@@ -25,13 +25,13 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataViewInitParameters, DataViewSource, HelpContextualValues, SideNavigationComponent, HELP_CONTEXTUAL } from 'qbm';
+import { BusyService, calculateSidesheetWidth, DataViewInitParameters, DataViewSource } from 'qbm';
 
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, EntitySchema, IClientProperty, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { DugSidesheetComponent } from '../dug/dug-sidesheet.component';
-import { PortalDgeResources, PortalDgeResourcesPerceivedowners } from '../TypedClient';
+import { PortalDgeResources } from '../TypedClient';
 import { DugAssignOwnershipSidesheetComponent } from './dug-assign-ownership-sidesheet/dug-assign-ownership-sidesheet.component';
 import { DugOwnershipService } from './dug-ownership.service';
 
@@ -43,16 +43,11 @@ import { DugOwnershipService } from './dug-ownership.service';
   providers: [DataViewSource],
 })
 export class DugOwnershipComponent implements OnInit {
-  public data?: PortalDgeResources;
   private dataModel: DataModel;
 
   public busyService = new BusyService();
-  public navigationState: CollectionLoadParameters = {};
-  public dstSettings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
   private displayedColumns: IClientProperty[] = [];
-  public readonly DisplayColumns = DisplayColumns;
-  public perceivedOwners: PortalDgeResourcesPerceivedowners;
   public selectedItems: PortalDgeResources[] = [];
 
   constructor(
@@ -68,7 +63,6 @@ export class DugOwnershipComponent implements OnInit {
         ColumnName: "assignOwner",
         Type: ValType.String
       },
-      // this.entitySchema.Columns.UID_QAMResourceType,
       this.entitySchema.Columns.RiskIndexCalculated,
       this.entitySchema.Columns.RequiresOwnership
     ];
@@ -92,7 +86,7 @@ export class DugOwnershipComponent implements OnInit {
       disableClose: true,
       padding: '0',
       testId: 'assign-dug-resource-sidesheet',
-      data: { uid: resource.GetEntity().GetKeys()[0], identifier:'perceivedOwner' },
+      data: { uid: resource.GetEntity().GetKeys()[0], identifier: 'perceivedOwner' },
     });
     sidesheetRef.afterClosed().subscribe((result) => {
       if (result) {
@@ -108,12 +102,12 @@ export class DugOwnershipComponent implements OnInit {
     const uidResources: string[] = resources.map((resource) => resource.GetEntity().GetKeys()[0]);
     const sidesheetRef = this.sideSheet.open(DugAssignOwnershipSidesheetComponent, {
       title: this.translate.instant('#LDS#Heading Assign Owner'),
-      subTitle: resources.map((res)=> res.GetEntity().GetDisplay()).join(', '),
+      subTitle: resources.map((res) => res.GetEntity().GetDisplay()).join(', '),
       width: calculateSidesheetWidth(),
       disableClose: true,
       padding: '0',
       testId: 'assign-dug-owner-sidesheet',
-      data: { uid:uidResources, identifier:'dug-assign-ownership' }
+      data: { uid: uidResources, identifier: 'dug-assign-ownership' }
     });
     sidesheetRef.afterClosed().subscribe((result) => {
       if (result) {
@@ -121,7 +115,7 @@ export class DugOwnershipComponent implements OnInit {
         this.getData();
       }
     });
-}
+  }
 
   public onSelectionChanged(items: PortalDgeResources[]): void {
     this.selectedItems = items;
@@ -133,9 +127,8 @@ export class DugOwnershipComponent implements OnInit {
       const dataViewInitParameters: DataViewInitParameters<PortalDgeResources> = {
         execute: async (params: CollectionLoadParameters,
           signal: AbortSignal,): Promise<TypedEntityCollectionData<PortalDgeResources>> => {
-          params= { ...params, withoutowner: '1' };
-          const data = await this.ownershipService.getData(params,signal)
-          return data;
+          params = { ...params, withoutowner: '1' };
+          return await this.ownershipService.getData(params, signal);
         },
         dataModel: this.dataModel,
         schema: this.entitySchema,

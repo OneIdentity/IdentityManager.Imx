@@ -74,7 +74,6 @@ export class StatusService {
 
     this.stream.onmessage = (evt) => {
       const changeData: EntityCollectionChangeData = JSON.parse(evt.data);
-      console.log(changeData);
       this.statusSession = changeData['OpenSessions'];
     };
 

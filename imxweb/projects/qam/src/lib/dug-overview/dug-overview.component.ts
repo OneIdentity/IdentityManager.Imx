@@ -25,16 +25,16 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataViewInitParameters, DataViewSource, HELP_CONTEXTUAL, HelpContextualValues, SideNavigationComponent } from 'qbm';
+import { BusyService, calculateSidesheetWidth, DataViewInitParameters, DataViewSource, HELP_CONTEXTUAL, HelpContextualValues, SideNavigationComponent } from 'qbm';
 
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData, ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
+import { QerPermissionsService } from 'qer';
+import { PermissionsService } from '../admin/permissions.service';
 import { DugSidesheetComponent } from '../dug/dug-sidesheet.component';
 import { PortalDgeResources } from '../TypedClient';
 import { DugOverviewService } from './dug-overview.service';
-import { QerPermissionsService } from 'qer';
-import { PermissionsService } from '../admin/permissions.service';
 
 export interface TabConfig {
   id: string;
@@ -56,26 +56,22 @@ export const ALL_TABS = [
 ];
 
 @Component({
-    selector: 'imx-dug-overview',
-    templateUrl: './dug-overview.component.html',
-    styleUrls: ['./dug-overview.component.scss'],
-    standalone: false,
-    providers: [DataViewSource],
+  selector: 'imx-dug-overview',
+  templateUrl: './dug-overview.component.html',
+  styleUrls: ['./dug-overview.component.scss'],
+  standalone: false,
+  providers: [DataViewSource],
 })
 export class DugOverviewComponent implements OnInit, SideNavigationComponent {
 
   @Input() public isAdmin = false;
-  @Input() public uiddugnode: string = ''; 
+  @Input() public uiddugnode: string = '';
   @Input() public isAuditView: boolean = false;
   @Output() public goBackToAuditView = new EventEmitter<void>();
 
-  public data?: any;
-  public contextId?: HelpContextualValues;
-  public headingText: string = '#LDS#Heading Governed Data';
   private dataModel: DataModel;
   public busyService = new BusyService();
   public navigationState: CollectionLoadParameters = {};
-  public dstSettings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
   private displayedColumns: IClientProperty[] = [];
   public readonly DisplayColumns = DisplayColumns;
@@ -105,7 +101,7 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
     const isBusy = this.busyService.beginBusy();
     try {
 
-      this.isAuditor = await this.qerPermissionService.isAuditor(); 
+      this.isAuditor = await this.qerPermissionService.isAuditor();
       this.isQAMAdmin = await this.qamPermissionsService.isQAMAdmin();
 
       if (!this.isAdmin) {
@@ -120,41 +116,24 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
         );
         this.visibleTabs.sort((a, b) => a.id === 'Dashboards' ? -1 : b.id === 'Dashboards' ? 1 : 0);
       }
-      
+
       this.dataModel = await this.overviewService.getDataModel();
-      if(this.isAuditView){
+      if (this.isAuditView) {
         this.displayedColumns.push(
           {
             ColumnName: 'actions',
             Type: ValType.String
           }
         );
-        await this.getData({uiddugnode: this.uiddugnode});
+        await this.getData({ uiddugnode: this.uiddugnode });
       }
-      else{
+      else {
         await this.getData();
       }
-        
+
     } finally {
       isBusy.endBusy();
     }
-  }
-
-  /**
-   * Occurs when the navigation state has changed - e.g. users clicks on the next page button.
-   *
-   */
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    await this.getData(newState);
-  }
-
-  /**
-   * Occurs when user triggers search.
-   *
-   * @param keywords Search keywords.
-   */
-  public async onSearch(keywords: string): Promise<void> {
-    await this.getData({ ...this.navigationState, StartIndex: 0, search: keywords });
   }
 
   public async showDugResource(resource: TypedEntity): Promise<void> {
@@ -176,10 +155,10 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
 
   private async getData(parameter: CollectionLoadParameters = {}): Promise<void> {
     const isBusy = this.busyService.beginBusy();
-    this.navigationState = this.isAdmin ? { ...parameter, allresources: '1' } : { ...parameter, owned: '1' };
     try {
       const dataViewInitParameters: DataViewInitParameters<PortalDgeResources> = {
-        execute: async (): Promise<TypedEntityCollectionData<PortalDgeResources>> => {
+        execute: async (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<PortalDgeResources>> => {
+          this.navigationState = this.isAdmin ? { ...params, allresources: '1', ...parameter } : { ...params, owned: '1', ...parameter };
           return await this.overviewService.getData(this.navigationState);
         },
         dataModel: this.dataModel,
@@ -195,18 +174,18 @@ export class DugOverviewComponent implements OnInit, SideNavigationComponent {
     }
   }
 
-  public async viewContent (item: PortalDgeResources): Promise<void> {
+  public async viewContent(item: PortalDgeResources): Promise<void> {
     this.rootDug.push(item);
-    await this.getData({uiddugnode: this.uiddugnode, uiddugparent: item.GetEntity().GetKeys()[0]});
+    await this.getData({ uiddugnode: this.uiddugnode, uiddugparent: item.GetEntity().GetKeys()[0] });
   }
 
   public async goBackToRoot(item?: PortalDgeResources): Promise<void> {
-    if(!item){
+    if (!item) {
       this.goBackToAuditView.emit();
       return;
     }
     this.rootDug.pop();
-    await this.getData({uiddugnode: this.uiddugnode, uiddugparent: item.GetEntity().GetColumn('UID_QAMDuGParent').GetValue()});
+    await this.getData({ uiddugnode: this.uiddugnode, uiddugparent: item.GetEntity().GetColumn('UID_QAMDuGParent').GetValue() });
   }
 
   public get lastRootDuGItem() {

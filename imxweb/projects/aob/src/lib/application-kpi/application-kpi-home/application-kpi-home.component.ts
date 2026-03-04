@@ -36,10 +36,10 @@ import { ApplicationKpiSidesheetComponent } from '../application-kpi-sidesheet/a
 import { ApplicationKpiService } from '../application-kpi.service';
 
 @Component({
-    selector: 'imx-application-kpi-home',
-    imports: [CommonModule, EuiCoreModule, MatCardModule, MatTooltipModule, BusyIndicatorModule, TranslateModule],
-    templateUrl: './application-kpi-home.component.html',
-    styleUrl: './application-kpi-home.component.scss'
+  selector: 'imx-application-kpi-home',
+  imports: [CommonModule, EuiCoreModule, MatCardModule, MatTooltipModule, BusyIndicatorModule, TranslateModule],
+  templateUrl: './application-kpi-home.component.html',
+  styleUrl: './application-kpi-home.component.scss'
 })
 export class ApplicationKpiHomeComponent implements OnInit {
   // Injected services
@@ -64,11 +64,13 @@ export class ApplicationKpiHomeComponent implements OnInit {
   }
 
   /**
-   * Get data from server and set loading state
+   * Get data from server and set loading state, filter out kpis without data
    */
   private async initializeData() {
     if (!this.isLoading()) this.isLoading.set(true);
-    this.allKpis.set(await this.kpiService.get(this.application().UID_AOBApplication.value));
+    this.allKpis.set((
+      await this.kpiService.get(this.application().UID_AOBApplication.value)
+    ).filter((kpi) => this.kpiHasData(kpi)));
     this.isLoading.set(false);
   }
 
@@ -86,7 +88,7 @@ export class ApplicationKpiHomeComponent implements OnInit {
    * @param kpi
    * @returns
    */
-  public kpiHasDetails(kpi: ChartDto) {
+  private kpiHasData(kpi: ChartDto) {
     return (kpi.Data?.length || 0) > 0;
   }
 

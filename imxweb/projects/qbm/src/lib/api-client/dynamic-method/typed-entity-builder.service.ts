@@ -52,7 +52,7 @@ export class TypedEntityBuilderService {
     private readonly appConfig: AppConfigService,
     private readonly methodDescriptor: MethodDescriptorService,
     private readonly translationProvider: ImxTranslationProviderService,
-  ) {}
+  ) { }
 
   public buildReadWriteEntities<TEntity extends TypedEntity, TExtendedData = any>(
     apiClient: ApiClient,
@@ -83,7 +83,6 @@ export class TypedEntityBuilderService {
     const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes ?? [], apiClient).build();
     const commitMethod = (__, writeData) => {
       const descriptor = this.methodDescriptor.putInteractive(typeWrapper.path, writeData);
-      console.log(descriptor);
       return apiClient.processRequest(descriptor);
     };
     const builder = new InteractiveTypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);

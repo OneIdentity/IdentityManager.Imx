@@ -31,7 +31,6 @@
         <mat-card
           class="eui-grid-cell eui-grid-cell--span-4 imx-kpi-card mat-elevation-z6"
           euiClickable
-          [euiClickableDisabled]="!kpiHasDetails(chart)"
           (click)="showDetails(chart, passBool)"
           [matTooltip]="chart?.Description"
         >

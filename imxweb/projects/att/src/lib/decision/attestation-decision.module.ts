@@ -54,6 +54,7 @@ import { AttestationDisplayModule } from '../attestation-display/attestation-dis
 import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-snapshot.module';
 import { EntityPropertyEditorComponent } from '../entity-property-editor/entity-property-editor.component';
 import { ApproversComponent } from './approvers/approvers.component';
+import { AttestationCaseHistoryComponent } from './attestation-case-history/attestation-case-history.component';
 import { AttestationCaseComponent } from './attestation-case.component';
 import { AttestationDecisionComponent } from './attestation-decision.component';
 import { AttestationInquiriesComponent } from './attestation-inquiries/attestation-inquiries.component';
@@ -63,6 +64,7 @@ import { DecisionPolicyViolationComponent } from './decision-policy-violation/de
 import { LossPreviewSidesheetComponent } from './loss-preview-sidesheet/loss-preview-sidesheet.component';
 import { LossPreviewTableComponent } from './loss-preview-table/loss-preview-table.component';
 import { MitigatingControlsComponent } from './mitigating-controls/mitigating-controls.component';
+
 @NgModule({
   declarations: [
     AttestationCaseComponent,
@@ -77,6 +79,7 @@ import { MitigatingControlsComponent } from './mitigating-controls/mitigating-co
     DecisionPolicyViolationComponent,
     MitigatingControlsComponent,
     AttestationInquiriesComponent,
+    AttestationCaseHistoryComponent
   ],
   imports: [
     AttestationSnapshotModule,
@@ -111,4 +114,4 @@ import { MitigatingControlsComponent } from './mitigating-controls/mitigating-co
   ],
   exports: [DecisionHistoryItemComponent, ApproversComponent],
 })
-export class AttestationDecisionModule {}
+export class AttestationDecisionModule { }

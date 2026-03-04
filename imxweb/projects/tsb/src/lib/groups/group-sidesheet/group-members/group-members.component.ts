@@ -52,11 +52,11 @@ import { GroupsService } from '../../groups.service';
 import { NewMembershipService } from './new-membership/new-membership.service';
 
 @Component({
-    selector: 'imx-group-members',
-    templateUrl: './group-members.component.html',
-    styleUrls: ['./group-members.component.scss'],
-    providers: [DataViewSource],
-    standalone: false
+  selector: 'imx-group-members',
+  templateUrl: './group-members.component.html',
+  styleUrls: ['./group-members.component.scss'],
+  providers: [DataViewSource],
+  standalone: false
 })
 export class GroupMembersComponent implements OnInit {
   @Input() public groupDirectMembershipData: TypedEntityCollectionData<PortalTargetsystemUnsDirectmembers>;
@@ -175,7 +175,6 @@ export class GroupMembersComponent implements OnInit {
     ) {
       this.handleOpenLoader();
       try {
-        console.log(this.dataSourceDirect.selection.selected);
         await this.groupsService.deleteGroupMembers(
           this.unsGroupDbObjectKey,
           this.dataSourceDirect.selection.selected.map((i) => i.GetEntity().GetColumn('UID_UNSAccount').GetValue()),

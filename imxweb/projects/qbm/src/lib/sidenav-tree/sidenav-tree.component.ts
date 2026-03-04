@@ -27,11 +27,13 @@
 import { animate, animateChild, group, query, state, style, transition, trigger } from '@angular/animations';
 import { FlatTreeControl, NestedTreeControl } from '@angular/cdk/tree';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges, TemplateRef } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { ClassloggerModule } from '../classlogger/classlogger.module';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
 import { CustomTreeControlComponent } from './custom-tree-control.component';
 import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
@@ -73,6 +75,7 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
     TranslateModule,
     DataSourceToolbarModule,
     CustomTreeControlComponent,
+    ClassloggerModule
   ],
   animations: [
     trigger('expandDiv', [
@@ -164,6 +167,7 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
   ],
 })
 export class SidenavTreeComponent implements OnChanges {
+  private logger = inject(ClassloggerService);
   public isLoadingMore: boolean;
   private searchEnabled = false;
 
@@ -220,7 +224,7 @@ export class SidenavTreeComponent implements OnChanges {
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes['database']) {
-      console.log('Need to refresh tree');
+      this.logger.debug(this, 'Need to refresh tree');
     }
   }
 

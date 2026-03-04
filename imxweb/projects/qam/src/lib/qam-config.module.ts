@@ -135,6 +135,7 @@ const routes: Routes = [
 })
 export class QamConfigModule {
   constructor(private readonly initializer: InitService) {
+    console.log('🔥 QAM loaded');
     this.initializer.onInit(routes);
 
     console.log('▶️ QAM initialized');

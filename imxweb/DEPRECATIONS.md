@@ -11,14 +11,6 @@ _deprecated in v10.0.0, will be removed later_
 _projects\aob\src\lib\user\user.module.ts_  
 _deprecated in v10.0.0, will be removed later_
 
-- **OutstandingComponent** (class)  
-_projects\dpr\src\lib\outstanding\outstanding.component.ts_  
-_deprecated in v10.0.0, will be removed later_
-
-- **OutstandingModule** (class)  
-_projects\dpr\src\lib\outstanding\outstanding.module.ts_  
-_deprecated in v10.0.0, will be removed later_
-
 - **PortalCandidatesAeroleInteractive** (class)  
 _projects\qam\src\lib\TypedClient.ts_  
 Use PortalCandidatesAerole instead.  
@@ -370,4 +362,3 @@ _deprecated in v10.0.0, will be removed later_
 _projects\tsb\src\lib\no-data\no-data.module.ts_  
 Use the DataViewModule instead.  
 _deprecated in v10.0.0, will be removed later_
-

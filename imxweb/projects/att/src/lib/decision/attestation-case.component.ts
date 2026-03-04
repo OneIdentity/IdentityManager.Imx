@@ -42,6 +42,7 @@ import {
   ColumnDependentReference,
   MetadataService,
   SnackBarService,
+  SqlWizardApiService,
   SystemInfoService,
 } from 'qbm';
 import {
@@ -87,6 +88,8 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
   public selectedOption: AttestationRelatedObject;
   public relatedOptions: AttestationRelatedObject[] = [];
 
+  public isHistoryAvailable = false;
+
   private readonly subscriptions$: Subscription[] = [];
 
   constructor(
@@ -112,6 +115,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
     private readonly systemInfoService: SystemInfoService,
     private readonly logger: ClassloggerService,
     private readonly metadataService: MetadataService,
+    private readonly sqlService: SqlWizardApiService,
     authentication: AuthenticationService,
   ) {
     this.case = data.case;
@@ -145,6 +149,10 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
       this.policyTabTitle = await this.translate.get('#LDS#Heading Policy Violations').toPromise();
       const info = await this.systemInfoService.get();
       this.canAnalyzeRisk = !!info.PreProps?.includes('RISKINDEX') && this.case.RiskIndex.value > 0;
+      const filterProperties = await this.sqlService.getFilterProperties('AttestationCase');
+      this.isHistoryAvailable = ['UID_AttestationPolicy', 'ObjectKeyBase', 'UID_AttestationCase'].every(
+        (col) => filterProperties.findIndex((prop) => prop.PropertyId === col) !== -1,
+      );
     } finally {
       this.busyService.hide(overlay);
     }

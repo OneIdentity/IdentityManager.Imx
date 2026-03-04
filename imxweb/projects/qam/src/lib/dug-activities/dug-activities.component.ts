@@ -26,22 +26,22 @@
 
 import { Component, Inject, InjectionToken, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { DugActivitiesService } from './dug-activities.service';
-import { ResourceActivityData, TrusteeActivityData } from '../TypedClient';
-import { DugActivityEntity } from './dug-activity-entity';
+import { DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { DisplayColumns, EntitySchema, ExtendedTypedEntityCollection, IClientProperty } from '@imx-modules/imx-qbm-dbts';
-import { DataSourceToolbarSettings, DataViewInitParameters, DataViewSource } from 'qbm';
+import { DataViewSource, LocalDataViewInitParameters } from 'qbm';
+import { ResourceActivityData, TrusteeActivityData } from '../TypedClient';
+import { DugActivitiesService } from './dug-activities.service';
+import { DugActivityEntity } from './dug-activity-entity';
 
 export const DataViewSourceResource = new InjectionToken<DataViewSource<DugActivityEntity>>('DataViewSourceResource');
 export const DataViewSourceTrustee = new InjectionToken<DataViewSource<DugActivityEntity>>('DataViewSourceTrustee');
 
 @Component({
-    selector: 'imx-dug-activities',
-    templateUrl: './dug-activities.component.html',
-    styleUrls: ['./dug-activities.component.scss'],
-    standalone: false,
-    providers: [
+  selector: 'imx-dug-activities',
+  templateUrl: './dug-activities.component.html',
+  styleUrls: ['./dug-activities.component.scss'],
+  standalone: false,
+  providers: [
     { provide: DataViewSourceResource, useClass: DataViewSource },
     { provide: DataViewSourceTrustee, useClass: DataViewSource }
   ]
@@ -53,8 +53,6 @@ export class DugActivitiesComponent implements OnInit {
   public entitySchemaTrustee: EntitySchema;
   public entitySchemaResource: EntitySchema;
 
-  public dstSettingsTrustee: DataSourceToolbarSettings;
-  public dstSettingsResource: DataSourceToolbarSettings;
   public DisplayColumns = DisplayColumns;
 
   private displayColumnsTrustee: IClientProperty[] = [];
@@ -71,7 +69,7 @@ export class DugActivitiesComponent implements OnInit {
     private readonly translateService: TranslateService,
     @Inject(DataViewSourceResource) public dataSourceResource: DataViewSource<DugActivityEntity>,
     @Inject(DataViewSourceTrustee) public dataSourceTrustee: DataViewSource<DugActivityEntity>,
-  ) {}
+  ) { }
 
   public async ngOnInit(): Promise<void> {
     const over = this.loadingServiceEui.show();
@@ -107,13 +105,12 @@ export class DugActivitiesComponent implements OnInit {
       DugActivityEntity.buildEntityDataTrustee(this.mostActiveTrustees),
       this.entitySchemaTrustee,
     );
-    const dataViewInitParameters: DataViewInitParameters<DugActivityEntity> = {
-      execute: (): Promise<ExtendedTypedEntityCollection<DugActivityEntity, unknown>> => Promise.resolve(data),
-      schema: this.entitySchemaTrustee,
+    const dataViewInitParameters: LocalDataViewInitParameters<DugActivityEntity> = {
+      data: data.Data,
       columnsToDisplay: this.displayColumnsTrustee,
-      localSource: true,
+      schema: this.entitySchemaTrustee,
     };
-    this.dataSourceTrustee.init(dataViewInitParameters);
+    this.dataSourceTrustee.initLocal(dataViewInitParameters);
   }
 
   public initResources() {
@@ -121,12 +118,11 @@ export class DugActivitiesComponent implements OnInit {
       DugActivityEntity.buildEntityDataResource(this.mostActiveResources),
       this.entitySchemaResource,
     );
-    const dataViewInitParameters: DataViewInitParameters<DugActivityEntity> = {
-      execute: (): Promise<ExtendedTypedEntityCollection<DugActivityEntity, unknown>> => Promise.resolve(data),
-      schema: this.entitySchemaResource,
+    const dataViewInitParameters: LocalDataViewInitParameters<DugActivityEntity> = {
+      data: data.Data,
       columnsToDisplay: this.displayColumnsResource,
-      localSource: true,
+      schema: this.entitySchemaResource,
     };
-    this.dataSourceResource.init(dataViewInitParameters);
+    this.dataSourceResource.initLocal(dataViewInitParameters);
   }
 }

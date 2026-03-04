@@ -26,10 +26,12 @@
 
 import { FlatTreeControl, NestedTreeControl } from '@angular/cdk/tree';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges, TemplateRef } from '@angular/core';
 import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { ClassloggerModule } from '../classlogger/classlogger.module';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
 
 /**
@@ -57,12 +59,13 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
 
  */
 @Component({
-    selector: 'imx-custom-tree-control',
-    templateUrl: './custom-tree-control.component.html',
-    styleUrls: ['./custom-tree-control.component.scss'],
-    imports: [CommonModule, MatTreeModule, EuiCoreModule, EuiMaterialModule, TranslateModule]
+  selector: 'imx-custom-tree-control',
+  templateUrl: './custom-tree-control.component.html',
+  styleUrls: ['./custom-tree-control.component.scss'],
+  imports: [CommonModule, MatTreeModule, EuiCoreModule, EuiMaterialModule, TranslateModule, ClassloggerModule]
 })
 export class CustomTreeControlComponent implements OnChanges {
+  private logger = inject(ClassloggerService);
   public isLoadingMore: boolean;
   private searchEnabled = false;
 
@@ -96,7 +99,7 @@ export class CustomTreeControlComponent implements OnChanges {
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes['database']) {
-      console.log('Need to refresh tree');
+      this.logger.debug(this, 'Need to refresh tree');
     }
   }
 

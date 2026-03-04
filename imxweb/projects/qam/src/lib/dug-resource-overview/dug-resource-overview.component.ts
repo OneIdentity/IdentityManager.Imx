@@ -35,9 +35,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntityCollectionData, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { DisplayColumns, EntitySchema } from '@imx-modules/imx-qbm-dbts';
 import { TranslateModule } from '@ngx-translate/core';
-import { BusyIndicatorModule, BusyService, ClientPropertyForTableColumns, DataViewInitParameters, DataViewModule, DataViewSource, HelpContextualModule, LdsReplaceModule } from 'qbm';
+import { BusyIndicatorModule, BusyService, ClientPropertyForTableColumns, DataViewModule, DataViewSource, HelpContextualModule, LdsReplaceModule, LocalDataViewInitParameters } from 'qbm';
 import { PortalDgeClassificationSummary } from '../TypedClient'; // Adjust import as needed
 import { DugResourceOverviewService } from './dug-resource-overview.service';
 
@@ -62,7 +62,7 @@ import { DugResourceOverviewService } from './dug-resource-overview.service';
     HelpContextualModule,
     LdsReplaceModule,
     DataViewModule
-],
+  ],
   providers: [DataViewSource],
   templateUrl: './dug-resource-overview.component.html',
   styleUrl: './dug-resource-overview.component.scss'
@@ -72,7 +72,6 @@ export class DugResourceOverviewComponent implements OnInit {
   public displayedColumns: ClientPropertyForTableColumns[] = [];
   public entitySchema: EntitySchema;
   public busyService = new BusyService();
-  private dataModel: DataModel & EntityCollectionData;
 
   constructor(
     private readonly dugResourceOverviewService: DugResourceOverviewService,
@@ -99,18 +98,12 @@ export class DugResourceOverviewComponent implements OnInit {
   }
 
   public async getData(): Promise<void> {
-    const dataViewInitParameters: DataViewInitParameters<PortalDgeClassificationSummary> = {
-      execute: async (params: CollectionLoadParameters,
-        signal: AbortSignal,): Promise<TypedEntityCollectionData<PortalDgeClassificationSummary>> => {
-        const data = await this.dugResourceOverviewService.getData(params, signal);
-        return data;
-      },
-      dataModel: this.dataModel,
-      schema: this.entitySchema,
+    const data = await this.dugResourceOverviewService.getData();
+    const dataViewInitParameters: LocalDataViewInitParameters<PortalDgeClassificationSummary> = {
+      data: data.Data,
       columnsToDisplay: this.displayedColumns,
-      localSource: true
-
+      schema: this.entitySchema,
     };
-    this.dataSource.init(dataViewInitParameters);
+    this.dataSource.initLocal(dataViewInitParameters);
   }
 }
