@@ -25,126 +25,122 @@
  */
 
 import { computed, signal } from '@angular/core';
-import { Sort } from '@angular/material/sort';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { CollectionLoadParameters, FilterTreeData, MethodDefinition, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { debounce } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { ClassloggerService } from '../classlogger/classlogger.service';
-import { ConfirmationService } from '../confirmation/confirmation.service';
 import { DSTViewConfig } from '../data-source-toolbar/data-source-toolbar-view-config.interface';
 import { SelectionModelWrapper } from '../data-source-toolbar/selection-model-wrapper';
-import { SettingsService } from '../settings/settings-service';
-import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
 import { DataViewSource } from './data-view-source';
 import { DataViewInitParameters, GroupInfoRow, LocalDataViewInitParameters, WritableEntitySchema } from './data-view.interface';
-export const FakeDataViewSource: Pick<DataViewSource, keyof DataViewSource> = {
-  collectionData: signal({ totalCount: 0, Data: [] }),
-  entitySchema: signal({ Columns: {}, LocalColumns: {} }),
-  dataModel: signal(undefined),
-  execute: () => Promise.resolve({ totalCount: 0, Data: [] }),
-  entitySubject: signal([]),
-  entitySubject$: of([]),
-  count: 0,
-  totalCount: signal(0),
-  getAllSelectableEntities: signal([]),
-  data: [],
-  loading: signal(false),
-  triggerRender: signal(false),
-  isLimitReached: signal(false),
-  selection: new SelectionModelWrapper<TypedEntity>(),
-  selectionChanged: signal(undefined),
-  selectionChangeFunction: undefined,
-  showOnlySelected: signal(false),
-  columnsToDisplay: signal([]),
-  initialColumnsToDisplay: [],
-  optionalColumns: signal([]),
-  additionalColumns: signal([]),
-  additionalListColumns: signal(undefined),
-  pageSizeOptions: [],
-  sortId: signal(undefined),
-  sortDirection: signal(''),
-  state: signal({ undefined }),
-  predefinedFilters: signal([]),
-  externalFilters: signal([]),
-  selectedFilters: signal([]),
-  exportFunction: {
+
+export class FakeDataViewSource implements Partial<DataViewSource> {
+  collectionData = signal({ totalCount: 0, Data: [] });
+  entitySchema = signal({ Columns: {}, LocalColumns: {} });
+  dataModel = signal(undefined);
+  execute = () => Promise.resolve({ totalCount: 0, Data: [] });
+  entitySubject = signal([]);
+  entitySubject$ = of([]);
+  count: 0;
+  totalCount = signal(0);
+  getAllSelectableEntities = signal([]);
+  data: [];
+  loading = signal(false);
+  triggerRender = signal(false);
+  isLimitReached = signal(false);
+  selection = new SelectionModelWrapper<TypedEntity>();
+  selectionChanged = signal(undefined);
+  selectionChangeFunction = undefined;
+  showOnlySelected = signal(false);
+  columnsToDisplay = signal([]);
+  initialColumnsToDisplay: [];
+  optionalColumns = signal([]);
+  additionalColumns = signal([]);
+  additionalListColumns = signal(undefined);
+  pageSizeOptions: [];
+  sortId = signal(undefined);
+  sortDirection = signal('' as SortDirection);
+  state = signal({ undefined });
+  predefinedFilters = signal([]);
+  externalFilters = signal([]);
+  selectedFilters = signal([]);
+  exportFunction = {
     getMethod: (withProperties: string, navigationState: CollectionLoadParameters, PageSize?: number) => ({}) as MethodDefinition<any>,
-  },
-  viewConfig: signal(undefined),
-  showFilters: signal(false),
-  currentSelectedEntityCount: signal(0),
-  isAllSelected: signal(false),
-  highlightedEntity: signal(undefined),
-  highlightedExecute: undefined,
-  itemStatus: {
+  };
+  viewConfig = signal(undefined);
+  showFilters = signal(false);
+  currentSelectedEntityCount = signal(0);
+  isAllSelected = signal(false);
+  highlightedEntity = signal(undefined);
+  highlightedExecute = undefined;
+  itemStatus = {
     enabled: () => true,
-  },
-  groupOptions: [],
-  groupByColumn: signal(null),
-  groupData: signal(undefined),
-  groupedDataSource: computed(() => ({}) as MatTableDataSource<GroupInfoRow>),
-  nestedSelection: new Map(),
-  filterTree: {
+  };
+  groupOptions = [];
+  groupByColumn = signal(null);
+  groupData = signal(undefined);
+  groupedDataSource = computed(() => ({}) as MatTableDataSource<GroupInfoRow>);
+  nestedSelection = new Map();
+  filterTree = {
     filterMethode: (parentkey: string) => Promise.resolve({} as FilterTreeData),
-  },
-  filterTreeData: signal({}),
-  filterTreeSelection: signal(undefined),
-  settings: new SettingsService(),
-  customIdentifier: '',
-  log: {
+  };
+  filterTreeData = signal({});
+  filterTreeSelection = signal(undefined);
+  customIdentifier = '';
+  log = {
     debug: () => { },
     info: () => { },
-  } as unknown as ClassloggerService,
-  confirmService: {} as ConfirmationService,
-  sqlWizardApiService: {} as SqlWizardApiService,
-  ngOnDestroy: function (): void { },
-  connect: function (): Observable<readonly TypedEntity[]> {
+  } as unknown as ClassloggerService;
+  ngOnDestroy = function (): void { };
+  connect = function (): Observable<readonly TypedEntity[]> {
     return of([]);
-  },
-  disconnect: function (): void { },
-  renderRows: () => { },
-  init: async function (initParameters: DataViewInitParameters<TypedEntity>): Promise<void> {
+  };
+  disconnect = function (): void { };
+  renderRows = () => { };
+  init = async function (initParameters: DataViewInitParameters<TypedEntity>): Promise<void> {
     this.execute = initParameters.execute;
     await this.updateState();
     return Promise.resolve();
-  },
-  initLocal: async function (initParameters: LocalDataViewInitParameters<TypedEntity>): Promise<void> {
+  };
+  initLocal = async function (initParameters: LocalDataViewInitParameters<TypedEntity>): Promise<void> {
     return Promise.resolve();
-  },
-  isDataLocal: false,
-  localDataCopy: [],
-  getLocalPage: function (data: TypedEntity[]): TypedEntity[] {
+  };
+  isDataLocal = false;
+  localDataCopy = [];
+  getLocalPage = function (data: TypedEntity[]): TypedEntity[] {
     return [];
-  },
-  searchLocally: function (): void { },
-  updateState: async function (): Promise<void> {
+  };
+  searchLocally = function (): void { };
+  updateState = async function (): Promise<void> {
     let collectionData = await this.execute();
     this.collectionData.set(collectionData);
     return Promise.resolve();
-  },
-  sortChange: function (sortState: Sort): void { },
-  abortCall: function (): void { },
-  resetView: function (): Promise<void> {
+  };
+  sortChange = function (sortState: Sort): void { };
+  abortCall = function (): void { };
+  resetView = function (): Promise<void> {
     return Promise.resolve();
-  },
-  applyConfig: function (config: DSTViewConfig): Promise<void> {
+  };
+  applyConfig = function (config: DSTViewConfig): Promise<void> {
     return Promise.resolve();
-  },
-  setKeywords: function (keywords: string): void { },
-  updateEntitySchema: function (additionalColumnNames: string[]): void { },
-  debouncedHighlightRow: debounce((entity: TypedEntity, event?) => { }, 250),
-  highlightRow: function (entity: TypedEntity, event?: MouseEvent): void { },
-  isSortable: function (column: string | undefined): boolean {
+  };
+  setKeywords = function (keywords: string): void { };
+  updateEntitySchema = function (additionalColumnNames: string[]): void { };
+  toggleShowOnlySelected = function (): void { }
+  debouncedHighlightRow = debounce((entity: TypedEntity, event?) => { }, 250);
+  highlightRow = function (entity: TypedEntity, event?: MouseEvent): void { };
+  isSortable = function (column: string | undefined): boolean {
     return false;
-  },
-  GetColumnDisplay: function (columnName: string, entitySchema?: WritableEntitySchema): string {
+  };
+  GetColumnDisplay = function (columnName: string, entitySchema?: WritableEntitySchema): string {
     return '';
-  },
+  };
   // initOptionalColumns: function (): void {
   //
   // },
-  initFilters: function (initParameters: DataViewInitParameters<TypedEntity>): Promise<void> {
+  initFilters = function (initParameters: DataViewInitParameters<TypedEntity>): Promise<void> {
     return Promise.resolve();
-  }
+  };
 };

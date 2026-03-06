@@ -36,7 +36,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatRadioModule } from '@angular/material/radio';
 import { EuiCoreModule } from '@elemental-ui/core';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateNoOpLoader } from '@ngx-translate/core';
 import { LoggerTestingModule } from 'ngx-logger/testing';
 
 import { MatTableModule } from '@angular/material/table';
@@ -51,7 +51,7 @@ import {
   MessageDialogService,
   MetadataService,
   SqlWizardApiService,
-  clearStylesFromDOM,
+  clearStylesFromDOM
 } from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
 import { LifecycleActionComponent } from './lifecycle-action.component';
@@ -62,11 +62,11 @@ const mockMatDialogRef = {
 };
 
 @Pipe({
-    name: 'ldsReplace',
-    standalone: false
+  name: 'ldsReplace',
+  standalone: false
 })
 class MockLdsReplacePipe implements PipeTransform {
-  transform() {}
+  transform() { }
 }
 
 const mockLdsReplacePipe = {
@@ -74,9 +74,9 @@ const mockLdsReplacePipe = {
 };
 
 @Component({
-    selector: 'imx-data-source-toolbar',
-    template: '<p>MockDataSourceToolbarComponent</p>',
-    standalone: false
+  selector: 'imx-data-source-toolbar',
+  template: '<p>MockDataSourceToolbarComponent</p>',
+  standalone: false
 })
 class MockDataSourceToolbarComponent {
   @Input() public dst: any;
@@ -85,18 +85,18 @@ class MockDataSourceToolbarComponent {
 }
 
 @Component({
-    selector: 'imx-data-table',
-    template: '<p>MockDataTableComponent</p>',
-    standalone: false
+  selector: 'imx-data-table',
+  template: '<p>MockDataTableComponent</p>',
+  standalone: false
 })
 class MockDataTableComponent {
   @Input() public dst: any;
 }
 
 @Component({
-    selector: 'imx-data-table-column',
-    template: '<p>MockDataTableColumnComponent</p>',
-    standalone: false
+  selector: 'imx-data-table-column',
+  template: '<p>MockDataTableColumnComponent</p>',
+  standalone: false
 })
 class MockDataTableColumnComponent {
   @Input() public entityColumn: any;
@@ -142,7 +142,7 @@ describe('LifecycleActionComponent', () => {
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,
-          useClass: TranslateFakeLoader,
+          useClass: TranslateNoOpLoader,
         },
       }),
       DataViewModule,
@@ -181,10 +181,10 @@ describe('LifecycleActionComponent', () => {
         },
       },
       { provide: MessageDialogService, useValue: {} },
-      { provide: ClassloggerService, useValue: { debug: () => {}, info: () => {} } },
+      { provide: ClassloggerService, useValue: { debug: () => { }, info: () => { } } },
       { provide: SqlWizardApiService, useValue: {} },
       { provide: ConfirmationService, useValue: {} },
-      { provide: DataViewSource, useValue: FakeDataViewSource },
+      { provide: DataViewSource, useClass: FakeDataViewSource },
       provideHttpClient(withInterceptorsFromDi()),
       provideHttpClientTesting(),
     ],

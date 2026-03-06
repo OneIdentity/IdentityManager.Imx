@@ -374,8 +374,8 @@ export class DataViewSource<T extends TypedEntity = TypedEntity, ExtendedType = 
       let collectionData = await this.execute(this.state(), this.abortController.signal);
       if (!!collectionData) {
         collectionData.Data.map((elem) => {
-          if (elem.GetEntity) {
-            elem.GetEntity()?.ApplySchema(this.entitySchema());
+          if (elem.GetEntity && elem.GetEntity().ApplySchema) {
+            elem.GetEntity().ApplySchema(this.entitySchema());
           }
         });
         this.collectionData.set(collectionData);

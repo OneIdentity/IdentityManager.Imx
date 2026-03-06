@@ -30,7 +30,7 @@ import { of, Subject } from 'rxjs';
 
 import { IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 
-import { clearStylesFromDOM, DataViewSource, ExtService, FakeDataViewSource } from 'qbm';
+import { clearStylesFromDOM, DataViewAutoTableComponent, DataViewSource, ExtService, FakeDataViewSource, SqlWizardApiService } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { UserModelService } from '../user/user-model.service';
 import { Approval } from './approval';
@@ -70,6 +70,7 @@ describe('ApprovalsTable', () => {
   const extServiceStub = {
     Registry: jasmine.createSpy('Registry'),
   };
+
   const sideSheetTestHelper = new (class {
     afterClosedResult = false;
     readonly servicestub = {
@@ -85,13 +86,15 @@ describe('ApprovalsTable', () => {
 
   beforeEach(() => {
     return MockBuilder(ApprovalsTableComponent)
+      .keep(DataViewAutoTableComponent)
       .mock(ApprovalsModule)
       .mock(ExtService, extServiceStub as unknown)
       .mock(EuiSidesheetService, sideSheetTestHelper.servicestub)
       .mock(UserModelService, { getFeatures: () => Promise.resolve({}) })
       .mock(WorkflowActionService, { applied: new Subject<void>() })
       .mock(ProjectConfigurationService, projectConfigurationServiceStub)
-      .mock(DataViewSource, FakeDataViewSource);
+      .provide({ provide: SqlWizardApiService, useValue: {} })
+      .provide({ provide: DataViewSource, useClass: FakeDataViewSource });
   });
 
   beforeEach(() => {
