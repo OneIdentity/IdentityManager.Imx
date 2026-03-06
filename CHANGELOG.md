@@ -1,4 +1,7 @@
-### March 3, 2026
+### March 6, 2026
+- 648933: Angular was updated to Angular 20.3.15 because of an important security update.
+
+### March 4, 2026
 - 698994 (696400): Fixes an issue with paging in grouped attestation cases due to a missing StartIndex property.
 - 647733 (647208): Fixes an issue with missing KPI information on Data administration > Applications> KPI.
 - 695787: Compile list of Angular changes from v93 to v100 added.
