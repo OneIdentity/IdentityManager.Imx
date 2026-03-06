@@ -1,3 +1,8 @@
+### March 6, 2026
+- 696400: Fixes an issue with paging in grouped attestation cases due to a missing StartIndex property.
+- 695798: Fixes an issue with direct product access via URL when login is required, and the user has a display language configured.
+- 648348 (648345): Adds historical attestation decisions for an object.
+
 ### Febraury 12, 2026
 - 6487639  Fixes an issue with unsupported system role creation.
 - Minor npm audit fix.
