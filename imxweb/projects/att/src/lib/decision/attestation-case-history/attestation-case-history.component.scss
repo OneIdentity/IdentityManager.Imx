@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+.imx-attestation-case-history-table {
+  flex: 1 1 auto;
+  overflow: auto;
+  margin-top: 10px;
+}

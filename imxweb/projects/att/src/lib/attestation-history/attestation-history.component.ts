@@ -173,7 +173,6 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
             .getGroupInfo({
               ...params,
               ...this.parameters,
-              StartIndex: 0,
               def: column,
             })
             .then((groupInfoData) => {
