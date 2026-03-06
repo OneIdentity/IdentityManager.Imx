@@ -1,4 +1,12 @@
-### January 9, 2025
+### March 6, 2026
+- 655204: Fixes an issue with incomplete workflow steps for some recipients on the Pending Attestation Page.
+- 652590: Fixes an issue with inquiries that are between the same two people.
+- 679175 (651327): Fixes an issue with the history of a pending attestation case.
+- 508572: Fixes an issue with the "Readonly" property on a service item, which could be changed, although the value was read-only.
+- 651885: Fixes an issue with the "Show report" button on the Statistics.
+- 506868: Fixes an issue with the approval of policy violations.
+
+### January 9, 2026
 - 648346 (648345): Adds historical attestation decisions for an object.
 - 438842 (432021): Improves team role creation.
 
