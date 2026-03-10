@@ -98,7 +98,7 @@
     "@nx/angular": "22.5.4",
     "@nx/js": "22.5.4",
     "@nx/workspace": "22.5.4",
-    "@schematics/angular": "20.3.18",
+    "@schematics/angular": "20.3.19",
     "@types/d3-hierarchy": "3.1.7",
     "@types/d3-scale": "4.0.8",
     "@types/fs-extra": "11.0.4",
