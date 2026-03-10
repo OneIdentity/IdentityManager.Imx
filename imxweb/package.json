@@ -126,7 +126,7 @@
     "ng-mocks": "14.13.5",
     "ng-packagr": "20.3.2",
     "prettier": "3.6.2",
-    "terser": "5.43.1",
+    "terser": "5.46.0",
     "typescript": "5.8.3"
   },
   "optionalDependencies": {
