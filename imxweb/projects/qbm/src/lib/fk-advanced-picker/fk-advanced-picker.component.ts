@@ -38,6 +38,7 @@ import { MetadataService } from '../base/metadata.service';
 import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
 import { FkSelectorComponent } from './fk-selector.component';
 import { ConfirmationService } from '../confirmation/confirmation.service';
+import { getKey } from '../cdr/edit-fk/edit-fk.model';
 
 @Component({
   templateUrl: './fk-advanced-picker.component.html',
@@ -104,7 +105,7 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
       candidates: entityList.map((typedEntity) => {
         const entity = typedEntity.GetEntity();
         return {
-          DataValue: this.getKey(entity),
+          DataValue: getKey(entity, this.data.fkRelations),
           DisplayValue: entity.GetDisplay(),
           displayLong: entity.GetDisplayLong(),
         };
@@ -114,28 +115,5 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
 
   public onSelectedCandidatesChanges(): void {
     this.isChanged = this.data.isMultiValue;
-  }
-
-  private getKey(entity: IEntity): string {
-    if (this.data.fkRelations && this.data.fkRelations.length > 1) {
-      this.logger.trace(this, 'Dynamic foreign key');
-      const xObjectKeyColumn = entity.GetColumn('XObjectKey');
-      return xObjectKeyColumn ? xObjectKeyColumn.GetValue() : undefined;
-    }
-
-    this.logger.trace(this, 'Foreign key');
-
-    try {
-      const parentColumn = entity.GetColumn(this.data.fkRelations[0].ColumnName);
-      if (parentColumn) {
-        this.logger.trace(this, 'Use value from explicit parent column');
-        return parentColumn.GetValue();
-      }
-    } catch (error) {
-      this.logger.trace(this, 'tried to get parent column but failed', error);
-    }
-
-    const keys = entity.GetKeys();
-    return keys && keys.length ? keys[0] : undefined;
   }
 }

@@ -37,7 +37,7 @@ import { RequestHistoryService } from '../request-history.service';
 
 @Component({
   templateUrl: './request-action.component.html',
-  styleUrls: ['./request-action.component.scss']
+  styleUrls: ['./request-action.component.scss'],
 })
 export class RequestActionComponent implements OnDestroy {
   public readonly requestsDst: DataSourceToolbarSettings;
@@ -53,14 +53,15 @@ export class RequestActionComponent implements OnDestroy {
     public readonly sidesheet: EuiSidesheetRef,
     requestHistoryService: RequestHistoryService,
     serviceItemsService: ServiceItemsService,
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: {
-      description: string,
-      reason: ColumnDependentReference,
-      justification?: ColumnDependentReference,
-      prolongation?: ColumnDependentReference,
-      unsubscription?: ColumnDependentReference,
-      requests: PortalItshopRequests[]
-    }
+    @Inject(EUI_SIDESHEET_DATA)
+    public readonly data: {
+      description: string;
+      reason: ColumnDependentReference;
+      justification?: ColumnDependentReference;
+      prolongation?: ColumnDependentReference;
+      unsubscription?: ColumnDependentReference;
+      requests: PortalItshopRequests[];
+    },
   ) {
     this.serviceItemEntitySchema = serviceItemsService.PortalShopServiceItemsSchema;
     this.entitySchema = requestHistoryService.PortalItshopRequestsSchema;
@@ -68,10 +69,10 @@ export class RequestActionComponent implements OnDestroy {
     const displayedColumns = [
       this.entitySchema.Columns.DisplayOrg,
       this.entitySchema.Columns.OrderDate,
-      this.entitySchema.Columns.ValidUntil
+      this.entitySchema.Columns.ValidUntil,
     ];
 
-    if (this.data.prolongation && this.data.requests.some(request => request.MaxValidDays.value > 0)) {
+    if (this.data.prolongation && this.data.requests.some((request) => request.MaxValidDays.value > 0)) {
       displayedColumns.push(this.entitySchema.Columns.MaxValidDays);
     }
 
@@ -82,35 +83,46 @@ export class RequestActionComponent implements OnDestroy {
       },
       entitySchema: this.entitySchema,
       navigationState: {},
-      displayedColumns
+      displayedColumns,
     };
   }
 
   public ngOnDestroy(): void {
-    this.subscribers.forEach(s => s.unsubscribe());
+    this.subscribers.forEach((s) => s.unsubscribe());
   }
 
   public addProlongationMaxValidDaysCheck(control: AbstractControl): void {
     this.formGroup.addControl('prolongation', control);
-    this.subscribers.push(control.valueChanges.subscribe(value =>
-      this.invalidProlongationDate = value != null && this.data.requests.some(request => {
-        if (request.MaxValidDays.value === 0) {
-          return false;
-        }
+    this.subscribers.push(
+      control.valueChanges.subscribe(
+        (value) =>
+          (this.invalidProlongationDate =
+            value != null &&
+            this.data.requests.some((request) => {
+              if (request.MaxValidDays.value === 0) {
+                return false;
+              }
 
-        const maxDate = new Date(request.OrderDate.value);
-        maxDate.setDate(maxDate.getDate() + request.MaxValidDays.value);
-        return new Date(value).valueOf() > maxDate.valueOf();
-      })
-    ));
+              const maxDate = new Date();
+              maxDate.setDate(maxDate.getDate() + request.MaxValidDays.value);
+              maxDate.setHours(23, 59, 59, 999);
+              return new Date(value).valueOf() > maxDate.valueOf();
+            })),
+      ),
+    );
   }
 
   public addUnsubscribeMaxValidDaysCheck(control: AbstractControl): void {
     this.formGroup.addControl('unsubscription', control);
-    this.subscribers.push(control.valueChanges.subscribe(value =>
-      this.invalidUnsubscriptionDate = value != null && this.data.requests.some(request =>
-        request.ValidUntil.value != null && new Date(value).valueOf() > new Date(request.ValidUntil.value).valueOf()
-      ))
+    this.subscribers.push(
+      control.valueChanges.subscribe(
+        (value) =>
+          (this.invalidUnsubscriptionDate =
+            value != null &&
+            this.data.requests.some(
+              (request) => request.ValidUntil.value != null && new Date(value).valueOf() > new Date(request.ValidUntil.value).valueOf(),
+            )),
+      ),
     );
   }
 }
