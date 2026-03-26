@@ -2,9 +2,9 @@ name: Build Angular applications
 
 on:
   push:
-    branches: [ master ]
+    branches: [ v92 ]
   pull_request:
-    branches: [ master, v82, v90, v92 ]
+    branches: [ v92 ]
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
-        node-version: [14.x]
+        node-version: [16.x]
     
     steps:
     - uses: actions/checkout@v3
