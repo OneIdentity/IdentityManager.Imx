@@ -1,5 +1,5 @@
 ### March 26, 2026
-Bug 702174 (646056): Fixes an issue with renewing a request that has a maximum valid days defined.
+- 702174 (646056): Fixes an issue with renewing a request that has a maximum valid days defined.
 - 698600 (647825): Fixes an error message on the Rule Violations page if the Riskindex config param is deactivated.
 - 699902: Fixes an issue with report parameters, rooted in an issue with the hierarchical FK editor.
 - Adds the npm audit skill to the line.
