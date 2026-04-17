@@ -1,3 +1,13 @@
+### April 17, 2026
+- 703564 (703561): Fixes an issue where the export data is not available if 'Group by' is predefined.
+- 700238: Fixes an issue with the withdrawal of additional attestors.
+- 702931: Fixes an issue with a flag in Data Administration > Application, which can not be set to false after it was set to true.
+- 702924 (702049): Fixes an issue with automatically added text after a user answered a question on an automatic cancellation process.
+- 702504 (702219): Fixes an issue with empty report generation of policy collection attestation runs.
+-Bug 702030: Fixes an issue if a user adds additional columns to recipient selection and shows selected items afterward.
+- 492646 (483430): Fixes an issue with a missing 'Products expiring soon' tile if the current user is not the requester.
+- 700171 (699092): Fixes an issue with re-selecting all items in a paged view.
+
 ### March 6, 2026
 - 648933: Angular was updated to Angular 20.3.15 because of an important security update.
 
