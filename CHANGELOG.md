@@ -1,3 +1,13 @@
+### April 17, 2026
+- 697986: Fixes an issue with a missing warning if there are too many results for the search.
+- 699092: Fixes an issue with re-selecting all items in a paged view.
+- 483430: Fixes an issue with a missing 'Products expiring soon' tile if the current user is not the requester.
+- 646041: Fixes an issue with the save button being disabled if the Valid-From date is in the past.
+- 702497 (702219): Fixes an issue with empty report generation of policy collection attestation runs.
+- 703561: Fixes an issue where the export data is not available if 'Group by' is predefined.
+- 702954: Fixes an issue where the Organizational Structures list is only available after a second click.
+- 702471: Fixes an issue with emptying the ValidUntil value during the approval process for a product without MaxValidDays.
+
 ### March 6, 2026
 - 696400: Fixes an issue with paging in grouped attestation cases due to a missing StartIndex property.
 - 695798: Fixes an issue with direct product access via URL when login is required, and the user has a display language configured.
