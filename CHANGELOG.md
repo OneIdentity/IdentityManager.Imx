@@ -1,3 +1,13 @@
+### April 17, 2026
+- 698600 (647825): Fixing an issue with an error on the Rule Violations page if the Riskindex config param is deactivated.
+- 494303: Fixes an issue with a missing badge for an active filter.
+- 702219: Fixes an issue with empty report generation of policy collection attestation runs.
+- 703157: Fixes an issue with refactoring of the edit-fk.model.ts file.
+- 703180(697986): Fixes an issue with a missing warning if there are too many results for the search.
+- 496653: Adds support for decimal range report parameters.
+- 704328 (446299): Fixes an issue with adding a condition to a custom filter for system entitlements.
+- 703974: Fixes an issue with additional column values that are not loaded into a grouped table.
+
 ### March 26, 2026
 - 702174 (646056): Fixes an issue with renewing a request that has a maximum valid days defined.
 - 698600 (647825): Fixes an error message on the Rule Violations page if the Riskindex config param is deactivated.
