@@ -48,7 +48,7 @@ export class DecisionHistoryComponent implements OnChanges {
   constructor(
     public readonly decisionHistory: DecisionHistoryService,
     public translate: TranslateService,
-  ) {}
+  ) { }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.approverContainer) {
@@ -59,5 +59,9 @@ export class DecisionHistoryComponent implements OnChanges {
         this.translate.instant('#LDS#Compliance rule'),
       );
     }
+  }
+
+  public showJustification(step: WorkflowHistoryItemWrapper): boolean {
+    return !!step.approveHistory.UID_QERJustification.value && !['Query', 'Answer'].includes(step.approveHistory.DecisionType.value);
   }
 }

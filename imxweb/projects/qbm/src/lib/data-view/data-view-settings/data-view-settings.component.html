@@ -4,13 +4,14 @@
   matTooltip="{{ '#LDS#Settings' | translate }}"
   data-imx-identifier="dataview-button-settings"
   [matMenuTriggerFor]="settingsMenu"
+  (menuOpened)="onSettingsMenuOpened()"
   color="primary"
 >
   <eui-icon icon="settings"></eui-icon>
 </button>
 <mat-menu #settingsMenu="matMenu">
   @if (!!dataSource.exportFunction && !!dataSource.dataModel()?.Properties) {
-    <button mat-menu-item (click)="openExportSidesheet()" data-imx-identifier="dst-menu-button-export">
+    <button mat-menu-item [disabled]="disableExport()" (click)="openExportSidesheet()" data-imx-identifier="dst-menu-button-export">
       {{ '#LDS#Export data' | translate }}
     </button>
   }

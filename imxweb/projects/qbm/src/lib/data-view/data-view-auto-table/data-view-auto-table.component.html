@@ -195,7 +195,7 @@
               {{ dataSource.GetColumnDisplay(column.ColumnName || '', dataSource?.entitySchema()) }}
             </th>
             <td mat-cell class="imx-header-cell" *matCellDef="let element" role="gridcell">
-              <div>{{ element?.GetEntity()?.GetColumn(column.ColumnName)?.GetDisplayValue() }}</div>
+              <div>{{ getDisplayValue(element, column) }}</div>
               @if (column.ColumnName === DisplayColumns.DISPLAY_PROPERTYNAME && !!dataSource.additionalListColumns()?.length) {
                 <div subtitle>{{ getSubtitleText(element?.GetEntity()) }}</div>
               }
@@ -218,7 +218,7 @@
               {{ dataSource.GetColumnDisplay(column.ColumnName || '', dataSource?.entitySchema()) }}
             </th>
             <td mat-cell class="imx-header-cell" *matCellDef="let element" role="gridcell">
-              <span>{{ element?.GetEntity()?.GetColumn(column.ColumnName)?.GetDisplayValue() }}</span>
+              <span>{{ getDisplayValue(element, column) }}</span>
             </td>
           </ng-container>
         }

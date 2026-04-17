@@ -14,14 +14,15 @@
     }
   </div>
   <mat-checkbox
+    [style.visibility]="dataReady() ? 'visible' : 'hidden'"
     (change)="filterApplicationsWithKpiIssues()"
     [(ngModel)]="filterKpiChecked"
-    [disabled]="!dstSettings?.dataSource?.totalCount"
     >
     {{ '#LDS#Only show applications with KPI issues' | translate }}
   </mat-checkbox>
   <imx-data-source-toolbar
     #dst
+    [style.visibility]="dataReady() ? 'visible' : 'hidden'"
     [settings]="dstSettings"
     (navigationStateChanged)="getData($event)"
     [options]="['search']"

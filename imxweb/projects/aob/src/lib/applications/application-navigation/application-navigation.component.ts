@@ -25,7 +25,7 @@
  */
 
 import { Overlay } from '@angular/cdk/overlay';
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 
@@ -40,7 +40,6 @@ import {
   DataTilesComponent,
   SettingsService,
 } from 'qbm';
-import { UserModelService } from 'qer';
 import { AobPermissionsService } from '../../permissions/aob-permissions.service';
 import { ApplicationsService } from '../applications.service';
 
@@ -49,10 +48,10 @@ import { ApplicationsService } from '../applications.service';
  * {@link ApplicationCardComponent|ApplicationCardComponent}.
  */
 @Component({
-    selector: 'imx-application-navigation',
-    templateUrl: './application-navigation.component.html',
-    styleUrls: ['./application-navigation.component.scss'],
-    standalone: false
+  selector: 'imx-application-navigation',
+  templateUrl: './application-navigation.component.html',
+  styleUrls: ['./application-navigation.component.scss'],
+  standalone: false
 })
 export class ApplicationNavigationComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings | undefined;
@@ -66,6 +65,15 @@ export class ApplicationNavigationComponent implements OnInit {
   public loadingSubject: Subject<boolean>;
 
   public busyService = new BusyService();
+
+  /**
+   * Signal to indicate if there are any applications to show. Used to disable the checkbox filter
+  **/
+  public hasData = signal(false);
+  /**
+   * Signal to indicate if the data is loaded. Used to disable the search and checkbox filter until the first data load is finished
+   */
+  public dataReady = signal(false);
 
   /**
    * An event, that is triggert, if the dataSource is changed
@@ -99,12 +107,11 @@ export class ApplicationNavigationComponent implements OnInit {
     private logger: ClassloggerService,
     private readonly appService: ApplicationsService,
     private readonly settingsService: SettingsService,
-    private readonly userService: UserModelService,
     private readonly route: ActivatedRoute,
     private readonly applicationsProvider: ApplicationsService,
     private readonly aobPermissionsService: AobPermissionsService,
     public overlay: Overlay,
-  ) {}
+  ) { }
 
   public async ngOnInit(): Promise<void> {
     this.isAdmin = await this.aobPermissionsService.isAobApplicationAdmin();
@@ -149,13 +156,15 @@ export class ApplicationNavigationComponent implements OnInit {
     this.loadingSubject?.next(true);
     try {
       const dataSource = await this.appService.get(this.navigationState);
-
+      this.hasData.set((dataSource?.totalCount ?? 0) > 0);
       if (dataSource) {
         this.dstSettings = {
           dataSource,
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
         };
+        // Data is loaded, allow search / checkbox interaction now
+        if (!this.dataReady()) this.dataReady.set(true);
       } else {
         this.dstSettings = undefined;
         this.logger.error(this, 'TypedEntityCollectionData<PortalApplication> is undefined');
@@ -198,6 +207,7 @@ export class ApplicationNavigationComponent implements OnInit {
 
   public async filterApplicationsWithKpiIssues(): Promise<void> {
     this.navigationState.filterkpi = this.filterKpiChecked;
+    if (!this.hasData()) return;
     this.navigationState.StartIndex = 0;
     await this.getData();
   }

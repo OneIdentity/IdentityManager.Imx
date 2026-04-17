@@ -155,9 +155,11 @@
       </div>
       @if (data.canSeeAttestationPolicies) {
         <div eui-sidesheet-actions>
-          <button data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
-            {{ '#LDS#Download report' | translate }}
-          </button>
+          @if (run.UID_AttestationPolicy.value) {
+            <button data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
+              {{ '#LDS#Download report' | translate }}
+            </button>
+          }
           <button
             data-imx-identifier="run-button-extend-attestation"
             mat-stroked-button

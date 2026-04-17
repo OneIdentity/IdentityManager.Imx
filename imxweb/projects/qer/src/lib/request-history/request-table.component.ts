@@ -355,11 +355,11 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
           filter.CurrentValue = '1';
         }
         if (filter.Name === 'person') {
-          filter.CurrentValue = '1,4';
+          filter.CurrentValue = '1,2,4';
         }
       });
       newState.ShowEndingSoon = '1';
-      newState.person = '1,4';
+      newState.person = '1,2,4';
       this.uniqueTableConfig = true;
     }
     // If any of the above filters are set, we need to update the state

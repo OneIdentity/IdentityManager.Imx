@@ -38,8 +38,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { MatColumnDef, MatTable } from '@angular/material/table';
-import { DisplayColumns, GroupInfoType, IEntity } from '@imx-modules/imx-qbm-dbts';
+import { DisplayColumns, GroupInfoType, IClientProperty, IEntity, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { isEqual } from 'lodash';
+import { CdrFactoryService } from '../../cdr/cdr-factory.service';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { buildAdditionalElementsString } from '../../data-table/data-table-additional-info.model';
 import { QueuedActionState } from '../../processing-queue/processing-queue.interface';
@@ -228,6 +229,21 @@ export class DataViewAutoTableComponent implements AfterContentInit {
 
   public refreshGroup(group: GroupInfoRow): void {
     group.refreshTable = !group.refreshTable;
+  }
+
+  /**
+   * gets the display value of the column in the table cell. 
+   * If the column is not existing or the display value is null, it returns an empty string.
+   * //TODO Later: This is just a fix to prevent exceptions. A better solution should be implemented, to update the column definitions, when the data model is changing and to remove this function from the template.
+   * @param element the TypedEntity object
+   * @param column  the column, that should be shown in the table cell
+   * @param element the TypedEntity object
+   * @param column  the column, that display should be shown
+   * @returns The display value
+   */
+  public getDisplayValue(element: TypedEntity, column: IClientProperty): string {
+    const nullSaveColumn = CdrFactoryService.tryGetColumn(element.GetEntity(), column.ColumnName ?? '');
+    return nullSaveColumn?.GetDisplayValue() ?? '';
   }
 
   /**

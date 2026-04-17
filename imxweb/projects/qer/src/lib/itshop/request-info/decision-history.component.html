@@ -35,7 +35,7 @@
             @if (step.approveHistory.UID_QERJustification.value || step.approveHistory.ReasonHead.value) {
               <div class="imx-reason">
                 <span class="column-display">{{ step.getReasonDisplay() | translate }}</span>
-                @if (step.approveHistory.UID_QERJustification.value) {
+                @if (showJustification(step)) {
                   <span class="column-value">
                     {{ step.approveHistory.UID_QERJustification.Column.GetDisplayValue() }}
                   </span>

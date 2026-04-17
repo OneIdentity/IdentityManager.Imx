@@ -84,16 +84,22 @@ export class DecisionStepSevice {
    * @param uidUser The uid of the current user.
    * @returns
    */
-  private getStep(extended: any, entity: TypedEntity, uidUser: string): EntityData {
+  private getStep(extended: any, entity: TypedEntity, uidUser: string): EntityData | undefined {
     const smallest = getWorkflowDataWithSmallestSublevel(extended, entity, uidUser, this.isEscalationApprover);
-    const uniqueUsersMap =
-      extended?.WorkflowSteps?.Entities?.filter(
-        (elem: EntityData) => elem.Columns?.UID_QERWorkingStep.Value === smallest?.Columns?.UID_QERWorkingStep.Value,
-      )?.reduce((acc, current) => {
-        return { ...acc, [current.Keys[0]]: current };
-      }, {}) ?? [];
+    const steps: EntityData[] = extended?.WorkflowSteps?.Entities ?? [];
+    const matchingSteps = steps.filter(
+      (elem: EntityData) => elem.Columns?.UID_QERWorkingStep.Value === smallest?.Columns?.UID_QERWorkingStep.Value,
+    );
 
-    return Object.values(uniqueUsersMap)[0] as EntityData;
+    const uniqueUsersMap: { [key: string]: EntityData } = {};
+    for (const current of matchingSteps) {
+      const key = current?.Keys?.[0];
+      if (key != null) {
+        uniqueUsersMap[key] = current;
+      }
+    }
+
+    return Object.values(uniqueUsersMap)[0];
   }
 }
 
@@ -128,18 +134,26 @@ export function getWorkflowDataWithSmallestSublevel(
   uidUser: string,
   isEscalationApprover: boolean,
 ): EntityData | undefined {
-  const filteredData = extended?.WorkflowData?.Entities?.filter(
+  const filteredData: EntityData[] = (extended?.WorkflowData?.Entities ?? []).filter(
     (data: EntityData) =>
       (isEscalationApprover || data?.Columns?.UID_PersonHead.Value === uidUser) &&
       (data?.Columns?.Decision?.Value ?? '') === '' &&
       data.Columns?.LevelNumber.Value === entity.GetEntity().GetColumn('DecisionLevel').GetValue(),
   );
 
-  if (filteredData && filteredData.length > 0) {
-    return filteredData.reduce((lowestSublevel, current) => {
-      return current.Columns.SubLevelNumber.Value < lowestSublevel.Columns.SubLevelNumber.Value ? current : lowestSublevel;
-    });
+  if (filteredData.length === 0) {
+    return undefined;
   }
 
-  return undefined;
+  let lowestSublevel = filteredData[0];
+  for (let i = 1; i < filteredData.length; i++) {
+    const current = filteredData[i];
+    const currentSubLevel = current.Columns?.SubLevelNumber?.Value ?? Number.POSITIVE_INFINITY;
+    const lowestSubLevel = lowestSublevel.Columns?.SubLevelNumber?.Value ?? Number.POSITIVE_INFINITY;
+    if (currentSubLevel < lowestSubLevel) {
+      lowestSublevel = current;
+    }
+  }
+
+  return lowestSublevel;
 }

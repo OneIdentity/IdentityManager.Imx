@@ -45,7 +45,7 @@ export class SelectionModelWrapper<T extends TypedEntity = TypedEntity> {
   /**
    * Selection model that handles multiple selection in the data source view.
    */
-  private selection = new SelectionModel<T>(true, []);
+  private selection = new SelectionModel<T>(true, [], undefined, (a, b) => this.getId(a) === this.getId(b));
 
   /**
    * Selection cache dictionary used by the data source view to get the check/uncheck state of an item if mutiselect is enabled.

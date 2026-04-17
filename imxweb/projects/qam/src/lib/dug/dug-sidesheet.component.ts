@@ -196,7 +196,7 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
 
       this.cdrList = this.cdrFactory
         .buildCdrFromColumnList(this.dug.GetEntity(), [
-          'UID_QAMDuG',
+          'DisplayName',
           'UID_QAMNode',
           'UID_QAMResourceType',
           'UID_PersonResponsible',
@@ -204,7 +204,6 @@ export class DugSidesheetComponent implements OnInit, OnDestroy {
           'IsSecurityInformationIndexed',
           'UID_BackingFolder',
           'UID_QAMDuGParent',
-          'DisplayName',
           'FullPath',
           'DisplayPath',
           'RiskIndexCalculated',

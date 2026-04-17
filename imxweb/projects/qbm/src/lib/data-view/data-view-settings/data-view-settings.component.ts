@@ -65,6 +65,13 @@ export class DataViewSettingsComponent {
     () => !!this.dataSource.viewConfig()?.viewConfigs && !!this.dataSource.viewConfig()?.viewConfigs?.length,
   );
 
+  
+  /**
+   * TODO: #703688
+   * Checks if the export button should be disabled. It is disabled when a groupBy is active, because the export function does not support this at the moment and would export unexpected data.
+   */
+  public disableExport = computed(() =>  !!this.dataSource.groupByColumn());
+
   constructor(
     private readonly sidesheetService: EuiSidesheetService,
     private readonly translateService: TranslateService,
@@ -92,6 +99,16 @@ export class DataViewSettingsComponent {
       icon: 'export',
       data: settings,
     });
+  }
+
+  /**
+    * TODO: #703688
+   * Logs a warning when export is disabled and the settings menu has been opened.
+   */
+  public onSettingsMenuOpened(): void {
+    if (this.disableExport()) {
+      console.warn('Data export is disabled when grouping is active as this is not yet supported.');
+    }
   }
 
   /**
