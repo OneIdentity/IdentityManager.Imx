@@ -6,6 +6,7 @@
       <imx-cdr-editor
         *ngIf="data.actionParameters.uidPerson"
         [cdr]="data.actionParameters.uidPerson"
+        [validateOnlyOnChange]="true"
         (controlCreated)="formGroup.addControl('uidPerson', $event)"
         data-imx-identifier="workflow-action-property-uidPerson"
       >
@@ -13,6 +14,7 @@
       <imx-cdr-editor
         *ngIf="data.actionParameters.validFrom"
         [cdr]="data.actionParameters.validFrom"
+        [validateOnlyOnChange]="true"
         (controlCreated)="formGroup.addControl('validFrom', $event)"
         data-imx-identifier="workflow-action-property-validFrom"
       >
@@ -20,6 +22,7 @@
       <imx-cdr-editor
         *ngIf="data.actionParameters.validUntil"
         [cdr]="data.actionParameters.validUntil"
+        [validateOnlyOnChange]="true"
         (controlCreated)="formGroup.addControl('validUntil', $event)"
         data-imx-identifier="workflow-action-property-validUntil"
       >

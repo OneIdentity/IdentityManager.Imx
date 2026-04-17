@@ -381,6 +381,9 @@ export class WorkflowActionService {
           const from = actionParameters.validFrom.column.GetValue();
           if (from) {
             request.ValidFrom.value = addTimeNowToDate(from);
+          } else {
+            // The value was removed, so set it to null in order to not send an invalid date to the backend
+            await request.ValidFrom.Column.PutValue(null);
           }
         }
 
@@ -388,6 +391,9 @@ export class WorkflowActionService {
           const until = actionParameters.validUntil.column.GetValue();
           if (until) {
             request.ValidUntil.value = addTimeNowToDate(until);
+          } else {
+            // The value was removed, so set it to null in order to not send an invalid date to the backend
+            await request.ValidUntil.Column.PutValue(null);
           }
         }
 

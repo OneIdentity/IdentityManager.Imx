@@ -136,7 +136,8 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
           this.productDst = source.dst;
           this.productDst.busyService = this.busyService;
           this.orchestration.dstSettingsReferenceUserProducts = this.productDstSettings;
-          // this.getProductData();
+          this.productDst.ngOnInit();
+
           this.subscriptions.push(
             this.selectionService.selectedProducts$.subscribe(() => {
               this.orchestration.preselectBySource(SelectedProductSource.ReferenceUserProducts, this.productDst);
@@ -162,6 +163,8 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
           this.membershipDst = source.dst;
           this.membershipDst.busyService = this.busyService;
           this.orchestration.dstSettingsReferenceUserOrgs = this.membershipDstSettings;
+          this.membershipDst.ngOnInit();
+
           this.subscriptions.push(
             this.selectionService.selectedProducts$.subscribe(() => {
               this.orchestration.preselectBySource(SelectedProductSource.ReferenceUserOrgs, this.membershipDst);

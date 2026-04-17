@@ -148,7 +148,7 @@
       </mat-card>
     </div>
     <div eui-sidesheet-actions *ngIf="data.canSeeAttestationPolicies">
-      <button data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
+      <button *ngIf="run.UID_AttestationPolicy.value" data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
         {{ '#LDS#Download report' | translate }}
       </button>
       <button

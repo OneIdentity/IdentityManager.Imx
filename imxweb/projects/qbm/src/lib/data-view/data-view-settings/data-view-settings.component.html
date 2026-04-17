@@ -4,6 +4,7 @@
   matTooltip="{{ '#LDS#Settings' | translate }}"
   data-imx-identifier="dataview-button-settings"
   [matMenuTriggerFor]="settingsMenu"
+  (menuOpened)="onSettingsMenuOpened()"
   color="primary"
 >
   <eui-icon icon="settings"></eui-icon>
@@ -12,6 +13,7 @@
   <button
     *ngIf="!!dataSource.exportFunction && !!dataSource.dataModel()?.Properties"
     mat-menu-item
+    [disabled]="disableExport()"
     (click)="openExportSidesheet()"
     data-imx-identifier="dst-menu-button-export"
   >
