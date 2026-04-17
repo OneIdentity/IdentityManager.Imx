@@ -29,7 +29,7 @@ import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { CollectionLoadParameters, EntitySchema } from 'imx-qbm-dbts';
-import { DataModelWrapper, DataSourceToolbarSettings, DataSourceWrapper, DataTableGroupedData } from 'qbm';
+import { DataModelWrapper, DataSourceToolbarSettings, DataSourceWrapper, DataTableGroupedData, SystemInfoService } from 'qbm';
 import { RulesViolationsApproval } from '../../../rules-violations/rules-violations-approval';
 import { RulesViolationsDetailsComponent } from '../../../rules-violations/rules-violations-details/rules-violations-details.component';
 import { RulesViolationsService } from '../../../rules-violations/rules-violations.service';
@@ -44,6 +44,7 @@ export class ViolationsPerRuleComponent implements OnInit {
   public dstWrapper: DataSourceWrapper<RulesViolationsApproval>;
   public dstSettings: DataSourceToolbarSettings;
   public groupedData: { [key: string]: DataTableGroupedData } = {};
+  public hasRiskIndex = false;
 
   public entitySchema: EntitySchema;
 
@@ -52,11 +53,18 @@ export class ViolationsPerRuleComponent implements OnInit {
   constructor(
     private readonly rulesViolationsService: RulesViolationsService,
     private readonly translate: TranslateService,
-    private readonly sidesheet: EuiSidesheetService
+    private readonly sidesheet: EuiSidesheetService,
+    private readonly systemInfoService: SystemInfoService,
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.entitySchema = this.rulesViolationsService.rulesViolationsApproveSchema;
+    this.hasRiskIndex = (await this.systemInfoService.get()).PreProps?.includes('RISKINDEX') ?? false;
+
+    const displayedColumns = [this.entitySchema.Columns.UID_Person, this.entitySchema.Columns.State];
+    if (this.hasRiskIndex) {
+      displayedColumns.push(this.entitySchema.Columns.RiskIndexCalculated, this.entitySchema.Columns.RiskIndexReduced);
+    }
 
     this.dataModelWrapper = {
       dataModel: await this.rulesViolationsService.getDataModel(),
@@ -70,16 +78,11 @@ export class ViolationsPerRuleComponent implements OnInit {
           ? Promise.resolve({ totalCount: 0, Data: [] })
           : this.rulesViolationsService.getRulesViolationsApprove(
               { ...state, ...{ uid_compliancerule: this.uidRule, approvable: undefined } },
-              requestOpts
+              requestOpts,
             ),
-      [
-        this.entitySchema.Columns.UID_Person,
-        this.entitySchema.Columns.State,
-        this.entitySchema.Columns.RiskIndexCalculated,
-        this.entitySchema.Columns.RiskIndexReduced,
-      ],
+      displayedColumns,
       this.entitySchema,
-      this.dataModelWrapper
+      this.dataModelWrapper,
     );
 
     await this.getData(undefined);
@@ -139,10 +142,7 @@ export class ViolationsPerRuleComponent implements OnInit {
   public async getData(parameter?: CollectionLoadParameters): Promise<void> {
     this.rulesViolationsService.handleOpenLoader();
     try {
-      const dstSettings = await this.dstWrapper.getDstSettings(
-        parameter,
-        { signal: this.rulesViolationsService.abortController.signal }
-      );
+      const dstSettings = await this.dstWrapper.getDstSettings(parameter, { signal: this.rulesViolationsService.abortController.signal });
       if (dstSettings) {
         this.dstSettings = dstSettings;
       }

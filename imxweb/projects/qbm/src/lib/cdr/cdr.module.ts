@@ -53,6 +53,7 @@ import { EditBitmaskComponent } from './edit-bitmask/edit-bitmask.component';
 import { EditBooleanComponent } from './edit-boolean/edit-boolean.component';
 import { EditDefaultComponent } from './edit-default/edit-default.component';
 import { EditMultilineComponent } from './edit-multiline/edit-multiline.component';
+import { EditNumberRangeComponent } from './edit-number-range/edit-number-range.component';
 import { EditNumberComponent } from './edit-number/edit-number.component';
 import { EditLimitedValueComponent } from './edit-limited-value/edit-limited-value.component';
 import { EditMultiValueComponent } from './edit-multi-value/edit-multi-value.component';
@@ -101,6 +102,7 @@ import { InfoModalDialogModule } from '../info-modal-dialog/info-modal-dialog.mo
     ViewPropertyDefaultComponent,
     ViewPropertyComponent,
     DateRangeComponent,
+    EditNumberRangeComponent,
     EntityColumnEditorComponent,
     EditUrlComponent,
     CdrSidesheetComponent,

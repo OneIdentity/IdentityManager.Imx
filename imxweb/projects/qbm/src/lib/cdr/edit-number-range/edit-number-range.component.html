@@ -1,0 +1,51 @@
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
+  <mat-label>{{ columnContainer.display | translate }}</mat-label>
+  <input matInput hidden class="input-hidden" [formControl]="control" />
+
+  <mat-form-field class="imx-form-field-width-full" appearance="outline">
+    <mat-label>{{ '#LDS#From' | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      [formControl]="valueFrom"
+      [attr.data-imx-identifier]="'cdr-edit-number-range-from-input-' + columnContainer?.name"
+      [required]="this.columnContainer?.isValueRequired"
+    />
+    <div matSuffix>
+      <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+    </div>
+    <mat-error *ngIf="valueFrom.errors?.['invalidInteger']">
+      {{ '#LDS#WD_InputInvalidFloat' | translate | ldsReplace: valueFrom.value }}
+    </mat-error>
+    <mat-error *ngIf="valueFrom.errors?.['rangeMin']">
+      {{ '#LDS#WD_InputInvalid' | translate | ldsReplace: valueFrom.value }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="imx-form-field-width-full" appearance="outline">
+    <mat-label>{{ '#LDS#To' | translate }}</mat-label>
+    <input
+      matInput
+      type="number"
+      [formControl]="valueTo"
+      [attr.data-imx-identifier]="'cdr-edit-number-range-to-input-' + columnContainer?.name"
+      [required]="this.columnContainer?.isValueRequired"
+    />
+    <div matSuffix>
+      <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+    </div>
+    <mat-error *ngIf="valueTo.errors?.['invalidInteger']">
+      {{ '#LDS#WD_InputInvalidFloat' | translate | ldsReplace: valueTo.value }}
+    </mat-error>
+    <mat-error *ngIf="valueTo.errors?.['rangeMax']">
+      {{ '#LDS#WD_InputInvalid' | translate | ldsReplace: valueTo.value }}
+    </mat-error>
+  </mat-form-field>
+  <mat-error *ngIf="control.errors?.['rangeOrder']">
+    {{ '#LDS#WD_InputInvalid' | translate | ldsReplace: valueTo.value }}
+  </mat-error>
+</mat-form-field>
+
+<ng-template #isReadonly>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
+</ng-template>

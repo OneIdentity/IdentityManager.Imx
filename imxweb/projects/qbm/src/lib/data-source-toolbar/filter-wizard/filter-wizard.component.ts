@@ -25,16 +25,16 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { isExpressionInvalid, LogOp, SqlExpression, SqlWizardExpression } from 'imx-qbm-dbts';
 import _ from 'lodash';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { ConfirmationService } from '../../confirmation/confirmation.service';
-import { FilterWizardService } from './filter-wizard.service';
-import { FilterFormState, FilterTypeIdentifier, FilterWizardSidesheetData } from './filter-wizard.interfaces';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SqlWizardApiService } from '../../sqlwizard/sqlwizard-api.service';
+import { FilterFormState, FilterTypeIdentifier, FilterWizardSidesheetData } from './filter-wizard.interfaces';
+import { FilterWizardService } from './filter-wizard.service';
 
 @Component({
   selector: 'imx-filter-wizard',
@@ -75,7 +75,7 @@ export class FilterWizardComponent implements OnDestroy {
     private readonly filterService: FilterWizardService,
     public readonly sqlWizardSvc: SqlWizardApiService,
     readonly translation: TranslateService,
-    @Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData
+    @Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData,
   ) {
     translation.get('#LDS#Heading Cancel Filtering').subscribe((value: string) => (this.confirmLeaveTitle = value));
     translation
@@ -93,7 +93,7 @@ export class FilterWizardComponent implements OnDestroy {
     this.subscriptions.push(
       this.filterService.filterFormStateEvent.subscribe((formState: FilterFormState) => {
         setTimeout(() => (this.formState = formState));
-      })
+      }),
     );
   }
 
@@ -156,7 +156,7 @@ export class FilterWizardComponent implements OnDestroy {
   }
 
   public get showSqlWizard(): boolean {
-    return this.sqlWizardSvc.implemented;
+    return this.sqlWizardSvc.implemented && !!this.data.settings?.entitySchema?.TypeName;
   }
 
   private async close(): Promise<void> {

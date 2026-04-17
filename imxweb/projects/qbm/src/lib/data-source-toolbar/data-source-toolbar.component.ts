@@ -1463,8 +1463,14 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
         const withProperties = optionals.length === 0 ? undefined : optionals.join(',');
         if (this.settings.navigationState.withProperties !== withProperties) {
           this.settings.navigationState.withProperties = withProperties;
-          if (this.settings.groupData?.currentGrouping == null && elem.needsReload) {
-            this.navigationStateChanged.emit(this.settings.navigationState);
+          if (elem.needsReload) {
+            // When grouping is active, use settingsChanged to trigger grouped data reload;
+            // otherwise emit navigationStateChanged for a regular data reload.
+            if (this.settings.groupData?.currentGrouping == null) {
+              this.navigationStateChanged.emit(this.settings.navigationState);
+            } else {
+              this.settingsChanged.emit(this.settings);
+            }
           }
         }
       })

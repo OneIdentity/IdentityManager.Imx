@@ -1,0 +1,26 @@
+:host {
+  flex-grow: 1;
+
+  ::ng-deep {
+    .mat-form-field {
+      .mat-form-field-wrapper {
+        .mat-form-field-infix {
+          display: flex;
+          gap: 10px;
+          padding-right: 16px;
+        }
+      }
+    }
+  }
+
+
+  .mat-form-field {
+    width: 100%;
+  }
+
+  .imx-form-field-width-full {
+    .mat-form-field-wrapper {
+      padding-right: 10px;
+    }
+  }
+}

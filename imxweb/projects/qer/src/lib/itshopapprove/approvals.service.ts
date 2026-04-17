@@ -27,37 +27,37 @@
 import { Injectable } from '@angular/core';
 
 import {
-  ExtendedTypedEntityCollection,
-  EntitySchema,
-  DataModel,
-  MethodDescriptor,
-  EntityCollectionData,
-  MethodDefinition,
-  ApiRequestOptions,
-  InteractiveEntityWriteData,
-  FkProviderItem,
-  IFkCandidateProvider,
-  ParameterData,
-} from 'imx-qbm-dbts';
-import {
-  PortalItshopApproveRequests,
-  OtherApproverInput,
-  DirectDecisionInput,
   DecisionInput,
-  PwoExtendedData,
-  RecallDecisionInput,
-  ReasonInput,
   DenyDecisionInput,
+  DirectDecisionInput,
+  OtherApproverInput,
+  PortalItshopApproveRequests,
+  PwoExtendedData,
   PwoQueryInput,
+  ReasonInput,
+  RecallDecisionInput,
   V2ApiClientMethodFactory,
 } from 'imx-api-qer';
-import { Approval } from './approval';
-import { QerApiService } from '../qer-api-client.service';
-import { ApprovalsLoadParameters } from './approvals-load-parameters';
-import { ItshopRequestService } from '../itshop/itshop-request.service';
+import {
+  ApiRequestOptions,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FkProviderItem,
+  IFkCandidateProvider,
+  InteractiveEntityWriteData,
+  MethodDefinition,
+  MethodDescriptor,
+  ParameterData,
+} from 'imx-qbm-dbts';
 import { DataSourceToolbarExportMethod } from 'qbm';
+import { ItshopRequestService } from '../itshop/itshop-request.service';
 import { ExtendedEntityWrapper } from '../parameter-data/extended-entity-wrapper.interface';
+import { QerApiService } from '../qer-api-client.service';
 import { RequestParametersService } from '../shopping-cart/cart-item-edit/request-parameters.service';
+import { Approval } from './approval';
+import { ApprovalsLoadParameters } from './approvals-load-parameters';
 
 @Injectable()
 export class ApprovalsService {
@@ -66,7 +66,7 @@ export class ApprovalsService {
   constructor(
     private readonly apiService: QerApiService,
     private readonly itshopRequest: ItshopRequestService,
-    private readonly requestParametersService: RequestParametersService
+    private readonly requestParametersService: RequestParametersService,
   ) {}
 
   public get PortalItshopApproveRequestsSchema(): EntitySchema {
@@ -88,25 +88,23 @@ export class ApprovalsService {
 
   public async get(
     parameters: ApprovalsLoadParameters,
-    requestOpts?: ApiRequestOptions
+    requestOpts?: ApiRequestOptions,
   ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData>> {
     const collection = await this.apiService.typedClient.PortalItshopApproveRequests.Get(
       {
         Escalation: this.isChiefApproval,
         ...parameters,
       },
-      requestOpts
+      requestOpts,
     );
 
     return collection == null
       ? undefined
       : {
-          tableName: collection.tableName,
-          totalCount: collection.totalCount,
+          ...collection,
           Data: collection.Data.map((element, index) =>
-            this.itshopRequest.createRequestApprovalItem(element, { ...collection.extendedData, ...{ index } })
+            this.itshopRequest.createRequestApprovalItem(element, { ...collection.extendedData, ...{ index } }),
           ),
-          extendedData: collection.extendedData,
         };
   }
 
@@ -203,14 +201,14 @@ export class ApprovalsService {
           index,
         },
         (parameter) => this.getFkProviderItemsInteractive(typedEntity, parameter),
-        typedEntity
+        typedEntity,
       ),
     };
   }
 
   public getFkProviderItemsInteractive(
     interactiveEntity: { InteractiveEntityWriteData: InteractiveEntityWriteData },
-    parameterData: ParameterData
+    parameterData: ParameterData,
   ): IFkCandidateProvider {
     const qerClient = this.apiService;
 
@@ -220,13 +218,13 @@ export class ApprovalsService {
           return this.getFkProviderItemInteractive(
             interactiveEntity,
             parameterData.Property.ColumnName,
-            parameterData.Property.FkRelation.ParentTableName
+            parameterData.Property.FkRelation.ParentTableName,
           );
         }
 
         if (parameterData.Property.ValidReferencedTables) {
           const t = parameterData.Property.ValidReferencedTables.map((parentTableRef) =>
-            this.getFkProviderItemInteractive(interactiveEntity, parameterData.Property.ColumnName, parentTableRef.TableName)
+            this.getFkProviderItemInteractive(interactiveEntity, parameterData.Property.ColumnName, parentTableRef.TableName),
           ).filter((t) => t.fkTableName == fkTableName);
           if (t.length == 1) return t[0];
           return null;
@@ -238,7 +236,7 @@ export class ApprovalsService {
       private getFkProviderItemInteractive(
         interactiveEntity: { InteractiveEntityWriteData: InteractiveEntityWriteData },
         columnName: string,
-        fkTableName: string
+        fkTableName: string,
       ): FkProviderItem {
         return {
           columnName,
@@ -249,7 +247,7 @@ export class ApprovalsService {
               columnName,
               fkTableName,
               interactiveEntity.InteractiveEntityWriteData,
-              parameters
+              parameters,
             );
           },
           getDataModel: async () => ({}),
@@ -258,7 +256,7 @@ export class ApprovalsService {
               columnName,
               fkTableName,
               interactiveEntity.InteractiveEntityWriteData,
-              { parentkey: parentkey }
+              { parentkey: parentkey },
             );
           },
         };

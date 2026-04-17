@@ -112,7 +112,7 @@
       </mat-accordion>
 
       <div *ngIf="data.canSeeAttestationPolicies" eui-sidesheet-actions>
-        <button data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
+        <button *ngIf="run.UID_AttestationPolicy.value" data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
           {{ '#LDS#Download report' | translate }}
         </button>
         <button data-imx-identifier="run-button-extend-attestation" mat-stroked-button (click)="extendAttestationRun()" [disabled]="!run.PendingCases.value">
