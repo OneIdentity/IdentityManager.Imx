@@ -22,10 +22,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: imxweb/package-lock.json
 
     - name: Install packages
       working-directory: ./imxweb
-      run: npm install
+      run: npm ci
 
     - name: Build qbm
       working-directory: ./imxweb
