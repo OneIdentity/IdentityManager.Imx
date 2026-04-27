@@ -26,7 +26,7 @@ jobs:
        cache-dependency-path: imxweb/package-lock.json
 
     - name: Install packages (clean, reproducible)
-       working-directory: ./imxweb
+      working-directory: ./imxweb
       shell: bash
       run: |
        set -euo pipefail
