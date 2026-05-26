@@ -1,3 +1,11 @@
+### May 26, 2026
+- 708384: Fixes an issue with order a product where the service item has a mandatory binary request property.
+- 705910: Fixes an issue where bulk editing does not work in shopping cart for some items.
+- 706242: Fixes an issue where opening a governed data all resources/My resources tab.
+- 544651: Fixes an issue with duplicate HTTP GET request if browser language is English and user profile language is German.
+- 705517: Fixes an issue where Password Reset Portal does not work with Recaptcha.
+- 652753: Fixes an issue where the Request History and Pending Requests pages are initially loaded twice in the web portal.
+
 ### April 17, 2026
 - 703564 (703561): Fixes an issue where the export data is not available if 'Group by' is predefined.
 - 700238: Fixes an issue with the withdrawal of additional attestors.
