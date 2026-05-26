@@ -52,7 +52,7 @@ import {
   DataViewSource,
   ExtService,
   IExtension,
-  ISessionState
+  ISessionState,
 } from 'qbm';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -92,7 +92,9 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     return this.selectedItems.every((item: Approval) => item.canAddApprover(this.currentUserId));
   }
   public get canDelegateDecision(): boolean {
-    return this.selectedItems.every((item: Approval) => item.canDelegateDecision(this.isUserEscalationApprover && this.viewEscalation ? '' : this.currentUserId));
+    return this.selectedItems.every((item: Approval) =>
+      item.canDelegateDecision(this.isUserEscalationApprover && this.viewEscalation ? '' : this.currentUserId),
+    );
   }
   public get canDenyApproval(): boolean {
     return this.selectedItems.every((item: Approval) => item.canDenyApproval(this.currentUserId));
@@ -105,7 +107,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   }
 
   public get canResetReservation(): boolean {
-    return this.selectedItems.every((item: Approval) => !item.canRecallInquiry && item.canResetReservation(this.isChiefApprover));
+    return this.selectedItems.every((item: Approval) => !item.canRecallInquiry && item.canResetReservation(this.isUserEscalationApprover));
   }
 
   public get canSendInquiry(): boolean {
@@ -148,6 +150,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public canBeDelegated = false;
   public selectedItems: Approval[] = [];
   public busyService = new BusyService();
+  public isChiefApprover = false;
 
   private approvalsDecision: ApprovalsDecision = ApprovalsDecision.none;
   private extensions: IExtension[] = [];
@@ -157,7 +160,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'itshop/approve/requests';
   private displayedColumns: ClientPropertyForTableColumns[];
-  private isChiefApprover = false;
   private _viewEscalation = false;
 
   private uid_personwantsorg: string;
@@ -232,7 +234,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
     try {
       this.dataModel = await this.approvalsService.getApprovalDataModel(this.abortController.signal);
-      this.isChiefApprover = await this.permissions.isCancelPwO();
+      this.isChiefApprover = (await this.userModelService.getUserConfig()).IsUserInChiefApprovalTeam;
       if (this.abortController.signal.aborted) {
         return;
       }
@@ -298,7 +300,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         params: CollectionLoadParameters,
         signal: AbortSignal,
       ): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData | undefined> | undefined> => {
-
         const updatedParams: ApprovalsLoadParameters = {
           ...params,
           ...(this.uid_personwantsorg && { uid_personwantsorg: this.uid_personwantsorg }),
@@ -399,7 +400,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       this.uid_pwohelperpwo = this.params.uid_pwohelperpwo;
 
       // Will otherwise result in a string
-      this.approvalsDecision = ApprovalsDecision[this.params.decision.toLowerCase() as keyof typeof ApprovalsDecision] ?? ApprovalsDecision.none;
+      this.approvalsDecision =
+        ApprovalsDecision[this.params.decision.toLowerCase() as keyof typeof ApprovalsDecision] ?? ApprovalsDecision.none;
       return;
     }
 

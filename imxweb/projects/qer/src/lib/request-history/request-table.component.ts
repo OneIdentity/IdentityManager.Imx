@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -183,12 +183,17 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
       }),
     );
   }
-  public async ngOnChanges(): Promise<void> {
-    const busy = this.busyService.beginBusy();
-    try {
-      await this.getData();
-    } finally {
-      busy.endBusy();
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    if (
+      (!!changes['uidRecipientRequester'] && !changes['uidRecipientRequester'].firstChange) ||
+      (!!changes['uidRecipient'] && !changes['uidRecipient'].firstChange)
+    ) {
+      const busy = this.busyService.beginBusy();
+      try {
+        await this.getData();
+      } finally {
+        busy.endBusy();
+      }
     }
   }
 

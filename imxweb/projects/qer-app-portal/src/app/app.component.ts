@@ -112,7 +112,7 @@ export class AppComponent implements OnInit, OnDestroy {
             // If culture is found, use it, otherwise fallback to the app default
             if (culture) {
               this.logger.debug(this, `ProfileLangChecked is true, culture available: Setting ${culture} as profile language`);
-              await this.translationProvider.reinit(culture, sessionState.cultureFormat ?? culture, this.router);
+              await this.translationProvider.init(culture, sessionState.cultureFormat ?? culture);
             }
           }
 

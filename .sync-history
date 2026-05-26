@@ -1,0 +1,4 @@
+4c0a06e4a 2026-04-22 Merged PR 92115: #705517 Fix recaptcha initialization for all apps
+2af708db8 2026-01-16 Merged PR 88159: #641463 - Fix process chart
+c41b09de8 2026-01-08 Merged PR 87890: Bug 650967: 10.0 Angular Web: Standard reason for request: mandatory field for reason is not displayed - Copy
+6cfad0d43 2026-01-07 Merged PR 87780: #648575- Fix schedule dialog datepicker

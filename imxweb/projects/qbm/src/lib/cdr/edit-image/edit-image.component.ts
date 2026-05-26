@@ -42,10 +42,11 @@ import { EntityColumnContainer } from '../entity-column-container';
  * When set to read-only, it uses an {@link ImageViewComponent | image view component} to display the content.
  */
 @Component({
-    selector: 'imx-edit-image',
-    templateUrl: './edit-image.component.html',
-    styleUrls: ['./edit-image.component.scss'],
-    standalone: false
+  selector: 'imx-edit-image',
+  templateUrl: './edit-image.component.html',
+  styleUrls: ['./edit-image.component.scss'],
+  standalone: false,
+  providers: [FileSelectorService],
 })
 export class EditImageComponent implements CdrEditor, OnDestroy {
   /**

@@ -107,7 +107,7 @@ import { StartComponent } from './start.component';
       useFactory: (config: AppInitializationService) => {
         return config.recaptchaSiteKeyV3;
       },
-      deps: [AppService],
+      deps: [AppInitializationService],
     },
     provideHttpClient(withInterceptorsFromDi()),
   ],

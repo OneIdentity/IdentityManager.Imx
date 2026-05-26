@@ -57,7 +57,7 @@ export class ImxTranslationProviderService implements ITranslationProvider {
     private translateService: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly dateAdapter: DateAdapter<any>,
-  ) {}
+  ) { }
 
   public get Culture(): string {
     return this.culture;
@@ -71,6 +71,7 @@ export class ImxTranslationProviderService implements ITranslationProvider {
     culture: string | undefined = this.translateService.getBrowserCultureLang(),
     cultureFormat: string | undefined = this.translateService.getBrowserCultureLang(),
   ): Promise<void> {
+    const previousCultureFormat = this.cultureFormat;
     const defaultLang = this.translateService.getDefaultLang();
     // Get filtered cultures that are available to frontends and set to english if culture (browser language) is not supported
     const cultures = await this.appConfig.client.imx_multilanguage_uicultures_get({
@@ -92,6 +93,10 @@ export class ImxTranslationProviderService implements ITranslationProvider {
     moment.locale(this.cultureFormat);
 
     if (this.culture != null && this.culture === culture) {
+      if (previousCultureFormat !== this.cultureFormat) {
+        // Emit culture changed even if culture is the same, because culture format might have changed and that also needs to be applied
+        this.cultureChanged.next({ culture: this.culture, cultureFormat: this.cultureFormat });
+      }
       return;
     }
 

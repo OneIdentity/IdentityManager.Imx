@@ -73,6 +73,7 @@ import { EditLimitedValueComponent } from './edit-limited-value/edit-limited-val
 import { EditMultiLimitedValueComponent } from './edit-multi-limited-value/edit-multi-limited-value.component';
 import { EditMultiValueComponent } from './edit-multi-value/edit-multi-value.component';
 import { EditMultilineComponent } from './edit-multiline/edit-multiline.component';
+import { EditNumberRangeComponent } from './edit-number-range/edit-number-range.component';
 import { EditNumberComponent } from './edit-number/edit-number.component';
 import { EditRiskIndexComponent } from './edit-risk-index/edit-risk-index.component';
 import { EditUrlComponent } from './edit-url/edit-url.component';
@@ -102,6 +103,7 @@ import { ViewPropertyComponent } from './view-property/view-property.component';
     ViewPropertyDefaultComponent,
     ViewPropertyComponent,
     DateRangeComponent,
+    EditNumberRangeComponent,
     EntityColumnEditorComponent,
     EditUrlComponent,
     CdrSidesheetComponent,

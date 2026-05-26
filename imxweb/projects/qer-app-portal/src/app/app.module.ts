@@ -53,7 +53,7 @@ import {
   StatisticsForObjectsService,
   StatisticsGuardService,
   StatisticsModule,
-  UserMessageModule
+  UserMessageModule,
 } from 'qbm';
 import {
   AddressbookModule,
@@ -168,7 +168,7 @@ export function getBaseHref(): string {
     provideAppInitializer(() => inject(AppService).init()),
     {
       provide: AboutService,
-      useClass: PortalAboutService
+      useClass: PortalAboutService,
     },
     {
       provide: ErrorHandler,
@@ -209,9 +209,9 @@ export function getBaseHref(): string {
       useFactory: (config: AppInitializationService) => {
         return config.recaptchaSiteKeyV3;
       },
-      deps: [AppService],
+      deps: [AppInitializationService],
     },
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
-export class AppModule { }
+export class AppModule {}

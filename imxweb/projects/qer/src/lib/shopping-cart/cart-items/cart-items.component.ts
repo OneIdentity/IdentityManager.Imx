@@ -53,11 +53,11 @@ import { ShoppingCart } from '../shopping-cart';
 import { CartItemCheckStatus } from './cart-item-check-status.enum';
 
 @Component({
-    templateUrl: './cart-items.component.html',
-    styleUrls: ['./cart-items.component.scss'],
-    selector: 'imx-cart-items',
-    providers: [DataViewSource],
-    standalone: false
+  templateUrl: './cart-items.component.html',
+  styleUrls: ['./cart-items.component.scss'],
+  selector: 'imx-cart-items',
+  providers: [DataViewSource],
+  standalone: false
 })
 export class CartItemsComponent implements OnInit, OnChanges {
   public CartItemCheckStatus = CartItemCheckStatus;
@@ -156,18 +156,18 @@ export class CartItemsComponent implements OnInit, OnChanges {
       updated: observable,
       cloneItem: this.itemCanBeCloned(cartItem)
         ? async () => {
-            reloadItems = true;
-            this.logger.trace(this, 'shopping cart must be reloaded');
-            this.cartItemClone.cloneItemForPersons({
-              personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
-              accProduct: {
-                DataValue: cartItem.UID_AccProduct.value,
-                DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue(),
-              },
-              uidITShopOrg: cartItem.UID_ITShopOrg.value,
-              display: cartItem.GetEntity().GetDisplay(),
-            });
-          }
+          reloadItems = true;
+          this.logger.trace(this, 'shopping cart must be reloaded');
+          this.cartItemClone.cloneItemForPersons({
+            personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
+            accProduct: {
+              DataValue: cartItem.UID_AccProduct.value,
+              DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue(),
+            },
+            uidITShopOrg: cartItem.UID_ITShopOrg.value,
+            display: cartItem.GetEntity().GetDisplay(),
+          });
+        }
         : undefined,
     };
 
@@ -284,8 +284,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
     const cartItem: PortalCartitem = event.item;
     event.selectableRows.push(
       cartItem.UID_ShoppingCartItemParent.value == null ||
-        cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
-        cartItem.IsOptionalChild.value,
+      cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
+      cartItem.IsOptionalChild.value,
     );
   }
 
@@ -301,8 +301,13 @@ export class CartItemsComponent implements OnInit, OnChanges {
     return this.itemsCanBeMoved(true);
   }
 
+  /**
+   * If only one item is selected, it can be edited. If multiple items are selected, they can be edited if they don't have parameters that prevent copying.
+   * @returns boolean indicating if the selected items can be edited
+   */
   public itemsCanBeEdited(): boolean {
-    return this.HasSelectedItems() && this.selectedItems.every((item) => !item.IsNoCopyParametersPerson.value);
+    return this.selectedItems.length === 1
+      || (this.HasSelectedItems() && this.selectedItems.every((item) => !item.IsNoCopyParametersPerson.value));
   }
 
   public async showValidationOverview(cartItem: PortalCartitem): Promise<void> {

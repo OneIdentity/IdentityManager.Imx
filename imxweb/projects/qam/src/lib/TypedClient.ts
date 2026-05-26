@@ -5283,7 +5283,7 @@ export class V2Client {
 
   constructor(
     private readonly apiClient: ApiClient,
-    private schemaProvider?: { readonly schemas: { [key: string]: EntitySchema } },
+    private schemaProvider?: { schemas: { [key: string]: EntitySchema } },
   ) {
     if (!apiClient) {
       throw new Error('The value for the apiClient parameter is undefined.');
@@ -5316,8 +5316,6 @@ export class V2Client {
     for (var key in dtos) {
       const dto = dtos[key];
       const columns = dto.Properties ?? {};
-      columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
-      columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY_LONG;
 
       schemas[key] = {
         TypeName: dto.TypeName,
@@ -5338,8 +5336,16 @@ export class V2Client {
   /** Returns the runtime schema for the named method. */
   public getSchema(methodKey: string): EntitySchema {
     const result = this.schemas[methodKey];
-    if (!result) throw new Error('Unknown method: ' + methodKey);
-    return result;
+    if (!result)
+      throw new Error('Unknown method: ' + methodKey);
+    return {
+      ...result,
+      Columns: {
+        ...result.Columns,
+        [DisplayColumns.DISPLAY_PROPERTYNAME]: DisplayColumns.DISPLAY_PROPERTY,
+        [DisplayColumns.DISPLAY_LONG_PROPERTYNAME]: DisplayColumns.DISPLAY_PROPERTY_LONG,
+      }
+    }
   }
 
   /** Returns a list of candidate objects from the table AERole. */

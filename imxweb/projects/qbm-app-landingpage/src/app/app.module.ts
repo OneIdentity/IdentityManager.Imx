@@ -101,13 +101,13 @@ import { AppService } from './app.service';
       useFactory: (config: AppInitializationService) => {
         return config.recaptchaSiteKeyV3;
       },
-      deps: [AppService],
+      deps: [AppInitializationService],
     },
     {
       provide: AboutService,
-      useClass: AdminAboutService
+      useClass: AdminAboutService,
     },
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
-export class AppModule { }
+export class AppModule {}

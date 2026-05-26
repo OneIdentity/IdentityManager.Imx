@@ -40,7 +40,6 @@ import * as readline from 'readline';
 
 // Look for a positional argument to point where the imx-modules are; defaults to imx-modules
 const imxModuleDir = process.argv.length > 2 ? process.argv[2] : 'imx-modules';
-
 const nodePackageDir = '@imx-modules';
 const nodeElementalDir = '@elemental-ui';
 const nodeModuleDir = 'node_modules';

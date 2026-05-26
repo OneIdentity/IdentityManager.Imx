@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, computed, effect, EventEmitter, Input, OnInit, Output, Signal } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, EventEmitter, Input, Output, Signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { FilterType } from '@imx-modules/imx-qbm-dbts';
 import { debounceTime } from 'rxjs/operators';
@@ -36,7 +36,7 @@ import { KeywordFilter, SelectedFilterType } from '../data-view.interface';
   templateUrl: './data-view-search.component.html',
   standalone: false,
 })
-export class DataViewSearchComponent implements OnInit {
+export class DataViewSearchComponent implements AfterViewInit {
   /**
    * Input the dataViewSource service. It handles all the action and the data loading. This input property is required.
    */
@@ -74,7 +74,7 @@ export class DataViewSearchComponent implements OnInit {
     });
   }
 
-  public ngOnInit(): void {
+  public ngAfterViewInit(): void {
     // Call onSearch on searchControl valueChange after a 1000ms standby.
     this.searchControl.valueChanges.pipe(debounceTime(1000)).subscribe((value) => this.onSearch(value));
   }

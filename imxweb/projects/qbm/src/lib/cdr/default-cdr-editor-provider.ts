@@ -38,6 +38,7 @@ import { EditLimitedValueComponent } from './edit-limited-value/edit-limited-val
 import { EditMultiLimitedValueComponent } from './edit-multi-limited-value/edit-multi-limited-value.component';
 import { EditMultiValueComponent } from './edit-multi-value/edit-multi-value.component';
 import { EditMultilineComponent } from './edit-multiline/edit-multiline.component';
+import { EditNumberRangeComponent } from './edit-number-range/edit-number-range.component';
 import { EditNumberComponent } from './edit-number/edit-number.component';
 import { EditRiskIndexComponent } from './edit-risk-index/edit-risk-index.component';
 import { EditUrlComponent } from './edit-url/edit-url.component';
@@ -109,8 +110,19 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
       return this.createBound(EditRiskIndexComponent, parent, cdref);
     }
 
-    if (range && type === ValType.Date) {
-      return this.createBound(DateRangeComponent, parent, cdref);
+    if (range) {
+      switch (type) {
+        case ValType.Byte:
+        case ValType.Decimal:
+        case ValType.Double:
+        case ValType.Int:
+        case ValType.Long:
+        case ValType.Short:
+          return this.createBound(EditNumberRangeComponent, parent, cdref);
+
+        case ValType.Date:
+          return this.createBound(DateRangeComponent, parent, cdref);
+      }
     }
 
     if (meta.isUrl) {

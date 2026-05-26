@@ -121,9 +121,9 @@ export function getBaseHref(): string {
       useFactory: (config: AppInitializationService) => {
         return config.recaptchaSiteKeyV3;
       },
-      deps: [AppService],
+      deps: [AppInitializationService],
     },
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
-export class AppModule { }
+export class AppModule {}
