@@ -16,8 +16,8 @@
           [attr.data-imx-identifier]="'cart-item-validation-detail-' + check.Id"
         >
           <mat-icon mat-list-icon>{{getStatus(check).icon}}</mat-icon>
-          <div mat-line data-imx-identifier="cart-item-validation-detail-title">{{ check.Title }}</div>
-          <div mat-line data-imx-identifier="cart-item-validation-detail-status">{{ getStatus(check).status }}</div>
+          <div mat-line data-imx-identifier="cart-item-validation-detail-title">{{ '#LDS#' + check.Title | translate }}</div>
+          <div mat-line data-imx-identifier="cart-item-validation-detail-status">{{ '#LDS#' + getStatus(check).status | translate }}</div>
           <div mat-line *ngIf="check.ResultText" data-imx-identifier="cart-item-validation-detail-result-text">
             {{ '#LDS#' + check.ResultText | translate | ldsReplace:warning.cartItemDisplay:warning.personOrderedDisplay }}
           </div>
