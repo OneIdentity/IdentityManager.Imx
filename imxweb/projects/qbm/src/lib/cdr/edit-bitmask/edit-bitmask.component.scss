@@ -1,1 +1,44 @@
-// add styles if necessary
+// CCC Start
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-bottom: 1.25em;
+}
+
+.imx-bitmask-select {
+  width: 100%;
+}
+
+.imx-bitmask-select.imx-required ::ng-deep .mat-form-field-label mat-label::after {
+  content: " *";
+  font-weight: bold;
+  color: inherit;
+}
+
+.imx-bitmask-select.imx-required.imx-invalid ::ng-deep .mat-form-field-label mat-label::after {
+  color: $phoenix-red;
+}
+
+.imx-bitmask-select.imx-required.imx-invalid ::ng-deep .mat-form-field:not(.mat-focused) .mat-form-field-label mat-label {
+  color: $phoenix-red;
+}
+
+.imx-bitmask-select.imx-required.imx-invalid ::ng-deep .mat-form-field-outline-thick,
+.imx-bitmask-select.imx-required.imx-invalid ::ng-deep .mat-form-field-outline {
+  color: $phoenix-red !important;
+}
+
+.imx-bitmask-select.imx-required.imx-invalid ::ng-deep .mat-select-placeholder {
+  color: $phoenix-red;
+}
+
+.mat-error {
+  padding: 0 1em;
+  font-size: 75%;
+  margin-top: .6666666667em;
+  line-height: 1.125;
+}
+// CCC End

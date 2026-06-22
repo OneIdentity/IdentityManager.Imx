@@ -1,7 +1,27 @@
 <ng-container *ngIf="columnContainer?.canEdit; else isReadonly">
-  <eui-select class="imx-bitmask-select" [label]="columnContainer?.display || '' | translate"
-    [placeholder]="'#LDS#Select' | translate" [multiple]="true" [options]="options" [formControl]="control">
+  <!-- CCC Default -->
+  <!--  <eui-select class="imx-bitmask-select" [label]="columnContainer?.display || '' | translate"-->
+  <!--              [placeholder]="'#LDS#Select' | translate" [multiple]="true" [options]="options" [formControl]="control">-->
+  <!--  </eui-select>-->
+<!-- CCC Start -->
+  <eui-select
+    class="imx-bitmask-select"
+    [ngClass]="{
+      'imx-required': columnContainer?.isValueRequired,
+      'imx-invalid': control.invalid && (control.touched || control.dirty)
+    }"
+    [label]="columnContainer?.display || '' | translate"
+    [placeholder]="'#LDS#Select' | translate"
+    [multiple]="true"
+    [options]="options"
+    [formControl]="control"
+    (optionsClear)="onOptionsClear()"
+    [attr.data-imx-identifier]="'cdr-edit-bitmask-select-' + columnContainer?.name">
   </eui-select>
+  <mat-error *ngIf="control.errors?.['required']">
+    {{ '#LDS#This field is mandatory.' | translate }}
+  </mat-error>
+<!-- CCC End -->
   <mat-error *ngIf="control.errors?.['generalError']">
     {{ validationErrorMessage }}
   </mat-error>

@@ -94,22 +94,33 @@ export class EditBitmaskComponent implements CdrEditor {
       this.columnContainer.init(cdref);
       const value = this.toArray(this.columnContainer.value);
       this.control.setValue(value, { emitEvent: false });
-      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-        this.logger.debug(this, 'value is required');
-        this.control.setValidators(Validators.required);
-      }
+
+      // CCC Default
+      // if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+      //   this.logger.debug(this, 'value is required');
+      //   this.control.setValidators(Validators.required);
+      // }
+      // if (cdref.minlengthSubject) {
+      //   this.subscribers.push(
+      //     cdref.minlengthSubject.subscribe(() => {
+      //       if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+      //         this.logger.debug(this, 'value is required');
+      //         this.control.setValidators(Validators.required);
+      //       } else {
+      //         this.control.setValidators(null);
+      //       }
+      //     }),
+      //   );
+      // }
+      // CCC Start
+      this.applyValidators();
       if (cdref.minlengthSubject) {
         this.subscribers.push(
-          cdref.minlengthSubject.subscribe(() => {
-            if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-              this.logger.debug(this, 'value is required');
-              this.control.setValidators(Validators.required);
-            } else {
-              this.control.setValidators(null);
-            }
-          }),
+          cdref.minlengthSubject.subscribe(() => this.applyValidators()),
         );
       }
+      // CCC End
+
       this.subscribers.push(
         this.columnContainer.subscribe(() => {
           if (!this.isWriting) {
@@ -123,7 +134,9 @@ export class EditBitmaskComponent implements CdrEditor {
       );
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(this.fromArray(value))));
       this.initOptions();
-      this.control.addValidators(EditorBase.hasServerError(this));
+      // CCC Default
+      // this.control.addValidators(EditorBase.hasServerError(this));
+      // CCC End
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -150,7 +163,12 @@ export class EditBitmaskComponent implements CdrEditor {
       this.lastError = undefined;
     } catch (e) {
       this.logger.error(this, e);
-      this.lastError = undefined;
+      // CCC Default
+      // OI Bug: Server Error will not show
+      // this.lastError = undefined;
+      // CCC Start
+      this.lastError = e;
+      // CCC End
     } finally {
       this.isWriting = false;
       const valueAfterWrite = this.toArray(this.columnContainer.value);
@@ -205,4 +223,31 @@ export class EditBitmaskComponent implements CdrEditor {
     });
     this.control.setValue(newValues, { emitEvent: false });
   }
+
+  // CCC Start
+  public onOptionsClear(): void {
+    this.control.setValue([]);
+    this.control.markAsTouched();
+    this.control.markAsDirty();
+    this.control.updateValueAndValidity();
+  }
+
+  private applyValidators(): void {
+    const canEdit = this.columnContainer.canEdit;
+    const isRequired = this.columnContainer.isValueRequired && canEdit;
+    if (isRequired) {
+      this.logger.debug(this, 'value is required');
+      this.control.setValidators([
+        Validators.required,
+        EditorBase.hasServerError(this)]);
+    } else if (canEdit){
+      this.logger.debug(this, 'value is editable');
+      this.control.setValidators([
+        EditorBase.hasServerError(this)]);
+    } else {
+      this.control.setValidators(null);
+    }
+    this.control.updateValueAndValidity();
+  }
+  // CCC End
 }
