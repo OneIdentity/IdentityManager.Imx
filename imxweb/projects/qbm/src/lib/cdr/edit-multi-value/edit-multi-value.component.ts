@@ -106,7 +106,7 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
 
       this.subscribers.push(
         this.columnContainer.subscribe(() => {
-          if (!this.isWriting) {
+          if (this.isWriting) {
             return;
           }
           if (this.control.value !== this.columnContainer.value) {
