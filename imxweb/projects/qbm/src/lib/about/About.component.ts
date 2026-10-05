@@ -34,6 +34,12 @@ import { SettingsService } from '../settings/settings-service';
 import { SystemInfoService } from '../system-info/system-info.service';
 import { AboutService } from './About.service';
 
+/**
+ * User-visible product version shown on the About page.
+ * Display only: Globals.Version and the API ProductVersion keep the real version.
+ */
+const DisplayVersion = '10.1';
+
 @Component({
     templateUrl: './About.component.html',
     styleUrls: ['./About.component.scss'],
@@ -67,7 +73,7 @@ export class AboutComponent implements OnInit {
       this.entitySchema.Columns['LicenceName'],
     ];
     this.product['Name'] = Globals.QIM_ProductNameFull;
-    this.product['Version'] = Globals.Version;
+    this.product['Version'] = DisplayVersion;
     this.product['Copyright'] = Globals.QBM_Copyright;
 
     this.product['ThirdPartyLicencesUrl'] = 'https://www.oneidentity.com/legal/third-party-licenses.aspx';

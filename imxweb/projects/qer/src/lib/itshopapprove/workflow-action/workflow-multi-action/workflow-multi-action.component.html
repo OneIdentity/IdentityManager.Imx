@@ -14,6 +14,7 @@
       @if (data.actionParameters.validFrom) {
         <imx-cdr-editor
           [cdr]="data.actionParameters.validFrom"
+          [validateOnlyOnChange]="true"
           (controlCreated)="formGroup.addControl('validFrom', $event)"
           data-imx-identifier="workflow-action-property-validFrom"
           >
@@ -22,6 +23,7 @@
       @if (data.actionParameters.validUntil) {
         <imx-cdr-editor
           [cdr]="data.actionParameters.validUntil"
+          [validateOnlyOnChange]="true"
           (controlCreated)="formGroup.addControl('validUntil', $event)"
           data-imx-identifier="workflow-action-property-validUntil"
           >
@@ -53,6 +55,7 @@
   class="imx-bulk-editor"
   [entities]="requests"
   [hideButtons]="true"
+  [validateOnlyOnChange]="true"
   (validationStateChanged)="validateItem($event)"
   (controlCreated)="formGroup.addControl('request-parameters', $event)"
   >

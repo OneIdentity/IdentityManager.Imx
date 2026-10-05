@@ -41,6 +41,7 @@ export class BulkPropertyEditorComponent implements OnChanges {
 
   @Input() public entities: BulkItem[] = [];
   @Input() public hideButtons = false;
+  @Input() public validateOnlyOnChange = false;
 
   @Output() public saveItem: EventEmitter<BulkItem> = new EventEmitter();
   @Output() public skipItem: EventEmitter<BulkItem> = new EventEmitter();
