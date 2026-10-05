@@ -4,7 +4,7 @@
 - 704422 - Web Portal: Preserve validity dates for bulk approvals.
 - 646041 - Web Portal: Make bulk-item validateOnlyOnChange opt-in.
 > [!IMPORTANT]
-> **Need Identity Manager 10.1 Update**
+> **Needs Identity Manager 10.1 Update**
 
 ### May 26, 2026
 - 708384: Fixes an issue with order a product where the service item has a mandatory binary request property.
