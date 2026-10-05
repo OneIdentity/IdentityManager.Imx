@@ -1,8 +1,8 @@
 ### October 5, 2026
-- #739412 - Show 10.1 version and 2026 copyright in client and web about pages.
-- #501302 - Add the missing fields on the Main Data tab.
-- #704422 - Web Portal: Preserve validity dates for bulk approvals.
-- #646041 - Web Portal: Make bulk-item validateOnlyOnChange opt-in.
+- 739412 - Show 10.1 version and 2026 copyright in client and web about pages.
+- 501302 - Add the missing fields on the Main Data tab.
+- 704422 - Web Portal: Preserve validity dates for bulk approvals.
+- 646041 - Web Portal: Make bulk-item validateOnlyOnChange opt-in.
 > [!IMPORTANT]
 > **Need Identity Manager 10.1 Update**
 
