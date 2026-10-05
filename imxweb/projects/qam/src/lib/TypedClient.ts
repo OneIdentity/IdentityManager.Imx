@@ -983,6 +983,11 @@ export class PortalDgeResourcesbyid extends TypedEntity {
   readonly InAERole: IWriteValue<string> = this.GetEntityValue('InAERole');
   readonly InLocality: IWriteValue<string> = this.GetEntityValue('InLocality');
   readonly InOrg: IWriteValue<string> = this.GetEntityValue('InOrg');
+  readonly XDateInserted: IReadValue<Date> = this.GetEntityValue("XDateInserted");
+  readonly DateOwnershipSet: IReadValue<Date> = this.GetEntityValue("DateOwnershipSet");
+  readonly DatePublishedToITShop: IReadValue<Date> = this.GetEntityValue("DatePublishedToITShop");
+  readonly Justification: IWriteValue<string> = this.GetEntityValue("Justification");
+  readonly Description: IWriteValue<string> = this.GetEntityValue("Description");
   /** Returns the static compile time schema for this type. */
   static GetEntitySchema(): StaticSchema<
     | 'UID_QAMDuG'
@@ -1005,6 +1010,11 @@ export class PortalDgeResourcesbyid extends TypedEntity {
     | 'InAERole'
     | 'InLocality'
     | 'InOrg'
+    | 'XDateInserted'
+    | 'DateOwnershipSet'
+    | 'DatePublishedToITShop'
+    | 'Justification'
+    | 'Description'
   > {
     const columns = {
       UID_QAMDuG: {
@@ -1104,6 +1114,31 @@ export class PortalDgeResourcesbyid extends TypedEntity {
       },
       InOrg: {
         ColumnName: 'InOrg',
+        Type: ValType.String,
+        IsReadOnly: false,
+      },
+      XDateInserted: {
+        ColumnName: 'XDateInserted',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      DateOwnershipSet: {
+        ColumnName: 'DateOwnershipSet',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      DatePublishedToITShop: {
+        ColumnName: 'DatePublishedToITShop',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      Justification: {
+        ColumnName: 'Justification',
+        Type: ValType.String,
+        IsReadOnly: false,
+      },
+      Description: {
+        ColumnName: 'Description',
         Type: ValType.String,
         IsReadOnly: false,
       },

@@ -6,6 +6,7 @@
         (saveItem)="handleAction($event, true)"
         (skipItem)="handleAction($event, false)"
         [hideButtons]="hideButtons"
+        [validateOnlyOnChange]="validateOnlyOnChange"
         (validationStateChanged)="validationStateChanged.emit($event)"
         (controlCreated)="formGroup.addControl('bulk-item' + i, $event)"
         >

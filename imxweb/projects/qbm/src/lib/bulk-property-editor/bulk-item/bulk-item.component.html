@@ -22,6 +22,7 @@
     @for (cdr of bulkItem?.properties; track cdr; let i = $index) {
       <imx-cdr-editor
         [cdr]="cdr"
+        [validateOnlyOnChange]="validateOnlyOnChange"
         (valueChange)="onValueChanged()"
         (pendingChanged)="onPendingChanged($event)"
         (controlCreated)="addControl(cdr.column.ColumnName + '_' + i, $event)"

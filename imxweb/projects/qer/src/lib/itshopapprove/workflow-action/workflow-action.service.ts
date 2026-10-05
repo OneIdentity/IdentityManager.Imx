@@ -89,7 +89,7 @@ export class WorkflowActionService {
     private readonly extService: ExtService,
     private readonly userService: UserModelService,
     private readonly queueService: ProcessingQueueService,
-  ) { }
+  ) {}
 
   public async directDecisions(requests: (Approval | TypedEntity)[], userUid: string): Promise<void> {
     const actionParameters = {
@@ -376,14 +376,13 @@ export class WorkflowActionService {
           message:
             '#LDS#The validity period you specified is not valid. The validity end date lies before the validity start date, or vice versa. Change the validity period.',
         },
-
       },
       apply: async (request: Approval) => {
         if (request.canSetValidFrom() && actionParameters.validFrom) {
           const from = actionParameters.validFrom.column.GetValue();
           if (from) {
             request.ValidFrom.value = addTimeNowToDate(from);
-          } else {
+          } else if (requests.length === 1) {
             // The value was removed, so set it to null in order to not send an invalid date to the backend
             await request.ValidFrom.Column.PutValue(null);
           }
@@ -393,7 +392,7 @@ export class WorkflowActionService {
           const until = actionParameters.validUntil.column.GetValue();
           if (until) {
             request.ValidUntil.value = addTimeNowToDate(until);
-          } else {
+          } else if (requests.length === 1) {
             // The value was removed, so set it to null in order to not send an invalid date to the backend
             await request.ValidUntil.Column.PutValue(null);
           }
@@ -446,13 +445,13 @@ export class WorkflowActionService {
         isInEscalationView: isEscalation,
         customValidation: itShopConfig?.VI_ITShop_ApproverReasonMandatoryOnDeny
           ? {
-            validate: () => {
-              const reasonValue = actionParameters.reason?.column.GetValue();
-              const justificationValue = actionParameters.justification?.column?.GetValue();
-              return (reasonValue != null && reasonValue.length > 0) || (justificationValue != null && justificationValue.length > 0);
-            },
-            message: '#LDS#Please enter or select a reason for your decision.',
-          }
+              validate: () => {
+                const reasonValue = actionParameters.reason?.column.GetValue();
+                const justificationValue = actionParameters.justification?.column?.GetValue();
+                return (reasonValue != null && reasonValue.length > 0) || (justificationValue != null && justificationValue.length > 0);
+              },
+              message: '#LDS#Please enter or select a reason for your decision.',
+            }
           : undefined,
       },
       apply: async (request: Approval) => {

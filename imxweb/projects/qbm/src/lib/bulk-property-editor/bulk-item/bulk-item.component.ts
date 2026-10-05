@@ -53,6 +53,7 @@ export class BulkItemComponent implements OnInit {
   @Input() public expanded = false;
   @Input() public hideButtons = false;
   @Input() public isOptional = false;
+  @Input() public validateOnlyOnChange = false;
 
   @Output() public saveItem: EventEmitter<BulkItem> = new EventEmitter();
   @Output() public skipItem: EventEmitter<BulkItem> = new EventEmitter();
