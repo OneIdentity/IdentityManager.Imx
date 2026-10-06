@@ -27,7 +27,7 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ValType } from '@imx-modules/imx-qbm-dbts';
+import { DateFormat, ValType } from '@imx-modules/imx-qbm-dbts';
 import { EntityColumnContainer } from '../entity-column-container';
 import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 
@@ -44,11 +44,26 @@ export class ViewPropertyComponent {
 
   public get displayedValue(): string {
     if (this.columnContainer?.type === ValType.Date) {
-      if (this.columnContainer?.value == null) {
+      // Prefer the server-supplied DisplayValue: it already honors DateFormat (DateOnly vs DateTime) via the shared DisplayBuilder.
+      if (this.columnContainer.displayValue) {
+        return this.columnContainer.displayValue;
+      }
+      if (this.columnContainer.value == null) {
         return this.defaultValue;
       }
       const date: Date = new Date(this.columnContainer.value);
-      return date.getDate() ? date.toLocaleString(this.translationProviderService.CultureFormat) : this.defaultValue;
+      if (!date.getDate()) {
+        return this.defaultValue;
+      }
+      const cultureFormat = this.translationProviderService.CultureFormat;
+      switch (this.columnContainer.metaData?.GetDateFormat()) {
+        case DateFormat.Date:
+          return date.toLocaleDateString(cultureFormat);
+        case DateFormat.UtcDateTime:
+          return date.toUTCString();
+        default:
+          return date.toLocaleString(cultureFormat);
+      }
     }
     return this.columnContainer?.displayValue || this.columnContainer?.value || this.defaultValue;
   }

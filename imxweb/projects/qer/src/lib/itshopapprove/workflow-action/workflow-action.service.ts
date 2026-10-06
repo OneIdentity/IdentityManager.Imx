@@ -379,7 +379,11 @@ export class WorkflowActionService {
         if (request.canSetValidFrom() && formGroup.controls.ValidFrom) {
           const from = formGroup.controls.ValidFrom!.value;
           if (from) {
-            request.ValidFrom.value = addTimeNowToDate(from);
+            // For a single request the control is bound to the request's own column, so any change is already set.
+            // Writing it again would resubmit an unchanged (possibly past) date. Only apply the general bulk value.
+            if (requests.length > 1) {
+              request.ValidFrom.value = addTimeNowToDate(from);
+            }
           } else if (requests.length === 1) {
             // The value was removed, so set it to null in order to not send an invalid date to the backend
             await request.ValidFrom.Column.PutValue(null);

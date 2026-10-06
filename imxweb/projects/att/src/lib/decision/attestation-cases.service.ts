@@ -94,6 +94,7 @@ export class AttestationCasesService {
     const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(attDecisionParameters, { signal });
     if (!collection) return { totalCount: 0, Data: [] };
     return {
+      ...collection,
       tableName: collection.tableName,
       totalCount: collection.totalCount,
       Data: collection.Data.map((item: PortalAttestationApprove, index: number) => {
