@@ -1,3 +1,8 @@
+### October 6, 2026
+- 725999 - Web Portal: Search approvals after loading.
+- 736614 - Angular read-only view-property honors DateFormat metadata.
+- 709042 - Web Portal: Do not resubmit unchanged Valid From on single approval.
+
 ### July 30, 2026
 - 724499 - Fixing parallel cart creation when requesting multiple group memberships.
 
