@@ -1,3 +1,7 @@
+### October 30, 2026
+- 741310 - Web Portal: Suppress empty peer-group warning outside peer-group selection.
+- 741335 - Web Portal: Preserve group membership delete response
+
 ### October 6, 2026
 - 725999 - Web Portal: Search approvals after loading.
 - 736614 - Angular read-only view-property honors DateFormat metadata.
