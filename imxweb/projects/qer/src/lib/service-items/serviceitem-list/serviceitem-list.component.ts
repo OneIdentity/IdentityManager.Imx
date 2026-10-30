@@ -216,7 +216,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize ?? 0;
 
-        if (this.peerGroupSize === 0) {
+        if (this.uidPersonPeerGroup && this.peerGroupSize === 0) {
           this.noDataText = '#LDS#Heading Peer Group Is Empty';
           this.dialog.open(MessageDialogComponent, {
             data: {

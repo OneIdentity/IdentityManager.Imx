@@ -25,8 +25,11 @@
  */
 
 import { of } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { ApiClientFetch } from './api-client-fetch';
 import { ApiClientMethodFactoryMock } from './api-client.spec';
+import { MethodDescriptorService } from './dynamic-method/method-descriptor.service';
 
 describe('ApiClientFetch', () => {
   const methodFactory = new ApiClientMethodFactoryMock();
@@ -159,6 +162,63 @@ describe('ApiClientFetch', () => {
             expect(JSON.stringify(actualResponse)).toEqual(testcase.expectedJson);
           }
         }
+      }),
+    );
+  });
+});
+
+describe('ApiClientFetch membership DELETE response contract', () => {
+  const descriptor = new MethodDescriptorService().delete('/portal/ADSGroup/{groupId}/memberships/{accountId}', {
+    groupId: 'test-group',
+    accountId: 'test-account',
+  });
+
+  function createClient(response: Response): { client: ApiClientFetch; fetch: jasmine.Spy } {
+    const logger = jasmine.createSpyObj<ClassloggerService>('ClassloggerService', ['debug', 'info']);
+    const translation = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
+    translation.instant.and.callFake((key: string) => key.replace('#LDS#', ''));
+    const fetch = jasmine.createSpy('fetch').and.returnValue(Promise.resolve(response));
+    return { client: new ApiClientFetch('', logger, translation, { fetch }), fetch };
+  }
+
+  it('accepts HTTP 204 without attempting to parse a body', async () => {
+    const { client } = createClient(new Response(null, { status: 204 }));
+
+    await expectAsync(client.processRequest(descriptor)).toBeResolvedTo(undefined);
+  });
+
+  it('preserves the JSON action-result array returned by a successful membership DELETE', async () => {
+    const { client } = createClient(new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    await expectAsync(client.processRequest(descriptor)).toBeResolvedTo([]);
+  });
+
+  it('preserves a nonempty text error returned with HTTP 200', async () => {
+    const { client } = createClient(
+      new Response('Membership cannot be removed', { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }),
+    );
+
+    await expectAsync(client.processRequest(descriptor)).toBeRejectedWithError('Membership cannot be removed');
+  });
+
+  it('does not accept an empty text response with an HTTP error status', async () => {
+    const { client } = createClient(
+      new Response('', { status: 500, statusText: 'Internal Server Error', headers: { 'Content-Type': 'text/plain; charset=utf-8' } }),
+    );
+
+    await expectAsync(client.processRequest(descriptor)).toBeRejectedWithError(
+      'The server returned an unexpected data type. (Internal Server Error)',
+    );
+  });
+
+  it('preserves structured server errors', async () => {
+    const errors = [{ Message: 'Membership cannot be removed', Level: '42', Number: '23' }];
+    const { client } = createClient(new Response(JSON.stringify(errors), { status: 500, headers: { 'Content-Type': 'application/json' } }));
+
+    await expectAsync(client.processRequest(descriptor)).toBeRejectedWith(
+      jasmine.objectContaining({
+        message: JSON.stringify(errors),
+        messageUserFriendly: 'Membership cannot be removed [23]',
       }),
     );
   });
