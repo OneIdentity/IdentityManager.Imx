@@ -50,10 +50,10 @@ import { WorkflowActionEdit } from './workflow-action-edit.interface';
  * An implementation of such a service is {@link WorkflowActionService}.
  */
 @Component({
-    selector: 'imx-workflow-action',
-    templateUrl: './workflow-action.component.html',
-    styleUrls: ['./workflow-action.component.scss'],
-    standalone: false
+  selector: 'imx-workflow-action',
+  templateUrl: './workflow-action.component.html',
+  styleUrls: ['./workflow-action.component.scss'],
+  standalone: false,
 })
 export class WorkflowActionComponent {
   /**
@@ -79,5 +79,9 @@ export class WorkflowActionComponent {
         this.data.customValidation?.validate(control) ? null : { customValidationError: true },
       );
     }
+  }
+
+  onClose(): void {
+    this.sideSheetRef.close(this.formGroup);
   }
 }

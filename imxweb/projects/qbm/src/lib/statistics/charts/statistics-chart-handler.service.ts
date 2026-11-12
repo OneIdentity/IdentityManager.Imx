@@ -60,14 +60,14 @@ export class StatisticsChartHandlerService {
 
   public dataHasNonZero(chart: ChartDto): boolean {
     // This will check the data to see if we have all 0 values and should display text instead of a chart
-    return chart.Data?.map((data) => (data.Points?.[0].Value ?? 0) > 0)?.some((value) => value) ?? false;
+    return chart.Data?.map((data) => (data.Points?.[0]?.Value ?? 0) > 0)?.some((value) => value) ?? false;
   }
 
   public getNamesValues(data: ChartData[], options?: { includeZero: boolean }): ChartNamesValues {
     const names: string[] = [];
     const values: number[] = [];
     data.forEach((datum) => {
-      const value = datum?.Points?.[0].Value ?? 0;
+      const value = datum?.Points?.[0]?.Value ?? 0;
       if (value > 0 || options?.includeZero) {
         names.push(datum?.Name ?? '');
         values.push(value);
@@ -215,7 +215,7 @@ export class StatisticsChartHandlerService {
     let chartNamesValues: ChartNamesValues;
     if (limitLessThanData) {
       // We will sort by highest value, and sum past the data limit
-      chart.Data?.sort((a, b) => (a.Points?.[0].Value ?? 0) - (b.Points?.[0].Value ?? 0)).reverse();
+      chart.Data?.sort((a, b) => (a.Points?.[0]?.Value ?? 0) - (b.Points?.[0]?.Value ?? 0)).reverse();
       chartNamesValues = this.getNamesValues(chart.Data?.slice(0, (displayOptions.dataLimit ?? 0) - 1) || []);
       this.getOtherValue(chart.Data?.slice((displayOptions.dataLimit ?? 0) - 1) ?? [], chartNamesValues);
     } else {
@@ -268,14 +268,14 @@ export class StatisticsChartHandlerService {
 
   public getLineData(chart: ChartDto, displayOptions: DisplayOptions): ChartOptions {
     const nDataStreams = chart.Data?.length ?? 0;
-    const nTimeLength = chart.Data?.[0].Points?.length ?? 0;
+    const nTimeLength = chart.Data?.[0]?.Points?.length ?? 0;
     const cutoff = displayOptions.dataLimit && displayOptions.dataLimit < nDataStreams ? displayOptions.dataLimit : nDataStreams;
     const timecutoff = displayOptions.pointLimit && displayOptions.pointLimit < nTimeLength ? displayOptions.pointLimit : nTimeLength;
 
     const slicedData = chart.Data?.slice(0, cutoff);
 
     // Build raw columns with possible `undefined`
-    const timeLabels = slicedData?.[0].Points?.slice(0, timecutoff).map((d) => d.Date) ?? [];
+    const timeLabels = slicedData?.[0]?.Points?.slice(0, timecutoff).map((d) => d.Date) ?? [];
     const valueColumns = slicedData?.map((data) => {
       return {
         name: data.Name ?? '',
