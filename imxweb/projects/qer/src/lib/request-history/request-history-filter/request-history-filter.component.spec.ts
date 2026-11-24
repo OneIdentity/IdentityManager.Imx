@@ -25,9 +25,8 @@
  */
 
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
-import { MockBuilder, MockRender } from 'ng-mocks';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 
 import { clearStylesFromDOM } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
@@ -35,7 +34,7 @@ import { RequestHistoryFilterComponent } from './request-history-filter.componen
 
 describe('RequestHistoryFilterComponent', () => {
   let component: RequestHistoryFilterComponent;
-  let fixture: ComponentFixture<RequestHistoryFilterComponent>;
+  let fixture: MockedComponentFixture<RequestHistoryFilterComponent>;
 
   beforeEach(() => {
     return MockBuilder([RequestHistoryFilterComponent, UntypedFormBuilder, ChangeDetectorRef])
@@ -49,7 +48,7 @@ describe('RequestHistoryFilterComponent', () => {
 
   beforeEach(() => {
     fixture = MockRender(RequestHistoryFilterComponent);
-    component = fixture.componentInstance;
+    component = fixture.point.componentInstance;
     fixture.detectChanges();
   });
 

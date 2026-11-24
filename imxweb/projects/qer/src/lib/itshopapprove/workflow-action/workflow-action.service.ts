@@ -29,7 +29,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { DecisionInput } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
@@ -377,24 +377,35 @@ export class WorkflowActionService {
             '#LDS#The validity period you specified is not valid. The validity end date lies before the validity start date, or vice versa. Change the validity period.',
         },
       },
-      apply: async (request: Approval) => {
-        if (request.canSetValidFrom() && actionParameters.validFrom) {
-          const from = actionParameters.validFrom.column.GetValue();
+      apply: async (request: Approval, formGroup: UntypedFormGroup) => {
+        if (request.canSetValidFrom() && formGroup.controls.ValidFrom) {
+          const from = formGroup.controls.ValidFrom!.value;
           if (from) {
-            request.ValidFrom.value = addTimeNowToDate(from);
+            // For a single request the control is bound to the request's own column, so any change is already set.
+            // Writing it again would resubmit an unchanged (possibly past) date. Only apply the general bulk value.
+            if (requests.length > 1) {
+              request.ValidFrom.value = addTimeNowToDate(from);
+            }
           } else if (requests.length === 1) {
             // The value was removed, so set it to null in order to not send an invalid date to the backend
             await request.ValidFrom.Column.PutValue(null);
           }
         }
 
-        if (request.canSetValidUntil(itShopConfig) && actionParameters.validUntil) {
-          const until = actionParameters.validUntil.column.GetValue();
-          if (until) {
-            request.ValidUntil.value = addTimeNowToDate(until);
-          } else if (requests.length === 1) {
+        if (request.canSetValidUntil(itShopConfig) && formGroup.controls.ValidUntil) {
+          const until = formGroup.controls.ValidUntil.value;
+          if (requests.length > 1) {
+            // The general bulk value is set explicitly by the approver, so apply it to every request.
+            if (until) {
+              request.ValidUntil.value = addTimeNowToDate(until);
+            }
+          } else if (!until) {
             // The value was removed, so set it to null in order to not send an invalid date to the backend
             await request.ValidUntil.Column.PutValue(null);
+          } else if (!until.isSame(request.ValidUntil.value, 'day')) {
+            // For a single request the control is bound to the request's own column. Only write a changed date,
+            // so an unchanged value keeps its original time.
+            request.ValidUntil.value = addTimeNowToDate(until);
           }
         }
 
@@ -605,7 +616,7 @@ export class WorkflowActionService {
               request.GetEntity().GetDisplay(),
               '',
               async () => {
-                await config.apply(request as Approval);
+                await config.apply(request as Approval, result as UntypedFormGroup);
               },
               request.GetEntity().GetKeys().join(','),
             ),
@@ -620,7 +631,7 @@ export class WorkflowActionService {
         let success: boolean;
         try {
           for (const request of config.data.requests) {
-            await config.apply(request as Approval);
+            await config.apply(request as Approval, result as UntypedFormGroup);
           }
           success = true;
         } finally {

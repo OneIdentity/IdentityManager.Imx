@@ -38,7 +38,7 @@ import { AboutService } from './About.service';
  * User-visible product version shown on the About page.
  * Display only: Globals.Version and the API ProductVersion keep the real version.
  */
-const DisplayVersion = '10.1';
+const DisplayVersion = '10.2';
 
 @Component({
     templateUrl: './About.component.html',
