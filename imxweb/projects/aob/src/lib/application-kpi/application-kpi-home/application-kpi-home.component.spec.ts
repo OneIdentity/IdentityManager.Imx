@@ -26,8 +26,8 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslatePipe } from '@ngx-translate/core';
-import { MockPipe, MockProvider } from 'ng-mocks';
+import { TranslateModule } from '@ngx-translate/core';
+import { MockProvider } from 'ng-mocks';
 import { BusyIndicatorModule } from 'qbm';
 import { AobApiService } from '../../aob-api-client.service';
 import { ApplicationKpiHomeComponent } from './application-kpi-home.component';
@@ -38,8 +38,7 @@ describe('ApplicationKpiHomeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApplicationKpiHomeComponent, BusyIndicatorModule],
-      declarations: [MockPipe(TranslatePipe)],
+      imports: [ApplicationKpiHomeComponent, BusyIndicatorModule, TranslateModule.forRoot()],
       providers: [MockProvider(AobApiService)],
     }).compileComponents();
 
