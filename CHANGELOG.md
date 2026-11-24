@@ -1,3 +1,12 @@
+### November 24, 2026
+- 741080 - Update Angular to 20.3.33 and the build tooling to 20.3.39, and fix npm dependencies with known CVEs.
+- 709042 - Web Portal: Apply the general Valid Until to every request in a bulk approval.
+- 723083 - Web Portal: Write Valid From and Valid Until on approval only when they were changed.
+- 707001 - Web Portal: Fix ValidFrom error message when approving requests with MaxValidDays.
+- 646684 - Web Portal: Handle empty arrays in statistics charts.
+> [!IMPORTANT]
+> **Needs Identity Manager 10.2 Update**
+
 ### October 5, 2026
 - 739412 - Show 10.1 version and 2026 copyright in client and web about pages.
 - 501302 - Add the missing fields on the Main Data tab.
